@@ -77,7 +77,7 @@
                 version="${version}"
 				target="${jad.target}">
 
-            <midlet name="${name}" class="app.Main" icon="${jad.icon}" />
+            <midlet name="${name}" class="app.Main" icon="/${jad.icon}" />
             <attribute name="MIDlet-Permissions" value="javax.microedition.io.Connector.socket" />
         </wtkjad>
     </target>
@@ -102,7 +102,7 @@
                 vendor="XK72"
                 version="${version}">
 
-            <midlet name="${name}" class="app.Main" icon="${jad.icon}"/>
+            <midlet name="${name}" class="app.Main" icon="/${jad.icon}"/>
         </wtkjad>
     </target>
 	

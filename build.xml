@@ -11,7 +11,7 @@
 		<antcall target="build-all"/>
 	</target>
 	
-	<target name="all-alpha">
+	<target name="all-alpha" description="Clean and build all versions, for alpha deploy">
 		<antcall target="clean"/>
 		
 		<property name="jad.target" value="${jad.target.alpha}"/>
@@ -19,7 +19,7 @@
 		<antcall target="build-all"/>
 	</target>
 	
-	<target name="all-beta">
+	<target name="all-beta" description="Clean and build all versions, for beta deploy">
 		<antcall target="clean"/>
 		
 		<property name="jad.target" value="${jad.target.beta}"/>

@@ -25,74 +25,83 @@ import app.session.Session;
  * Preferences - Java - Code Style - Code Templates
  */
 public class SessionTerminal extends Terminal implements Activatable,
-		CommandListener {
+        CommandListener {
 
-	private static Command disconnectCommand = new Command("Close", Command.STOP, 100);
-	private static Command textInputCommand = new Command("Input (5)", Command.ITEM, 10);
-	private static Command tabCommand = new Command( "Tab", Command.ITEM, 20 );
-	private static Command ctrlCommand = new Command( "CTRL", Command.ITEM, 21 );
+    private static Command disconnectCommand = new Command( "Close",
+            Command.STOP, 100 );
 
-	private Session session;
+    private static Command textInputCommand = new Command( "Input (5)",
+            Command.ITEM, 10 );
 
-	private InputDialog inputDialog;
-	private ModifierInputDialog modifierInputDialog;
+    private static Command tabCommand = new Command( "Tab", Command.ITEM, 20 );
 
-	/**
-	 * @param buffer
-	 */
-	public SessionTerminal(vt320 buffer, Session session) {
-		super(buffer);
+    private static Command ctrlCommand = new Command( "CTRL", Command.ITEM, 21 );
 
-		this.session = session;
-		addCommand(disconnectCommand);
-		addCommand(textInputCommand);
-		addCommand(tabCommand);
-		addCommand(ctrlCommand);
+    private Session session;
 
-		setCommandListener(this);
-	}
+    private InputDialog inputDialog;
 
-	public void commandAction(Command command, Displayable displayable) {
-		if (command == disconnectCommand) {
-			session.disconnect();
-		} else if (command == textInputCommand) {
-			doTextInput();
-		} else if ( command == tabCommand ) {
-			buffer.keyTyped( 0, '\t', 0 );
-		} else if ( command == ctrlCommand ) {
-			doModifierInput( vt320.KEY_CONTROL );
-		}
-	}
+    private ModifierInputDialog modifierInputDialog;
 
-	protected void keyPressed(int keycode) {
-		switch (keycode) {
-		case Canvas.KEY_NUM5:
-			doTextInput();
-			break;
-		}
-	}
+    /**
+     * @param buffer
+     */
+    public SessionTerminal( vt320 buffer, Session session ) {
+        super( buffer );
 
-	private void doTextInput() {
-		if (inputDialog == null) {
-			inputDialog = new InputDialog(this, buffer);
-		}
-		inputDialog.activate();
-	}
-	
-	private void doModifierInput( int modifier ) {
-		if ( modifierInputDialog == null ) {
-			modifierInputDialog = new ModifierInputDialog( this, buffer );
-		}
-		modifierInputDialog.modifier = modifier;
-		modifierInputDialog.activate();
-	}
+        this.session = session;
+        addCommand( disconnectCommand );
+        addCommand( textInputCommand );
+        addCommand( tabCommand );
+        addCommand( ctrlCommand );
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gui.Activatable#activate()
-	 */
-	public void activate() {
-		Main.setDisplay(this);
-	}
+        setCommandListener( this );
+    }
+
+    public void commandAction( Command command, Displayable displayable ) {
+        if ( command == disconnectCommand ) {
+            session.disconnect();
+        }
+        else if ( command == textInputCommand ) {
+            doTextInput();
+        }
+        else if ( command == tabCommand ) {
+            buffer.keyTyped( 0, '\t', 0 );
+        }
+        else if ( command == ctrlCommand ) {
+            doModifierInput( vt320.KEY_CONTROL );
+        }
+    }
+
+    protected void keyPressed( int keycode ) {
+        switch ( keycode ) {
+        case Canvas.KEY_NUM5:
+            doTextInput();
+            break;
+        }
+    }
+
+    private void doTextInput() {
+        if ( inputDialog == null ) {
+            inputDialog = new InputDialog( this, buffer );
+        }
+        inputDialog.activate();
+    }
+
+    private void doModifierInput( int modifier ) {
+        if ( modifierInputDialog == null ) {
+            modifierInputDialog = new ModifierInputDialog( this, buffer );
+        }
+        modifierInputDialog.modifier = modifier;
+        modifierInputDialog.activate();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gui.Activatable#activate()
+     */
+    public void activate() {
+        Main.setDisplay( this );
+    }
 }

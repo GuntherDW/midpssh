@@ -30,14 +30,14 @@ package telnet;
 
 public class Dimension {
 
-	public int width, height;
+    public int width, height;
 
-	public Dimension() {
-	}
+    public Dimension() {
+    }
 
-	public Dimension(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
+    public Dimension( int width, int height ) {
+        this.width = width;
+        this.height = height;
+    }
 
 }

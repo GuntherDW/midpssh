@@ -36,21 +36,21 @@ import javax.microedition.lcdui.List;
 
 public class Console extends List implements CommandListener {
 
-	public Console() {
-		super("Console", List.IMPLICIT);
-		setCommandListener(this);
-		addCommand(new Command("Exit", Command.EXIT, 1));
-	}
+    public Console() {
+        super( "Console", List.IMPLICIT );
+        setCommandListener( this );
+        addCommand( new Command( "Exit", Command.EXIT, 1 ) );
+    }
 
-	public void commandAction(Command command, Displayable displayable) {
-		while (this.size() > 0)
-			delete(0);
-		//Main.setDisplay(Main.terminal);
-	}
+    public void commandAction( Command command, Displayable displayable ) {
+        while ( this.size() > 0 )
+            delete( 0 );
+        //Main.setDisplay(Main.terminal);
+    }
 
-	public void append(String s) {
-		if (s != null) {
-			append(s, null);
-		}
-	}
+    public void append( String s ) {
+        if ( s != null ) {
+            append( s, null );
+        }
+    }
 }

@@ -33,53 +33,54 @@ package ssh;
 
 public abstract class Cipher {
 
-	public static Cipher getInstance(String algorithm) {
-		Class c;
-		try {
-			//      System.out.println( "--- Cipher needs " + algorithm );
-			c = Class.forName("ssh." + algorithm);
-			return (Cipher) c.newInstance();
-		} catch (Throwable t) {
-			System.err.println("Cipher: unable to load instance of '"
-					+ algorithm + "'");
-			t.printStackTrace();
-			return null;
-		}
-	}
+    public static Cipher getInstance( String algorithm ) {
+        Class c;
+        try {
+            //      System.out.println( "--- Cipher needs " + algorithm );
+            c = Class.forName( "ssh." + algorithm );
+            return (Cipher) c.newInstance();
+        }
+        catch ( Throwable t ) {
+            System.err.println( "Cipher: unable to load instance of '"
+                    + algorithm + "'" );
+            t.printStackTrace();
+            return null;
+        }
+    }
 
-	/**
-	 * Encrypt source byte array using the instantiated algorithm.
-	 */
-	public byte[] encrypt(byte[] src) {
-		byte[] dest = new byte[src.length];
-		encrypt(src, 0, dest, 0, src.length);
-		return dest;
-	}
+    /**
+     * Encrypt source byte array using the instantiated algorithm.
+     */
+    public byte[] encrypt( byte[] src ) {
+        byte[] dest = new byte[src.length];
+        encrypt( src, 0, dest, 0, src.length );
+        return dest;
+    }
 
-	/**
-	 * The actual encryption takes place here.
-	 */
-	public abstract void encrypt(byte[] src, int srcOff, byte[] dest,
-			int destOff, int len);
+    /**
+     * The actual encryption takes place here.
+     */
+    public abstract void encrypt( byte[] src, int srcOff, byte[] dest,
+            int destOff, int len );
 
-	/**
-	 * Decrypt source byte array using the instantiated algorithm.
-	 */
-	public byte[] decrypt(byte[] src) {
-		byte[] dest = new byte[src.length];
-		decrypt(src, 0, dest, 0, src.length);
-		return dest;
-	}
+    /**
+     * Decrypt source byte array using the instantiated algorithm.
+     */
+    public byte[] decrypt( byte[] src ) {
+        byte[] dest = new byte[src.length];
+        decrypt( src, 0, dest, 0, src.length );
+        return dest;
+    }
 
-	/**
-	 * The actual decryption takes place here.
-	 */
-	public abstract void decrypt(byte[] src, int srcOff, byte[] dest,
-			int destOff, int len);
+    /**
+     * The actual decryption takes place here.
+     */
+    public abstract void decrypt( byte[] src, int srcOff, byte[] dest,
+            int destOff, int len );
 
-	public abstract void setKey(byte[] key);
+    public abstract void setKey( byte[] key );
 
-	public void setKey(String key) {
-		setKey(key.getBytes());
-	}
+    public void setKey( String key ) {
+        setKey( key.getBytes() );
+    }
 }

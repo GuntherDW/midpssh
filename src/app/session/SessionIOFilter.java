@@ -13,5 +13,5 @@ package app.session;
  * Preferences - Java - Code Style - Code Templates
  */
 public interface SessionIOFilter extends SessionIOListener {
-	public void setSessionlIOListener(SessionIOListener listener);
+    public void setSessionlIOListener( SessionIOListener listener );
 }

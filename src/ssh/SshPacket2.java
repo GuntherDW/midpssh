@@ -181,80 +181,85 @@ public class SshPacket2 extends SshPacket {
 
         while ( boffset < buff.length ) {
             switch ( phase_packet ) {
-            // 4 bytes
-            // Packet length: 32 bit unsigned integer
-            // gives the length of the packet, not including the length field
-            // and padding. maximum is 262144 bytes.
+                // 4 bytes
+                // Packet length: 32 bit unsigned integer
+                // gives the length of the packet, not including the length
+                // field
+                // and padding. maximum is 262144 bytes.
 
-            case PHASE_packet_length:
-                packet_length_array[position++] = buff[boffset++];
-                if ( position == 5 ) {
-                    packet_length = ( packet_length_array[3] & 0xff )
-                            + ( ( packet_length_array[2] & 0xff ) << 8 )
-                            + ( ( packet_length_array[1] & 0xff ) << 16 )
-                            + ( ( packet_length_array[0] & 0xff ) << 24 );
-                    padlen = packet_length_array[4];
-                    position = 0;
-                    System.out.println( "SSH2: packet length " + packet_length );
-                    System.out.println( "SSH2: padlen " + padlen );
-                    packet_length += hmaclen; /* len(md5) */
-                    block = new byte[packet_length - 1]; /* padlen already done */
-                    phase_packet++;
-                }
-                break; //switch (phase_packet)
-
-            //8*(packet_length/8 +1) bytes
-
-            case PHASE_block:
-                if ( position < block.length ) {
-                    int amount = buff.length - boffset;
-                    if ( amount > 0 ) {
-                        if ( amount > block.length - position )
-                            amount = block.length - position;
-                        System.arraycopy( buff, boffset, block, position,
-                                amount );
-                        boffset += amount;
-                        position += amount;
+                case PHASE_packet_length:
+                    packet_length_array[position++] = buff[boffset++];
+                    if ( position == 5 ) {
+                        packet_length = ( packet_length_array[3] & 0xff )
+                                + ( ( packet_length_array[2] & 0xff ) << 8 )
+                                + ( ( packet_length_array[1] & 0xff ) << 16 )
+                                + ( ( packet_length_array[0] & 0xff ) << 24 );
+                        padlen = packet_length_array[4];
+                        position = 0;
+                        System.out.println( "SSH2: packet length "
+                                + packet_length );
+                        System.out.println( "SSH2: padlen " + padlen );
+                        packet_length += hmaclen; /* len(md5) */
+                        block = new byte[packet_length - 1]; /*
+                                                              * padlen already
+                                                              * done
+                                                              */
+                        phase_packet++;
                     }
-                }
-                if ( position == block.length ) { //the block is complete
-                    if ( buff.length > boffset ) {
-                        newbuf = new byte[buff.length - boffset];
-                        System.arraycopy( buff, boffset, newbuf, 0, buff.length
-                                - boffset );
+                    break; //switch (phase_packet)
+
+                //8*(packet_length/8 +1) bytes
+
+                case PHASE_block:
+                    if ( position < block.length ) {
+                        int amount = buff.length - boffset;
+                        if ( amount > 0 ) {
+                            if ( amount > block.length - position )
+                                amount = block.length - position;
+                            System.arraycopy( buff, boffset, block, position,
+                                    amount );
+                            boffset += amount;
+                            position += amount;
+                        }
                     }
-                    byte[] decryptedBlock = new byte[block.length - hmaclen];
-                    byte[] data;
-                    packet_length -= hmaclen;
+                    if ( position == block.length ) { //the block is complete
+                        if ( buff.length > boffset ) {
+                            newbuf = new byte[buff.length - boffset];
+                            System.arraycopy( buff, boffset, newbuf, 0,
+                                    buff.length - boffset );
+                        }
+                        byte[] decryptedBlock = new byte[block.length - hmaclen];
+                        byte[] data;
+                        packet_length -= hmaclen;
 
-                    System.arraycopy( block, 0, decryptedBlock, 0, block.length
-                            - hmaclen );
+                        System.arraycopy( block, 0, decryptedBlock, 0,
+                                block.length - hmaclen );
 
-                    if ( crypto != null )
-                        decryptedBlock = crypto.decrypt( decryptedBlock );
+                        if ( crypto != null )
+                            decryptedBlock = crypto.decrypt( decryptedBlock );
 
-                    for ( int i = 0; i < decryptedBlock.length; i++ )
-                        System.out.print( " " + decryptedBlock[i] );
-                    System.out.println( "" );
+                        for ( int i = 0; i < decryptedBlock.length; i++ )
+                            System.out.print( " " + decryptedBlock[i] );
+                        System.out.println( "" );
 
-                    setType( decryptedBlock[0] );
-                    System.err.println( "Packet type: " + getType() );
-                    System.err.println( "Packet len: " + packet_length );
+                        setType( decryptedBlock[0] );
+                        System.err.println( "Packet type: " + getType() );
+                        System.err.println( "Packet len: " + packet_length );
 
-                    //data
-                    if ( packet_length > padlen + 1 + 1 ) {
-                        data = new byte[packet_length - 1 - padlen - 1];
-                        System.arraycopy( decryptedBlock, 1, data, 0,
-                                data.length );
-                        putData( data );
+                        //data
+                        if ( packet_length > padlen + 1 + 1 ) {
+                            data = new byte[packet_length - 1 - padlen - 1];
+                            System.arraycopy( decryptedBlock, 1, data, 0,
+                                    data.length );
+                            putData( data );
+                        }
+                        else {
+                            putData( null );
+                        }
+                        /* MAC! */
+                        return newbuf;
                     }
-                    else {
-                        putData( null );
-                    }
-                    /* MAC! */
-                    return newbuf;
-                }
-                break;
+                    break;
             }
         }
         return null;

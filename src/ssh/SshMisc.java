@@ -109,7 +109,7 @@ public class SshMisc {
         byte[] result = new byte[a.length];
         for ( int i = 0; i < result.length; i++ )
             result[i] = (byte) ( ( ( a[i] & 0xff ) ^ ( b[i] & 0xff ) ) & 0xff );// ^
-                                                                                // xor
+        // xor
         // operator
         return result;
     }

@@ -74,20 +74,20 @@ public final class IDEA extends Cipher {
             }
             else {
                 switch ( end - di ) {
-                case 7:
-                    dest[di + 6] = (byte) ( ( iv1 >>> 8 ) & 0xff );
-                case 6:
-                    dest[di + 5] = (byte) ( ( iv1 >>> 16 ) & 0xff );
-                case 5:
-                    dest[di + 4] = (byte) ( ( iv1 >>> 24 ) & 0xff );
-                case 4:
-                    dest[di + 3] = (byte) ( iv0 & 0xff );
-                case 3:
-                    dest[di + 2] = (byte) ( ( iv0 >>> 8 ) & 0xff );
-                case 2:
-                    dest[di + 1] = (byte) ( ( iv0 >>> 16 ) & 0xff );
-                case 1:
-                    dest[di] = (byte) ( ( iv0 >>> 24 ) & 0xff );
+                    case 7:
+                        dest[di + 6] = (byte) ( ( iv1 >>> 8 ) & 0xff );
+                    case 6:
+                        dest[di + 5] = (byte) ( ( iv1 >>> 16 ) & 0xff );
+                    case 5:
+                        dest[di + 4] = (byte) ( ( iv1 >>> 24 ) & 0xff );
+                    case 4:
+                        dest[di + 3] = (byte) ( iv0 & 0xff );
+                    case 3:
+                        dest[di + 2] = (byte) ( ( iv0 >>> 8 ) & 0xff );
+                    case 2:
+                        dest[di + 1] = (byte) ( ( iv0 >>> 16 ) & 0xff );
+                    case 1:
+                        dest[di] = (byte) ( ( iv0 >>> 24 ) & 0xff );
                 }
             }
         }
@@ -124,20 +124,20 @@ public final class IDEA extends Cipher {
             }
             else {
                 switch ( end - di ) {
-                case 7:
-                    dest[di + 6] = (byte) ( ( plain1 >>> 8 ) & 0xff );
-                case 6:
-                    dest[di + 5] = (byte) ( ( plain1 >>> 16 ) & 0xff );
-                case 5:
-                    dest[di + 4] = (byte) ( ( plain1 >>> 24 ) & 0xff );
-                case 4:
-                    dest[di + 3] = (byte) ( plain0 & 0xff );
-                case 3:
-                    dest[di + 2] = (byte) ( ( plain0 >>> 8 ) & 0xff );
-                case 2:
-                    dest[di + 1] = (byte) ( ( plain0 >>> 16 ) & 0xff );
-                case 1:
-                    dest[di] = (byte) ( ( plain0 >>> 24 ) & 0xff );
+                    case 7:
+                        dest[di + 6] = (byte) ( ( plain1 >>> 8 ) & 0xff );
+                    case 6:
+                        dest[di + 5] = (byte) ( ( plain1 >>> 16 ) & 0xff );
+                    case 5:
+                        dest[di + 4] = (byte) ( ( plain1 >>> 24 ) & 0xff );
+                    case 4:
+                        dest[di + 3] = (byte) ( plain0 & 0xff );
+                    case 3:
+                        dest[di + 2] = (byte) ( ( plain0 >>> 8 ) & 0xff );
+                    case 2:
+                        dest[di + 1] = (byte) ( ( plain0 >>> 16 ) & 0xff );
+                    case 1:
+                        dest[di] = (byte) ( ( plain0 >>> 24 ) & 0xff );
                 }
             }
         }

@@ -28,76 +28,93 @@ import app.session.Session;
  */
 public class SessionTerminal extends Terminal implements Activatable,
         CommandListener {
-    
+
     private static final int MODE_NORMAL = 0;
+
     private static final int MODE_CURSOR = 1;
 
-    private static final Command textInputCommand = new Command( "Input", Command.ITEM, 10 );
-    private static final Command cursorCommand = new Command( "Cursor", Command.ITEM, 15 );
-    private static final Command scrollCommand = new Command( "Scroll", Command.ITEM, 16 );
-    private static final Command tabCommand = new Command( "TAB", Command.ITEM, 20 );
-    private static final Command ctrlCommand = new Command( "CTRL", Command.ITEM, 21 );
-    private static final Command altCommand = new Command( "ALT", Command.ITEM, 22 );
-    private static final Command enterCommand = new Command( "ENTER", Command.ITEM, 23 );
-    private static final Command disconnectCommand = new Command( "Close", Command.STOP, 100 );
+    private static final Command textInputCommand = new Command( "Input",
+            Command.ITEM, 10 );
 
-    private static final Command backCommand = new Command( "Back", Command.BACK, 90 );
-    
-    private static final Command [] commandsNormal = new Command[] {
-            textInputCommand, cursorCommand, scrollCommand, tabCommand, ctrlCommand,
-            altCommand, enterCommand, disconnectCommand
+    private static final Command cursorCommand = new Command( "Cursor",
+            Command.ITEM, 15 );
+
+    private static final Command scrollCommand = new Command( "Scroll",
+            Command.ITEM, 16 );
+
+    private static final Command tabCommand = new Command( "TAB", Command.ITEM,
+            20 );
+
+    private static final Command ctrlCommand = new Command( "CTRL",
+            Command.ITEM, 21 );
+
+    private static final Command altCommand = new Command( "ALT", Command.ITEM,
+            22 );
+
+    private static final Command enterCommand = new Command( "ENTER",
+            Command.ITEM, 23 );
+
+    private static final Command disconnectCommand = new Command( "Close",
+            Command.STOP, 100 );
+
+    private static final Command backCommand = new Command( "Back",
+            Command.BACK, 90 );
+
+    private static final Command[] commandsNormal = new Command[] {
+            textInputCommand, cursorCommand, scrollCommand, tabCommand,
+            ctrlCommand, altCommand, enterCommand, disconnectCommand
     };
-    
-    private static final Command [] commandsCursor = new Command[] {
-            backCommand
+
+    private static final Command[] commandsCursor = new Command[] {
+        backCommand
     };
-    
+
     private Session session;
 
     private InputDialog inputDialog;
 
     private ModifierInputDialog modifierInputDialog;
 
-    private Command [] currentCommands;
-    
+    private Command[] currentCommands;
+
     private int mode;
-    
+
     /**
      * @param buffer
      */
     public SessionTerminal( vt320 buffer, Session session ) {
         super( buffer );
         this.session = session;
-        
+
         changeMode( MODE_NORMAL );
 
         setCommandListener( this );
     }
-    
+
     protected void changeMode( int mode ) {
         this.mode = mode;
-        
+
         switch ( mode ) {
-        	case MODE_NORMAL:
-        	    changeCurrentCommands( commandsNormal );
-        	    break;
-    	    case MODE_CURSOR:
-    	        changeCurrentCommands( commandsCursor );
-    	        break;
+            case MODE_NORMAL:
+                changeCurrentCommands( commandsNormal );
+                break;
+            case MODE_CURSOR:
+                changeCurrentCommands( commandsCursor );
+                break;
         }
     }
-    
-    protected void changeCurrentCommands( Command [] commands ) {
+
+    protected void changeCurrentCommands( Command[] commands ) {
         if ( currentCommands != null ) {
             for ( int i = 0; i < currentCommands.length; i++ ) {
                 removeCommand( currentCommands[i] );
             }
         }
-        
+
         for ( int i = 0; i < commands.length; i++ ) {
             addCommand( commands[i] );
         }
-        
+
         this.currentCommands = commands;
     }
 
@@ -139,9 +156,9 @@ public class SessionTerminal extends Terminal implements Activatable,
 
     protected void keyPressed( int keycode ) {
         switch ( keycode ) {
-	        case Canvas.KEY_NUM5:
-	            doTextInput();
-	            break;
+            case Canvas.KEY_NUM5:
+                doTextInput();
+                break;
         }
     }
 
@@ -159,10 +176,10 @@ public class SessionTerminal extends Terminal implements Activatable,
         modifierInputDialog.modifier = modifier;
         modifierInputDialog.activate();
     }
-    
-    private static final Alert doCursorAlert = new Alert( "Cursor", "Move the cursor using stick or 2,5,6,8 keys",
-            null, AlertType.INFO );
-    
+
+    private static final Alert doCursorAlert = new Alert( "Cursor",
+            "Move the cursor using stick or 2,5,6,8 keys", null, AlertType.INFO );
+
     private void doCursor() {
         Main.setDisplay( doCursorAlert );
         changeMode( MODE_CURSOR );

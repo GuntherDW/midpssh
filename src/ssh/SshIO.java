@@ -336,129 +336,131 @@ public abstract class SshIO {
      */
     private String handlePacket2( SshPacket2 p ) throws IOException {
         switch ( p.getType() ) {
-        case SSH2_MSG_IGNORE:
-            //        System.out.println("SSH2: SSH2_MSG_IGNORE");
-            break;
-        case SSH2_MSG_DISCONNECT:
-            int discreason = p.getInt32();
-            String discreason1 = p.getString();
-            /* String discreason2 = p.getString(); */
-            //        System.out.println("SSH2: SSH2_MSG_DISCONNECT(" + discreason +
-            // "," + discreason1 + "," + /*discreason2+*/")");
-            return "\nSSH2 disconnect: " + discreason1 + "\n";
+            case SSH2_MSG_IGNORE:
+                //        System.out.println("SSH2: SSH2_MSG_IGNORE");
+                break;
+            case SSH2_MSG_DISCONNECT:
+                int discreason = p.getInt32();
+                String discreason1 = p.getString();
+                /* String discreason2 = p.getString(); */
+                //        System.out.println("SSH2: SSH2_MSG_DISCONNECT(" + discreason
+                // +
+                // "," + discreason1 + "," + /*discreason2+*/")");
+                return "\nSSH2 disconnect: " + discreason1 + "\n";
 
-        case SSH2_MSG_NEWKEYS: {
-            //          System.out.println("SSH2: SSH2_MSG_NEWKEYS");
-            sendPacket2( new SshPacket2( SSH2_MSG_NEWKEYS ) );
+            case SSH2_MSG_NEWKEYS: {
+                //          System.out.println("SSH2: SSH2_MSG_NEWKEYS");
+                sendPacket2( new SshPacket2( SSH2_MSG_NEWKEYS ) );
 
-            byte[] session_key = new byte[16];
+                byte[] session_key = new byte[16];
 
-            crypto = new SshCrypto( cipher_type, session_key );
+                crypto = new SshCrypto( cipher_type, session_key );
 
-            SshPacket2 pn = new SshPacket2( SSH2_MSG_SERVICE_REQUEST );
-            pn.putString( "ssh-userauth" );
-            sendPacket2( pn );
-            break;
-        }
-        case SSH2_MSG_SERVICE_ACCEPT: {
-            //          System.out.println("Service Accept: " + p.getString());
-            break;
-        }
-        case SSH2_MSG_KEXINIT: {
-            byte[] fupp;
-            //          System.out.println("SSH2: SSH2_MSG_KEXINIT");
-            byte kexcookie[] = p.getBytes( 16 ); // unused.
-
-            String kexalgs = p.getString();
-            //          System.out.println("- " + kexalgs);
-            String hostkeyalgs = p.getString();
-            //          System.out.println("- " + hostkeyalgs);
-            String encalgc2s = p.getString();
-            //          System.out.println("- " + encalgc2s);
-            String encalgs2c = p.getString();
-            //          System.out.println("- " + encalgs2c);
-            String macalgc2s = p.getString();
-            //          System.out.println("- " + macalgc2s);
-            String macalgs2c = p.getString();
-            //          System.out.println("- " + macalgs2c);
-            String compalgc2s = p.getString();
-            //          System.out.println("- " + compalgc2s);
-            String compalgs2c = p.getString();
-            //          System.out.println("- " + compalgs2c);
-            String langc2s = p.getString();
-            //          System.out.println("- " + langc2s);
-            String langs2c = p.getString();
-            //          System.out.println("- " + langs2c);
-            fupp = p.getBytes( 1 );
-            //          System.out.println("- first_kex_follows: " + fupp[0]);
-            /* int32 reserved (0) */
-
-            SshPacket2 pn = new SshPacket2( SSH2_MSG_KEXINIT );
-            byte[] kexsend = new byte[16];
-            String ciphername;
-            pn.putBytes( kexsend );
-            pn.putString( "diffie-hellman-group1-sha1" );
-            pn.putString( "ssh-rsa" );
-
-            /* FIXME: check if it really is in the encalgc2s */
-            cipher_type = "NONE";
-            ciphername = "none";
-
-            /* FIXME: dito for HMAC */
-
-            pn.putString( "none" );
-            pn.putString( "none" );
-            pn.putString( "hmac-md5" );
-            pn.putString( "hmac-md5" );
-            pn.putString( "none" );
-            pn.putString( "none" );
-            pn.putString( "" );
-            pn.putString( "" );
-            pn.putByte( (byte) 0 );
-            pn.putInt32( 0 );
-            sendPacket2( pn );
-
-            pn = new SshPacket2( SSH2_MSG_KEXDH_INIT );
-            pn.putMpInt( BigInteger.valueOf( 0xdeadbeef ) );
-            sendPacket2( pn );
-            break;
-        }
-        case SSH2_MSG_KEXDH_REPLY: {
-            String result;
-
-            //          System.out.println("SSH2_MSG_KEXDH_REPLY");
-            int bloblen = p.getInt32();
-            //          System.out.println("bloblen is " + bloblen);
-            /*
-             * the blob has a substructure: String type if RSA: bignum1 bignum2
-             * if DSA: bignum1,2,3,4
-             */
-            String keytype = p.getString();
-            //          System.out.println("KEXDH: " + keytype);
-            if ( keytype.equals( "ssh-rsa" ) ) {
-                rsa_e = p.getMpInt();
-                rsa_n = p.getMpInt();
-                result = "\n\rSSH-RSA (" + rsa_n + "," + rsa_e + ")\n\r";
+                SshPacket2 pn = new SshPacket2( SSH2_MSG_SERVICE_REQUEST );
+                pn.putString( "ssh-userauth" );
+                sendPacket2( pn );
+                break;
             }
-            else {
-                return "\n\rUnsupported kexdh algorithm " + keytype + "!\n\r";
+            case SSH2_MSG_SERVICE_ACCEPT: {
+                //          System.out.println("Service Accept: " + p.getString());
+                break;
             }
-            BigInteger dhserverpub = p.getMpInt();
-            result += "DH Server Pub: " + dhserverpub + "\n\r";
+            case SSH2_MSG_KEXINIT: {
+                byte[] fupp;
+                //          System.out.println("SSH2: SSH2_MSG_KEXINIT");
+                byte kexcookie[] = p.getBytes( 16 ); // unused.
 
-            /* signature is a new blob, length is Int32. */
-            /*
-             * RSA: String type (ssh-rsa) Int32/byte[] signed signature
-             */
-            int siglen = p.getInt32();
-            String sigstr = p.getString();
-            result += "Signature: ktype is " + sigstr + "\r\n";
-            byte sigdata[] = p.getBytes( p.getInt32() );
+                String kexalgs = p.getString();
+                //          System.out.println("- " + kexalgs);
+                String hostkeyalgs = p.getString();
+                //          System.out.println("- " + hostkeyalgs);
+                String encalgc2s = p.getString();
+                //          System.out.println("- " + encalgc2s);
+                String encalgs2c = p.getString();
+                //          System.out.println("- " + encalgs2c);
+                String macalgc2s = p.getString();
+                //          System.out.println("- " + macalgc2s);
+                String macalgs2c = p.getString();
+                //          System.out.println("- " + macalgs2c);
+                String compalgc2s = p.getString();
+                //          System.out.println("- " + compalgc2s);
+                String compalgs2c = p.getString();
+                //          System.out.println("- " + compalgs2c);
+                String langc2s = p.getString();
+                //          System.out.println("- " + langc2s);
+                String langs2c = p.getString();
+                //          System.out.println("- " + langs2c);
+                fupp = p.getBytes( 1 );
+                //          System.out.println("- first_kex_follows: " + fupp[0]);
+                /* int32 reserved (0) */
 
-            return result;
-        }
-        default:
-            return "SSH2: handlePacket2 Unknown type " + p.getType();
+                SshPacket2 pn = new SshPacket2( SSH2_MSG_KEXINIT );
+                byte[] kexsend = new byte[16];
+                String ciphername;
+                pn.putBytes( kexsend );
+                pn.putString( "diffie-hellman-group1-sha1" );
+                pn.putString( "ssh-rsa" );
+
+                /* FIXME: check if it really is in the encalgc2s */
+                cipher_type = "NONE";
+                ciphername = "none";
+
+                /* FIXME: dito for HMAC */
+
+                pn.putString( "none" );
+                pn.putString( "none" );
+                pn.putString( "hmac-md5" );
+                pn.putString( "hmac-md5" );
+                pn.putString( "none" );
+                pn.putString( "none" );
+                pn.putString( "" );
+                pn.putString( "" );
+                pn.putByte( (byte) 0 );
+                pn.putInt32( 0 );
+                sendPacket2( pn );
+
+                pn = new SshPacket2( SSH2_MSG_KEXDH_INIT );
+                pn.putMpInt( BigInteger.valueOf( 0xdeadbeef ) );
+                sendPacket2( pn );
+                break;
+            }
+            case SSH2_MSG_KEXDH_REPLY: {
+                String result;
+
+                //          System.out.println("SSH2_MSG_KEXDH_REPLY");
+                int bloblen = p.getInt32();
+                //          System.out.println("bloblen is " + bloblen);
+                /*
+                 * the blob has a substructure: String type if RSA: bignum1
+                 * bignum2 if DSA: bignum1,2,3,4
+                 */
+                String keytype = p.getString();
+                //          System.out.println("KEXDH: " + keytype);
+                if ( keytype.equals( "ssh-rsa" ) ) {
+                    rsa_e = p.getMpInt();
+                    rsa_n = p.getMpInt();
+                    result = "\n\rSSH-RSA (" + rsa_n + "," + rsa_e + ")\n\r";
+                }
+                else {
+                    return "\n\rUnsupported kexdh algorithm " + keytype
+                            + "!\n\r";
+                }
+                BigInteger dhserverpub = p.getMpInt();
+                result += "DH Server Pub: " + dhserverpub + "\n\r";
+
+                /* signature is a new blob, length is Int32. */
+                /*
+                 * RSA: String type (ssh-rsa) Int32/byte[] signed signature
+                 */
+                int siglen = p.getInt32();
+                String sigstr = p.getString();
+                result += "Signature: ktype is " + sigstr + "\r\n";
+                byte sigdata[] = p.getBytes( p.getInt32() );
+
+                return result;
+            }
+            default:
+                return "SSH2: handlePacket2 Unknown type " + p.getType();
         }
         return "";
     }
@@ -478,204 +480,214 @@ public abstract class SshIO {
         //      System.out.println("1 packet to handle, type " + p.getType());
 
         switch ( p.getType() ) {
-        case SSH_MSG_IGNORE:
-            return "";
+            case SSH_MSG_IGNORE:
+                return "";
 
-        case SSH_MSG_DISCONNECT:
-            String str = p.getString();
-            disconnect();
-            return str;
-
-        case SSH_SMSG_PUBLIC_KEY:
-            byte[] anti_spoofing_cookie; //8 bytes
-            byte[] server_key_bits; //32-bit int
-            byte[] server_key_public_exponent; //mp-int
-            byte[] server_key_public_modulus; //mp-int
-            byte[] host_key_bits; //32-bit int
-            byte[] host_key_public_exponent; //mp-int
-            byte[] host_key_public_modulus; //mp-int
-            byte[] protocol_flags; //32-bit int
-            byte[] supported_ciphers_mask; //32-bit int
-            byte[] supported_authentications_mask; //32-bit int
-
-            anti_spoofing_cookie = p.getBytes( 8 );
-            server_key_bits = p.getBytes( 4 );
-            server_key_public_exponent = p.getMpInt();
-            server_key_public_modulus = p.getMpInt();
-            host_key_bits = p.getBytes( 4 );
-            host_key_public_exponent = p.getMpInt();
-            host_key_public_modulus = p.getMpInt();
-            protocol_flags = p.getBytes( 4 );
-            supported_ciphers_mask = p.getBytes( 4 );
-            supported_authentications_mask = p.getBytes( 4 );
-
-            // We have completely received the PUBLIC_KEY
-            // We prepare the answer ...
-
-            String ret = Send_SSH_CMSG_SESSION_KEY( anti_spoofing_cookie,
-                    server_key_public_modulus, host_key_public_modulus,
-                    supported_ciphers_mask, server_key_public_exponent,
-                    host_key_public_exponent );
-            if ( ret != null )
-                return ret;
-
-            // we check if MD5(server_key_public_exponent) is equals to the
-            // applet parameter if any .
-            if ( hashHostKey != null && hashHostKey.compareTo( "" ) != 0 ) {
-                // we compute hashHostKeyBis the hash value in hexa of
-                // host_key_public_modulus
-                byte[] Md5_hostKey = md5.digest( host_key_public_modulus );
-                String hashHostKeyBis = "";
-                for ( int i = 0; i < Md5_hostKey.length; i++ ) {
-                    String hex = "";
-                    int[] v = new int[2];
-                    v[0] = ( Md5_hostKey[i] & 240 ) >> 4;
-                    v[1] = ( Md5_hostKey[i] & 15 );
-                    for ( int j = 0; j < 1; j++ )
-                        switch ( v[j] ) {
-                        case 10:
-                            hex += "a";
-                            break;
-                        case 11:
-                            hex += "b";
-                            break;
-                        case 12:
-                            hex += "c";
-                            break;
-                        case 13:
-                            hex += "d";
-                            break;
-                        case 14:
-                            hex += "e";
-                            break;
-                        case 15:
-                            hex += "f";
-                            break;
-                        default:
-                            hex += String.valueOf( v[j] );
-                            break;
-                        }
-                    hashHostKeyBis = hashHostKeyBis + hex;
-                }
-                //we compare the 2 values
-                if ( hashHostKeyBis.compareTo( hashHostKey ) != 0 ) {
-                    login = password = "";
-                    return "\nHash value of the host key not correct \r\n";
-                    //              + "login & password have been reset \r\n"
-                    //              + "- erase the 'hashHostKey' parameter in the Html\r\n"
-                    //              + "(it is used for auhentificating the server and "
-                    //              + "prevent you from connecting \r\n"
-                    //              + "to any other)\r\n";
-                }
-            }
-            break;
-
-        case SSH_SMSG_SUCCESS:
-            //        if (debug > 0)
-            //          System.out.println("SSH_SMSG_SUCCESS (last packet was " +
-            // lastPacketSentType + ")");
-            if ( lastPacketSentType == SSH_CMSG_SESSION_KEY ) {
-                //we have succefully sent the session key !! (at last :-) )
-                Send_SSH_CMSG_USER();
-                break;
-            }
-
-            if ( lastPacketSentType == SSH_CMSG_USER ) {
-                // authentication is NOT needed for this user
-                Send_SSH_CMSG_REQUEST_PTY(); //request a pseudo-terminal
-                return "\nEmpty password login.\r\n";
-            }
-
-            if ( lastPacketSentType == SSH_CMSG_AUTH_PASSWORD ) {// password
-                // correct !!!
-                //yahoo
-                //          if (debug > 0)
-                //            System.out.println("login succesful");
-
-                //now we have to start the interactive session ...
-                Send_SSH_CMSG_REQUEST_PTY(); //request a pseudo-terminal
-                return "\nLogin & password accepted\r\n";
-            }
-
-            if ( lastPacketSentType == SSH_CMSG_REQUEST_PTY ) {// pty accepted
-                // !!
-                /* we can send data with a pty accepted ... no need for a shell. */
-                cansenddata = true;
-                if ( dataToSend != null ) {
-                    Send_SSH_CMSG_STDIN_DATA( dataToSend );
-                    dataToSend = null;
-                }
-                Send_SSH_CMSG_EXEC_SHELL(); //we start a shell
-                break;
-            }
-            if ( lastPacketSentType == SSH_CMSG_EXEC_SHELL ) {// shell is
-                // running
-                // ...
-                /* empty */
-            }
-
-            break;
-
-        case SSH_SMSG_FAILURE:
-            if ( lastPacketSentType == SSH_CMSG_AUTH_PASSWORD ) {// password
-                // incorrect ???
-                //          System.out.println("failed to log in");
+            case SSH_MSG_DISCONNECT:
+                String str = p.getString();
                 disconnect();
-                return "\nLogin & password not accepted\r\n";
-            }
-            if ( lastPacketSentType == SSH_CMSG_USER ) {
-                // authentication is needed for the given user
-                // (in most cases that's true)
-                Send_SSH_CMSG_AUTH_PASSWORD();
+                return str;
+
+            case SSH_SMSG_PUBLIC_KEY:
+                byte[] anti_spoofing_cookie; //8 bytes
+                byte[] server_key_bits; //32-bit int
+                byte[] server_key_public_exponent; //mp-int
+                byte[] server_key_public_modulus; //mp-int
+                byte[] host_key_bits; //32-bit int
+                byte[] host_key_public_exponent; //mp-int
+                byte[] host_key_public_modulus; //mp-int
+                byte[] protocol_flags; //32-bit int
+                byte[] supported_ciphers_mask; //32-bit int
+                byte[] supported_authentications_mask; //32-bit int
+
+                anti_spoofing_cookie = p.getBytes( 8 );
+                server_key_bits = p.getBytes( 4 );
+                server_key_public_exponent = p.getMpInt();
+                server_key_public_modulus = p.getMpInt();
+                host_key_bits = p.getBytes( 4 );
+                host_key_public_exponent = p.getMpInt();
+                host_key_public_modulus = p.getMpInt();
+                protocol_flags = p.getBytes( 4 );
+                supported_ciphers_mask = p.getBytes( 4 );
+                supported_authentications_mask = p.getBytes( 4 );
+
+                // We have completely received the PUBLIC_KEY
+                // We prepare the answer ...
+
+                String ret = Send_SSH_CMSG_SESSION_KEY( anti_spoofing_cookie,
+                        server_key_public_modulus, host_key_public_modulus,
+                        supported_ciphers_mask, server_key_public_exponent,
+                        host_key_public_exponent );
+                if ( ret != null )
+                    return ret;
+
+                // we check if MD5(server_key_public_exponent) is equals to the
+                // applet parameter if any .
+                if ( hashHostKey != null && hashHostKey.compareTo( "" ) != 0 ) {
+                    // we compute hashHostKeyBis the hash value in hexa of
+                    // host_key_public_modulus
+                    byte[] Md5_hostKey = md5.digest( host_key_public_modulus );
+                    String hashHostKeyBis = "";
+                    for ( int i = 0; i < Md5_hostKey.length; i++ ) {
+                        String hex = "";
+                        int[] v = new int[2];
+                        v[0] = ( Md5_hostKey[i] & 240 ) >> 4;
+                        v[1] = ( Md5_hostKey[i] & 15 );
+                        for ( int j = 0; j < 1; j++ )
+                            switch ( v[j] ) {
+                                case 10:
+                                    hex += "a";
+                                    break;
+                                case 11:
+                                    hex += "b";
+                                    break;
+                                case 12:
+                                    hex += "c";
+                                    break;
+                                case 13:
+                                    hex += "d";
+                                    break;
+                                case 14:
+                                    hex += "e";
+                                    break;
+                                case 15:
+                                    hex += "f";
+                                    break;
+                                default:
+                                    hex += String.valueOf( v[j] );
+                                    break;
+                            }
+                        hashHostKeyBis = hashHostKeyBis + hex;
+                    }
+                    //we compare the 2 values
+                    if ( hashHostKeyBis.compareTo( hashHostKey ) != 0 ) {
+                        login = password = "";
+                        return "\nHash value of the host key not correct \r\n";
+                        //              + "login & password have been reset \r\n"
+                        //              + "- erase the 'hashHostKey' parameter in the
+                        // Html\r\n"
+                        //              + "(it is used for auhentificating the server and "
+                        //              + "prevent you from connecting \r\n"
+                        //              + "to any other)\r\n";
+                    }
+                }
                 break;
-            }
 
-            if ( lastPacketSentType == SSH_CMSG_REQUEST_PTY ) {// pty not
-                // accepted
-                // !!
+            case SSH_SMSG_SUCCESS:
+                //        if (debug > 0)
+                //          System.out.println("SSH_SMSG_SUCCESS (last packet was " +
+                // lastPacketSentType + ")");
+                if ( lastPacketSentType == SSH_CMSG_SESSION_KEY ) {
+                    //we have succefully sent the session key !! (at last :-) )
+                    Send_SSH_CMSG_USER();
+                    break;
+                }
+
+                if ( lastPacketSentType == SSH_CMSG_USER ) {
+                    // authentication is NOT needed for this user
+                    Send_SSH_CMSG_REQUEST_PTY(); //request a pseudo-terminal
+                    return "\nEmpty password login.\r\n";
+                }
+
+                if ( lastPacketSentType == SSH_CMSG_AUTH_PASSWORD ) {// password
+                    // correct !!!
+                    //yahoo
+                    //          if (debug > 0)
+                    //            System.out.println("login succesful");
+
+                    //now we have to start the interactive session ...
+                    Send_SSH_CMSG_REQUEST_PTY(); //request a pseudo-terminal
+                    return "\nLogin & password accepted\r\n";
+                }
+
+                if ( lastPacketSentType == SSH_CMSG_REQUEST_PTY ) {// pty
+                                                                   // accepted
+                    // !!
+                    /*
+                     * we can send data with a pty accepted ... no need for a
+                     * shell.
+                     */
+                    cansenddata = true;
+                    if ( dataToSend != null ) {
+                        Send_SSH_CMSG_STDIN_DATA( dataToSend );
+                        dataToSend = null;
+                    }
+                    Send_SSH_CMSG_EXEC_SHELL(); //we start a shell
+                    break;
+                }
+                if ( lastPacketSentType == SSH_CMSG_EXEC_SHELL ) {// shell is
+                    // running
+                    // ...
+                    /* empty */
+                }
+
                 break;
-            }
-            break;
 
-        case SSH_SMSG_STDOUT_DATA: //receive some data from the server
-            return p.getString();
+            case SSH_SMSG_FAILURE:
+                if ( lastPacketSentType == SSH_CMSG_AUTH_PASSWORD ) {// password
+                    // incorrect ???
+                    //          System.out.println("failed to log in");
+                    disconnect();
+                    return "\nLogin & password not accepted\r\n";
+                }
+                if ( lastPacketSentType == SSH_CMSG_USER ) {
+                    // authentication is needed for the given user
+                    // (in most cases that's true)
+                    Send_SSH_CMSG_AUTH_PASSWORD();
+                    break;
+                }
 
-        case SSH_SMSG_STDERR_DATA: //receive some error data from the server
-            //	if(debug > 1)
-            str = "Error : " + p.getString();
-            //        System.out.println("SshIO.handlePacket : " + "STDERR_DATA " +
-            // str);
-            return str;
+                if ( lastPacketSentType == SSH_CMSG_REQUEST_PTY ) {// pty not
+                    // accepted
+                    // !!
+                    break;
+                }
+                break;
 
-        case SSH_SMSG_EXITSTATUS: //sent by the server to indicate that
-            // the client program has terminated.
-            //32-bit int exit status of the command
-            int value = p.getInt32();
-            Send_SSH_CMSG_EXIT_CONFIRMATION();
-            //        System.out.println("SshIO : Exit status " + value);
-            disconnect();
-            break;
+            case SSH_SMSG_STDOUT_DATA: //receive some data from the server
+                return p.getString();
 
-        case SSH_MSG_DEBUG:
-            str = p.getString();
-            //        if (debug > 0) {
-            //          System.out.println("SshIO.handlePacket : " + " DEBUG " + str);
+            case SSH_SMSG_STDERR_DATA: //receive some error data from the
+                                       // server
+                //	if(debug > 1)
+                str = "Error : " + p.getString();
+                //        System.out.println("SshIO.handlePacket : " + "STDERR_DATA " +
+                // str);
+                return str;
 
-            // bad bad bad bad bad. We should not do actions in DEBUG messages,
-            // but apparently some SSH demons does not send SSH_SMSG_FAILURE for
-            // just USER CMS.
-            /*
-             * if(lastPacketSentType==SSH_CMSG_USER) {
-             * Send_SSH_CMSG_AUTH_PASSWORD(); break; }
-             */
-            //          return str;
-            //      }
-            return "";
+            case SSH_SMSG_EXITSTATUS: //sent by the server to indicate that
+                // the client program has terminated.
+                //32-bit int exit status of the command
+                int value = p.getInt32();
+                Send_SSH_CMSG_EXIT_CONFIRMATION();
+                //        System.out.println("SshIO : Exit status " + value);
+                disconnect();
+                break;
 
-        default:
-            //        System.err.print("SshIO.handlePacket1: Packet Type unknown: " +
-            // p.getType());
-            break;
+            case SSH_MSG_DEBUG:
+                str = p.getString();
+                //        if (debug > 0) {
+                //          System.out.println("SshIO.handlePacket : " + " DEBUG " +
+                // str);
+
+                // bad bad bad bad bad. We should not do actions in DEBUG
+                // messages,
+                // but apparently some SSH demons does not send SSH_SMSG_FAILURE
+                // for
+                // just USER CMS.
+                /*
+                 * if(lastPacketSentType==SSH_CMSG_USER) {
+                 * Send_SSH_CMSG_AUTH_PASSWORD(); break; }
+                 */
+                //          return str;
+                //      }
+                return "";
+
+            default:
+                //        System.err.print("SshIO.handlePacket1: Packet Type unknown: "
+                // +
+                // p.getType());
+                break;
 
         }//	switch(b)
         return "";

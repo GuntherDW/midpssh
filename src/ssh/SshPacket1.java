@@ -153,90 +153,91 @@ public class SshPacket1 extends SshPacket {
         while ( boffset < buff.length ) {
             switch ( phase_packet ) {
 
-            // 4 bytes
-            // Packet length: 32 bit unsigned integer
-            // gives the length of the packet, not including the length field
-            // and padding. maximum is 262144 bytes.
+                // 4 bytes
+                // Packet length: 32 bit unsigned integer
+                // gives the length of the packet, not including the length
+                // field
+                // and padding. maximum is 262144 bytes.
 
-            case PHASE_packet_length:
-                packet_length_array[position++] = buff[boffset++];
-                if ( position >= 4 ) {
-                    packet_length = ( packet_length_array[3] & 0xff )
-                            + ( ( packet_length_array[2] & 0xff ) << 8 )
-                            + ( ( packet_length_array[1] & 0xff ) << 16 )
-                            + ( ( packet_length_array[0] & 0xff ) << 24 );
-                    position = 0;
-                    phase_packet++;
-                    block = new byte[8 * ( packet_length / 8 + 1 )];
-                }
-                break; //switch (phase_packet)
-
-            //8*(packet_length/8 +1) bytes
-
-            case PHASE_block:
-
-                if ( block.length > position ) {
-                    if ( boffset < buff.length ) {
-                        int amount = buff.length - boffset;
-                        if ( amount > block.length - position )
-                            amount = block.length - position;
-                        System.arraycopy( buff, boffset, block, position,
-                                amount );
-                        boffset += amount;
-                        position += amount;
+                case PHASE_packet_length:
+                    packet_length_array[position++] = buff[boffset++];
+                    if ( position >= 4 ) {
+                        packet_length = ( packet_length_array[3] & 0xff )
+                                + ( ( packet_length_array[2] & 0xff ) << 8 )
+                                + ( ( packet_length_array[1] & 0xff ) << 16 )
+                                + ( ( packet_length_array[0] & 0xff ) << 24 );
+                        position = 0;
+                        phase_packet++;
+                        block = new byte[8 * ( packet_length / 8 + 1 )];
                     }
-                }
+                    break; //switch (phase_packet)
 
-                if ( position == block.length ) { //the block is complete
-                    if ( buff.length > boffset ) { //there is more than 1
-                        // packet
-                        // in buff
-                        newbuf = new byte[buff.length - boffset];
-                        System.arraycopy( buff, boffset, newbuf, 0, buff.length
-                                - boffset );
-                    }
-                    int blockOffset = 0;
-                    //padding
-                    int padding_length = (int) ( 8 - ( packet_length % 8 ) );
-                    padding = new byte[padding_length];
+                //8*(packet_length/8 +1) bytes
 
-                    if ( crypto != null )
-                        decryptedBlock = crypto.decrypt( block );
-                    else
-                        decryptedBlock = block;
+                case PHASE_block:
 
-                    if ( decryptedBlock.length != padding_length
-                            + packet_length )
-                        System.out.println( "???" );
-
-                    for ( int i = 0; i < padding.length; i++ )
-                        padding[i] = decryptedBlock[blockOffset++];
-
-                    //packet type
-                    setType( decryptedBlock[blockOffset++] );
-
-                    byte[] data;
-                    //data
-                    if ( packet_length > 5 ) {
-                        data = new byte[packet_length - 5];
-                        System.arraycopy( decryptedBlock, blockOffset, data, 0,
-                                packet_length - 5 );
-                        blockOffset += packet_length - 5;
-                    }
-                    else
-                        data = null;
-                    putData( data );
-                    //crc
-                    for ( int i = 0; i < crc_array.length; i++ )
-                        crc_array[i] = decryptedBlock[blockOffset++];
-                    if ( !checkCrc() ) {
-                        System.err
-                                .println( "SshPacket1: CRC wrong in received packet!" );
+                    if ( block.length > position ) {
+                        if ( boffset < buff.length ) {
+                            int amount = buff.length - boffset;
+                            if ( amount > block.length - position )
+                                amount = block.length - position;
+                            System.arraycopy( buff, boffset, block, position,
+                                    amount );
+                            boffset += amount;
+                            position += amount;
+                        }
                     }
 
-                    return newbuf;
-                }
-                break;
+                    if ( position == block.length ) { //the block is complete
+                        if ( buff.length > boffset ) { //there is more than 1
+                            // packet
+                            // in buff
+                            newbuf = new byte[buff.length - boffset];
+                            System.arraycopy( buff, boffset, newbuf, 0,
+                                    buff.length - boffset );
+                        }
+                        int blockOffset = 0;
+                        //padding
+                        int padding_length = (int) ( 8 - ( packet_length % 8 ) );
+                        padding = new byte[padding_length];
+
+                        if ( crypto != null )
+                            decryptedBlock = crypto.decrypt( block );
+                        else
+                            decryptedBlock = block;
+
+                        if ( decryptedBlock.length != padding_length
+                                + packet_length )
+                            System.out.println( "???" );
+
+                        for ( int i = 0; i < padding.length; i++ )
+                            padding[i] = decryptedBlock[blockOffset++];
+
+                        //packet type
+                        setType( decryptedBlock[blockOffset++] );
+
+                        byte[] data;
+                        //data
+                        if ( packet_length > 5 ) {
+                            data = new byte[packet_length - 5];
+                            System.arraycopy( decryptedBlock, blockOffset,
+                                    data, 0, packet_length - 5 );
+                            blockOffset += packet_length - 5;
+                        }
+                        else
+                            data = null;
+                        putData( data );
+                        //crc
+                        for ( int i = 0; i < crc_array.length; i++ )
+                            crc_array[i] = decryptedBlock[blockOffset++];
+                        if ( !checkCrc() ) {
+                            System.err
+                                    .println( "SshPacket1: CRC wrong in received packet!" );
+                        }
+
+                        return newbuf;
+                    }
+                    break;
             }
         }
         return null;

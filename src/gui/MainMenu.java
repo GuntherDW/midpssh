@@ -64,12 +64,12 @@ public class MainMenu extends List implements CommandListener {
 
     private void doSelect( int i ) {
         switch ( i ) {
-        case 0:
-            doConnect();
-            break;
-        case 4:
-            doQuit();
-            break;
+            case 0:
+                doConnect();
+                break;
+            case 4:
+                doQuit();
+                break;
         }
     }
 

@@ -247,19 +247,19 @@ public abstract class TelnetProtocolHandler {
     private void handle_sb( byte type, byte[] sbdata, int sbcount )
             throws IOException {
         switch ( type ) {
-        case TELOPT_TTYPE:
-            if ( sbcount > 0 && sbdata[0] == TELQUAL_SEND ) {
-                write( new byte[] {
-                        IAC, SB, TELOPT_TTYPE, TELQUAL_IS
-                } );
-                /*
-                 * FIXME: need more logic here if we use more than one terminal
-                 * type
-                 */
-                String ttype = getTerminalType();
-                write( ttype.getBytes() );
-                write( IACSE );
-            }
+            case TELOPT_TTYPE:
+                if ( sbcount > 0 && sbdata[0] == TELQUAL_SEND ) {
+                    write( new byte[] {
+                            IAC, SB, TELOPT_TTYPE, TELQUAL_IS
+                    } );
+                    /*
+                     * FIXME: need more logic here if we use more than one
+                     * terminal type
+                     */
+                    String ttype = getTerminalType();
+                    write( ttype.getBytes() );
+                    write( IACSE );
+                }
 
         }
     }
@@ -290,51 +290,53 @@ public abstract class TelnetProtocolHandler {
 
         for ( i = 0; i < buf.length; i++ ) {
             switch ( buf[i] ) {
-            // Escape IAC twice in stream ... to be telnet protocol compliant
-            // this is there in binary and non-binary mode.
-            case IAC:
-                nbuf[nbufptr++] = IAC;
-                nbuf[nbufptr++] = IAC;
-                break;
-            // We need to heed RFC 854. LF (\n) is 10, CR (\r) is 13
-            // we assume that the Terminal sends \n for lf+cr and \r for just cr
-            // linefeed+carriage return is CR LF */
-            case 10: // \n
-                if ( receivedDX[TELOPT_BINARY + 128] != DO ) {
-                    while ( nbuf.length - nbufptr < crlf.length ) {
-                        xbuf = new byte[nbuf.length * 2];
-                        System.arraycopy( nbuf, 0, xbuf, 0, nbufptr );
-                        nbuf = xbuf;
-                    }
-                    for ( int j = 0; j < crlf.length; j++ )
-                        nbuf[nbufptr++] = crlf[j];
+                // Escape IAC twice in stream ... to be telnet protocol
+                // compliant
+                // this is there in binary and non-binary mode.
+                case IAC:
+                    nbuf[nbufptr++] = IAC;
+                    nbuf[nbufptr++] = IAC;
                     break;
-                }
-                else {
-                    // copy verbatim in binary mode.
-                    nbuf[nbufptr++] = buf[i];
-                }
-                break;
-            // carriage return is CR NUL */
-            case 13: // \r
-                if ( receivedDX[TELOPT_BINARY + 128] != DO ) {
-                    while ( nbuf.length - nbufptr < cr.length ) {
-                        xbuf = new byte[nbuf.length * 2];
-                        System.arraycopy( nbuf, 0, xbuf, 0, nbufptr );
-                        nbuf = xbuf;
+                // We need to heed RFC 854. LF (\n) is 10, CR (\r) is 13
+                // we assume that the Terminal sends \n for lf+cr and \r for
+                // just cr
+                // linefeed+carriage return is CR LF */
+                case 10: // \n
+                    if ( receivedDX[TELOPT_BINARY + 128] != DO ) {
+                        while ( nbuf.length - nbufptr < crlf.length ) {
+                            xbuf = new byte[nbuf.length * 2];
+                            System.arraycopy( nbuf, 0, xbuf, 0, nbufptr );
+                            nbuf = xbuf;
+                        }
+                        for ( int j = 0; j < crlf.length; j++ )
+                            nbuf[nbufptr++] = crlf[j];
+                        break;
                     }
-                    for ( int j = 0; j < cr.length; j++ )
-                        nbuf[nbufptr++] = cr[j];
-                }
-                else {
-                    // copy verbatim in binary mode.
+                    else {
+                        // copy verbatim in binary mode.
+                        nbuf[nbufptr++] = buf[i];
+                    }
+                    break;
+                // carriage return is CR NUL */
+                case 13: // \r
+                    if ( receivedDX[TELOPT_BINARY + 128] != DO ) {
+                        while ( nbuf.length - nbufptr < cr.length ) {
+                            xbuf = new byte[nbuf.length * 2];
+                            System.arraycopy( nbuf, 0, xbuf, 0, nbufptr );
+                            nbuf = xbuf;
+                        }
+                        for ( int j = 0; j < cr.length; j++ )
+                            nbuf[nbufptr++] = cr[j];
+                    }
+                    else {
+                        // copy verbatim in binary mode.
+                        nbuf[nbufptr++] = buf[i];
+                    }
+                    break;
+                // all other characters are just copied
+                default:
                     nbuf[nbufptr++] = buf[i];
-                }
-                break;
-            // all other characters are just copied
-            default:
-                nbuf[nbufptr++] = buf[i];
-                break;
+                    break;
             }
         }
         xbuf = new byte[nbufptr];
@@ -382,242 +384,246 @@ public abstract class TelnetProtocolHandler {
             if ( b >= 128 )
                 b = (byte) ( (int) b - 256 );
             switch ( neg_state ) {
-            case STATE_DATA:
-                if ( b == IAC ) {
-                    neg_state = STATE_IAC;
-                    dobreak = true; // leave the loop so we can sync.
-                }
-                else
-                    nbuf[noffset++] = b;
-                break;
-            case STATE_IAC:
-                switch ( b ) {
-                case IAC:
-                    neg_state = STATE_DATA;
-                    nbuf[noffset++] = IAC;
-                    break;
-                case WILL:
-                    neg_state = STATE_IACWILL;
-                    break;
-                case WONT:
-                    neg_state = STATE_IACWONT;
-                    break;
-                case DONT:
-                    neg_state = STATE_IACDONT;
-                    break;
-                case DO:
-                    neg_state = STATE_IACDO;
-                    break;
-                case EOR:
-                    notifyEndOfRecord();
-                    dobreak = true; // leave the loop so we can sync.
-                    neg_state = STATE_DATA;
-                    break;
-                case SB:
-                    neg_state = STATE_IACSB;
-                    sbcount = 0;
-                    break;
-                default:
-                    neg_state = STATE_DATA;
-                    break;
-                }
-                break;
-            case STATE_IACWILL:
-                switch ( b ) {
-                case TELOPT_ECHO:
-                    reply = DO;
-                    setLocalEcho( false );
-                    break;
-                case TELOPT_SGA:
-                    reply = DO;
-                    break;
-                case TELOPT_EOR:
-                    reply = DO;
-                    break;
-                case TELOPT_BINARY:
-                    reply = DO;
-                    break;
-                default:
-                    reply = DONT;
-                    break;
-                }
-                if ( reply != sentDX[b + 128] || WILL != receivedWX[b + 128] ) {
-                    sendbuf[0] = IAC;
-                    sendbuf[1] = reply;
-                    sendbuf[2] = b;
-                    write( sendbuf );
-                    sentDX[b + 128] = reply;
-                    receivedWX[b + 128] = WILL;
-                }
-                neg_state = STATE_DATA;
-                break;
-            case STATE_IACWONT:
-                switch ( b ) {
-                case TELOPT_ECHO:
-                    setLocalEcho( true );
-                    reply = DONT;
-                    break;
-                case TELOPT_SGA:
-                    reply = DONT;
-                    break;
-                case TELOPT_EOR:
-                    reply = DONT;
-                    break;
-                case TELOPT_BINARY:
-                    reply = DONT;
-                    break;
-                default:
-                    reply = DONT;
-                    break;
-                }
-                if ( reply != sentDX[b + 128] || WONT != receivedWX[b + 128] ) {
-                    sendbuf[0] = IAC;
-                    sendbuf[1] = reply;
-                    sendbuf[2] = b;
-                    write( sendbuf );
-                    sentDX[b + 128] = reply;
-                    receivedWX[b + 128] = WILL;
-                }
-                neg_state = STATE_DATA;
-                break;
-            case STATE_IACDO:
-                switch ( b ) {
-                case TELOPT_ECHO:
-                    reply = WILL;
-                    setLocalEcho( true );
-                    break;
-                case TELOPT_SGA:
-                    reply = WILL;
-                    break;
-                case TELOPT_TTYPE:
-                    reply = WILL;
-                    break;
-                case TELOPT_BINARY:
-                    reply = WILL;
-                    break;
-                case TELOPT_NAWS:
-                    Dimension size = getWindowSize();
-                    receivedDX[b] = DO;
-                    if ( size == null ) {
-                        // this shouldn't happen
-                        write( new byte[] {
-                                IAC, WONT, TELOPT_NAWS
-                        } );
-                        reply = WONT;
-                        sentWX[b] = WONT;
-                        break;
+                case STATE_DATA:
+                    if ( b == IAC ) {
+                        neg_state = STATE_IAC;
+                        dobreak = true; // leave the loop so we can sync.
                     }
-                    reply = WILL;
-                    sentWX[b] = WILL;
-                    sendbuf[0] = IAC;
-                    sendbuf[1] = WILL;
-                    sendbuf[2] = TELOPT_NAWS;
-                    write( sendbuf );
-                    write( new byte[] {
-                            IAC, SB, TELOPT_NAWS, (byte) ( size.width >> 8 ),
-                            (byte) ( size.width & 0xff ),
-                            (byte) ( size.height >> 8 ),
-                            (byte) ( size.height & 0xff ), IAC, SE
-                    } );
+                    else
+                        nbuf[noffset++] = b;
                     break;
-                default:
-                    reply = WONT;
+                case STATE_IAC:
+                    switch ( b ) {
+                        case IAC:
+                            neg_state = STATE_DATA;
+                            nbuf[noffset++] = IAC;
+                            break;
+                        case WILL:
+                            neg_state = STATE_IACWILL;
+                            break;
+                        case WONT:
+                            neg_state = STATE_IACWONT;
+                            break;
+                        case DONT:
+                            neg_state = STATE_IACDONT;
+                            break;
+                        case DO:
+                            neg_state = STATE_IACDO;
+                            break;
+                        case EOR:
+                            notifyEndOfRecord();
+                            dobreak = true; // leave the loop so we can sync.
+                            neg_state = STATE_DATA;
+                            break;
+                        case SB:
+                            neg_state = STATE_IACSB;
+                            sbcount = 0;
+                            break;
+                        default:
+                            neg_state = STATE_DATA;
+                            break;
+                    }
                     break;
-                }
-                if ( reply != sentWX[128 + b] || DO != receivedDX[128 + b] ) {
-                    sendbuf[0] = IAC;
-                    sendbuf[1] = reply;
-                    sendbuf[2] = b;
-                    write( sendbuf );
-                    sentWX[b + 128] = reply;
-                    receivedDX[b + 128] = DO;
-                }
-                neg_state = STATE_DATA;
-                break;
-            case STATE_IACDONT:
-                switch ( b ) {
-                case TELOPT_ECHO:
-                    reply = WONT;
-                    setLocalEcho( false );
-                    break;
-                case TELOPT_SGA:
-                    reply = WONT;
-                    break;
-                case TELOPT_NAWS:
-                    reply = WONT;
-                    break;
-                case TELOPT_BINARY:
-                    reply = WONT;
-                    break;
-                default:
-                    reply = WONT;
-                    break;
-                }
-                if ( reply != sentWX[b + 128] || DONT != receivedDX[b + 128] ) {
-                    write( new byte[] {
-                            IAC, reply, b
-                    } );
-                    sentWX[b + 128] = reply;
-                    receivedDX[b + 128] = DONT;
-                }
-                neg_state = STATE_DATA;
-                break;
-            case STATE_IACSBIAC:
-                if ( b == IAC ) {
-                    sbcount = 0;
-                    current_sb = b;
-                    neg_state = STATE_IACSBDATA;
-                }
-                else {
-                    System.err.println( "(bad) " + b + " " );
-                    neg_state = STATE_DATA;
-                }
-                break;
-            case STATE_IACSB:
-                switch ( b ) {
-                case IAC:
-                    neg_state = STATE_IACSBIAC;
-                    break;
-                default:
-                    current_sb = b;
-                    sbcount = 0;
-                    neg_state = STATE_IACSBDATA;
-                    break;
-                }
-                break;
-            case STATE_IACSBDATA:
-                switch ( b ) {
-                case IAC:
-                    neg_state = STATE_IACSBDATAIAC;
-                    break;
-                default:
-                    sbbuf[sbcount++] = b;
-                    break;
-                }
-                break;
-            case STATE_IACSBDATAIAC:
-                switch ( b ) {
-                case IAC:
-                    neg_state = STATE_IACSBDATA;
-                    sbbuf[sbcount++] = IAC;
-                    break;
-                case SE:
-                    handle_sb( current_sb, sbbuf, sbcount );
-                    current_sb = 0;
+                case STATE_IACWILL:
+                    switch ( b ) {
+                        case TELOPT_ECHO:
+                            reply = DO;
+                            setLocalEcho( false );
+                            break;
+                        case TELOPT_SGA:
+                            reply = DO;
+                            break;
+                        case TELOPT_EOR:
+                            reply = DO;
+                            break;
+                        case TELOPT_BINARY:
+                            reply = DO;
+                            break;
+                        default:
+                            reply = DONT;
+                            break;
+                    }
+                    if ( reply != sentDX[b + 128]
+                            || WILL != receivedWX[b + 128] ) {
+                        sendbuf[0] = IAC;
+                        sendbuf[1] = reply;
+                        sendbuf[2] = b;
+                        write( sendbuf );
+                        sentDX[b + 128] = reply;
+                        receivedWX[b + 128] = WILL;
+                    }
                     neg_state = STATE_DATA;
                     break;
-                case SB:
-                    handle_sb( current_sb, sbbuf, sbcount );
-                    neg_state = STATE_IACSB;
+                case STATE_IACWONT:
+                    switch ( b ) {
+                        case TELOPT_ECHO:
+                            setLocalEcho( true );
+                            reply = DONT;
+                            break;
+                        case TELOPT_SGA:
+                            reply = DONT;
+                            break;
+                        case TELOPT_EOR:
+                            reply = DONT;
+                            break;
+                        case TELOPT_BINARY:
+                            reply = DONT;
+                            break;
+                        default:
+                            reply = DONT;
+                            break;
+                    }
+                    if ( reply != sentDX[b + 128]
+                            || WONT != receivedWX[b + 128] ) {
+                        sendbuf[0] = IAC;
+                        sendbuf[1] = reply;
+                        sendbuf[2] = b;
+                        write( sendbuf );
+                        sentDX[b + 128] = reply;
+                        receivedWX[b + 128] = WILL;
+                    }
+                    neg_state = STATE_DATA;
+                    break;
+                case STATE_IACDO:
+                    switch ( b ) {
+                        case TELOPT_ECHO:
+                            reply = WILL;
+                            setLocalEcho( true );
+                            break;
+                        case TELOPT_SGA:
+                            reply = WILL;
+                            break;
+                        case TELOPT_TTYPE:
+                            reply = WILL;
+                            break;
+                        case TELOPT_BINARY:
+                            reply = WILL;
+                            break;
+                        case TELOPT_NAWS:
+                            Dimension size = getWindowSize();
+                            receivedDX[b] = DO;
+                            if ( size == null ) {
+                                // this shouldn't happen
+                                write( new byte[] {
+                                        IAC, WONT, TELOPT_NAWS
+                                } );
+                                reply = WONT;
+                                sentWX[b] = WONT;
+                                break;
+                            }
+                            reply = WILL;
+                            sentWX[b] = WILL;
+                            sendbuf[0] = IAC;
+                            sendbuf[1] = WILL;
+                            sendbuf[2] = TELOPT_NAWS;
+                            write( sendbuf );
+                            write( new byte[] {
+                                    IAC, SB, TELOPT_NAWS,
+                                    (byte) ( size.width >> 8 ),
+                                    (byte) ( size.width & 0xff ),
+                                    (byte) ( size.height >> 8 ),
+                                    (byte) ( size.height & 0xff ), IAC, SE
+                            } );
+                            break;
+                        default:
+                            reply = WONT;
+                            break;
+                    }
+                    if ( reply != sentWX[128 + b] || DO != receivedDX[128 + b] ) {
+                        sendbuf[0] = IAC;
+                        sendbuf[1] = reply;
+                        sendbuf[2] = b;
+                        write( sendbuf );
+                        sentWX[b + 128] = reply;
+                        receivedDX[b + 128] = DO;
+                    }
+                    neg_state = STATE_DATA;
+                    break;
+                case STATE_IACDONT:
+                    switch ( b ) {
+                        case TELOPT_ECHO:
+                            reply = WONT;
+                            setLocalEcho( false );
+                            break;
+                        case TELOPT_SGA:
+                            reply = WONT;
+                            break;
+                        case TELOPT_NAWS:
+                            reply = WONT;
+                            break;
+                        case TELOPT_BINARY:
+                            reply = WONT;
+                            break;
+                        default:
+                            reply = WONT;
+                            break;
+                    }
+                    if ( reply != sentWX[b + 128]
+                            || DONT != receivedDX[b + 128] ) {
+                        write( new byte[] {
+                                IAC, reply, b
+                        } );
+                        sentWX[b + 128] = reply;
+                        receivedDX[b + 128] = DONT;
+                    }
+                    neg_state = STATE_DATA;
+                    break;
+                case STATE_IACSBIAC:
+                    if ( b == IAC ) {
+                        sbcount = 0;
+                        current_sb = b;
+                        neg_state = STATE_IACSBDATA;
+                    }
+                    else {
+                        System.err.println( "(bad) " + b + " " );
+                        neg_state = STATE_DATA;
+                    }
+                    break;
+                case STATE_IACSB:
+                    switch ( b ) {
+                        case IAC:
+                            neg_state = STATE_IACSBIAC;
+                            break;
+                        default:
+                            current_sb = b;
+                            sbcount = 0;
+                            neg_state = STATE_IACSBDATA;
+                            break;
+                    }
+                    break;
+                case STATE_IACSBDATA:
+                    switch ( b ) {
+                        case IAC:
+                            neg_state = STATE_IACSBDATAIAC;
+                            break;
+                        default:
+                            sbbuf[sbcount++] = b;
+                            break;
+                    }
+                    break;
+                case STATE_IACSBDATAIAC:
+                    switch ( b ) {
+                        case IAC:
+                            neg_state = STATE_IACSBDATA;
+                            sbbuf[sbcount++] = IAC;
+                            break;
+                        case SE:
+                            handle_sb( current_sb, sbbuf, sbcount );
+                            current_sb = 0;
+                            neg_state = STATE_DATA;
+                            break;
+                        case SB:
+                            handle_sb( current_sb, sbbuf, sbcount );
+                            neg_state = STATE_IACSB;
+                            break;
+                        default:
+                            neg_state = STATE_DATA;
+                            break;
+                    }
                     break;
                 default:
                     neg_state = STATE_DATA;
                     break;
-                }
-                break;
-            default:
-                neg_state = STATE_DATA;
-                break;
             }
         }
         // shrink tempbuf to new processed size.

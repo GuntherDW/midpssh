@@ -618,41 +618,42 @@ public abstract class vt320 extends VDUBuffer {
             if ( idx == tmp.length() )
                 return cmd;
             switch ( tmp.charAt( idx ) ) {
-            case 'b':
-                cmd += "\b";
-                break;
-            case 'e':
-                cmd += "\u001b";
-                break;
-            case 'n':
-                cmd += "\n";
-                break;
-            case 'r':
-                cmd += "\r";
-                break;
-            case 't':
-                cmd += "\t";
-                break;
-            case 'v':
-                cmd += "\u000b";
-                break;
-            case 'a':
-                cmd += "\u0012";
-                break;
-            default:
-                if ( ( tmp.charAt( idx ) >= '0' )
-                        && ( tmp.charAt( idx ) <= '9' ) ) {
-                    int i;
-                    for ( i = idx; i < tmp.length(); i++ )
-                        if ( ( tmp.charAt( i ) < '0' )
-                                || ( tmp.charAt( i ) > '9' ) )
-                            break;
-                    cmd += (char) Integer.parseInt( tmp.substring( idx, i ) );
-                    idx = i - 1;
-                }
-                else
-                    cmd += tmp.substring( idx, ++idx );
-                break;
+                case 'b':
+                    cmd += "\b";
+                    break;
+                case 'e':
+                    cmd += "\u001b";
+                    break;
+                case 'n':
+                    cmd += "\n";
+                    break;
+                case 'r':
+                    cmd += "\r";
+                    break;
+                case 't':
+                    cmd += "\t";
+                    break;
+                case 'v':
+                    cmd += "\u000b";
+                    break;
+                case 'a':
+                    cmd += "\u0012";
+                    break;
+                default:
+                    if ( ( tmp.charAt( idx ) >= '0' )
+                            && ( tmp.charAt( idx ) <= '9' ) ) {
+                        int i;
+                        for ( i = idx; i < tmp.length(); i++ )
+                            if ( ( tmp.charAt( i ) < '0' )
+                                    || ( tmp.charAt( i ) > '9' ) )
+                                break;
+                        cmd += (char) Integer
+                                .parseInt( tmp.substring( idx, i ) );
+                        idx = i - 1;
+                    }
+                    else
+                        cmd += tmp.substring( idx, ++idx );
+                    break;
             }
             oldidx = ++idx;
         }
@@ -722,103 +723,103 @@ public abstract class vt320 extends VDUBuffer {
         }
 
         switch ( keyCode ) {
-        case KeyEvent.VK_PAUSE:
-            if ( shift || control )
-                sendTelnetCommand( (byte) 243 ); // BREAK
-            break;
-        case KeyEvent.VK_F1:
-            writeSpecial( fmap[1] );
-            break;
-        case KeyEvent.VK_F2:
-            writeSpecial( fmap[2] );
-            break;
-        case KeyEvent.VK_F3:
-            writeSpecial( fmap[3] );
-            break;
-        case KeyEvent.VK_F4:
-            writeSpecial( fmap[4] );
-            break;
-        case KeyEvent.VK_F5:
-            writeSpecial( fmap[5] );
-            break;
-        case KeyEvent.VK_F6:
-            writeSpecial( fmap[6] );
-            break;
-        case KeyEvent.VK_F7:
-            writeSpecial( fmap[7] );
-            break;
-        case KeyEvent.VK_F8:
-            writeSpecial( fmap[8] );
-            break;
-        case KeyEvent.VK_F9:
-            writeSpecial( fmap[9] );
-            break;
-        case KeyEvent.VK_F10:
-            writeSpecial( fmap[10] );
-            break;
-        case KeyEvent.VK_F11:
-            writeSpecial( fmap[11] );
-            break;
-        case KeyEvent.VK_F12:
-            writeSpecial( fmap[12] );
-            break;
-        case KeyEvent.VK_UP:
-            writeSpecial( KeyUp[xind] );
-            break;
-        case KeyEvent.VK_DOWN:
-            writeSpecial( KeyDown[xind] );
-            break;
-        case KeyEvent.VK_LEFT:
-            writeSpecial( KeyLeft[xind] );
-            break;
-        case KeyEvent.VK_RIGHT:
-            writeSpecial( KeyRight[xind] );
-            break;
-        case KeyEvent.VK_PAGE_DOWN:
-            writeSpecial( NextScn[xind] );
-            break;
-        case KeyEvent.VK_PAGE_UP:
-            writeSpecial( PrevScn[xind] );
-            break;
-        case KeyEvent.VK_INSERT:
-            writeSpecial( Insert[xind] );
-            break;
-        case KeyEvent.VK_DELETE:
-            writeSpecial( Remove[xind] );
-            break;
-        case KeyEvent.VK_BACK_SPACE:
-            writeSpecial( BackSpace[xind] );
-            if ( localecho ) {
-                if ( BackSpace[xind] == "\b" ) {
-                    putString( "\b \b" ); // make the last char 'deleted'
+            case KeyEvent.VK_PAUSE:
+                if ( shift || control )
+                    sendTelnetCommand( (byte) 243 ); // BREAK
+                break;
+            case KeyEvent.VK_F1:
+                writeSpecial( fmap[1] );
+                break;
+            case KeyEvent.VK_F2:
+                writeSpecial( fmap[2] );
+                break;
+            case KeyEvent.VK_F3:
+                writeSpecial( fmap[3] );
+                break;
+            case KeyEvent.VK_F4:
+                writeSpecial( fmap[4] );
+                break;
+            case KeyEvent.VK_F5:
+                writeSpecial( fmap[5] );
+                break;
+            case KeyEvent.VK_F6:
+                writeSpecial( fmap[6] );
+                break;
+            case KeyEvent.VK_F7:
+                writeSpecial( fmap[7] );
+                break;
+            case KeyEvent.VK_F8:
+                writeSpecial( fmap[8] );
+                break;
+            case KeyEvent.VK_F9:
+                writeSpecial( fmap[9] );
+                break;
+            case KeyEvent.VK_F10:
+                writeSpecial( fmap[10] );
+                break;
+            case KeyEvent.VK_F11:
+                writeSpecial( fmap[11] );
+                break;
+            case KeyEvent.VK_F12:
+                writeSpecial( fmap[12] );
+                break;
+            case KeyEvent.VK_UP:
+                writeSpecial( KeyUp[xind] );
+                break;
+            case KeyEvent.VK_DOWN:
+                writeSpecial( KeyDown[xind] );
+                break;
+            case KeyEvent.VK_LEFT:
+                writeSpecial( KeyLeft[xind] );
+                break;
+            case KeyEvent.VK_RIGHT:
+                writeSpecial( KeyRight[xind] );
+                break;
+            case KeyEvent.VK_PAGE_DOWN:
+                writeSpecial( NextScn[xind] );
+                break;
+            case KeyEvent.VK_PAGE_UP:
+                writeSpecial( PrevScn[xind] );
+                break;
+            case KeyEvent.VK_INSERT:
+                writeSpecial( Insert[xind] );
+                break;
+            case KeyEvent.VK_DELETE:
+                writeSpecial( Remove[xind] );
+                break;
+            case KeyEvent.VK_BACK_SPACE:
+                writeSpecial( BackSpace[xind] );
+                if ( localecho ) {
+                    if ( BackSpace[xind] == "\b" ) {
+                        putString( "\b \b" ); // make the last char 'deleted'
+                    }
+                    else {
+                        putString( BackSpace[xind] ); // echo it
+                    }
                 }
-                else {
-                    putString( BackSpace[xind] ); // echo it
+                break;
+            case KeyEvent.VK_HOME:
+                writeSpecial( KeyHome[xind] );
+                break;
+            case KeyEvent.VK_END:
+                writeSpecial( KeyEnd[xind] );
+                break;
+            case KeyEvent.VK_NUM_LOCK:
+                if ( vms && control ) {
+                    writeSpecial( PF1 );
                 }
-            }
-            break;
-        case KeyEvent.VK_HOME:
-            writeSpecial( KeyHome[xind] );
-            break;
-        case KeyEvent.VK_END:
-            writeSpecial( KeyEnd[xind] );
-            break;
-        case KeyEvent.VK_NUM_LOCK:
-            if ( vms && control ) {
-                writeSpecial( PF1 );
-            }
-            if ( !control )
-                numlock = !numlock;
-            break;
-        case KeyEvent.VK_CAPS_LOCK:
-            capslock = !capslock;
-            return;
-        case KeyEvent.VK_SHIFT:
-        case KeyEvent.VK_CONTROL:
-        case KeyEvent.VK_ALT:
-            return;
-        default:
-            break;
+                if ( !control )
+                    numlock = !numlock;
+                break;
+            case KeyEvent.VK_CAPS_LOCK:
+                capslock = !capslock;
+                return;
+            case KeyEvent.VK_SHIFT:
+            case KeyEvent.VK_CONTROL:
+            case KeyEvent.VK_ALT:
+                return;
+            default:
+                break;
         }
     }
 
@@ -894,58 +895,58 @@ public abstract class vt320 extends VDUBuffer {
             }
             else if ( control )
                 switch ( keyChar ) {
-                case '0':
-                    writeSpecial( Numpad[0] );
-                    return;
-                case '1':
-                    writeSpecial( Numpad[1] );
-                    return;
-                case '2':
-                    writeSpecial( Numpad[2] );
-                    return;
-                case '3':
-                    writeSpecial( Numpad[3] );
-                    return;
-                case '4':
-                    writeSpecial( Numpad[4] );
-                    return;
-                case '5':
-                    writeSpecial( Numpad[5] );
-                    return;
-                case '6':
-                    writeSpecial( Numpad[6] );
-                    return;
-                case '7':
-                    writeSpecial( Numpad[7] );
-                    return;
-                case '8':
-                    writeSpecial( Numpad[8] );
-                    return;
-                case '9':
-                    writeSpecial( Numpad[9] );
-                    return;
-                case '.':
-                    writeSpecial( KPPeriod );
-                    return;
-                case '-':
-                case 31:
-                    writeSpecial( KPMinus );
-                    return;
-                case '+':
-                    writeSpecial( KPComma );
-                    return;
-                case 10:
-                    writeSpecial( KPEnter );
-                    return;
-                case '/':
-                    writeSpecial( PF2 );
-                    return;
-                case '*':
-                    writeSpecial( PF3 );
-                    return;
-                /* NUMLOCK handled in keyPressed */
-                default:
-                    break;
+                    case '0':
+                        writeSpecial( Numpad[0] );
+                        return;
+                    case '1':
+                        writeSpecial( Numpad[1] );
+                        return;
+                    case '2':
+                        writeSpecial( Numpad[2] );
+                        return;
+                    case '3':
+                        writeSpecial( Numpad[3] );
+                        return;
+                    case '4':
+                        writeSpecial( Numpad[4] );
+                        return;
+                    case '5':
+                        writeSpecial( Numpad[5] );
+                        return;
+                    case '6':
+                        writeSpecial( Numpad[6] );
+                        return;
+                    case '7':
+                        writeSpecial( Numpad[7] );
+                        return;
+                    case '8':
+                        writeSpecial( Numpad[8] );
+                        return;
+                    case '9':
+                        writeSpecial( Numpad[9] );
+                        return;
+                    case '.':
+                        writeSpecial( KPPeriod );
+                        return;
+                    case '-':
+                    case 31:
+                        writeSpecial( KPMinus );
+                        return;
+                    case '+':
+                        writeSpecial( KPComma );
+                        return;
+                    case 10:
+                        writeSpecial( KPEnter );
+                        return;
+                    case '/':
+                        writeSpecial( PF2 );
+                        return;
+                    case '*':
+                        writeSpecial( PF3 );
+                        return;
+                    /* NUMLOCK handled in keyPressed */
+                    default:
+                        break;
                 }
             /*
              * Now what does this do and how did it get here. -Marcus if (shift &&
@@ -978,42 +979,42 @@ public abstract class vt320 extends VDUBuffer {
 
         if ( ( modifiers & KEY_ACTION ) != 0 )
             switch ( keyCode ) {
-            case KeyEvent.VK_NUMPAD0:
-                writeSpecial( Numpad[0] );
-                return;
-            case KeyEvent.VK_NUMPAD1:
-                writeSpecial( Numpad[1] );
-                return;
-            case KeyEvent.VK_NUMPAD2:
-                writeSpecial( Numpad[2] );
-                return;
-            case KeyEvent.VK_NUMPAD3:
-                writeSpecial( Numpad[3] );
-                return;
-            case KeyEvent.VK_NUMPAD4:
-                writeSpecial( Numpad[4] );
-                return;
-            case KeyEvent.VK_NUMPAD5:
-                writeSpecial( Numpad[5] );
-                return;
-            case KeyEvent.VK_NUMPAD6:
-                writeSpecial( Numpad[6] );
-                return;
-            case KeyEvent.VK_NUMPAD7:
-                writeSpecial( Numpad[7] );
-                return;
-            case KeyEvent.VK_NUMPAD8:
-                writeSpecial( Numpad[8] );
-                return;
-            case KeyEvent.VK_NUMPAD9:
-                writeSpecial( Numpad[9] );
-                return;
-            case KeyEvent.VK_DECIMAL:
-                writeSpecial( NUMDot[xind] );
-                return;
-            case KeyEvent.VK_ADD:
-                writeSpecial( NUMPlus[xind] );
-                return;
+                case KeyEvent.VK_NUMPAD0:
+                    writeSpecial( Numpad[0] );
+                    return;
+                case KeyEvent.VK_NUMPAD1:
+                    writeSpecial( Numpad[1] );
+                    return;
+                case KeyEvent.VK_NUMPAD2:
+                    writeSpecial( Numpad[2] );
+                    return;
+                case KeyEvent.VK_NUMPAD3:
+                    writeSpecial( Numpad[3] );
+                    return;
+                case KeyEvent.VK_NUMPAD4:
+                    writeSpecial( Numpad[4] );
+                    return;
+                case KeyEvent.VK_NUMPAD5:
+                    writeSpecial( Numpad[5] );
+                    return;
+                case KeyEvent.VK_NUMPAD6:
+                    writeSpecial( Numpad[6] );
+                    return;
+                case KeyEvent.VK_NUMPAD7:
+                    writeSpecial( Numpad[7] );
+                    return;
+                case KeyEvent.VK_NUMPAD8:
+                    writeSpecial( Numpad[8] );
+                    return;
+                case KeyEvent.VK_NUMPAD9:
+                    writeSpecial( Numpad[9] );
+                    return;
+                case KeyEvent.VK_DECIMAL:
+                    writeSpecial( NUMDot[xind] );
+                    return;
+                case KeyEvent.VK_ADD:
+                    writeSpecial( NUMPlus[xind] );
+                    return;
             }
 
         if ( !( ( keyChar == 8 ) || ( keyChar == 127 ) || ( keyChar == '\r' ) || ( keyChar == '\n' ) ) ) {
@@ -1355,1131 +1356,1173 @@ public abstract class vt320 extends VDUBuffer {
         }
 
         switch ( term_state ) {
-        case TSTATE_DATA:
-            /*
-             * FIXME: we shouldn't use chars with bit 8 set if ibmcharset.
-             * probably... but some BBS do anyway...
-             */
-            if ( !useibmcharset ) {
-                boolean doneflag = true;
-                switch ( c ) {
-                case OSC:
-                    osc = "";
-                    term_state = TSTATE_OSC;
-                    break;
-                case RI:
-                    if ( R > tm )
-                        R--;
-                    else
-                        insertLine( R, 1, SCROLL_DOWN );
-                    break;
-                case IND:
-                    if ( R == bm || R == rows - 1 )
-                        insertLine( R, 1, SCROLL_UP );
-                    else
-                        R++;
-                    break;
-                case NEL:
-                    if ( R == bm || R == rows - 1 )
-                        insertLine( R, 1, SCROLL_UP );
-                    else
-                        R++;
-                    C = 0;
-                    break;
-                case HTS:
-                    Tabs[C] = 1;
-                    break;
-                case DCS:
-                    dcs = "";
-                    term_state = TSTATE_DCS;
-                    break;
-                default:
-                    doneflag = false;
-                    break;
-                }
-                if ( doneflag )
-                    break;
-            }
-            switch ( c ) {
-            case SS3:
-                onegl = 3;
-                break;
-            case SS2:
-                onegl = 2;
-                break;
-            case CSI: // should be in the 8bit section, but some BBS use this
-                DCEvar = 0;
-                DCEvars[0] = 0;
-                DCEvars[1] = 0;
-                DCEvars[2] = 0;
-                DCEvars[3] = 0;
-                term_state = TSTATE_CSI;
-                break;
-            case ESC:
-                term_state = TSTATE_ESC;
-                lastwaslf = 0;
-                break;
-            case 5: /* ENQ */
-                write( answerBack, false );
-                break;
-            case 12:
-                /* FormFeed, Home for the BBS world */
-                deleteArea( 0, 0, columns, rows, attributes );
-                C = R = 0;
-                break;
-            case '\b': /* 8 */
-                C--;
-                if ( C < 0 )
-                    C = 0;
-                lastwaslf = 0;
-                break;
-            case '\t':
-                do {
-                    // Don't overwrite or insert! TABS are not destructive, but
-                    // movement!
-                    C++;
-                }
-                while ( C < columns && ( Tabs[C] == 0 ) );
-                lastwaslf = 0;
-                break;
-            case '\r':
-                C = 0;
-                break;
-            case '\n':
-                if ( !vms ) {
-                    if ( lastwaslf != 0 && lastwaslf != c ) //  Ray: I do not
-                        // understand this
-                        // logic.
-                        break;
-                    lastwaslf = c;
-                    /* C = 0; */
-                }
-                if ( R == bm || R >= rows - 1 )
-                    insertLine( R, 1, SCROLL_UP );
-                else
-                    R++;
-                break;
-            case 7:
-                beep();
-                break;
-            case '\016': /* SMACS , as */
-                /* ^N, Shift out - Put G1 into GL */
-                gl = 1;
-                usedcharsets = true;
-                break;
-            case '\017': /* RMACS , ae */
-                /* ^O, Shift in - Put G0 into GL */
-                gl = 0;
-                usedcharsets = true;
-                break;
-            default: {
-                int thisgl = gl;
-
-                if ( onegl >= 0 ) {
-                    thisgl = onegl;
-                    onegl = -1;
-                }
-                lastwaslf = 0;
-                if ( c < 32 ) {
-                    if ( c != 0 )
-                        /*
-                         * break; some BBS really want those characters, like
-                         * hearst etc.
-                         */
-                        if ( c == 0 ) /* print 0 ... you bet */
-                            break;
-                }
-                if ( C >= columns ) {
-                    if ( wraparound ) {
-                        if ( R < rows - 1 )
-                            R++;
-                        else
-                            insertLine( R, 1, SCROLL_UP );
-                        C = 0;
-                    }
-                    else {
-                        // cursor stays on last character.
-                        C = columns - 1;
-                    }
-                }
-
-                // Mapping if DEC Special is chosen charset
-                if ( usedcharsets ) {
-                    if ( c >= '\u0020' && c <= '\u007f' ) {
-                        switch ( gx[thisgl] ) {
-                        case '0':
-                            // Remap SCOANSI line drawing to VT100 line drawing
-                            // chars
-                            // for our SCO using customers.
-                            if ( terminalID.equals( "scoansi" )
-                                    || terminalID.equals( "ansi" ) ) {
-                                for ( int i = 0; i < scoansi_acs.length(); i += 2 ) {
-                                    if ( c == scoansi_acs.charAt( i ) ) {
-                                        c = scoansi_acs.charAt( i + 1 );
-                                        break;
-                                    }
-                                }
-                            }
-                            if ( c >= '\u005f' && c <= '\u007e' ) {
-                                c = DECSPECIAL[(short) c - 0x5f];
-                                mapped = true;
-                            }
-                            break;
-                        case '<': // 'user preferred' is currently 'ISO Latin-1
-                            // suppl
-                            c = (char) ( ( (int) c & 0x7f ) | 0x80 );
-                            mapped = true;
-                            break;
-                        case 'A':
-                        case 'B': // Latin-1 , ASCII -> fall through
-                            mapped = true;
-                            break;
-                        default:
-                            break;
-                        }
-                    }
-                    if ( !mapped && ( c >= '\u0080' && c <= '\u00ff' ) ) {
-                        switch ( gx[gr] ) {
-                        case '0':
-                            if ( c >= '\u00df' && c <= '\u00fe' ) {
-                                c = DECSPECIAL[c - '\u00df'];
-                                mapped = true;
-                            }
-                            break;
-                        case '<':
-                        case 'A':
-                        case 'B':
-                            mapped = true;
-                            break;
-                        default:
-                            break;
-                        }
-                    }
-                }
-                if ( !mapped && useibmcharset )
-                    c = map_cp850_unicode( c );
-
-                /* if(true || (statusmode == 0)) { */
-                if ( insertmode == 1 ) {
-                    insertChar( C, R, c, attributes );
-                }
-                else {
-                    putChar( C, R, c, attributes );
-                }
+            case TSTATE_DATA:
                 /*
-                 * } else { if (insertmode==1) { insertChar(C, rows, c,
-                 * attributes); } else { putChar(C, rows, c, attributes); } }
+                 * FIXME: we shouldn't use chars with bit 8 set if ibmcharset.
+                 * probably... but some BBS do anyway...
                  */
-                C++;
-                break;
-            }
-            } /* switch(c) */
-            break;
-        case TSTATE_OSC:
-            if ( ( c < 0x20 ) && ( c != ESC ) ) {// NP - No printing character
-                handle_osc( osc );
-                term_state = TSTATE_DATA;
-                break;
-            }
-            //but check for vt102 ESC \
-            if ( c == '\\' && osc.charAt( osc.length() - 1 ) == ESC ) {
-                handle_osc( osc );
-                term_state = TSTATE_DATA;
-                break;
-            }
-            osc = osc + c;
-            break;
-        case TSTATE_ESCSPACE:
-            term_state = TSTATE_DATA;
-            switch ( c ) {
-            case 'F': /* S7C1T, Disable output of 8-bit controls, use 7-bit */
-                output8bit = false;
-                break;
-            case 'G': /* S8C1T, Enable output of 8-bit control codes */
-                output8bit = true;
-                break;
-            default:
-            }
-            break;
-        case TSTATE_ESC:
-            term_state = TSTATE_DATA;
-            switch ( c ) {
-            case ' ':
-                term_state = TSTATE_ESCSPACE;
-                break;
-            case '#':
-                term_state = TSTATE_ESCSQUARE;
-                break;
-            case 'c':
-                /* Hard terminal reset */
-                /* reset character sets */
-                gx[0] = 'B';
-                gx[1] = '0';
-                gx[2] = 'B';
-                gx[3] = 'B';
-                gl = 0; // default GL to G0
-                gr = 1; // default GR to G1
-                /* reset tabs */
-                int nw = width;
-                if ( nw < 132 )
-                    nw = 132;
-                Tabs = new byte[nw];
-                for ( int i = 0; i < nw; i += 8 ) {
-                    Tabs[i] = 1;
-                }
-                /* FIXME: */
-                break;
-            case '[':
-                DCEvar = 0;
-                DCEvars[0] = 0;
-                DCEvars[1] = 0;
-                DCEvars[2] = 0;
-                DCEvars[3] = 0;
-                term_state = TSTATE_CSI;
-                break;
-            case ']':
-                osc = "";
-                term_state = TSTATE_OSC;
-                break;
-            case 'P':
-                dcs = "";
-                term_state = TSTATE_DCS;
-                break;
-            case 'A': /* CUU */
-                R--;
-                if ( R < 0 )
-                    R = 0;
-                break;
-            case 'B': /* CUD */
-                R++;
-                if ( R > rows - 1 )
-                    R = rows - 1;
-                break;
-            case 'C':
-                C++;
-                if ( C >= columns )
-                    C = columns - 1;
-                break;
-            case 'I': // RI
-                insertLine( R, 1, SCROLL_DOWN );
-                break;
-            case 'E': /* NEL */
-                if ( R == bm || R == rows - 1 )
-                    insertLine( R, 1, SCROLL_UP );
-                else
-                    R++;
-                C = 0;
-                break;
-            case 'D': /* IND */
-                if ( R == bm || R == rows - 1 )
-                    insertLine( R, 1, SCROLL_UP );
-                else
-                    R++;
-                break;
-            case 'J': /* erase to end of screen */
-                if ( R < rows - 1 )
-                    deleteArea( 0, R + 1, columns, rows - R - 1, attributes );
-                if ( C < columns - 1 )
-                    deleteArea( C, R, columns - C, 1, attributes );
-                break;
-            case 'K':
-                if ( C < columns - 1 )
-                    deleteArea( C, R, columns - C, 1, attributes );
-                break;
-            case 'M': // RI
-                if ( R > bm ) // outside scrolling region
-                    break;
-                if ( R > tm ) { // just go up 1 line.
-                    R--;
-                }
-                else { // scroll down
-                    insertLine( R, 1, SCROLL_DOWN );
-                }
-                /* else do nothing ; */
-                break;
-            case 'H':
-                /* right border probably ... */
-                if ( C >= columns )
-                    C = columns - 1;
-                Tabs[C] = 1;
-                break;
-            case 'N': // SS2
-                onegl = 2;
-                break;
-            case 'O': // SS3
-                onegl = 3;
-                break;
-            case '=':
-                /* application keypad */
-                keypadmode = true;
-                break;
-            case '<': /* vt52 mode off */
-                vt52mode = false;
-                break;
-            case '>': /* normal keypad */
-                keypadmode = false;
-                break;
-            case '7': /* save cursor, attributes, margins */
-                Sc = C;
-                Sr = R;
-                Sgl = gl;
-                Sgr = gr;
-                Sa = attributes;
-                Sgx = new char[4];
-                for ( int i = 0; i < 4; i++ )
-                    Sgx[i] = gx[i];
-                Stm = getTopMargin();
-                Sbm = getBottomMargin();
-                break;
-            case '8': /* restore cursor, attributes, margins */
-                C = Sc;
-                R = Sr;
-                gl = Sgl;
-                gr = Sgr;
-                for ( int i = 0; i < 4; i++ )
-                    gx[i] = Sgx[i];
-                setTopMargin( Stm );
-                setBottomMargin( Sbm );
-                attributes = Sa;
-                break;
-            case '(': /* Designate G0 Character set (ISO 2022) */
-                term_state = TSTATE_SETG0;
-                usedcharsets = true;
-                break;
-            case ')': /* Designate G1 character set (ISO 2022) */
-                term_state = TSTATE_SETG1;
-                usedcharsets = true;
-                break;
-            case '*': /* Designate G2 Character set (ISO 2022) */
-                term_state = TSTATE_SETG2;
-                usedcharsets = true;
-                break;
-            case '+': /* Designate G3 Character set (ISO 2022) */
-                term_state = TSTATE_SETG3;
-                usedcharsets = true;
-                break;
-            case '~': /* Locking Shift 1, right */
-                gr = 1;
-                usedcharsets = true;
-                break;
-            case 'n': /* Locking Shift 2 */
-                gl = 2;
-                usedcharsets = true;
-                break;
-            case '}': /* Locking Shift 2, right */
-                gr = 2;
-                usedcharsets = true;
-                break;
-            case 'o': /* Locking Shift 3 */
-                gl = 3;
-                usedcharsets = true;
-                break;
-            case '|': /* Locking Shift 3, right */
-                gr = 3;
-                usedcharsets = true;
-                break;
-            case 'Y': /* vt52 cursor address mode , next chars are x,y */
-                term_state = TSTATE_VT52Y;
-                break;
-            default:
-                break;
-            }
-            break;
-        case TSTATE_VT52X:
-            C = c - 37;
-            term_state = TSTATE_VT52Y;
-            break;
-        case TSTATE_VT52Y:
-            R = c - 37;
-            term_state = TSTATE_DATA;
-            break;
-        case TSTATE_SETG0:
-            if ( !( c != '0' && c != 'A' && c != 'B' && c != '<' ) )
-                gx[0] = c;
-            term_state = TSTATE_DATA;
-            break;
-        case TSTATE_SETG1:
-            if ( !( c != '0' && c != 'A' && c != 'B' && c != '<' ) ) {
-                gx[1] = c;
-            }
-            term_state = TSTATE_DATA;
-            break;
-        case TSTATE_SETG2:
-            if ( !( c != '0' && c != 'A' && c != 'B' && c != '<' ) )
-                gx[2] = c;
-            term_state = TSTATE_DATA;
-            break;
-        case TSTATE_SETG3:
-            if ( !( c != '0' && c != 'A' && c != 'B' && c != '<' ) )
-                gx[3] = c;
-            term_state = TSTATE_DATA;
-            break;
-        case TSTATE_ESCSQUARE:
-            switch ( c ) {
-            case '8':
-                for ( int i = 0; i < columns; i++ )
-                    for ( int j = 0; j < rows; j++ )
-                        putChar( i, j, 'E', 0 );
-                break;
-            default:
-                break;
-            }
-            term_state = TSTATE_DATA;
-            break;
-        case TSTATE_DCS:
-            if ( c == '\\' && dcs.charAt( dcs.length() - 1 ) == ESC ) {
-                handle_dcs( dcs );
-                term_state = TSTATE_DATA;
-                break;
-            }
-            dcs = dcs + c;
-            break;
-
-        case TSTATE_DCEQ:
-            term_state = TSTATE_DATA;
-            switch ( c ) {
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                DCEvars[DCEvar] = DCEvars[DCEvar] * 10 + ( (int) c ) - 48;
-                term_state = TSTATE_DCEQ;
-                break;
-            case ';':
-                DCEvar++;
-                DCEvars[DCEvar] = 0;
-                term_state = TSTATE_DCEQ;
-                break;
-            case 's': // XTERM_SAVE missing!
-                break;
-            case 'r': // XTERM_RESTORE
-                /* DEC Mode reset */
-                for ( int i = 0; i <= DCEvar; i++ ) {
-                    switch ( DCEvars[i] ) {
-                    case 3: /* 80 columns */
-                        setScreenSize( 80, height );
-                        break;
-                    case 4: /* scrolling mode, smooth */
-                        break;
-                    case 5: /* light background */
-                        break;
-                    case 6: /* DECOM (Origin Mode) move inside margins. */
-                        moveoutsidemargins = true;
-                        break;
-                    case 7: /* DECAWM: Autowrap Mode */
-                        wraparound = false;
-                        break;
-                    case 12:/* local echo off */
-                        break;
-                    case 9: /* X10 mouse */
-                    case 1000: /* xterm style mouse report on */
-                    case 1001:
-                    case 1002:
-                    case 1003:
-                        mouserpt = DCEvars[i];
-                        break;
-                    default:
+                if ( !useibmcharset ) {
+                    boolean doneflag = true;
+                    switch ( c ) {
+                        case OSC:
+                            osc = "";
+                            term_state = TSTATE_OSC;
+                            break;
+                        case RI:
+                            if ( R > tm )
+                                R--;
+                            else
+                                insertLine( R, 1, SCROLL_DOWN );
+                            break;
+                        case IND:
+                            if ( R == bm || R == rows - 1 )
+                                insertLine( R, 1, SCROLL_UP );
+                            else
+                                R++;
+                            break;
+                        case NEL:
+                            if ( R == bm || R == rows - 1 )
+                                insertLine( R, 1, SCROLL_UP );
+                            else
+                                R++;
+                            C = 0;
+                            break;
+                        case HTS:
+                            Tabs[C] = 1;
+                            break;
+                        case DCS:
+                            dcs = "";
+                            term_state = TSTATE_DCS;
+                            break;
+                        default:
+                            doneflag = false;
+                            break;
                     }
-                }
-                break;
-            case 'h': // DECSET
-                /* DEC Mode set */
-                for ( int i = 0; i <= DCEvar; i++ ) {
-                    switch ( DCEvars[i] ) {
-                    case 1: /* Application cursor keys */
-                        KeyUp[0] = "\u001bOA";
-                        KeyDown[0] = "\u001bOB";
-                        KeyRight[0] = "\u001bOC";
-                        KeyLeft[0] = "\u001bOD";
+                    if ( doneflag )
                         break;
-                    case 2: /* DECANM */
-                        vt52mode = false;
+                }
+                switch ( c ) {
+                    case SS3:
+                        onegl = 3;
                         break;
-                    case 3: /* 132 columns */
-                        setScreenSize( 132, height );
+                    case SS2:
+                        onegl = 2;
                         break;
-                    case 6: /* DECOM: move inside margins. */
-                        moveoutsidemargins = false;
+                    case CSI: // should be in the 8bit section, but some BBS use
+                              // this
+                        DCEvar = 0;
+                        DCEvars[0] = 0;
+                        DCEvars[1] = 0;
+                        DCEvars[2] = 0;
+                        DCEvars[3] = 0;
+                        term_state = TSTATE_CSI;
                         break;
-                    case 7: /* DECAWM: Autowrap Mode */
-                        wraparound = true;
+                    case ESC:
+                        term_state = TSTATE_ESC;
+                        lastwaslf = 0;
                         break;
-                    case 25: /* turn cursor on */
-                        showCursor( true );
-                        redraw();
+                    case 5: /* ENQ */
+                        write( answerBack, false );
                         break;
-                    case 9: /* X10 mouse */
-                    case 1000: /* xterm style mouse report on */
-                    case 1001:
-                    case 1002:
-                    case 1003:
-                        mouserpt = DCEvars[i];
+                    case 12:
+                        /* FormFeed, Home for the BBS world */
+                        deleteArea( 0, 0, columns, rows, attributes );
+                        C = R = 0;
                         break;
-
-                    /* unimplemented stuff, fall through */
-                    /* 4 - scrolling mode, smooth */
-                    /* 5 - light background */
-                    /* 12 - local echo off */
-                    /* 18 - DECPFF - Printer Form Feed Mode -> On */
-                    /* 19 - DECPEX - Printer Extent Mode -> Screen */
-                    default:
+                    case '\b': /* 8 */
+                        C--;
+                        if ( C < 0 )
+                            C = 0;
+                        lastwaslf = 0;
                         break;
-                    }
-                }
-                break;
-            case 'i': // DEC Printer Control, autoprint, echo screenchars to
-                // printer
-                // This is different to CSI i!
-                // Also: "Autoprint prints a final display line only when the
-                // cursor is moved off the line by an autowrap or LF, FF, or
-                // VT (otherwise do not print the line)."
-                switch ( DCEvars[0] ) {
-                case 1:
-                    break;
-                case 4:
-                    break;
-                case 5:
-                    break;
-                }
-                break;
-            case 'l': //DECRST
-                /* DEC Mode reset */
-                for ( int i = 0; i <= DCEvar; i++ ) {
-                    switch ( DCEvars[i] ) {
-                    case 1: /* Application cursor keys */
-                        KeyUp[0] = "\u001b[A";
-                        KeyDown[0] = "\u001b[B";
-                        KeyRight[0] = "\u001b[C";
-                        KeyLeft[0] = "\u001b[D";
-                        break;
-                    case 2: /* DECANM */
-                        vt52mode = true;
-                        break;
-                    case 3: /* 80 columns */
-                        setScreenSize( 80, height );
-                        break;
-                    case 6: /* DECOM: move outside margins. */
-                        moveoutsidemargins = true;
-                        break;
-                    case 7: /* DECAWM: Autowrap Mode OFF */
-                        wraparound = false;
-                        break;
-                    case 25: /* turn cursor off */
-                        showCursor( false );
-                        redraw();
-                        break;
-                    /* Unimplemented stuff: */
-                    /* 4 - scrolling mode, jump */
-                    /* 5 - dark background */
-                    /* 7 - DECAWM - no wrap around mode */
-                    /* 12 - local echo on */
-                    /* 18 - DECPFF - Printer Form Feed Mode -> Off */
-                    /* 19 - DECPEX - Printer Extent Mode -> Scrolling Region */
-                    case 9: /* X10 mouse */
-                    case 1000: /* xterm style mouse report OFF */
-                    case 1001:
-                    case 1002:
-                    case 1003:
-                        mouserpt = 0;
-                        break;
-                    default:
-                        break;
-                    }
-                }
-                break;
-            case 'n':
-                switch ( DCEvars[0] ) {
-                case 15:
-                    /* printer? no printer. */
-                    write( ( (char) ESC ) + "[?13n", false );
-                    break;
-                default:
-                    break;
-                }
-                break;
-            default:
-                break;
-            }
-            break;
-        case TSTATE_CSI_EX:
-            term_state = TSTATE_DATA;
-            switch ( c ) {
-            case ESC:
-                term_state = TSTATE_ESC;
-                break;
-            default:
-                break;
-            }
-            break;
-        case TSTATE_CSI_TICKS:
-            term_state = TSTATE_DATA;
-            switch ( c ) {
-            case 'p':
-                if ( DCEvars[0] == 61 ) {
-                    output8bit = false;
-                    break;
-                }
-                if ( DCEvars[1] == 1 ) {
-                    output8bit = false;
-                }
-                else {
-                    output8bit = true; /* 0 or 2 */
-                }
-                break;
-            default:
-                break;
-            }
-            break;
-        case TSTATE_CSI_DOLLAR:
-            term_state = TSTATE_DATA;
-            switch ( c ) {
-            case '}':
-                statusmode = DCEvars[0];
-                break;
-            case '~':
-                break;
-            default:
-                break;
-            }
-            break;
-        case TSTATE_CSI:
-            term_state = TSTATE_DATA;
-            switch ( c ) {
-            case '"':
-                term_state = TSTATE_CSI_TICKS;
-                break;
-            case '$':
-                term_state = TSTATE_CSI_DOLLAR;
-                break;
-            case '!':
-                term_state = TSTATE_CSI_EX;
-                break;
-            case '?':
-                DCEvar = 0;
-                DCEvars[0] = 0;
-                term_state = TSTATE_DCEQ;
-                break;
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                DCEvars[DCEvar] = DCEvars[DCEvar] * 10 + ( (int) c ) - 48;
-                term_state = TSTATE_CSI;
-                break;
-            case ';':
-                DCEvar++;
-                DCEvars[DCEvar] = 0;
-                term_state = TSTATE_CSI;
-                break;
-            case 'c':/* send primary device attributes */
-                /* send (ESC[?61c) */
-
-                String subcode = "";
-                if ( terminalID.equals( "vt320" ) )
-                    subcode = "63;";
-                if ( terminalID.equals( "vt220" ) )
-                    subcode = "62;";
-                if ( terminalID.equals( "vt100" ) )
-                    subcode = "61;";
-                write( ( (char) ESC ) + "[?" + subcode + "1;2c", false );
-                break;
-            case 'q':
-                break;
-            case 'g':
-                /* used for tabsets */
-                switch ( DCEvars[0] ) {
-                case 3:/* clear them */
-                    Tabs = new byte[width];
-                    break;
-                case 0:
-                    Tabs[C] = 0;
-                    break;
-                }
-                break;
-            case 'h':
-                switch ( DCEvars[0] ) {
-                case 4:
-                    insertmode = 1;
-                    break;
-                case 20:
-                    sendcrlf = true;
-                    break;
-                default:
-                    break;
-                }
-                break;
-            case 'i': // Printer Controller mode.
-                // "Transparent printing sends all output, except the CSI 4 i
-                //  termination string, to the printer and not the screen,
-                //  uses an 8-bit channel if no parity so NUL and DEL will be
-                //  seen by the printer and by the termination recognizer code,
-                //  and all translation and character set selections are
-                //  bypassed."
-                switch ( DCEvars[0] ) {
-                case 0:
-                    break;
-                case 4:
-                    break;
-                case 5:
-                    break;
-                default:
-                }
-                break;
-            case 'l':
-                switch ( DCEvars[0] ) {
-                case 4:
-                    insertmode = 0;
-                    break;
-                case 20:
-                    sendcrlf = false;
-                    break;
-                default:
-                    break;
-                }
-                break;
-            case 'A': // CUU
-            {
-                int limit;
-                /* FIXME: xterm only cares about 0 and topmargin */
-                if ( R > bm )
-                    limit = bm + 1;
-                else if ( R >= tm ) {
-                    limit = tm;
-                }
-                else
-                    limit = 0;
-                if ( DCEvars[0] == 0 )
-                    R--;
-                else
-                    R -= DCEvars[0];
-                if ( R < limit )
-                    R = limit;
-                break;
-            }
-            case 'B': // CUD
-            /* cursor down n (1) times */
-            {
-                int limit;
-                if ( R < tm )
-                    limit = tm - 1;
-                else if ( R <= bm ) {
-                    limit = bm;
-                }
-                else
-                    limit = rows - 1;
-                if ( DCEvars[0] == 0 )
-                    R++;
-                else
-                    R += DCEvars[0];
-                if ( R > limit )
-                    R = limit;
-                break;
-            }
-            case 'C':
-                if ( DCEvars[0] == 0 )
-                    C++;
-                else
-                    C += DCEvars[0];
-                if ( C > columns - 1 )
-                    C = columns - 1;
-                break;
-            case 'd': // CVA
-                R = DCEvars[0];
-                break;
-            case 'D':
-                if ( DCEvars[0] == 0 )
-                    C--;
-                else
-                    C -= DCEvars[0];
-                if ( C < 0 )
-                    C = 0;
-                break;
-            case 'r': // DECSTBM
-                if ( DCEvar > 0 ) //  Ray: Any argument is optional
-                {
-                    R = DCEvars[1] - 1;
-                    if ( R < 0 )
-                        R = rows - 1;
-                    else if ( R >= rows ) {
-                        R = rows - 1;
-                    }
-                }
-                else
-                    R = rows - 1;
-                setBottomMargin( R );
-                if ( R >= DCEvars[0] ) {
-                    R = DCEvars[0] - 1;
-                    if ( R < 0 )
-                        R = 0;
-                }
-                setTopMargin( R );
-                _SetCursor( 0, 0 );
-                break;
-            case 'G': /* CUP / cursor absolute column */
-                C = DCEvars[0];
-                break;
-            case 'H': /* CUP / cursor position */
-                /* gets 2 arguments */
-                _SetCursor( DCEvars[0] - 1, DCEvars[1] - 1 );
-                break;
-            case 'f': /* move cursor 2 */
-                /* gets 2 arguments */
-                R = DCEvars[0] - 1;
-                C = DCEvars[1] - 1;
-                if ( C < 0 )
-                    C = 0;
-                if ( R < 0 )
-                    R = 0;
-                break;
-            case 'S': /* ind aka 'scroll forward' */
-                if ( DCEvars[0] == 0 )
-                    insertLine( rows - 1, SCROLL_UP );
-                else
-                    insertLine( rows - 1, DCEvars[0], SCROLL_UP );
-                break;
-            case 'L':
-                /* insert n lines */
-                if ( DCEvars[0] == 0 )
-                    insertLine( R, SCROLL_DOWN );
-                else
-                    insertLine( R, DCEvars[0], SCROLL_DOWN );
-                break;
-            case 'T': /* 'ri' aka scroll backward */
-                if ( DCEvars[0] == 0 )
-                    insertLine( 0, SCROLL_DOWN );
-                else
-                    insertLine( 0, DCEvars[0], SCROLL_DOWN );
-                break;
-            case 'M':
-                if ( DCEvars[0] == 0 )
-                    deleteLine( R );
-                else
-                    for ( int i = 0; i < DCEvars[0]; i++ )
-                        deleteLine( R );
-                break;
-            case 'K':
-                /* clear in line */
-                switch ( DCEvars[0] ) {
-                case 6: /* 97801 uses ESC[6K for delete to end of line */
-                case 0:/* clear to right */
-                    if ( C < columns - 1 )
-                        deleteArea( C, R, columns - C, 1, attributes );
-                    break;
-                case 1:/* clear to the left, including this */
-                    if ( C > 0 )
-                        deleteArea( 0, R, C + 1, 1, attributes );
-                    break;
-                case 2:/* clear whole line */
-                    deleteArea( 0, R, columns, 1, attributes );
-                    break;
-                }
-                break;
-            case 'J':
-                /* clear below current line */
-                switch ( DCEvars[0] ) {
-                case 0:
-                    if ( R < rows - 1 )
-                        deleteArea( 0, R + 1, columns, rows - R - 1, attributes );
-                    if ( C < columns - 1 )
-                        deleteArea( C, R, columns - C, 1, attributes );
-                    break;
-                case 1:
-                    if ( R > 0 )
-                        deleteArea( 0, 0, columns, R, attributes );
-                    if ( C > 0 )
-                        deleteArea( 0, R, C + 1, 1, attributes );// include up
-                                                                 // to
-                    // and including
-                    // current
-                    break;
-                case 2:
-                    deleteArea( 0, 0, columns, rows, attributes );
-                    break;
-                }
-                break;
-            case '@':
-                for ( int i = 0; i < DCEvars[0]; i++ )
-                    insertChar( C, R, ' ', attributes );
-                break;
-            case 'X': {
-                int toerase = DCEvars[0];
-                if ( toerase == 0 )
-                    toerase = 1;
-                if ( toerase + C > columns )
-                    toerase = columns - C;
-                deleteArea( C, R, toerase, 1, attributes );
-                // does not change cursor position
-                break;
-            }
-            case 'P':
-                if ( DCEvars[0] == 0 )
-                    DCEvars[0] = 1;
-                for ( int i = 0; i < DCEvars[0]; i++ )
-                    deleteChar( C, R );
-                break;
-            case 'n':
-                switch ( DCEvars[0] ) {
-                case 5: /* malfunction? No malfunction. */
-                    writeSpecial( ( (char) ESC ) + "[0n" );
-                    break;
-                case 6:
-                    // DO NOT offset R and C by 1! (checked against
-                    // /usr/X11R6/bin/resize
-                    // FIXME check again.
-                    // FIXME: but vttest thinks different???
-                    writeSpecial( ( (char) ESC ) + "[" + R + ";" + C + "R" );
-                    break;
-                default:
-                    break;
-                }
-                break;
-            case 's': /* DECSC - save cursor */
-                Sc = C;
-                Sr = R;
-                Sa = attributes;
-                break;
-            case 'u': /* DECRC - restore cursor */
-                C = Sc;
-                R = Sr;
-                attributes = Sa;
-                break;
-            case 'm': /* attributes as color, bold , blink, */
-                if ( DCEvar == 0 && DCEvars[0] == 0 )
-                    attributes = 0;
-                for ( int i = 0; i <= DCEvar; i++ ) {
-                    switch ( DCEvars[i] ) {
-                    case 0:
-                        if ( DCEvar > 0 ) {
-                            if ( terminalID.equals( "scoansi" ) ) {
-                                attributes &= COLOR; /*
-                                                      * Keeps color. Strange but
-                                                      * true.
-                                                      */
-                            }
-                            else {
-                                attributes = 0;
-                            }
+                    case '\t':
+                        do {
+                            // Don't overwrite or insert! TABS are not
+                            // destructive, but
+                            // movement!
+                            C++;
                         }
+                        while ( C < columns && ( Tabs[C] == 0 ) );
+                        lastwaslf = 0;
                         break;
-                    case 1:
-                        attributes |= BOLD;
-                        attributes &= ~LOW;
+                    case '\r':
+                        C = 0;
                         break;
-                    case 2:
-                        /* SCO color hack mode */
-                        if ( terminalID.equals( "scoansi" )
-                                && ( ( DCEvar - i ) >= 2 ) ) {
-                            int ncolor;
-                            attributes &= ~( COLOR | BOLD );
-
-                            ncolor = DCEvars[i + 1];
-                            if ( ( ncolor & 8 ) == 8 )
-                                attributes |= BOLD;
-                            ncolor = ( ( ncolor & 1 ) << 2 ) | ( ncolor & 2 )
-                                    | ( ( ncolor & 4 ) >> 2 );
-                            attributes |= ( ( ncolor ) + 1 ) << 4;
-                            ncolor = DCEvars[i + 2];
-                            ncolor = ( ( ncolor & 1 ) << 2 ) | ( ncolor & 2 )
-                                    | ( ( ncolor & 4 ) >> 2 );
-                            attributes |= ( ( ncolor ) + 1 ) << 8;
-                            i += 2;
+                    case '\n':
+                        if ( !vms ) {
+                            if ( lastwaslf != 0 && lastwaslf != c ) //  Ray: I do
+                                                                    // not
+                                // understand this
+                                // logic.
+                                break;
+                            lastwaslf = c;
+                            /* C = 0; */
                         }
-                        else {
-                            attributes |= LOW;
-                        }
-                        break;
-                    case 4:
-                        attributes |= UNDERLINE;
+                        if ( R == bm || R >= rows - 1 )
+                            insertLine( R, 1, SCROLL_UP );
+                        else
+                            R++;
                         break;
                     case 7:
-                        attributes |= INVERT;
+                        beep();
                         break;
-                    case 5: /* blink on */
-                        break;
-                    /*
-                     * 10 - ANSI X3.64-1979, select primary font, don't display
-                     * control chars, don't set bit 8 on output
-                     */
-                    case 10:
-                        gl = 0;
-                        usedcharsets = true;
-                        break;
-                    /*
-                     * 11 - ANSI X3.64-1979, select second alt. font, display
-                     * control chars, set bit 8 on output
-                     */
-                    case 11: /* SMACS , as */
-                    case 12:
+                    case '\016': /* SMACS , as */
+                        /* ^N, Shift out - Put G1 into GL */
                         gl = 1;
                         usedcharsets = true;
                         break;
-                    case 21: /* normal intensity */
-                        attributes &= ~( LOW | BOLD );
+                    case '\017': /* RMACS , ae */
+                        /* ^O, Shift in - Put G0 into GL */
+                        gl = 0;
+                        usedcharsets = true;
                         break;
-                    case 25: /* blinking off */
-                        break;
-                    case 27:
-                        attributes &= ~INVERT;
-                        break;
-                    case 24:
-                        attributes &= ~UNDERLINE;
-                        break;
-                    case 22:
-                        attributes &= ~BOLD;
-                        break;
-                    case 30:
-                    case 31:
-                    case 32:
-                    case 33:
-                    case 34:
-                    case 35:
-                    case 36:
-                    case 37:
-                        attributes &= ~COLOR_FG;
-                        attributes |= ( ( DCEvars[i] - 30 ) + 1 ) << 4;
-                        break;
-                    case 39:
-                        attributes &= ~COLOR_FG;
-                        break;
-                    case 40:
-                    case 41:
-                    case 42:
-                    case 43:
-                    case 44:
-                    case 45:
-                    case 46:
-                    case 47:
-                        attributes &= ~COLOR_BG;
-                        attributes |= ( ( DCEvars[i] - 40 ) + 1 ) << 8;
-                        break;
-                    case 49:
-                        attributes &= ~COLOR_BG;
-                        break;
+                    default: {
+                        int thisgl = gl;
 
-                    default:
+                        if ( onegl >= 0 ) {
+                            thisgl = onegl;
+                            onegl = -1;
+                        }
+                        lastwaslf = 0;
+                        if ( c < 32 ) {
+                            if ( c != 0 )
+                                /*
+                                 * break; some BBS really want those characters,
+                                 * like hearst etc.
+                                 */
+                                if ( c == 0 ) /* print 0 ... you bet */
+                                    break;
+                        }
+                        if ( C >= columns ) {
+                            if ( wraparound ) {
+                                if ( R < rows - 1 )
+                                    R++;
+                                else
+                                    insertLine( R, 1, SCROLL_UP );
+                                C = 0;
+                            }
+                            else {
+                                // cursor stays on last character.
+                                C = columns - 1;
+                            }
+                        }
+
+                        // Mapping if DEC Special is chosen charset
+                        if ( usedcharsets ) {
+                            if ( c >= '\u0020' && c <= '\u007f' ) {
+                                switch ( gx[thisgl] ) {
+                                    case '0':
+                                        // Remap SCOANSI line drawing to VT100
+                                        // line drawing
+                                        // chars
+                                        // for our SCO using customers.
+                                        if ( terminalID.equals( "scoansi" )
+                                                || terminalID.equals( "ansi" ) ) {
+                                            for ( int i = 0; i < scoansi_acs
+                                                    .length(); i += 2 ) {
+                                                if ( c == scoansi_acs
+                                                        .charAt( i ) ) {
+                                                    c = scoansi_acs
+                                                            .charAt( i + 1 );
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if ( c >= '\u005f' && c <= '\u007e' ) {
+                                            c = DECSPECIAL[(short) c - 0x5f];
+                                            mapped = true;
+                                        }
+                                        break;
+                                    case '<': // 'user preferred' is currently
+                                              // 'ISO Latin-1
+                                        // suppl
+                                        c = (char) ( ( (int) c & 0x7f ) | 0x80 );
+                                        mapped = true;
+                                        break;
+                                    case 'A':
+                                    case 'B': // Latin-1 , ASCII -> fall through
+                                        mapped = true;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            if ( !mapped && ( c >= '\u0080' && c <= '\u00ff' ) ) {
+                                switch ( gx[gr] ) {
+                                    case '0':
+                                        if ( c >= '\u00df' && c <= '\u00fe' ) {
+                                            c = DECSPECIAL[c - '\u00df'];
+                                            mapped = true;
+                                        }
+                                        break;
+                                    case '<':
+                                    case 'A':
+                                    case 'B':
+                                        mapped = true;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                        if ( !mapped && useibmcharset )
+                            c = map_cp850_unicode( c );
+
+                        /* if(true || (statusmode == 0)) { */
+                        if ( insertmode == 1 ) {
+                            insertChar( C, R, c, attributes );
+                        }
+                        else {
+                            putChar( C, R, c, attributes );
+                        }
+                        /*
+                         * } else { if (insertmode==1) { insertChar(C, rows, c,
+                         * attributes); } else { putChar(C, rows, c,
+                         * attributes); } }
+                         */
+                        C++;
                         break;
                     }
+                } /* switch(c) */
+                break;
+            case TSTATE_OSC:
+                if ( ( c < 0x20 ) && ( c != ESC ) ) {// NP - No printing
+                                                     // character
+                    handle_osc( osc );
+                    term_state = TSTATE_DATA;
+                    break;
+                }
+                //but check for vt102 ESC \
+                if ( c == '\\' && osc.charAt( osc.length() - 1 ) == ESC ) {
+                    handle_osc( osc );
+                    term_state = TSTATE_DATA;
+                    break;
+                }
+                osc = osc + c;
+                break;
+            case TSTATE_ESCSPACE:
+                term_state = TSTATE_DATA;
+                switch ( c ) {
+                    case 'F': /*
+                               * S7C1T, Disable output of 8-bit controls, use
+                               * 7-bit
+                               */
+                        output8bit = false;
+                        break;
+                    case 'G': /* S8C1T, Enable output of 8-bit control codes */
+                        output8bit = true;
+                        break;
+                    default:
+                }
+                break;
+            case TSTATE_ESC:
+                term_state = TSTATE_DATA;
+                switch ( c ) {
+                    case ' ':
+                        term_state = TSTATE_ESCSPACE;
+                        break;
+                    case '#':
+                        term_state = TSTATE_ESCSQUARE;
+                        break;
+                    case 'c':
+                        /* Hard terminal reset */
+                        /* reset character sets */
+                        gx[0] = 'B';
+                        gx[1] = '0';
+                        gx[2] = 'B';
+                        gx[3] = 'B';
+                        gl = 0; // default GL to G0
+                        gr = 1; // default GR to G1
+                        /* reset tabs */
+                        int nw = width;
+                        if ( nw < 132 )
+                            nw = 132;
+                        Tabs = new byte[nw];
+                        for ( int i = 0; i < nw; i += 8 ) {
+                            Tabs[i] = 1;
+                        }
+                        /* FIXME: */
+                        break;
+                    case '[':
+                        DCEvar = 0;
+                        DCEvars[0] = 0;
+                        DCEvars[1] = 0;
+                        DCEvars[2] = 0;
+                        DCEvars[3] = 0;
+                        term_state = TSTATE_CSI;
+                        break;
+                    case ']':
+                        osc = "";
+                        term_state = TSTATE_OSC;
+                        break;
+                    case 'P':
+                        dcs = "";
+                        term_state = TSTATE_DCS;
+                        break;
+                    case 'A': /* CUU */
+                        R--;
+                        if ( R < 0 )
+                            R = 0;
+                        break;
+                    case 'B': /* CUD */
+                        R++;
+                        if ( R > rows - 1 )
+                            R = rows - 1;
+                        break;
+                    case 'C':
+                        C++;
+                        if ( C >= columns )
+                            C = columns - 1;
+                        break;
+                    case 'I': // RI
+                        insertLine( R, 1, SCROLL_DOWN );
+                        break;
+                    case 'E': /* NEL */
+                        if ( R == bm || R == rows - 1 )
+                            insertLine( R, 1, SCROLL_UP );
+                        else
+                            R++;
+                        C = 0;
+                        break;
+                    case 'D': /* IND */
+                        if ( R == bm || R == rows - 1 )
+                            insertLine( R, 1, SCROLL_UP );
+                        else
+                            R++;
+                        break;
+                    case 'J': /* erase to end of screen */
+                        if ( R < rows - 1 )
+                            deleteArea( 0, R + 1, columns, rows - R - 1,
+                                    attributes );
+                        if ( C < columns - 1 )
+                            deleteArea( C, R, columns - C, 1, attributes );
+                        break;
+                    case 'K':
+                        if ( C < columns - 1 )
+                            deleteArea( C, R, columns - C, 1, attributes );
+                        break;
+                    case 'M': // RI
+                        if ( R > bm ) // outside scrolling region
+                            break;
+                        if ( R > tm ) { // just go up 1 line.
+                            R--;
+                        }
+                        else { // scroll down
+                            insertLine( R, 1, SCROLL_DOWN );
+                        }
+                        /* else do nothing ; */
+                        break;
+                    case 'H':
+                        /* right border probably ... */
+                        if ( C >= columns )
+                            C = columns - 1;
+                        Tabs[C] = 1;
+                        break;
+                    case 'N': // SS2
+                        onegl = 2;
+                        break;
+                    case 'O': // SS3
+                        onegl = 3;
+                        break;
+                    case '=':
+                        /* application keypad */
+                        keypadmode = true;
+                        break;
+                    case '<': /* vt52 mode off */
+                        vt52mode = false;
+                        break;
+                    case '>': /* normal keypad */
+                        keypadmode = false;
+                        break;
+                    case '7': /* save cursor, attributes, margins */
+                        Sc = C;
+                        Sr = R;
+                        Sgl = gl;
+                        Sgr = gr;
+                        Sa = attributes;
+                        Sgx = new char[4];
+                        for ( int i = 0; i < 4; i++ )
+                            Sgx[i] = gx[i];
+                        Stm = getTopMargin();
+                        Sbm = getBottomMargin();
+                        break;
+                    case '8': /* restore cursor, attributes, margins */
+                        C = Sc;
+                        R = Sr;
+                        gl = Sgl;
+                        gr = Sgr;
+                        for ( int i = 0; i < 4; i++ )
+                            gx[i] = Sgx[i];
+                        setTopMargin( Stm );
+                        setBottomMargin( Sbm );
+                        attributes = Sa;
+                        break;
+                    case '(': /* Designate G0 Character set (ISO 2022) */
+                        term_state = TSTATE_SETG0;
+                        usedcharsets = true;
+                        break;
+                    case ')': /* Designate G1 character set (ISO 2022) */
+                        term_state = TSTATE_SETG1;
+                        usedcharsets = true;
+                        break;
+                    case '*': /* Designate G2 Character set (ISO 2022) */
+                        term_state = TSTATE_SETG2;
+                        usedcharsets = true;
+                        break;
+                    case '+': /* Designate G3 Character set (ISO 2022) */
+                        term_state = TSTATE_SETG3;
+                        usedcharsets = true;
+                        break;
+                    case '~': /* Locking Shift 1, right */
+                        gr = 1;
+                        usedcharsets = true;
+                        break;
+                    case 'n': /* Locking Shift 2 */
+                        gl = 2;
+                        usedcharsets = true;
+                        break;
+                    case '}': /* Locking Shift 2, right */
+                        gr = 2;
+                        usedcharsets = true;
+                        break;
+                    case 'o': /* Locking Shift 3 */
+                        gl = 3;
+                        usedcharsets = true;
+                        break;
+                    case '|': /* Locking Shift 3, right */
+                        gr = 3;
+                        usedcharsets = true;
+                        break;
+                    case 'Y': /* vt52 cursor address mode , next chars are x,y */
+                        term_state = TSTATE_VT52Y;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case TSTATE_VT52X:
+                C = c - 37;
+                term_state = TSTATE_VT52Y;
+                break;
+            case TSTATE_VT52Y:
+                R = c - 37;
+                term_state = TSTATE_DATA;
+                break;
+            case TSTATE_SETG0:
+                if ( !( c != '0' && c != 'A' && c != 'B' && c != '<' ) )
+                    gx[0] = c;
+                term_state = TSTATE_DATA;
+                break;
+            case TSTATE_SETG1:
+                if ( !( c != '0' && c != 'A' && c != 'B' && c != '<' ) ) {
+                    gx[1] = c;
+                }
+                term_state = TSTATE_DATA;
+                break;
+            case TSTATE_SETG2:
+                if ( !( c != '0' && c != 'A' && c != 'B' && c != '<' ) )
+                    gx[2] = c;
+                term_state = TSTATE_DATA;
+                break;
+            case TSTATE_SETG3:
+                if ( !( c != '0' && c != 'A' && c != 'B' && c != '<' ) )
+                    gx[3] = c;
+                term_state = TSTATE_DATA;
+                break;
+            case TSTATE_ESCSQUARE:
+                switch ( c ) {
+                    case '8':
+                        for ( int i = 0; i < columns; i++ )
+                            for ( int j = 0; j < rows; j++ )
+                                putChar( i, j, 'E', 0 );
+                        break;
+                    default:
+                        break;
+                }
+                term_state = TSTATE_DATA;
+                break;
+            case TSTATE_DCS:
+                if ( c == '\\' && dcs.charAt( dcs.length() - 1 ) == ESC ) {
+                    handle_dcs( dcs );
+                    term_state = TSTATE_DATA;
+                    break;
+                }
+                dcs = dcs + c;
+                break;
+
+            case TSTATE_DCEQ:
+                term_state = TSTATE_DATA;
+                switch ( c ) {
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        DCEvars[DCEvar] = DCEvars[DCEvar] * 10 + ( (int) c )
+                                - 48;
+                        term_state = TSTATE_DCEQ;
+                        break;
+                    case ';':
+                        DCEvar++;
+                        DCEvars[DCEvar] = 0;
+                        term_state = TSTATE_DCEQ;
+                        break;
+                    case 's': // XTERM_SAVE missing!
+                        break;
+                    case 'r': // XTERM_RESTORE
+                        /* DEC Mode reset */
+                        for ( int i = 0; i <= DCEvar; i++ ) {
+                            switch ( DCEvars[i] ) {
+                                case 3: /* 80 columns */
+                                    setScreenSize( 80, height );
+                                    break;
+                                case 4: /* scrolling mode, smooth */
+                                    break;
+                                case 5: /* light background */
+                                    break;
+                                case 6: /*
+                                         * DECOM (Origin Mode) move inside
+                                         * margins.
+                                         */
+                                    moveoutsidemargins = true;
+                                    break;
+                                case 7: /* DECAWM: Autowrap Mode */
+                                    wraparound = false;
+                                    break;
+                                case 12:/* local echo off */
+                                    break;
+                                case 9: /* X10 mouse */
+                                case 1000: /* xterm style mouse report on */
+                                case 1001:
+                                case 1002:
+                                case 1003:
+                                    mouserpt = DCEvars[i];
+                                    break;
+                                default:
+                            }
+                        }
+                        break;
+                    case 'h': // DECSET
+                        /* DEC Mode set */
+                        for ( int i = 0; i <= DCEvar; i++ ) {
+                            switch ( DCEvars[i] ) {
+                                case 1: /* Application cursor keys */
+                                    KeyUp[0] = "\u001bOA";
+                                    KeyDown[0] = "\u001bOB";
+                                    KeyRight[0] = "\u001bOC";
+                                    KeyLeft[0] = "\u001bOD";
+                                    break;
+                                case 2: /* DECANM */
+                                    vt52mode = false;
+                                    break;
+                                case 3: /* 132 columns */
+                                    setScreenSize( 132, height );
+                                    break;
+                                case 6: /* DECOM: move inside margins. */
+                                    moveoutsidemargins = false;
+                                    break;
+                                case 7: /* DECAWM: Autowrap Mode */
+                                    wraparound = true;
+                                    break;
+                                case 25: /* turn cursor on */
+                                    showCursor( true );
+                                    redraw();
+                                    break;
+                                case 9: /* X10 mouse */
+                                case 1000: /* xterm style mouse report on */
+                                case 1001:
+                                case 1002:
+                                case 1003:
+                                    mouserpt = DCEvars[i];
+                                    break;
+
+                                /* unimplemented stuff, fall through */
+                                /* 4 - scrolling mode, smooth */
+                                /* 5 - light background */
+                                /* 12 - local echo off */
+                                /* 18 - DECPFF - Printer Form Feed Mode -> On */
+                                /* 19 - DECPEX - Printer Extent Mode -> Screen */
+                                default:
+                                    break;
+                            }
+                        }
+                        break;
+                    case 'i': // DEC Printer Control, autoprint, echo
+                              // screenchars to
+                        // printer
+                        // This is different to CSI i!
+                        // Also: "Autoprint prints a final display line only
+                        // when the
+                        // cursor is moved off the line by an autowrap or LF,
+                        // FF, or
+                        // VT (otherwise do not print the line)."
+                        switch ( DCEvars[0] ) {
+                            case 1:
+                                break;
+                            case 4:
+                                break;
+                            case 5:
+                                break;
+                        }
+                        break;
+                    case 'l': //DECRST
+                        /* DEC Mode reset */
+                        for ( int i = 0; i <= DCEvar; i++ ) {
+                            switch ( DCEvars[i] ) {
+                                case 1: /* Application cursor keys */
+                                    KeyUp[0] = "\u001b[A";
+                                    KeyDown[0] = "\u001b[B";
+                                    KeyRight[0] = "\u001b[C";
+                                    KeyLeft[0] = "\u001b[D";
+                                    break;
+                                case 2: /* DECANM */
+                                    vt52mode = true;
+                                    break;
+                                case 3: /* 80 columns */
+                                    setScreenSize( 80, height );
+                                    break;
+                                case 6: /* DECOM: move outside margins. */
+                                    moveoutsidemargins = true;
+                                    break;
+                                case 7: /* DECAWM: Autowrap Mode OFF */
+                                    wraparound = false;
+                                    break;
+                                case 25: /* turn cursor off */
+                                    showCursor( false );
+                                    redraw();
+                                    break;
+                                /* Unimplemented stuff: */
+                                /* 4 - scrolling mode, jump */
+                                /* 5 - dark background */
+                                /* 7 - DECAWM - no wrap around mode */
+                                /* 12 - local echo on */
+                                /* 18 - DECPFF - Printer Form Feed Mode -> Off */
+                                /*
+                                 * 19 - DECPEX - Printer Extent Mode ->
+                                 * Scrolling Region
+                                 */
+                                case 9: /* X10 mouse */
+                                case 1000: /* xterm style mouse report OFF */
+                                case 1001:
+                                case 1002:
+                                case 1003:
+                                    mouserpt = 0;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        break;
+                    case 'n':
+                        switch ( DCEvars[0] ) {
+                            case 15:
+                                /* printer? no printer. */
+                                write( ( (char) ESC ) + "[?13n", false );
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case TSTATE_CSI_EX:
+                term_state = TSTATE_DATA;
+                switch ( c ) {
+                    case ESC:
+                        term_state = TSTATE_ESC;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case TSTATE_CSI_TICKS:
+                term_state = TSTATE_DATA;
+                switch ( c ) {
+                    case 'p':
+                        if ( DCEvars[0] == 61 ) {
+                            output8bit = false;
+                            break;
+                        }
+                        if ( DCEvars[1] == 1 ) {
+                            output8bit = false;
+                        }
+                        else {
+                            output8bit = true; /* 0 or 2 */
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case TSTATE_CSI_DOLLAR:
+                term_state = TSTATE_DATA;
+                switch ( c ) {
+                    case '}':
+                        statusmode = DCEvars[0];
+                        break;
+                    case '~':
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case TSTATE_CSI:
+                term_state = TSTATE_DATA;
+                switch ( c ) {
+                    case '"':
+                        term_state = TSTATE_CSI_TICKS;
+                        break;
+                    case '$':
+                        term_state = TSTATE_CSI_DOLLAR;
+                        break;
+                    case '!':
+                        term_state = TSTATE_CSI_EX;
+                        break;
+                    case '?':
+                        DCEvar = 0;
+                        DCEvars[0] = 0;
+                        term_state = TSTATE_DCEQ;
+                        break;
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        DCEvars[DCEvar] = DCEvars[DCEvar] * 10 + ( (int) c )
+                                - 48;
+                        term_state = TSTATE_CSI;
+                        break;
+                    case ';':
+                        DCEvar++;
+                        DCEvars[DCEvar] = 0;
+                        term_state = TSTATE_CSI;
+                        break;
+                    case 'c':/* send primary device attributes */
+                        /* send (ESC[?61c) */
+
+                        String subcode = "";
+                        if ( terminalID.equals( "vt320" ) )
+                            subcode = "63;";
+                        if ( terminalID.equals( "vt220" ) )
+                            subcode = "62;";
+                        if ( terminalID.equals( "vt100" ) )
+                            subcode = "61;";
+                        write( ( (char) ESC ) + "[?" + subcode + "1;2c", false );
+                        break;
+                    case 'q':
+                        break;
+                    case 'g':
+                        /* used for tabsets */
+                        switch ( DCEvars[0] ) {
+                            case 3:/* clear them */
+                                Tabs = new byte[width];
+                                break;
+                            case 0:
+                                Tabs[C] = 0;
+                                break;
+                        }
+                        break;
+                    case 'h':
+                        switch ( DCEvars[0] ) {
+                            case 4:
+                                insertmode = 1;
+                                break;
+                            case 20:
+                                sendcrlf = true;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 'i': // Printer Controller mode.
+                        // "Transparent printing sends all output, except the
+                        // CSI 4 i
+                        //  termination string, to the printer and not the
+                        // screen,
+                        //  uses an 8-bit channel if no parity so NUL and DEL
+                        // will be
+                        //  seen by the printer and by the termination recognizer
+                        // code,
+                        //  and all translation and character set selections are
+                        //  bypassed."
+                        switch ( DCEvars[0] ) {
+                            case 0:
+                                break;
+                            case 4:
+                                break;
+                            case 5:
+                                break;
+                            default:
+                        }
+                        break;
+                    case 'l':
+                        switch ( DCEvars[0] ) {
+                            case 4:
+                                insertmode = 0;
+                                break;
+                            case 20:
+                                sendcrlf = false;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 'A': // CUU
+                    {
+                        int limit;
+                        /* FIXME: xterm only cares about 0 and topmargin */
+                        if ( R > bm )
+                            limit = bm + 1;
+                        else if ( R >= tm ) {
+                            limit = tm;
+                        }
+                        else
+                            limit = 0;
+                        if ( DCEvars[0] == 0 )
+                            R--;
+                        else
+                            R -= DCEvars[0];
+                        if ( R < limit )
+                            R = limit;
+                        break;
+                    }
+                    case 'B': // CUD
+                    /* cursor down n (1) times */
+                    {
+                        int limit;
+                        if ( R < tm )
+                            limit = tm - 1;
+                        else if ( R <= bm ) {
+                            limit = bm;
+                        }
+                        else
+                            limit = rows - 1;
+                        if ( DCEvars[0] == 0 )
+                            R++;
+                        else
+                            R += DCEvars[0];
+                        if ( R > limit )
+                            R = limit;
+                        break;
+                    }
+                    case 'C':
+                        if ( DCEvars[0] == 0 )
+                            C++;
+                        else
+                            C += DCEvars[0];
+                        if ( C > columns - 1 )
+                            C = columns - 1;
+                        break;
+                    case 'd': // CVA
+                        R = DCEvars[0];
+                        break;
+                    case 'D':
+                        if ( DCEvars[0] == 0 )
+                            C--;
+                        else
+                            C -= DCEvars[0];
+                        if ( C < 0 )
+                            C = 0;
+                        break;
+                    case 'r': // DECSTBM
+                        if ( DCEvar > 0 ) //  Ray: Any argument is optional
+                        {
+                            R = DCEvars[1] - 1;
+                            if ( R < 0 )
+                                R = rows - 1;
+                            else if ( R >= rows ) {
+                                R = rows - 1;
+                            }
+                        }
+                        else
+                            R = rows - 1;
+                        setBottomMargin( R );
+                        if ( R >= DCEvars[0] ) {
+                            R = DCEvars[0] - 1;
+                            if ( R < 0 )
+                                R = 0;
+                        }
+                        setTopMargin( R );
+                        _SetCursor( 0, 0 );
+                        break;
+                    case 'G': /* CUP / cursor absolute column */
+                        C = DCEvars[0];
+                        break;
+                    case 'H': /* CUP / cursor position */
+                        /* gets 2 arguments */
+                        _SetCursor( DCEvars[0] - 1, DCEvars[1] - 1 );
+                        break;
+                    case 'f': /* move cursor 2 */
+                        /* gets 2 arguments */
+                        R = DCEvars[0] - 1;
+                        C = DCEvars[1] - 1;
+                        if ( C < 0 )
+                            C = 0;
+                        if ( R < 0 )
+                            R = 0;
+                        break;
+                    case 'S': /* ind aka 'scroll forward' */
+                        if ( DCEvars[0] == 0 )
+                            insertLine( rows - 1, SCROLL_UP );
+                        else
+                            insertLine( rows - 1, DCEvars[0], SCROLL_UP );
+                        break;
+                    case 'L':
+                        /* insert n lines */
+                        if ( DCEvars[0] == 0 )
+                            insertLine( R, SCROLL_DOWN );
+                        else
+                            insertLine( R, DCEvars[0], SCROLL_DOWN );
+                        break;
+                    case 'T': /* 'ri' aka scroll backward */
+                        if ( DCEvars[0] == 0 )
+                            insertLine( 0, SCROLL_DOWN );
+                        else
+                            insertLine( 0, DCEvars[0], SCROLL_DOWN );
+                        break;
+                    case 'M':
+                        if ( DCEvars[0] == 0 )
+                            deleteLine( R );
+                        else
+                            for ( int i = 0; i < DCEvars[0]; i++ )
+                                deleteLine( R );
+                        break;
+                    case 'K':
+                        /* clear in line */
+                        switch ( DCEvars[0] ) {
+                            case 6: /*
+                                     * 97801 uses ESC[6K for delete to end of
+                                     * line
+                                     */
+                            case 0:/* clear to right */
+                                if ( C < columns - 1 )
+                                    deleteArea( C, R, columns - C, 1,
+                                            attributes );
+                                break;
+                            case 1:/* clear to the left, including this */
+                                if ( C > 0 )
+                                    deleteArea( 0, R, C + 1, 1, attributes );
+                                break;
+                            case 2:/* clear whole line */
+                                deleteArea( 0, R, columns, 1, attributes );
+                                break;
+                        }
+                        break;
+                    case 'J':
+                        /* clear below current line */
+                        switch ( DCEvars[0] ) {
+                            case 0:
+                                if ( R < rows - 1 )
+                                    deleteArea( 0, R + 1, columns,
+                                            rows - R - 1, attributes );
+                                if ( C < columns - 1 )
+                                    deleteArea( C, R, columns - C, 1,
+                                            attributes );
+                                break;
+                            case 1:
+                                if ( R > 0 )
+                                    deleteArea( 0, 0, columns, R, attributes );
+                                if ( C > 0 )
+                                    deleteArea( 0, R, C + 1, 1, attributes );// include
+                                                                             // up
+                                // to
+                                // and including
+                                // current
+                                break;
+                            case 2:
+                                deleteArea( 0, 0, columns, rows, attributes );
+                                break;
+                        }
+                        break;
+                    case '@':
+                        for ( int i = 0; i < DCEvars[0]; i++ )
+                            insertChar( C, R, ' ', attributes );
+                        break;
+                    case 'X': {
+                        int toerase = DCEvars[0];
+                        if ( toerase == 0 )
+                            toerase = 1;
+                        if ( toerase + C > columns )
+                            toerase = columns - C;
+                        deleteArea( C, R, toerase, 1, attributes );
+                        // does not change cursor position
+                        break;
+                    }
+                    case 'P':
+                        if ( DCEvars[0] == 0 )
+                            DCEvars[0] = 1;
+                        for ( int i = 0; i < DCEvars[0]; i++ )
+                            deleteChar( C, R );
+                        break;
+                    case 'n':
+                        switch ( DCEvars[0] ) {
+                            case 5: /* malfunction? No malfunction. */
+                                writeSpecial( ( (char) ESC ) + "[0n" );
+                                break;
+                            case 6:
+                                // DO NOT offset R and C by 1! (checked against
+                                // /usr/X11R6/bin/resize
+                                // FIXME check again.
+                                // FIXME: but vttest thinks different???
+                                writeSpecial( ( (char) ESC ) + "[" + R + ";"
+                                        + C + "R" );
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 's': /* DECSC - save cursor */
+                        Sc = C;
+                        Sr = R;
+                        Sa = attributes;
+                        break;
+                    case 'u': /* DECRC - restore cursor */
+                        C = Sc;
+                        R = Sr;
+                        attributes = Sa;
+                        break;
+                    case 'm': /* attributes as color, bold , blink, */
+                        if ( DCEvar == 0 && DCEvars[0] == 0 )
+                            attributes = 0;
+                        for ( int i = 0; i <= DCEvar; i++ ) {
+                            switch ( DCEvars[i] ) {
+                                case 0:
+                                    if ( DCEvar > 0 ) {
+                                        if ( terminalID.equals( "scoansi" ) ) {
+                                            attributes &= COLOR; /*
+                                                                  * Keeps color.
+                                                                  * Strange but
+                                                                  * true.
+                                                                  */
+                                        }
+                                        else {
+                                            attributes = 0;
+                                        }
+                                    }
+                                    break;
+                                case 1:
+                                    attributes |= BOLD;
+                                    attributes &= ~LOW;
+                                    break;
+                                case 2:
+                                    /* SCO color hack mode */
+                                    if ( terminalID.equals( "scoansi" )
+                                            && ( ( DCEvar - i ) >= 2 ) ) {
+                                        int ncolor;
+                                        attributes &= ~( COLOR | BOLD );
+
+                                        ncolor = DCEvars[i + 1];
+                                        if ( ( ncolor & 8 ) == 8 )
+                                            attributes |= BOLD;
+                                        ncolor = ( ( ncolor & 1 ) << 2 )
+                                                | ( ncolor & 2 )
+                                                | ( ( ncolor & 4 ) >> 2 );
+                                        attributes |= ( ( ncolor ) + 1 ) << 4;
+                                        ncolor = DCEvars[i + 2];
+                                        ncolor = ( ( ncolor & 1 ) << 2 )
+                                                | ( ncolor & 2 )
+                                                | ( ( ncolor & 4 ) >> 2 );
+                                        attributes |= ( ( ncolor ) + 1 ) << 8;
+                                        i += 2;
+                                    }
+                                    else {
+                                        attributes |= LOW;
+                                    }
+                                    break;
+                                case 4:
+                                    attributes |= UNDERLINE;
+                                    break;
+                                case 7:
+                                    attributes |= INVERT;
+                                    break;
+                                case 5: /* blink on */
+                                    break;
+                                /*
+                                 * 10 - ANSI X3.64-1979, select primary font,
+                                 * don't display control chars, don't set bit 8
+                                 * on output
+                                 */
+                                case 10:
+                                    gl = 0;
+                                    usedcharsets = true;
+                                    break;
+                                /*
+                                 * 11 - ANSI X3.64-1979, select second alt.
+                                 * font, display control chars, set bit 8 on
+                                 * output
+                                 */
+                                case 11: /* SMACS , as */
+                                case 12:
+                                    gl = 1;
+                                    usedcharsets = true;
+                                    break;
+                                case 21: /* normal intensity */
+                                    attributes &= ~( LOW | BOLD );
+                                    break;
+                                case 25: /* blinking off */
+                                    break;
+                                case 27:
+                                    attributes &= ~INVERT;
+                                    break;
+                                case 24:
+                                    attributes &= ~UNDERLINE;
+                                    break;
+                                case 22:
+                                    attributes &= ~BOLD;
+                                    break;
+                                case 30:
+                                case 31:
+                                case 32:
+                                case 33:
+                                case 34:
+                                case 35:
+                                case 36:
+                                case 37:
+                                    attributes &= ~COLOR_FG;
+                                    attributes |= ( ( DCEvars[i] - 30 ) + 1 ) << 4;
+                                    break;
+                                case 39:
+                                    attributes &= ~COLOR_FG;
+                                    break;
+                                case 40:
+                                case 41:
+                                case 42:
+                                case 43:
+                                case 44:
+                                case 45:
+                                case 46:
+                                case 47:
+                                    attributes &= ~COLOR_BG;
+                                    attributes |= ( ( DCEvars[i] - 40 ) + 1 ) << 8;
+                                    break;
+                                case 49:
+                                    attributes &= ~COLOR_BG;
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 break;
             default:
+                term_state = TSTATE_DATA;
                 break;
-            }
-            break;
-        default:
-            term_state = TSTATE_DATA;
-            break;
         }
         if ( C > columns )
             C = columns;

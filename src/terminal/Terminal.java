@@ -106,8 +106,6 @@ public class Terminal extends Canvas {
 		rows = height / font.height;
 		backingStore = Image.createImage( width, height );
 		
-		System.out.println( "ROWS " + rows + " COLS " + cols );
-
 		buffer.setScreenSize( cols, rows );
 
 		top = 0;

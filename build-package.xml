@@ -47,7 +47,8 @@
                 jarfile="${dist.dir}/${jar.file}"
                 name="${name}"
                 vendor="XK72"
-                version="${version}">
+                version="${version}"
+				target="http://www.xk72.com/midpssh">
 
             <midlet name="${name}" class="app.Main"/>
         </wtkjad>

@@ -82,6 +82,7 @@ public class SessionForm extends EditableForm {
 
 		append( tfAlias );
 		append( tfHost );
+		append( new StringItem( null, "To specify an alternative port append a colon and the port number to the host name." ) );
 		append( cgType );
 //#ifndef notelnet
 		append( new StringItem( "Authentication:\n", "For SSH connections only." ) );

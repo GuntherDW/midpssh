@@ -57,6 +57,10 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private static int commandPriority = 1;
 
+	// Have this separate back command as a Command.ITEM so that it will show first in the menu on
+	// the phone, so that you know you're in typing mode
+	private static final Command backMainCommand = new Command( "Back", Command.ITEM, commandPriority++ );
+	
 	private static final Command textInputCommand = new Command( "Input", Command.ITEM, commandPriority++ );
 
 	private static final Command typeCommand = new Command( "Type", Command.ITEM, commandPriority++ );
@@ -123,6 +127,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	};
 
 	private static final Command[] commandsTyping = new Command[] {
+	    backMainCommand,
 		backCommand,
         textInputCommand,
 		macrosCommand, 
@@ -306,7 +311,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		    }
 		    menuSpecialKeys.activate( this );
 		}
-		else if ( command == backCommand ) {
+		else if ( command == backCommand  || command == backMainCommand ) {
 			changeMode( MODE_CONNECTED );
 		}
 		else if ( command == showBindingsCommand ) {

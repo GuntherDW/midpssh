@@ -32,7 +32,7 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
         "Cursor", "Scroll",
 //#endif
 //#ifndef small        
-        "BACKSPACE",
+        "BACKSPACE", "Page Up", "Page Down",
         "Function Keys", 
         "|", "\\", "~", ":", ";", "'", "\"",
         ",", "<", ".", ">", "/", "?",
@@ -100,7 +100,13 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
 			            case 2:
 			                keyCode = KeyEvent.VK_BACK_SPACE;
 			                break;
-			            case 3:
+                        case 3:
+                            keyCode = KeyEvent.VK_PAGE_UP;
+                            break;
+                        case 4:
+                            keyCode = KeyEvent.VK_PAGE_DOWN;
+                            break;
+			            case 5:
 			                if ( menuFunctionKeys == null ) {
 					            menuFunctionKeys = new SpecialMenu( "Function Keys", FUNCTION_KEY_OPTIONS );
 					        }

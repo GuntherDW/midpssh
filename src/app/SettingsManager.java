@@ -41,8 +41,11 @@ public class SettingsManager extends MyRecordStore {
 	public static Settings getSettings() {
 		if ( settings == null ) {
 			Vector v = me.load( RMS_NAME, false );
-			if ( !v.isEmpty() ) {
+			if ( v != null && !v.isEmpty() ) {
 			    settings = (Settings) v.elementAt( 0 );
+			}
+			else {
+			    settings = new Settings();
 			}
 		}
 		return settings;

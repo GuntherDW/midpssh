@@ -136,8 +136,12 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		setCommandListener( this );
 		
 		// Settings
-		Settings settings = SettingsManager.getSettings();
-		
+		Settings settings;
+//#ifndef nosettings
+		settings = SettingsManager.getSettings();
+//#else
+		settings = new Settings();
+//#endif
 		if ( Main.useColors ) {
 			bgcolor = settings.bgcolor;
 			fgcolor = settings.fgcolor;

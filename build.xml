@@ -87,17 +87,16 @@
 	
 	<target name="obfuscatesmall" depends="package">
 		<!-- Obfuscate -->
-		    	
-		    	<wtkobfuscate jarfile="${jar.file}"
-		        			  jadfile="${jad.file}"
-		    				  obfuscator="proguard"
-		    				  classpath="lib/proguard.jar">
-		    		<argument value="-keep class ssh.Blowfish" />
-		    		<argument value="-defaultpackage" />
-		    		<argument value="-allowaccessmodification" />
-		    		<argument value="-overloadaggressively" />
-		    		<argument value="-verbose" />
-				</wtkobfuscate>
+    	<wtkobfuscate jarfile="${jar.file}"
+        			  jadfile="${jad.file}"
+    				  obfuscator="proguard"
+    				  classpath="lib/proguard.jar">
+    		<argument value="-keep class ssh.Blowfish" />
+    		<argument value="-defaultpackage" />
+    		<argument value="-allowaccessmodification" />
+    		<argument value="-overloadaggressively" />
+    		<argument value="-verbose" />
+		</wtkobfuscate>
 	</target>
 		
 	<target name="preverify">

@@ -45,11 +45,13 @@ public class ModifierInputDialog extends TextBox implements Activatable, Command
 
 	private Activatable back;
 
-	public int modifier;
+	private int modifier;
 
-	public ModifierInputDialog() {
-		super( "Control Keys", "", 10, TextField.ANY );
+	public ModifierInputDialog( String title, int modifier ) {
+		super( title, "", 10, TextField.ANY );
 
+		this.modifier = modifier;
+		
 		addCommand( enterCommand );
 		addCommand( backCommand );
 

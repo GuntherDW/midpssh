@@ -108,7 +108,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private static MacroSetsMenu macrosMenu;
 
-	private ModifierInputDialog modifierInputDialog;
+	private ModifierInputDialog controlKeyDialog, altKeyDialog;
 
 	private Command[] currentCommands;
 
@@ -203,10 +203,10 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			buffer.keyTyped( 0, '\b', 0 );
 		}
 		else if ( command == ctrlCommand ) {
-			doModifierInput( vt320.KEY_CONTROL );
+			doControlKeyInput();
 		}
 		else if ( command == altCommand ) {
-			doModifierInput( vt320.KEY_ALT );
+			doAltKeyInput();
 		}
 		else if ( command == cursorCommand ) {
 			doCursor();
@@ -335,12 +335,18 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		macrosMenu.activate( this );
 	}
 
-	private void doModifierInput( int modifier ) {
-		if ( modifierInputDialog == null ) {
-			modifierInputDialog = new ModifierInputDialog();
+	private void doControlKeyInput() {
+		if ( controlKeyDialog == null ) {
+			controlKeyDialog = new ModifierInputDialog( "Control Keys", vt320.KEY_CONTROL );
 		}
-		modifierInputDialog.modifier = modifier;
-		modifierInputDialog.activate( this );
+		controlKeyDialog.activate( this );
+	}
+
+	private void doAltKeyInput() {
+		if ( altKeyDialog == null ) {
+			altKeyDialog = new ModifierInputDialog( "Alt Keys", vt320.KEY_ALT );
+		}
+		altKeyDialog.activate( this );
 	}
 
 	private void doCursor() {

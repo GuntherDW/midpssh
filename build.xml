@@ -57,6 +57,12 @@
 			<param name="mode" value="ssh2"/>
 			<param name="noobfuscate" value="true"/>
 		</antcall>
+		
+		<antcall target="blackberry" />
+	</target>
+	
+	<target name="build">
+		<ant antfile="build-package.xml" />
 	</target>
 	
 	<target name="run-debug">
@@ -97,141 +103,25 @@
 		</antcall>
 	</target>
 
-	<target name="init" depends="init-midp1,init-midp2,init-mode">
+	<target name="clean">
 		<property file="build.properties"/>
-		<mkdir dir="${dist.dir}"/>
-		<property name="jar.file" value="${filename}.jar"/>
-		<property name="jad.file" value="${filename}.jad"/>
-	</target>
-	
-	<target name="init-mode" if="mode">
-		<property file="build-${mode}.properties"/>
-	</target>
-	
-	<target name="init-midp1" if="midp1">
-		<property name="wtk.midp.version" value="1.0"/>
-		<property name="preprocess.symbols.midp" value="midp1"/>
-	</target>
-	
-	<target name="init-midp2" if="midp2">
-		<property name="wtk.midp.version" value="2.0"/>
-		<property name="preprocess.symbols.midp" value="midp2"/>
-	</target>
-	
-	<target name="build" depends="init,package,obfuscate,preverify,build-run">
-	</target>
-	
-	<target name="build-run" if="run">
-		<wtkrun jadfile="${dist.dir}/${jad.file}" device="${deviceName}" wait="true"/>
-	</target>
-		
-    <target name="jad">
-        <wtkjad jadfile="${dist.dir}/${jad.file}"
-                jarfile="${dist.dir}/${jar.file}"
-                name="${name}"
-                vendor="XK72"
-                version="${version}">
-
-            <midlet name="${name}" class="app.Main"/>
-        </wtkjad>
-    </target>
-
-	<target name="clean" depends="init">
 		<delete dir="${build.dir}"/>
 		<delete dir="output"/>
 		<delete dir="${dist.dir}"/>
 	</target>
 	
-	<target name="preprocess">
-		<mkdir dir="${build.dir}/src-proc/${filename}"/>
+	<target name="run-blackberry" depends="blackberry">
+		<property file="build.properties"/>
 		
-		<wtkpreprocess srcdir="src"
-					   destdir="${build.dir}/src-proc/${filename}"
-					   symbols="${preprocess.symbols},${preprocess.symbols.global},${preprocess.symbols.midp},${preprocess.symbols.extra}"
-					   verbose="false" />
-	</target>
-    	
-   	<target name="compile" depends="jad,preprocess">
-        <mkdir dir="${build.dir}/bin/${filename}"/>
-
-        <!-- Compile everything, but don't preverify (yet). -->
-
-        <wtkbuild srcdir="${build.dir}/src-proc/${filename}"
-                  destdir="${build.dir}/bin/${filename}"
-        		  debug="false"
-        	      optimize="true"
-                  preverify="false"/>
-
-        <!-- Package everything. Most of the necessary information is
-             contained in the JAD file. Also preverify the result this
-             time. To obfuscate everything, set the corresponding
-             parameter to "true" (requires RetroGuard or ProGuard). The
-             version parameter increments the MIDlet-Version by one. -->
-	</target>
-   		
-	<target name="package" depends="compile">
-        <wtkpackage jarfile="${dist.dir}/${jar.file}"
-                    jadfile="${dist.dir}/${jad.file}"
-                    obfuscate="false"
-                    preverify="false">
-
-            <!-- Package our newly compiled classes. -->
-
-            <fileset dir="${build.dir}/bin/${filename}"/>
-        	<fileset dir="res"/>
-        </wtkpackage>
-    </target>
-	
-	<target name="obfuscate" depends="obfuscate-normal,obfuscate-blackberry,obfuscate-lite" unless="noobfuscate" />
+		<copy todir="${bb.simulator}">
+			<fileset dir="${dist.dir}">
+				<include name="*.cod"/>
+			</fileset>
+		</copy>
 		
-	<target name="obfuscate-normal" if="obfuscate-normal" unless="noobfuscate">
-    	<!-- Obfuscate -->
-    	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
-        			  jadfile="${dist.dir}/${jad.file}"
-    				  obfuscator="proguard"
-    				  classpath="lib/proguard.jar">
-    		<argument value="-keep class ssh.v1.Blowfish" />
-    		<argument value="-keep class ssh.v1.DES" />
-    		<argument value="-keep class ssh.v1.DES3" />
-    		<argument value="-keep class ssh.v1.IDEA" />
-			<argument value="-keep class ssh.v1.MD5" />
-			<argument value="-keep class ssh.v1.MPN" />
-			<argument value="-keep class ssh.v1.NONE" />
-    		<argument value="-defaultpackage" />
-		</wtkobfuscate>
-    </target>
-	
-	<target name="obfuscate-blackberry" if="obfuscate-blackberry" unless="noobfuscate">
-		<!-- Obfuscate -->
-    	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
-        			  jadfile="${dist.dir}/${jad.file}"
-    				  obfuscator="proguard"
-    				  classpath="lib/proguard.jar">
-    		<argument value="-keep class ssh.v1.DES3" />
-    		<!--<argument value="-dontobfuscate"/>-->
-    		<!--<argument value="-defaultpackage" />-->
-		</wtkobfuscate>
-	</target>
-	
-	<target name="obfuscate-lite" if="obfuscate-lite" unless="noobfuscate">
-		<!-- Obfuscate -->
-    	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
-        			  jadfile="${dist.dir}/${jad.file}"
-    				  obfuscator="proguard"
-    				  classpath="lib/proguard.jar">
-    		<argument value="-keep class ssh.v1.DES3" />
-    		<argument value="-defaultpackage" />
-    		<argument value="-allowaccessmodification" />
-    		<argument value="-overloadaggressively" />
-		</wtkobfuscate>
+		<exec executable="${bb.simulator.run}" dir="${bb.simulator}" />
 	</target>
 		
-	<target name="preverify">
-        <!-- Preverify. -->
-        <wtkpreverify jarfile="${dist.dir}/${jar.file}"
-                      jadfile="${dist.dir}/${jad.file}"/>
-    </target>
-	
 	<target name="blackberry">
 		<!--
 		<antcall target="build-blackberry">
@@ -242,14 +132,14 @@
 		</antcall>
 		-->
 		<antcall target="build-blackberry">
-			<param name="filename" value="midpsshbb"/>
+			<param name="filename" value="midpssh-bb"/>
 			<param name="midp1" value="true"/>
 			<param name="mode" value="blackberry"/>
-			<param name="noobfuscate" value="true"/>
-			<param name="bb.codename" value="midpsshb"/>
+			<!--<param name="noobfuscate" value="true"/>-->
+			<param name="bb.codename" value="midpssh"/>
 		</antcall>
 	</target>
-	
+	<!--
 	<target name="blackberry-source">
 		<copy todir="blackberry" overwrite="true">
 			<fileset dir="build/src-proc/midpsshbb">
@@ -257,41 +147,10 @@
 			</fileset>
 		</copy>
 	</target>
+	-->
 	
-	<target name="build-blackberry" depends="build">
-		<!-- Work around for broken wtkrapc -->
-		<!--<touch file="${bb.codename}.alx"/>-->
-			
-		<exec executable="${bb.home}/bin/rapc.exe">
-			<arg value="import=${bb.lib.home}/net_rim_api.jar" />
-			<arg value="codename=${bb.codename}" />
-			<arg value="-midlet" />
-			<arg value="jad=${dist.dir}/${jad.file}"/>
-			<arg value="${dist.dir}/${jar.file}"/>
-		</exec>
-		<move todir="${dist.dir}">
-			<fileset dir=".">
-				<include name="${bb.codename}.cod" />
-			</fileset>
-		</move>
-		<delete>
-			<fileset dir=".">
-				<include name="${bb.codename}.cso"/>
-				<include name="${bb.codename}.debug"/>
-				<include name="${bb.codename}-*.debug"/>
-			</fileset>
-		</delete>
-		<!--
-		<wtkrapc jadfile="${dist.dir}/${jad.file}" source="${dist.dir}/${jar.file}"
-			import="${bb.lib.home}/net_rim_api.jar"
-			codename="${bb.codename}" destdir="${dist.dir}" quiet="false" midlet="false"/>
-		<delete>
-			<fileset dir=".">
-				<include name="${bb.codename}*"/>
-			</fileset>
-		</delete>
-		<delete file="${dist.dir}/${bb.codename}.alx"/>
-		-->
+	<target name="build-blackberry">
+		<ant antfile="build-blackberry.xml"/>
 	</target>
 		
 	<target name="deploy">
@@ -301,7 +160,8 @@
 		</exec>
 	</target>
 	
-	<target name="source" depends="init">
+	<target name="source">
+		<property file="build.properties"/>
 		<zip zipfile="${dist.dir}/${zip.file}">
 			<fileset dir=".">
 				<include name="src/**"/>

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<project name="MidpSSH-blackberry" basedir="." default="all">
+
+	<target name="all" depends="init,blackberry-uptodate">
+		<antcall target="build-blackberry"/>
+	</target>
+
+	<target name="init">
+		<property file="build.properties"/>
+		<property name="jar.file" value="${filename}.jar"/>
+		<property name="jad.file" value="${filename}.jad"/>
+		<property name="cod.file" value="${bb.codename}.cod"/>
+	</target>
+
+	<target name="build-blackberry" unless="build.uptodate" depends="build">
+		<exec executable="${bb.home}/bin/rapc.exe">
+			<arg value="import=${bb.lib.home}/net_rim_api.jar" />
+			<arg value="codename=${bb.codename}" />
+			<arg value="-midlet" />
+			<arg value="jad=${dist.dir}/${jad.file}"/>
+			<arg value="${dist.dir}/${jar.file}"/>
+		</exec>
+		<move todir="${dist.dir}">
+			<fileset dir=".">
+				<include name="${cod.file}" />
+			</fileset>
+		</move>
+		<delete>
+			<fileset dir=".">
+				<include name="${bb.codename}.cso"/>
+				<include name="${bb.codename}.debug"/>
+				<include name="${bb.codename}-*.debug"/>
+			</fileset>
+		</delete>
+	</target>
+	
+	<target name="blackberry-uptodate">
+		<uptodate property="build.uptodate" targetfile="${dist.dir}/${cod.file}">
+			<srcfiles dir="src" includes="**/*.java"/>
+		</uptodate>
+	</target>
+
+	<target name="build">
+		<ant antfile="build-package.xml" />
+	</target>
+
+</project>

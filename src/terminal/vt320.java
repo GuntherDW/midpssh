@@ -187,6 +187,10 @@ public abstract class vt320 extends VDUBuffer {
 		this( 80, 24 );
 	}
 
+	private int writeBufferIndex = 0;
+	
+	private byte [] writeBuffer = new byte[128];
+	
 	/**
 	 * Write an answer back to the remote host. This is needed to be able to
 	 * send terminal answers requests like status and type information.
@@ -195,12 +199,35 @@ public abstract class vt320 extends VDUBuffer {
 	 *            the array of bytes to be sent
 	 */
 	protected void write( byte[] b, int offset, int length ) {
-		try {
-			sendData( b, offset, length );
+	    if ( writeBufferIndex + length > writeBuffer.length ) {
+	        if ( writeBufferIndex > 0 ) {
+	            // First write out what we have and then try to add this to the buffer
+	            flush();
+	            write( b, offset, length );
+	        }
+	        else {
+	            // Buffer is too small so write out in parts
+	            System.arraycopy( b, offset, writeBuffer, 0, writeBuffer.length );
+	            writeBufferIndex = writeBuffer.length;
+	            flush();
+	            
+	            write( b, offset + writeBuffer.length, length - writeBuffer.length );
+	        }
+	    }
+	    else {
+	        System.arraycopy( b, offset, writeBuffer, writeBufferIndex, length );
+	        writeBufferIndex += length;
+	    }
+	}
+	
+	protected void flush() {
+	    try {
+			sendData( writeBuffer, 0, writeBufferIndex );
 		}
 		catch ( java.io.IOException e ) {
 			System.err.println( e );
 		}
+		writeBufferIndex = 0;
 	}
 
 	public abstract void sendData( byte[] b, int offset, int length ) throws IOException;
@@ -273,6 +300,7 @@ public abstract class vt320 extends VDUBuffer {
 		b[5] = (byte) ( 0x20 + y + 1 );
 
 		write( b, 0, b.length ); // FIXME: writeSpecial here
+		flush();
 	}
 
 	/**
@@ -307,6 +335,7 @@ public abstract class vt320 extends VDUBuffer {
 		b[4] = (byte) ( 0x20 + x + 1 );
 		b[5] = (byte) ( 0x20 + y + 1 );
 		write( b, 0, b.length ); // FIXME: writeSpecial here
+		flush();
 		mousebut = 0;
 	}
 //#endif
@@ -367,7 +396,7 @@ public abstract class vt320 extends VDUBuffer {
 		return terminalID;
 	}
 
-	private byte [] writeBuffer = new byte[10];
+	private byte [] stringConversionBuffer = new byte[10];
 	
 	/**
 	 * A small conveniance method thar converts the string to a byte array for
@@ -387,15 +416,15 @@ public abstract class vt320 extends VDUBuffer {
 		 */
 
 		// Maybe extend writeBuffer
-		if ( writeBuffer.length < s.length() ) {
-			writeBuffer = new byte[ s.length() ];
+		if ( stringConversionBuffer.length < s.length() ) {
+		    stringConversionBuffer = new byte[ s.length() ];
 		}
 		
 		// Fill writeBuffer
 		for ( int i = 0; i < s.length(); i++ ) {
-			writeBuffer[i] = (byte) s.charAt( i );
+		    stringConversionBuffer[i] = (byte) s.charAt( i );
 		}
-		write( writeBuffer, 0, s.length() );
+		write( stringConversionBuffer, 0, s.length() );
 
 		if ( doecho )
 			putString( s );
@@ -844,13 +873,22 @@ public abstract class vt320 extends VDUBuffer {
 				break;
 			case KeyEvent.VK_CAPS_LOCK:
 				capslock = !capslock;
-				return;
+				break;
 			case KeyEvent.VK_SHIFT:
 			case KeyEvent.VK_CONTROL:
 			case KeyEvent.VK_ALT:
-				return;
+				break;
 //#endif
 		}
+		
+		flush();
+	}
+	
+	public void stringTyped( String str ) {
+	    for ( int i = 0; i < str.length(); i++ ) {
+			_keyTyped( 0, str.charAt( i ), 0 );
+		}
+	    flush();
 	}
 
 	/**
@@ -858,7 +896,11 @@ public abstract class vt320 extends VDUBuffer {
 	 * types, but no shift/alt/control/numlock.
 	 */
 	public void keyTyped( int keyCode, char keyChar, int modifiers ) {
-
+	    _keyTyped( keyCode, keyChar, modifiers );
+	    flush();
+	}
+	
+	private void _keyTyped( int keyCode, char keyChar, int modifiers ) {
 		//    System.out.println("KEY TYPED keycode:"+keyCode+"
 		// keychar"+(int)keyChar+" modifiers:"+modifiers );
 
@@ -1471,6 +1513,7 @@ public abstract class vt320 extends VDUBuffer {
 						break;
 					case 5: /* ENQ */
 						write( answerBack, false );
+						flush();
 						break;
 					case 12:
 						/* FormFeed, Home for the BBS world */
@@ -2066,6 +2109,7 @@ public abstract class vt320 extends VDUBuffer {
 							case 15:
 								/* printer? no printer. */
 								write( ( (char) ESC ) + "[?13n", false );
+								flush();
 								break;
 							default:
 								break;
@@ -2162,6 +2206,7 @@ public abstract class vt320 extends VDUBuffer {
 						if ( terminalID.equals( "vt100" ) )
 							subcode = "61;";
 						write( ( (char) ESC ) + "[?" + subcode + "1;2c", false );
+						flush();
 						break;
 					case 'q':
 						break;
@@ -2409,6 +2454,7 @@ public abstract class vt320 extends VDUBuffer {
 						switch ( DCEvars[0] ) {
 							case 5: /* malfunction? No malfunction. */
 								writeSpecial( ( (char) ESC ) + "[0n" );
+								flush();
 								break;
 							case 6:
 								// DO NOT offset R and C by 1! (checked against
@@ -2416,6 +2462,7 @@ public abstract class vt320 extends VDUBuffer {
 								// FIXME check again.
 								// FIXME: but vttest thinks different???
 								writeSpecial( ( (char) ESC ) + "[" + R + ";" + C + "R" );
+								flush();
 								break;
 							default:
 								break;

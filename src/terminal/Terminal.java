@@ -141,17 +141,20 @@ public class Terminal extends Canvas {
 		b /= 10;
 		return b | ( g << 8 ) | ( r << 16 );
 	}
+	
+	private Object paintMutex = new Object();
 
 	protected void paint( Graphics g ) {
-		// Redraw backing store if necessary
-		redrawBackingStore();
-
+		
 		// Erase display
 		g.setColor( bgcolor );
 		g.fillRect( 0, 0, getWidth(), getHeight() );
 
 		// Draw terminal image
-		synchronized ( this ) {
+		synchronized ( paintMutex ) {
+			// Redraw backing store if necessary
+			redrawBackingStore();
+			
 			g.drawImage( backingStore, 0, 1, Graphics.TOP | Graphics.LEFT );
 			// KARL the y coord 1 is because with 0 it sometimes fails to draw
 			// on my SonyEricsson K700i
@@ -160,9 +163,11 @@ public class Terminal extends Canvas {
 
 	private boolean invalid = true;
 
-	public synchronized void redraw() {
-		invalid = true;
-		repaint();
+	public void redraw() {
+	    synchronized ( paintMutex ) {
+	        invalid = true;
+	        repaint();
+	    }
 	}
 
 	/** Required paint implementation */
@@ -171,7 +176,7 @@ public class Terminal extends Canvas {
 	 * getWidth(), getHeight() ); g.drawImage(backingStore, 0, 0, 0); }
 	 */
 
-	protected synchronized void redrawBackingStore() {
+	protected void redrawBackingStore() {
 		// Only redraw if we've been marked as invalid by a call to redraw
 		// The idea is that if multiple calls to redraw occur before the call to
 		// paint then we save

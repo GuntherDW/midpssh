@@ -40,9 +40,9 @@ public abstract class Cipher {
 			c = Class.forName( "ssh.v1." + algorithm );
 			return (Cipher) c.newInstance();
 		}
-		catch ( Throwable t ) {
-			System.err.println( "Cipher: " + algorithm + " " + t );
-			return null;
+		catch ( Exception e ) {
+		    System.err.println( "Cipher: " + algorithm + " " + e );
+		    return null;
 		}
 	}
 

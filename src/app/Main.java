@@ -46,6 +46,7 @@ public class Main extends MIDlet {
 	public Main() {
 		instance = this;
 		useColors = getDisplay().isColor();
+		SettingsManager.init();
 	}
 
 	/** Main method */

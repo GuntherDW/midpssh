@@ -128,7 +128,15 @@
 	
 	<target name="obfuscate" depends="obfuscate-normal,obfuscate-lite,obfuscate-blackberry,obfuscate-blackberry-lite" unless="noobfuscate" />
 		
-	<target name="obfuscate-normal" if="obfuscate-normal" unless="noobfuscate">
+	<target name="obfuscate-init">
+		<copy todir="${wtk.home}/bin">
+			<fileset dir="lib">
+				<include name="proguard.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="obfuscate-normal" depends="obfuscate-init" if="obfuscate-normal" unless="noobfuscate">
     	<!-- Obfuscate -->
     	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
         			  jadfile="${dist.dir}/${jad.file}"
@@ -145,7 +153,7 @@
 		</wtkobfuscate>
     </target>
 	
-	<target name="obfuscate-blackberry" if="obfuscate-blackberry" unless="noobfuscate">
+	<target name="obfuscate-blackberry" depends="obfuscate-init" if="obfuscate-blackberry" unless="noobfuscate">
 		<!-- Obfuscate -->
     	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
         			  jadfile="${dist.dir}/${jad.file}"
@@ -161,7 +169,7 @@
 		</wtkobfuscate>
 	</target>
 	
-	<target name="obfuscate-blackberry-lite" if="obfuscate-blackberry-lite" unless="noobfuscate">
+	<target name="obfuscate-blackberry-lite" depends="obfuscate-init" if="obfuscate-blackberry-lite" unless="noobfuscate">
 		<!-- Obfuscate -->
     	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
         			  jadfile="${dist.dir}/${jad.file}"
@@ -171,7 +179,7 @@
 		</wtkobfuscate>
 	</target>
 	
-	<target name="obfuscate-lite" if="obfuscate-lite" unless="noobfuscate">
+	<target name="obfuscate-lite" depends="obfuscate-init" if="obfuscate-lite" unless="noobfuscate">
 		<!-- Obfuscate -->
     	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
         			  jadfile="${dist.dir}/${jad.file}"

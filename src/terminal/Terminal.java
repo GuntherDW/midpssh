@@ -717,13 +717,6 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         new MessageForm( "Key Bindings", str.toString() ).activate( this );
     }
     
-    /*private void doSettings() {
-        if ( settingsMenu == null ) {
-            settingsMenu = new SessionSettingsMenu();
-        }
-        settingsMenu.activate( this );
-    }*/
-    
     
     
     

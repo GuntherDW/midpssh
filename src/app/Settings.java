@@ -25,44 +25,62 @@ package app;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Vector;
 
 /**
  * @author Karl von Randow
  */
-public class Settings {
+public class Settings extends MyRecordStore {
 	
 	public static final int DEFAULT_BGCOLOR = 0x000000, DEFAULT_FGCOLOR = 0xffffff;
 	
-	public static int bgcolor, fgcolor;
+	public static int bgcolor = DEFAULT_BGCOLOR, fgcolor = DEFAULT_FGCOLOR;
 	
 	public static int terminalCols, terminalRows;
 	
-	public static String terminalType;
+	public static String terminalType = "";
+
+	public static boolean terminalRotated;
+
+	private static final String RMS_NAME = "settings";
+	
+	private static Settings me = new Settings();
+	
+	public static void init() {
+		me.load( RMS_NAME, false );
+	}
 
 	/**
-	 * @param in
+	 * @param settings2
 	 */
-	public static void read( DataInputStream in ) throws IOException {
-		fgcolor = in.readInt();
+	public static void saveSettings() {
+		Vector v = new Vector();
+		v.addElement( null );
+		me.save( RMS_NAME, v );
+	}
+	
+    /* (non-Javadoc)
+     * @see app.MyRecordStore#read(java.io.DataInputStream)
+     */
+    protected Object read(DataInputStream in) throws IOException {
+    	fgcolor = in.readInt();
 		bgcolor = in.readInt();
 		terminalCols = in.readInt();
 		terminalRows = in.readInt();
 		terminalType = in.readUTF();
-	}
-	
-	public static void write( DataOutputStream out ) throws IOException {
-		out.writeInt( fgcolor );
+		terminalRotated = in.readBoolean();
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see app.MyRecordStore#write(java.io.DataOutputStream, java.lang.Object)
+     */
+    protected void write(DataOutputStream out, Object ob) throws IOException {
+    	out.writeInt( fgcolor );
 		out.writeInt( bgcolor );
 		out.writeInt( terminalCols );
 		out.writeInt( terminalRows );
 		out.writeUTF( terminalType );
-	}
-	
-	public static void defaults() {
-		fgcolor = DEFAULT_FGCOLOR;
-		bgcolor = DEFAULT_BGCOLOR;
-		terminalCols = 0;
-		terminalRows = 0;
-		terminalType = "";
-	}
+		out.writeBoolean( terminalRotated );
+    }
 }

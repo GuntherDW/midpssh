@@ -90,39 +90,36 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
 	 *      javax.microedition.lcdui.Displayable)
 	 */
-	public void commandAction( Command command, Displayable displayed ) {
-		if ( command == List.SELECT_COMMAND || command == selectCommand ) {
-			doSelect( getString( getSelectedIndex() ) );
-		}
-		else if ( command == quitCommand ) {
-			doQuit();
-		}
-	}
-
-	private void doSelect( String command ) {
-		if ( command.equals( ITEM_SESSIONS ) ) {
-			doSessions();
-		}
+	public void commandAction( Command com, Displayable displayed ) {
+		if ( com == List.SELECT_COMMAND || com == selectCommand ) {
+			String command = getString( getSelectedIndex() );
+			if ( command.equals( ITEM_SESSIONS ) ) {
+				doSessions();
+			}
 //#ifndef nomacros
-		else if ( command.equals( ITEM_MACROS ) ) {
-			doMacros();
-		}
+			else if ( command.equals( ITEM_MACROS ) ) {
+				doMacros();
+			}
 //#endif
 //#ifndef nosettings			
-		else if ( command.equals( ITEM_SETTINGS ) ) {    
-			doSettings();
-		}
+			else if ( command.equals( ITEM_SETTINGS ) ) {    
+				doSettings();
+			}
 //#endif
 //#ifndef nodocs
-		else if ( command.equals( ITEM_ABOUT ) ) {
-				doAbout();
-		}
-		else if ( command.equals( ITEM_HELP ) ) {
-		    doHelp();
-		}
+			else if ( command.equals( ITEM_ABOUT ) ) {
+					doAbout();
+			}
+			else if ( command.equals( ITEM_HELP ) ) {
+			    doHelp();
+			}
 //#endif
-		else if ( command.equals( ITEM_QUIT ) ) {
-			doQuit();
+			else if ( command.equals( ITEM_QUIT ) ) {
+				Main.quitApp();
+			}
+		}
+		else if ( com == quitCommand ) {
+			Main.quitApp();
 		}
 	}
 
@@ -169,9 +166,6 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 				).activate( this );
 	}
 	
-	private void doQuit() {
-		Main.quitApp();
-	}
 	/* (non-Javadoc)
 	 * @see app.Activatable#activate()
 	 */

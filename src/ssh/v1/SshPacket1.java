@@ -25,7 +25,7 @@
 package ssh.v1;
 
 
-import ssh.SshMisc;
+import ssh.SshIO;
 import ssh.SshPacket;
 
 /**
@@ -116,7 +116,7 @@ public class SshPacket1 extends SshPacket {
 		}
 		else {
 			for ( int i = 0; i < padding.length; i++ )
-				padding[i] = SshMisc.getNotZeroRandomByte();
+				padding[i] = SshIO.getNotZeroRandomByte();
 		}
 
 		//Compute the crc of [ Padding, Packet type, Data ]
@@ -130,7 +130,7 @@ public class SshPacket1 extends SshPacket {
 			offset += data.length;
 		}
 
-		long crc = SshMisc.crc32( block, offset );
+		long crc = SshIO.crc32( block, offset );
 		crc_array[3] = (byte) ( crc & 0xff );
 		crc_array[2] = (byte) ( ( crc >> 8 ) & 0xff );
 		crc_array[1] = (byte) ( ( crc >> 16 ) & 0xff );
@@ -250,7 +250,7 @@ public class SshPacket1 extends SshPacket {
 		byte[] crc_arrayCheck = new byte[4];
 		long crcCheck;
 
-		crcCheck = SshMisc.crc32( decryptedBlock, decryptedBlock.length - 4 );
+		crcCheck = SshIO.crc32( decryptedBlock, decryptedBlock.length - 4 );
 		crc_arrayCheck[3] = (byte) ( crcCheck & 0xff );
 		crc_arrayCheck[2] = (byte) ( ( crcCheck >> 8 ) & 0xff );
 		crc_arrayCheck[1] = (byte) ( ( crcCheck >> 16 ) & 0xff );

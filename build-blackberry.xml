@@ -2,7 +2,7 @@
 
 <project name="MidpSSH-blackberry" basedir="." default="all">
 
-	<target name="all" depends="init,blackberry-uptodate">
+	<target name="all" depends="init,blackberry-uptodate,alx">
 		<antcall target="build-blackberry"/>
 	</target>
 
@@ -43,6 +43,17 @@
 
 	<target name="build">
 		<ant antfile="build-package.xml" />
+	</target>
+
+	<target name="alx">
+		<copy todir="${dist.dir}">
+			<fileset dir="conf">
+				<include name="midpssh.alx" />
+			</fileset>
+			<filterset>
+				<filter token="VERSION" value="${version}" />
+			</filterset>
+		</copy>
 	</target>
 
 </project>

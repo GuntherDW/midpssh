@@ -92,7 +92,7 @@ public class TerminalSettingsForm extends SettingsForm {
 		tfFg.setString( toHex( Settings.fgcolor ) );
 		tfBg.setString( toHex( Settings.bgcolor ) );
 		
-		cgRotated.setSelectedIndex( 0, true );
+		cgRotated.setSelectedIndex( Settings.terminalRotated ? 1 : 0, true );
 		
 		super.activate();
 	}

@@ -191,6 +191,10 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	public SessionTerminal( vt320 buffer, Session session ) {
 		super( buffer, Settings.terminalRotated );
 		this.session = session;
+        
+//#ifdef midp2
+        //setFullScreenMode( true );
+//#endif
 
 		changeMode( MODE_DISCONNECTED );
 
@@ -296,8 +300,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			buffer.keyTyped( 0, ' ', 0 );
 		}
 		else if ( command == enterCommand ) {
-			//buffer.keyTyped( 0, '\n', 0 );
-            buffer.stringTyped( "\r\n" );
+			buffer.keyTyped( 0, '\n', 0 );
 		}
 		else if ( command == escCommand ) {
 			buffer.keyTyped( 0, (char) 27, 0 );
@@ -344,7 +347,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		}*/
 	}
 
-	protected void keyPressed( int keycode ) {
+	protected void keyPressed( int keycode ) { 
 		switch ( mode ) {
 			case MODE_CONNECTED:
 				keyPressedConnected( keycode );
@@ -393,6 +396,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	protected boolean handleGameAction( int keycode ) {
 		int gameAction = getGameAction( keycode );
+        
 		if ( gameAction != 0 ) {
 			switch ( gameAction ) {
 			case Canvas.UP:
@@ -451,7 +455,15 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	    }
 	    
 	    // If a game action is used, allow it to operate the cursor even when not in cursor mode
-		if ( handleGameAction( keycode ) ) return;
+        // But need to make sure it's not a character that we might accept for typing
+        if ( keycode == 8 || keycode == KEY_BACKSPACE || keycode == 10 || keycode == 13 ||
+                keycode == KEY_SHIFT || ( keycode >= 32 && keycode < 128 ) )
+        {
+            // NOOP in keyPressedTyping
+        }
+        else {
+            if ( handleGameAction( keycode ) ) return;
+        }
 	}
 	
 	protected void keyReleasedTyping( int keycode ) {
@@ -460,7 +472,8 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	        buffer.keyPressed( KeyEvent.VK_BACK_SPACE, 0 );
 		}
 		else if ( keycode == 10 || keycode == 13 ) {
-			buffer.keyTyped( keycode, (char) keycode, 0 );
+			//buffer.keyTyped( keycode, (char) keycode, 0 );
+            buffer.keyTyped( 0, '\n', 0 );
 		}
 	    else if ( keycode == KEY_SHIFT ) {
 	        typingShift = false;
@@ -471,7 +484,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	            c = shiftChar( c );
 	        }
 	        
-            buffer.keyTyped( keycode, c, 0 );
+            // Don't pass through the keycode, as we don't want the terminal to do any keycode mapping
+            // we just care about the char
+            buffer.keyTyped( 0, c, 0 );
 	    }
 	}
 	

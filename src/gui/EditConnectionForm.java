@@ -9,7 +9,6 @@ package gui;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
 
-import app.Activatable;
 import app.ConnectionManager;
 import app.ConnectionSpec;
 
@@ -29,8 +28,8 @@ public class EditConnectionForm extends ConnectionForm {
 	 * @param back
 	 * @param title
 	 */
-	public EditConnectionForm( Activatable back ) {
-		super( back, "Edit Connection" );
+	public EditConnectionForm() {
+		super( "Edit Connection" );
 
 		addCommand( saveCommand );
 	}

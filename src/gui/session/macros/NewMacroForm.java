@@ -4,13 +4,12 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package gui;
+package gui.session.macros;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
 
-import app.ConnectionManager;
-import app.ConnectionSpec;
+import app.session.MacroSetManager;
 
 /**
  * @author Karl
@@ -18,18 +17,26 @@ import app.ConnectionSpec;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class NewConnectionForm extends ConnectionForm {
+public class NewMacroForm extends MacroForm {
 
 	private static Command createCommand = new Command( "Create", Command.SCREEN, 1 );
+	
+	private int macroSetIndex;
 
 	/**
 	 * @param title
 	 */
-	public NewConnectionForm() {
-		super( "New Connection" );
+	public NewMacroForm() {
+		super( "New Macro" );
 		addCommand( createCommand );
 	}
 
+	/**
+	 * @param macroSetIndex The macroSetIndex to set.
+	 */
+	public void setMacroSetIndex( int macroSetIndex ) {
+		this.macroSetIndex = macroSetIndex;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -47,20 +54,10 @@ public class NewConnectionForm extends ConnectionForm {
 
 	private void doCreate() {
 		if ( validateForm() ) {
-			String alias = tfAlias.getString();
-			String type = selectedConnectionType();
-			String host = tfHost.getString();
-			String username = tfUsername.getString();
-			String password = tfPassword.getString();
-
-			ConnectionSpec conn = new ConnectionSpec();
-			conn.alias = alias;
-			conn.type = type;
-			conn.host = host;
-			conn.username = username;
-			conn.password = password;
-			ConnectionManager.addConnection( conn );
-
+			MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
+			Macro macro = new Macro( tfName.getString(), tfValue.getString() );
+			macroSet.addMacro( macro );
+			
 			doBack();
 		}
 	}

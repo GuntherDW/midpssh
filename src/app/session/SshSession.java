@@ -66,12 +66,7 @@ public class SshSession extends Session {
 			byte[] result;
 			result = sshIO.handleSSH( data, offset, length );
 			
-			try {
-				SshSession.this.receiveData( result, 0, result.length );
-			}
-			catch ( Exception e ) {
-				throw new RuntimeException( "IN SSH SESSION" );
-			}
+			SshSession.this.receiveData( result, 0, result.length );
 		}
 
 		/*

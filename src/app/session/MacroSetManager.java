@@ -1,10 +1,12 @@
 /*
- * Created on Oct 1, 2004
+ * Created on Oct 3, 2004
  *
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package app;
+package app.session;
+
+import gui.session.macros.MacroSet;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,30 +23,30 @@ import javax.microedition.rms.RecordStoreNotFoundException;
 
 /**
  * @author Karl
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
  */
-public class ConnectionManager {
+public class MacroSetManager {
 	
-	private static final String RMS_NAME = "connections";
+	private static final String RMS_NAME = "macros";
 	
-	private static Vector connections;
-
-	public static Vector getConnections() {
-		if ( connections == null ) {
+	private static Vector macroSets;
+	
+	public static Vector getMacroSets() {
+		if ( macroSets == null ) {
 			try {
 				RecordStore rec = RecordStore.openRecordStore( RMS_NAME, false );
 				RecordEnumeration recs = rec.enumerateRecords( null, null, false );
-				Vector connections = new Vector();
+				Vector macroSets = new Vector();
 
 				while ( recs.hasNextElement() ) {
 					byte[] data = recs.nextRecord();
 					DataInputStream in = new DataInputStream( new ByteArrayInputStream( data ) );
-					ConnectionSpec conn = new ConnectionSpec();
+					MacroSet macroSet = new MacroSet();
 					try {
-						conn.read( in );
-						connections.addElement( conn );
+						macroSet.read( in );
+						macroSets.addElement( macroSet );
 					}
 					catch ( IOException e ) {
 						e.printStackTrace();
@@ -52,15 +54,14 @@ public class ConnectionManager {
 					in.close();
 				}
 				rec.closeRecordStore();
-				ConnectionManager.connections = connections;
-
+				MacroSetManager.macroSets = macroSets;
 			}
 			catch ( RecordStoreFullException e ) {
 				e.printStackTrace();
 			}
 			catch ( RecordStoreNotFoundException e ) {
 				// Start with an empty Vector
-				connections = new Vector();
+				macroSets = new Vector();
 			}
 			catch ( RecordStoreException e ) {
 				e.printStackTrace();
@@ -69,11 +70,11 @@ public class ConnectionManager {
 				e.printStackTrace();
 			}
 		}
-		return connections;
+		return macroSets;
 	}
 
-	private static void saveConnections() {
-		if ( connections != null ) {
+	public static void saveMacroSets() {
+		if ( macroSets != null ) {
 			try {
 				try {
 					RecordStore.deleteRecordStore( RMS_NAME );
@@ -83,12 +84,12 @@ public class ConnectionManager {
 				}
 
 				RecordStore rec = RecordStore.openRecordStore( RMS_NAME, true );
-				for ( int i = 0; i < connections.size(); i++ ) {
-					ConnectionSpec conn = (ConnectionSpec) connections.elementAt( i );
+				for ( int i = 0; i < macroSets.size(); i++ ) {
+					MacroSet macroSet = (MacroSet) macroSets.elementAt( i );
 					ByteArrayOutputStream out = new ByteArrayOutputStream();
 					DataOutputStream dout = new DataOutputStream( out );
 					try {
-						conn.write( dout );
+						macroSet.write( dout );
 						dout.close();
 
 						byte[] data = out.toByteArray();
@@ -115,59 +116,59 @@ public class ConnectionManager {
 	}
 
 	/**
-	 * @param conn
-	 */
-	public static void addConnection( ConnectionSpec conn ) {
-		Vector connections = getConnections();
-		if ( connections == null ) {
-			connections = new Vector();
-		}
-		connections.addElement( conn );
-		saveConnections();
-	}
-
-	/**
 	 * @param i
 	 * @return
 	 */
-	public static ConnectionSpec getConnection( int i ) {
+	public static MacroSet getMacroSet( int i ) {
 		if ( i < 0 )
 			return null;
-		Vector connections = getConnections();
-		if ( connections == null || i >= connections.size() )
+		Vector macroSets = getMacroSets();
+		if ( macroSets == null || i >= macroSets.size() )
 			return null;
-		return (ConnectionSpec) connections.elementAt( i );
+		return (MacroSet) macroSets.elementAt( i );
+	}
+
+	/**
+	 * @param conn
+	 */
+	public static void addMacroSet( MacroSet macroSet ) {
+		Vector macroSets = getMacroSets();
+		if ( macroSets == null ) {
+			macroSets = new Vector();
+		}
+		macroSets.addElement( macroSet );
+		saveMacroSets();
 	}
 
 	/**
 	 * @param i
 	 */
-	public static void deleteConnection( int i ) {
+	public static void deleteMacroSet( int i ) {
 		if ( i < 0 )
 			return;
-		Vector connections = getConnections();
-		if ( connections == null || i >= connections.size() )
+		Vector macroSets = getMacroSets();
+		if ( macroSets == null || i >= macroSets.size() )
 			return;
-		connections.removeElementAt( i );
-		saveConnections();
+		macroSets.removeElementAt( i );
+		saveMacroSets();
 	}
 
 	/**
 	 * @param connectionIndex
 	 * @param conn
 	 */
-	public static void replaceConnection( int i, ConnectionSpec conn ) {
+	public static void replaceMacroSet( int i, MacroSet macroSet ) {
 		if ( i < 0 )
 			return;
-		Vector connections = getConnections();
-		if ( connections == null )
-			connections = new Vector();
-		if ( i >= connections.size() ) {
-			connections.addElement( conn );
+		Vector macroSets = getMacroSets();
+		if ( macroSets == null )
+			macroSets = new Vector();
+		if ( i >= macroSets.size() ) {
+			macroSets.addElement( macroSet );
 		}
 		else {
-			connections.setElementAt( conn, i );
+			macroSets.setElementAt( macroSet, i );
 		}
-		saveConnections();
+		saveMacroSets();
 	}
 }

@@ -6,13 +6,14 @@
  */
 package gui.session;
 
+import gui.Activatable;
+
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.TextBox;
 import javax.microedition.lcdui.TextField;
 
-import app.Activatable;
 import app.Main;
 
 import terminal.vt320;
@@ -33,10 +34,9 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 
 	private Activatable back;
 
-	public InputDialog( Activatable back, vt320 vt ) {
+	public InputDialog( vt320 vt ) {
 		super( "Input", "", 255, TextField.ANY );
 
-		this.back = back;
 		this.vt = vt;
 
 		addCommand( enterCommand );
@@ -55,6 +55,13 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 		Main.setDisplay( this );
 	}
 
+	/* (non-Javadoc)
+	 * @see gui.Activatable#activate(gui.Activatable)
+	 */
+	public void activate( Activatable back ) {
+		this.back = back;
+		activate();
+	}
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -6,19 +6,11 @@
  */
 package gui;
 
-import javax.microedition.lcdui.Alert;
-import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.ChoiceGroup;
-import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Displayable;
-import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
-import app.Activatable;
 import app.ConnectionSpec;
-import app.Main;
 
 /**
  * @author Karl
@@ -26,14 +18,10 @@ import app.Main;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public abstract class ConnectionForm extends Form implements CommandListener {
+public abstract class ConnectionForm extends EditableForm {
 	protected TextField tfAlias, tfHost, tfUsername, tfPassword;
 
 	protected ChoiceGroup cgType;
-
-	private Activatable back;
-
-	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 
 	private static String[] typeNames = new String[] {
 			"SSH", "Telnet"
@@ -46,10 +34,8 @@ public abstract class ConnectionForm extends Form implements CommandListener {
 	/**
 	 * @param arg0
 	 */
-	public ConnectionForm( Activatable back, String title ) {
+	public ConnectionForm( String title ) {
 		super( title );
-
-		this.back = back;
 
 		tfAlias = new TextField( "Alias:", null, 255, TextField.ANY );
 		tfHost = new TextField( "Host:", null, 255, TextField.ANY );
@@ -66,26 +52,6 @@ public abstract class ConnectionForm extends Form implements CommandListener {
 		append( new StringItem( "Authentication:\n", "For SSH connections only." ) );
 		append( tfUsername );
 		append( tfPassword );
-
-		addCommand( backCommand );
-
-		setCommandListener( this );
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
-	 *      javax.microedition.lcdui.Displayable)
-	 */
-	public void commandAction( Command command, Displayable displayed ) {
-		if ( command == backCommand ) {
-			doBack();
-		}
-	}
-
-	protected void doBack() {
-		back.activate();
 	}
 
 	protected boolean validateForm() {
@@ -119,10 +85,7 @@ public abstract class ConnectionForm extends Form implements CommandListener {
 		}
 
 		if ( errorMessage != null ) {
-			Alert alert = new Alert( "Error" );
-			alert.setString( errorMessage );
-			alert.setType( AlertType.ERROR );
-			Main.setDisplay( alert );
+			showErrorMessage( errorMessage );
 			return false;
 		}
 		else {

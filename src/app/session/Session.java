@@ -6,6 +6,7 @@
  */
 package app.session;
 
+import gui.Activatable;
 import gui.session.SessionTerminal;
 
 import java.io.DataInputStream;
@@ -18,7 +19,6 @@ import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 
 import terminal.vt320;
-import app.Activatable;
 import app.Main;
 
 /**
@@ -165,7 +165,7 @@ public abstract class Session implements SessionIOListener, Activatable {
 	 * Continuously read from remote host and display the data on screen.
 	 */
 	private void read() throws IOException {
-		byte [] buf = new byte[100];
+		byte [] buf = new byte[1024];
 		
 		int n = in.read( buf, 0, buf.length );
 		while ( n != -1 ) {
@@ -173,8 +173,6 @@ public abstract class Session implements SessionIOListener, Activatable {
 			
 			n = in.read( buf, 0, buf.length );
 		}
-		
-		System.out.println( "Conn closed" );
 	}
 	
 	private void write() throws IOException {
@@ -269,6 +267,10 @@ public abstract class Session implements SessionIOListener, Activatable {
 	 */
 	public void activate() {
 		terminal.activate();
+	}
+	
+	public void activate( Activatable back ) {
+		activate();
 	}
 	
 	private class Reader extends Thread {

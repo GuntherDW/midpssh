@@ -6,6 +6,9 @@
  */
 package gui.session;
 
+import gui.Activatable;
+import gui.session.macros.MacroSetsMenu;
+
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Canvas;
@@ -17,7 +20,6 @@ import terminal.KeyEvent;
 import terminal.Terminal;
 import terminal.vt320;
 
-import app.Activatable;
 import app.Main;
 import app.session.Session;
 
@@ -36,6 +38,8 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	private static final int MODE_CURSOR = 2;
 
 	private static final Command textInputCommand = new Command( "Input", Command.ITEM, 10 );
+
+	private static final Command macrosCommand = new Command( "Macros", Command.ITEM, 11 );
 
 	private static final Command cursorCommand = new Command( "Cursor", Command.ITEM, 15 );
 
@@ -62,7 +66,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	};
 	
 	private static final Command[] commandsConnected = new Command[] {
-			textInputCommand, cursorCommand, scrollCommand,
+			textInputCommand, macrosCommand, cursorCommand, scrollCommand,
 			tabCommand, enterCommand, escCommand, backspaceCommand,
 			ctrlCommand, altCommand, 
 			disconnectCommand
@@ -75,6 +79,8 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	private Session session;
 
 	private InputDialog inputDialog;
+	
+	private MacroSetsMenu macrosMenu;
 
 	private ModifierInputDialog modifierInputDialog;
 
@@ -140,6 +146,10 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	public void activate() {
 		Main.setDisplay( this );
 	}
+	
+	public void activate( Activatable back ) {
+		activate();
+	}
 
 	public void commandAction( Command command, Displayable displayable ) {
 		if ( command == disconnectCommand ) {
@@ -147,6 +157,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		}
 		else if ( command == textInputCommand ) {
 			doTextInput();
+		}
+		else if ( command == macrosCommand ) {
+			doMacros();
 		}
 		else if ( command == tabCommand ) {
 			buffer.keyTyped( 0, '\t', 0 );
@@ -177,7 +190,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	protected void keyPressed( int keycode ) {
 		switch ( mode ) {
 			case MODE_CONNECTED:
-				keyPressedNormal( keycode );
+				keyPressedConnected( keycode );
 				break;
 			case MODE_CURSOR:
 				keyPressedCursor( keycode );
@@ -185,11 +198,29 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		}
 	}
 
-	protected void keyPressedNormal( int keycode ) {
-		switch ( keycode ) {
-			case Canvas.KEY_NUM5:
-				doTextInput();
-				break;
+	protected void keyPressedConnected( int keycode ) {
+		int index = -1;
+		
+		// Map keys to actions
+		if ( keycode >= Canvas.KEY_NUM1 && keycode <= Canvas.KEY_NUM9 ) {
+			index = keycode - Canvas.KEY_NUM1;
+		}
+		else {
+			switch ( keycode ) {
+				case Canvas.KEY_STAR:
+					index = 10;
+					break;
+				case Canvas.KEY_NUM0:
+					index = 11;
+					break;
+				case Canvas.KEY_POUND:
+					index = 12;
+					break;
+			}
+		}
+		
+		if ( index >= 0 && index < commandsConnected.length ) {
+			commandAction( commandsConnected[index], this );
 		}
 	}
 
@@ -253,14 +284,21 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private void doTextInput() {
 		if ( inputDialog == null ) {
-			inputDialog = new InputDialog( this, buffer );
+			inputDialog = new InputDialog( buffer );
 		}
-		inputDialog.activate();
+		inputDialog.activate( this );
+	}
+	
+	private void doMacros() {
+		if ( macrosMenu == null ) {
+			macrosMenu = new MacroSetsMenu();
+		}
+		macrosMenu.activate( this );
 	}
 
 	private void doModifierInput( int modifier ) {
 		if ( modifierInputDialog == null ) {
-			modifierInputDialog = new ModifierInputDialog( this, buffer );
+			modifierInputDialog = new ModifierInputDialog( buffer );
 		}
 		modifierInputDialog.modifier = modifier;
 		modifierInputDialog.activate();

@@ -6,6 +6,8 @@
  */
 package gui.session;
 
+import gui.Activatable;
+
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
@@ -13,7 +15,6 @@ import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.TextField;
 
 import terminal.vt320;
-import app.Activatable;
 import app.Main;
 
 /**
@@ -36,11 +37,10 @@ public class ModifierInputDialog extends Form implements Activatable, CommandLis
 
 	public int modifier;
 
-	public ModifierInputDialog( Activatable back, vt320 vt ) {
+	public ModifierInputDialog( vt320 vt ) {
 		super( "Control Keys" );
 		//super("Control Keys", "", 10, TextField.ANY);
 
-		this.back = back;
 		this.vt = vt;
 
 		tf = new TextField( "Enter one or more letters", null, 10, TextField.ANY );
@@ -60,6 +60,11 @@ public class ModifierInputDialog extends Form implements Activatable, CommandLis
 	public void activate() {
 		tf.setString( "" );
 		Main.setDisplay( this );
+	}
+	
+	public void activate( Activatable back ) {
+		this.back = back;
+		activate();
 	}
 
 	/*

@@ -6,6 +6,8 @@
  */
 package gui;
 
+import gui.session.macros.MacroSetsMenu;
+
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
@@ -19,13 +21,15 @@ import app.Main;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class MainMenu extends List implements CommandListener {
+public class MainMenu extends List implements CommandListener, Activatable {
 
 	private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
 
 	private static Command quitCommand = new Command( "Quit", Command.EXIT, 2 );
 
-	private ConnectMenu connectMenu = new ConnectMenu( this );
+	private SessionsMenu sessionsMenu;
+	
+	private MacroSetsMenu macrosMenu;
 
 	/**
 	 * @param arg0
@@ -34,7 +38,8 @@ public class MainMenu extends List implements CommandListener {
 	public MainMenu() {
 		super( "FloydSSHx", List.IMPLICIT );
 
-		append( "Connect", null );
+		append( "Sessions", null );
+		append( "Macros", null );
 		append( "Settings", null );
 		append( "About FloydSSHx", null );
 		append( "Help", null );
@@ -64,19 +69,44 @@ public class MainMenu extends List implements CommandListener {
 	private void doSelect( int i ) {
 		switch ( i ) {
 			case 0:
-				doConnect();
+				doSessions();
 				break;
-			case 4:
+			case 1:
+				doMacros();
+				break;
+			case 5:
 				doQuit();
 				break;
 		}
 	}
 
-	private void doConnect() {
-		Main.setDisplay( connectMenu );
+	private void doSessions() {
+		if ( sessionsMenu == null ) {
+			sessionsMenu = new SessionsMenu();
+		}
+		sessionsMenu.activate();
+	}
+	
+	private void doMacros() {
+		if ( macrosMenu == null ) {
+			macrosMenu = new MacroSetsMenu();
+		}
+		macrosMenu.activate();
 	}
 
 	private void doQuit() {
 		Main.quitApp();
+	}
+	/* (non-Javadoc)
+	 * @see app.Activatable#activate()
+	 */
+	public void activate() {
+		Main.setDisplay( this );
+	}
+	/* (non-Javadoc)
+	 * @see gui.Activatable#activate(gui.Activatable)
+	 */
+	public void activate( Activatable back ) {
+		activate();
 	}
 }

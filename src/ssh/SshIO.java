@@ -280,7 +280,7 @@ public abstract class SshIO {
 		disconnect();
 	}
 
-	synchronized public void sendData( byte[] data, int offset, int length ) throws IOException {
+	public void sendData( byte[] data, int offset, int length ) throws IOException {
 		String str = new String( data, offset, length );
 		//    if (debug > 1) System.out.println("SshIO.send(" + str + ")");
 		if ( dataToSend == null )

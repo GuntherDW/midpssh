@@ -204,7 +204,7 @@ public abstract class Session implements Activatable {
 			    filter.handleReceiveData( buf, 0, n );
 			}
 			catch ( RuntimeException e ) {
-			    throw new RuntimeException( "read.filter: " + e );
+			    throw new RuntimeException( "read.filter1 " + n + ": " + e );
 			}
 			
 			a = in.available();
@@ -227,7 +227,7 @@ public abstract class Session implements Activatable {
 			    filter.handleReceiveData( buf, 0, 1 );
 			}
 			catch ( RuntimeException e ) {
-			    throw new RuntimeException( "read.filter: " + e );
+			    throw new RuntimeException( "read.filter2 " + n + ": " + e );
 			}
 			c = in.read();
 	    }

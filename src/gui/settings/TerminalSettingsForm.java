@@ -32,7 +32,7 @@ import app.Settings;
  * @author Karl von Randow
  */
 public class TerminalSettingsForm extends SettingsForm {
-
+    
 	protected TextField tfType = new TextField( "Type", "", 20, TextField.ANY );
 	
 	protected TextField tfCols = new TextField( "Cols", "", 3, TextField.NUMERIC );
@@ -51,7 +51,7 @@ public class TerminalSettingsForm extends SettingsForm {
 	
 	public TerminalSettingsForm() {
 		super( "Terminal Settings" );
-
+        
 		append( new StringItem( "Type", "The terminal type reported to the remote server. The default type is VT320." ) );
 		append( tfType );
 		
@@ -150,13 +150,13 @@ public class TerminalSettingsForm extends SettingsForm {
 				Settings.terminalCols = Integer.parseInt( tfCols.getString() );
 			}
 			catch ( NumberFormatException e ) {
-				
+				Settings.terminalCols = 0;
 			}
 			try {
 				Settings.terminalRows = Integer.parseInt( tfRows.getString() );
 			}
 			catch ( NumberFormatException e ) {
-				
+				Settings.terminalRows = 0;
 			}
 //#ifdef midp2
             Settings.terminalFullscreen = cgFullscreen.getSelectedIndex() == 1;
@@ -166,7 +166,7 @@ public class TerminalSettingsForm extends SettingsForm {
 				Settings.fgcolor = col;
 			}
 			catch ( NumberFormatException e ) {
-				
+				Settings.fgcolor = Settings.DEFAULT_FGCOLOR;
 			}
 			
 			try {
@@ -174,7 +174,7 @@ public class TerminalSettingsForm extends SettingsForm {
 				Settings.bgcolor = col;
 			}
 			catch ( NumberFormatException e ) {
-				
+				Settings.bgcolor = Settings.DEFAULT_BGCOLOR;
 			}
 			
             switch (cgFont.getSelectedIndex()) {

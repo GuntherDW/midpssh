@@ -39,20 +39,19 @@ public class ExtendedList extends List {
 		super( arg0, arg1 );
 	}
 
+//#ifndef midp2
 	public void deleteAll() {
 		while ( size() > 0 ) {
 			delete( size() - 1 );
 		}
 	}
+//#endif
 	
 	public void setSelectCommand( Command command ) {
-		try {
-			super.setSelectCommand( command );
-		}
-		catch ( Throwable t ) {
-			// MIDP 1.0 TODO does this actually happen on MIDP 1.0 devices?
-			t.printStackTrace();
-			addCommand( command );
-		}
+//#ifdef midp2
+	    super.setSelectCommand( command );
+//#else
+	    addCommand( command );
+//#endif
 	}
 }

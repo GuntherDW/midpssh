@@ -1,6 +1,9 @@
 package terminal;
 
+import java.io.InputStream;
+
 import javax.microedition.lcdui.Canvas;
+import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 //#ifdef midp2
@@ -50,14 +53,14 @@ public class Terminal extends Canvas {
 	
 	protected int width, height;
 	
+	private int fontWidth, fontHeight;
+	
 	protected boolean rotated;
 
 	/** display size in characters */
 	public int rows, cols;
 
 	private Image backingStore = null;
-
-	private DrawFont font;
 
 	public int fgcolor = 0x000000;
 
@@ -88,7 +91,7 @@ public class Terminal extends Canvas {
 			bgcolor = 0x000000;
 		}
 
-		font = new DrawFont();
+		initFont();
 
 //#ifdef midp2
 		this.rotated = rotated;
@@ -102,9 +105,11 @@ public class Terminal extends Canvas {
 			width = getHeight();
 			height = getWidth();
 		}
-		cols = width / font.width;
-		rows = height / font.height;
+		cols = width / fontWidth;
+		rows = height / fontHeight;
 		backingStore = Image.createImage( width, height );
+		
+		System.out.println( "ROWS " + rows + " COLS " + cols );
 		
 		buffer.setScreenSize( cols, rows );
 
@@ -266,7 +271,7 @@ public class Terminal extends Canvas {
 					else
 						g.setColor( bgcolor );
 
-					g.fillRect( ( c - left ) * font.width, ( l - top ) * font.height, addr * font.width, font.height );
+					g.fillRect( ( c - left ) * fontWidth, ( l - top ) * fontHeight, addr * fontWidth, fontHeight );
 
 					if ( Main.useColors )
 						g.setColor( fg );
@@ -274,8 +279,8 @@ public class Terminal extends Canvas {
 						g.setColor( fgcolor );
 
 					// draw the characters
-					font.drawChars( g, buffer.charArray[buffer.windowBase + l], c, addr, ( c - left ) * font.width,
-							( l - top ) * font.height );
+					drawChars( g, buffer.charArray[buffer.windowBase + l], c, addr, ( c - left ) * fontWidth,
+							( l - top ) * fontHeight );
 
 					c += addr - 1;
 				}
@@ -286,9 +291,9 @@ public class Terminal extends Canvas {
 					&& ( buffer.screenBase + buffer.cursorY >= buffer.windowBase && buffer.screenBase + buffer.cursorY < buffer.windowBase
 							+ buffer.height ) ) {
 				g.setColor( fgcolor );
-				g.fillRect( ( buffer.cursorX - left ) * font.width,
-						( buffer.cursorY - top + buffer.screenBase - buffer.windowBase ) * font.height, font.width,
-						font.height );
+				g.fillRect( ( buffer.cursorX - left ) * fontWidth,
+						( buffer.cursorY - top + buffer.screenBase - buffer.windowBase ) * fontHeight, fontWidth,
+						fontHeight );
 			}
 
 			invalid = false;
@@ -309,5 +314,100 @@ public class Terminal extends Canvas {
 	public vt320 getVDUBuffer() {
 		return buffer;
 	}
+	
+	private void initFont() {
+	    if ( useInternalFont ) {
+	        initInternalFont();
+	    }
+	    else {
+	        initSystemFont();
+	    }
+	}
 
+	private void initInternalFont() {
+	    fontWidth = 4;
+	    fontHeight = 6;
+	    fontData = new int[128][];
+	    
+	    try {
+			InputStream in = getClass().getResourceAsStream( FONT_RESOURCE );
+			for ( int i = 33; i < 128; i++ ) {
+				int b = in.read();
+				int l = ( b & 3 ) + 2; // length could be 1,2,3 or 4; this is
+				// len+1
+				fontData[i] = new int[l]; // one more for template
+				fontData[i][0] = ( b >> 2 ) - 32; // draw this template
+				//        System.out.println("--- ascii "+i +"---" );
+				//        System.out.println("header "+b );
+				//        System.out.println("len "+(l-1) );
+				//        System.out.println("template "+ data[i][0] );
+				for ( int j = 1; j < l; j++ ) {
+				    fontData[i][j] = in.read();
+					//          System.out.println("data["+j+"]" + data[i][j] );
+				}
+			}
+			in.close();
+		}
+		catch ( Exception e ) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void initSystemFont() {
+	    font = Font.getFont( Font.FACE_MONOSPACE, Font.STYLE_PLAIN, Font.SIZE_SMALL );
+		fontHeight = font.getHeight();
+		fontWidth = font.charWidth( 'W' );
+	}
+	
+	protected void drawChars( Graphics g, char[] chars, int offset, int length, int x, int y ) {
+	    if ( useInternalFont ) {
+	        for ( int i = offset; i < offset + length; i++ ) {
+				drawChar( g, chars[i], x, y );
+				x += fontWidth;
+			}
+	    }
+	    else {
+	        g.setFont( font );
+			for ( int i = offset; i < offset + length; i++ ) {
+				g.drawChar( chars[i], x, y, Graphics.TOP|Graphics.LEFT);
+				x += fontWidth;
+			}
+	    }
+	}
+
+	private void drawChar( Graphics g, char c, int x, int y ) {
+		if ( c >= fontData.length || fontData[c] == null )
+			return;
+		for ( int j = 1; j < fontData[c].length; j++ ) {
+			int x1 = fontData[c][j] & 3;
+			int y1 = ( fontData[c][j] & 12 ) >> 2;
+			int x2 = ( fontData[c][j] & 48 ) >> 4;
+			int y2 = ( fontData[c][j] & 192 ) >> 6;
+
+			if ( x1 == 3 ) {
+				x1 = y1;
+				y1 = 4;
+			}
+
+			if ( x2 == 3 ) {
+				x2 = y2;
+				y2 = 4;
+			}
+
+			//      System.out.println( "char " + c + " x1=" + x1 + " y1="+ (4-y1) +"
+			// x2=" + x2 + " y2="+ (4-y2));
+
+			g.drawLine( x + x1, y + y1, x + x2, y + y2 );
+		}
+		if ( fontData[c][0] != 0 )
+			drawChar( g, (char) ( c + fontData[c][0] ), x, y ); // draw template
+	}
+	
+	private boolean useInternalFont = true;
+	
+	private Font font;
+	
+	private int[][] fontData;
+	
+	private static final String FONT_RESOURCE = "/font";
 }

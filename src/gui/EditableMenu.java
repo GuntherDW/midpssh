@@ -43,7 +43,7 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 
 	protected static Command backCommand = new Command( "Back", Command.BACK, 2 );
 	
-	protected Command selectCommand = SELECT_COMMAND;
+	protected Command selectCommand = List.SELECT_COMMAND;
 	
 	private Activatable back;
 

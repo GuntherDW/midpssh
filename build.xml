@@ -21,9 +21,14 @@
 			<param name="mode" value="ssh1"/>
 		</antcall>
 		<antcall target="build">
-			<param name="filename" value="midpssh-lite"/>
+			<param name="filename" value="midpssh-ssh2-lite"/>
 			<param name="midp2" value="true"/>
-			<param name="mode" value="lite"/>
+			<param name="mode" value="ssh2-lite"/>
+		</antcall>
+		<antcall target="build">
+			<param name="filename" value="midpssh-ssh1-lite"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="ssh1-lite"/>
 		</antcall>
 		
 		<antcall target="build">
@@ -37,9 +42,14 @@
 			<param name="mode" value="ssh1"/>
 		</antcall>
 		<antcall target="build">
-			<param name="filename" value="midpssh-midp1-lite"/>
+			<param name="filename" value="midpssh-midp1-ssh2-lite"/>
 			<param name="midp1" value="true"/>
-			<param name="mode" value="lite"/>
+			<param name="mode" value="ssh2-lite"/>
+		</antcall>
+		<antcall target="build">
+			<param name="filename" value="midpssh-midp1-ssh1-lite"/>
+			<param name="midp1" value="true"/>
+			<param name="mode" value="ssh1-lite"/>
 		</antcall>
 	</target>
 	
@@ -122,25 +132,25 @@
 	<target name="clean" depends="init">
 		<delete dir="${build.dir}"/>
 		<delete dir="output"/>
-		<delete dir="src-proc"/>
 		<delete dir="${dist.dir}"/>
 	</target>
 	
 	<target name="preprocess">
-		<delete dir="src-proc"/>
+		<mkdir dir="${build.dir}/src-proc/${filename}"/>
+		
 		<wtkpreprocess srcdir="src"
-					   destdir="src-proc"
+					   destdir="${build.dir}/src-proc/${filename}"
 					   symbols="${preprocess.symbols},${preprocess.symbols.global},${preprocess.symbols.midp}"
 					   verbose="false" />
 	</target>
     	
    	<target name="compile" depends="jad,preprocess">
-        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dir}/bin/${filename}"/>
 
         <!-- Compile everything, but don't preverify (yet). -->
 
-        <wtkbuild srcdir="src-proc"
-                  destdir="${build.dir}"
+        <wtkbuild srcdir="${build.dir}/src-proc/${filename}"
+                  destdir="${build.dir}/bin/${filename}"
         		  debug="false"
         	      optimize="true"
                   preverify="false"/>
@@ -160,14 +170,14 @@
 
             <!-- Package our newly compiled classes. -->
 
-            <fileset dir="${build.dir}"/>
+            <fileset dir="${build.dir}/bin/${filename}"/>
         	<fileset dir="res"/>
         </wtkpackage>
     </target>
 	
 	<target name="obfuscate" depends="obfuscate-normal,obfuscate-lite" unless="noobfuscate" />
 		
-	<target name="obfuscate-normal" if="obfuscate-normal">
+	<target name="obfuscate-normal" if="obfuscate-normal" unless="noobfuscate">
     	<!-- Obfuscate -->
     	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
         			  jadfile="${dist.dir}/${jad.file}"
@@ -187,7 +197,7 @@
 		</wtkobfuscate>
     </target>
 	
-	<target name="obfuscate-lite" if="obfuscate-lite">
+	<target name="obfuscate-lite" if="obfuscate-lite" unless="noobfuscate">
 		<!-- Obfuscate -->
     	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
         			  jadfile="${dist.dir}/${jad.file}"
@@ -208,6 +218,38 @@
                       jadfile="${dist.dir}/${jad.file}"/>
     </target>
 	
+	<target name="blackberry">
+		<property name="filename" value="midpssh-blackberry"/>
+		<property name="midp1" value="true"/>
+		<property name="mode" value="ssh1"/>
+		<property name="noobfuscate" value="true"/>
+		<property name="bb.codename" value="midpsshbb"/>
+		
+		<antcall target="build-blackberry"/>
+			
+	</target>
+	
+	<target name="build-blackberry" depends="build">
+		<!-- Work around for broken wtkrapc -->
+		<touch file="${bb.codename}.alx"/>
+			
+		<wtkrapc jadfile="${dist.dir}/${jad.file}" source="${dist.dir}/${jar.file}"
+			import="${bb.lib.home}/net_rim_api.jar"
+			codename="${bb.codename}" destdir="${dist.dir}" quiet="false" midlet="false"/>
+		
+		<!-- Tidy up -->
+		<delete file="${dist.dir}/${jad.file}"/>
+		<delete file="${dist.dir}/${jar.file}"/>
+			
+		<!-- Work around for broken wtkrapc -->
+		<delete>
+			<fileset dir=".">
+				<include name="${bb.codename}*"/>
+			</fileset>
+		</delete>
+		<delete file="${dist.dir}/${bb.codename}.alx"/>
+	</target>
+		
 	<target name="deploy">
 		<exec executable="C:\SonyEricsson\J2ME_SDK\OnDeviceDebug\bin\ejava">
 			<arg value="install" />

@@ -26,6 +26,8 @@ package ssh;
 
 import java.io.IOException;
 
+import ssh.v1.MD5;
+
 /**
  * @author Marcus Meissner
  * @version $Id$

@@ -36,7 +36,7 @@
  obligated to do so.  If you do not wish to do so, delete this
  exception statement from your version. */
 
-package ssh;
+package ssh.v1;
 
 /**
  * This class implements the MD5 algorithm as described in RFC1321.

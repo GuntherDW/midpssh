@@ -70,7 +70,8 @@
  * [including the GNU Public Licence.]
  * ----
  */
-package ssh;
+package ssh.v1;
+
 
 public final class DES extends Cipher {
 

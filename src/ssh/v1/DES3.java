@@ -25,7 +25,8 @@
  * Additional NOTICE: This file uses DES (see DES.java for copyright
  * information!)
  */
-package ssh;
+package ssh.v1;
+
 
 public final class DES3 extends Cipher {
 	DES des1 = new DES();

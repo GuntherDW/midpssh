@@ -27,7 +27,8 @@
  * Bruce Schneier: Applied Cryptography 2nd ed., John Wiley & Sons, 1996
  */
 
-package ssh;
+package ssh.v1;
+
 
 /**
  * @author Marcus Meissner

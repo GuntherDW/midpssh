@@ -6,78 +6,99 @@
 	
 	<target name="all">
 		<antcall target="clean"/>
-		<antcall target="make-midp2"/>
-		<antcall target="make-midp2-lite"/>
-		<antcall target="make-midp1"/>
-		<antcall target="make-midp1-lite"/>
+		<antcall target="build-all"/>
 	</target>
+	
+	<target name="build-all">
+		<antcall target="build">
+			<param name="filename" value="midpssh-ssh2"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="ssh2"/>
+		</antcall>
+		<antcall target="build">
+			<param name="filename" value="midpssh-ssh1"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="ssh1"/>
+		</antcall>
+		<antcall target="build">
+			<param name="filename" value="midpssh-lite"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="lite"/>
+		</antcall>
 		
-	<target name="make-midp2">
 		<antcall target="build">
-			<param name="mode" value="midp2"/>
-			<param name="obfuscate-normal" value="true"/>
+			<param name="filename" value="midpssh-midp1-ssh2"/>
+			<param name="midp1" value="true"/>
+			<param name="mode" value="ssh2"/>
 		</antcall>
-	</target>
-	
-	<target name="make-midp2-lite">
 		<antcall target="build">
-			<param name="mode" value="midp2-lite"/>
-			<param name="submode" value="midp2"/>
-			<param name="obfuscate-lite" value="true"/>
+			<param name="filename" value="midpssh-midp1-ssh1"/>
+			<param name="midp1" value="true"/>
+			<param name="mode" value="ssh1"/>
 		</antcall>
-	</target>
-	
-	<target name="make-midp1">
 		<antcall target="build">
-			<param name="mode" value="midp1"/>
-			<param name="obfuscate-normal" value="true"/>
-		</antcall>
-	</target>
-	
-	<target name="make-midp1-lite">
-		<antcall target="build">
-			<param name="mode" value="midp1-lite"/>
-			<param name="submode" value="midp1"/>
-			<param name="obfuscate-lite" value="true"/>
-		</antcall>
-	</target>
-	
-	<target name="make-debug">
-		<antcall target="build">
-			<param name="mode" value="midp2-debug"/>
-			<param name="submode" value="midp2"/>
+			<param name="filename" value="midpssh-midp1-lite"/>
+			<param name="midp1" value="true"/>
+			<param name="mode" value="lite"/>
 		</antcall>
 	</target>
 	
 	<target name="run-debug">
-    	<antcall target="make-debug">
+		<antcall target="build">
+			<param name="filename" value="midpssh-debug"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="ssh2"/>
     		<param name="run" value="true"/>
-    	</antcall>
+			<param name="noobfuscate" value="true"/>
+		</antcall>
 	</target>
 	
-	<target name="run-midp2">
-		<antcall target="make-midp2">
+	<target name="run-midp2-ssh2">
+		<antcall target="build">
+			<param name="filename" value="midpssh-ssh2"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="ssh2"/>
     		<param name="run" value="true"/>
-    	</antcall>
+		</antcall>
+	</target>
+	
+	<target name="run-midp2-ssh1">
+		<antcall target="build">
+			<param name="filename" value="midpssh-ssh1"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="ssh1"/>
+    		<param name="run" value="true"/>
+		</antcall>
 	</target>
 	
 	<target name="run-midp2-lite">
-		<antcall target="make-midp2-lite">
+		<antcall target="build">
+			<param name="filename" value="midpssh-lite"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="ssh2"/>
     		<param name="run" value="true"/>
-    	</antcall>
+		</antcall>
 	</target>
 
-	<target name="init" depends="init-mode,init-submode">
+	<target name="init" depends="init-midp1,init-midp2,init-mode">
 		<property file="build.properties"/>
 		<mkdir dir="${dist.dir}"/>
+		<property name="jar.file" value="${filename}.jar"/>
+		<property name="jad.file" value="${filename}.jad"/>
 	</target>
 	
 	<target name="init-mode" if="mode">
 		<property file="build-${mode}.properties"/>
 	</target>
 	
-	<target name="init-submode" if="mode">
-		<property file="build-${submode}.properties"/>
+	<target name="init-midp1" if="midp1">
+		<property name="wtk.midp.version" value="1.0"/>
+		<property name="preprocess.symbols.midp" value="midp1"/>
+	</target>
+	
+	<target name="init-midp2" if="midp2">
+		<property name="wtk.midp.version" value="2.0"/>
+		<property name="preprocess.symbols.midp" value="midp2"/>
 	</target>
 	
 	<target name="build" depends="init,package,obfuscate,preverify,build-run">
@@ -144,7 +165,7 @@
         </wtkpackage>
     </target>
 	
-	<target name="obfuscate" depends="obfuscate-normal,obfuscate-lite"/>
+	<target name="obfuscate" depends="obfuscate-normal,obfuscate-lite" unless="noobfuscate" />
 		
 	<target name="obfuscate-normal" if="obfuscate-normal">
     	<!-- Obfuscate -->
@@ -152,14 +173,16 @@
         			  jadfile="${dist.dir}/${jad.file}"
     				  obfuscator="proguard"
     				  classpath="lib/proguard.jar">
-    		<argument value="-keep class ssh.Blowfish" />
-    		<argument value="-keep class ssh.DES" />
-    		<argument value="-keep class ssh.DES3" />
-    		<argument value="-keep class ssh.IDEA" />
-			<argument value="-keep class ssh.MD5" />
-			<argument value="-keep class ssh.MPN" />
-			<argument value="-keep class ssh.NONE" />
+    		<argument value="-keep class ssh.v1.Blowfish" />
+    		<argument value="-keep class ssh.v1.DES" />
+    		<argument value="-keep class ssh.v1.DES3" />
+    		<argument value="-keep class ssh.v1.IDEA" />
+			<argument value="-keep class ssh.v1.MD5" />
+			<argument value="-keep class ssh.v1.MPN" />
+			<argument value="-keep class ssh.v1.NONE" />
     		<argument value="-defaultpackage" />
+    		<argument value="-allowaccessmodification" />
+    		<argument value="-overloadaggressively" />
     		<!--<argument value="-verbose" />-->
 		</wtkobfuscate>
     </target>
@@ -170,7 +193,7 @@
         			  jadfile="${dist.dir}/${jad.file}"
     				  obfuscator="proguard"
     				  classpath="lib/proguard.jar">
-    		<argument value="-keep class ssh.Blowfish" />
+    		<argument value="-keep class ssh.v1.Blowfish" />
     		<argument value="-defaultpackage" />
     		<argument value="-allowaccessmodification" />
     		<argument value="-overloadaggressively" />

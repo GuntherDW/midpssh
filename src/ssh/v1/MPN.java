@@ -38,7 +38,7 @@
 
 // Included from Kawa 1.6.62 with permission of the author,
 // Per Bothner <per@bothner.com>.
-package ssh;
+package ssh.v1;
 
 /**
  * This contains various low-level routines for unsigned bigints. The interfaces

@@ -22,7 +22,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * --LICENSE NOTICE--
  */
-package ssh;
+package ssh.v1;
+
+
+import ssh.SshMisc;
 
 /**
  * @author Marcus Meissner
@@ -31,6 +34,10 @@ package ssh;
 public class SshCrypto {
 	private Cipher sndCipher, rcvCipher;
 
+	protected SshCrypto() {
+		
+	}
+	
 	public SshCrypto( String type, final byte[] key ) {
 		sndCipher = Cipher.getInstance( type );
 		rcvCipher = Cipher.getInstance( type );

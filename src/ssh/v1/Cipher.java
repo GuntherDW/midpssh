@@ -22,7 +22,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * --LICENSE NOTICE--
  */
-package ssh;
+package ssh.v1;
 
 /**
  * Cipher class is the type for all other ciphers.
@@ -37,7 +37,7 @@ public abstract class Cipher {
 		Class c;
 		try {
 			//      System.out.println( "--- Cipher needs " + algorithm );
-			c = Class.forName( "ssh." + algorithm );
+			c = Class.forName( "ssh.v1." + algorithm );
 			return (Cipher) c.newInstance();
 		}
 		catch ( Throwable t ) {

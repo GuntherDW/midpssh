@@ -28,6 +28,17 @@
 package ssh;
 
 import java.io.IOException;
+import java.util.Random;
+
+
+import ssh.v1.BigInteger;
+import ssh.v1.MD5;
+import ssh.v1.SshCrypto;
+import ssh.v1.SshPacket1;
+import ssh.v2.DHKeyExchange;
+import ssh.v2.SHA1Digest;
+import ssh.v2.SshCrypto2;
+import ssh.v2.SshPacket2;
 
 /**
  * Secure Shell IO
@@ -126,6 +137,61 @@ public abstract class SshIO {
 	private final byte SSH_CMSG_EXIT_CONFIRMATION = 33;
 
 	private final byte SSH_MSG_DEBUG = 36;
+
+	/* SSH v2 stuff */
+
+	private static final byte SSH2_MSG_DISCONNECT = 1;
+
+	private static final byte SSH2_MSG_IGNORE = 2;
+
+	private static final byte SSH2_MSG_UNIMPLEMENTED = 3;
+
+	private static final byte SSH2_MSG_SERVICE_REQUEST = 5;
+
+	private static final byte SSH2_MSG_SERVICE_ACCEPT = 6;
+
+	private static final byte SSH2_MSG_KEXINIT = 20;
+
+	private static final byte SSH2_MSG_NEWKEYS = 21;
+
+	private static final byte SSH2_MSG_KEXDH_INIT = 30;
+
+	private static final byte SSH2_MSG_KEXDH_REPLY = 31;
+	
+	private static final byte SSH2_MSG_USERAUTH_REQUEST = 50;
+	
+	private static final byte SSH2_MSG_USERAUTH_FAILURE = 51;
+	
+	private static final byte SSH2_MSG_USERAUTH_SUCCESS = 52;
+	
+	private static final byte SSH2_MSG_USERAUTH_BANNER = 53;
+
+	private static final byte SSH2_MSG_CHANNEL_OPEN = 90;
+
+	private static final byte SSH2_MSG_CHANNEL_OPEN_CONFIRMATION = 91;
+
+	private static final byte SSH2_MSG_CHANNEL_OPEN_FAILURE = 92;
+
+	private static final byte SSH2_MSG_CHANNEL_WINDOW_ADJUST = 93;
+
+	private static final byte SSH2_MSG_CHANNEL_DATA = 94;
+
+	private static final byte SSH2_MSG_CHANNEL_EXTENDED_DATA = 95;
+
+	private static final byte SSH2_MSG_CHANNEL_EOF = 96;
+
+	private static final byte SSH2_MSG_CHANNEL_CLOSE = 97;
+
+	private static final byte SSH2_MSG_CHANNEL_REQUEST = 98;
+
+	private static final byte SSH2_MSG_CHANNEL_SUCCESS = 99;
+
+	private static final byte SSH2_MSG_CHANNEL_FAILURE = 100;
+
+	private String kexalgs, hostkeyalgs, encalgs2c, encalgc2s, macalgs2c, macalgc2s, compalgc2s, compalgs2c, langc2s,
+			langs2;
+
+	private int outgoingseq = 0, incomingseq = 0;
 
 	//
 	// encryption types
@@ -239,20 +305,47 @@ public abstract class SshIO {
 					//        System.out.println("remotemajor " + remotemajor);
 					//          System.out.println("remoteminor " + remoteminor);
 
+//#ifdef ssh2
 					if ( remotemajor == 2 ) {
-						return "Remote server does not support ssh1\n".getBytes();
+						mymajor = 2;
+						myminor = 0;
+						useprotocol = 2;
+					}
+					else {
+						if ( false && ( remoteminor == 99 ) ) {
+							mymajor = 2;
+							myminor = 0;
+							useprotocol = 2;
+						}
+						else {
+							mymajor = 1;
+							myminor = 5;
+							useprotocol = 1;
+						}
+					}
+//#else
+					if ( remotemajor == 2 ) {
+						return "Remote server does not support ssh1\r\n".getBytes();
 					}
 					else {
 						mymajor = 1;
 						myminor = 5;
 						useprotocol = 1;
 					}
+//#endif
 					// this is how we tell the remote server what protocol we
 					// use.
 					idstr_sent = "SSH-" + mymajor + "." + myminor + "-" + idstr_sent;
 					write( idstr_sent.getBytes() );
 
-					currentpacket = new SshPacket( null );
+//#ifdef ssh2
+					if ( useprotocol == 2 )
+						currentpacket = new SshPacket2( null );
+					else
+						currentpacket = new SshPacket1( null );
+//#else
+					currentpacket = new SshPacket1( null );
+//#endif
 				}
 			}
 			if ( boffset == boffsetend )
@@ -264,14 +357,25 @@ public abstract class SshIO {
 		while ( boffset < boffsetend ) {
 			boffset = currentpacket.addPayload( buff, boffset, ( boffsetend - boffset ) );
 			if ( currentpacket.isFinished() ) {
-				result = result + handlePacket1( (SshPacket) currentpacket );
-				currentpacket = new SshPacket( crypto );
+//#ifdef ssh2
+				if ( useprotocol == 1 ) {
+					result = result + handlePacket1( (SshPacket1) currentpacket );
+					currentpacket = new SshPacket1( crypto );
+				}
+				else {
+					result = result + handlePacket2( (SshPacket2) currentpacket );
+					currentpacket = new SshPacket2( (SshCrypto2)crypto );
+				}
+//#else				
+				result = result + handlePacket1( (SshPacket1) currentpacket );
+				currentpacket = new SshPacket1( crypto );
+//#endif
 			}
 		}
 		return result.getBytes();
 	}
 
-	private String handlePacket1( SshPacket p ) throws IOException { //the
+	private String handlePacket1( SshPacket1 p ) throws IOException { //the
 		// message
 		// to handle
 		// is data
@@ -498,11 +602,356 @@ public abstract class SshIO {
 		return "";
 	} // handlePacket
 
-	private void sendPacket1( SshPacket packet ) throws IOException {
+	private void sendPacket1( SshPacket1 packet ) throws IOException {
 		write( packet.getPayLoad( crypto ) );
 		lastPacketSentType = packet.getType();
 	}
+	
+//#ifdef ssh2
+	/**
+	 * Handle SSH protocol Version 2
+	 * 
+	 * @param p
+	 *            the packet we will process here.
+	 * @return a array of bytes
+	 */
+	private String handlePacket2( SshPacket2 p ) throws IOException {
+		switch ( p.getType() ) {
+			case SSH2_MSG_IGNORE:
+				//        System.out.println("SSH2: SSH2_MSG_IGNORE");
+				break;
+			case SSH2_MSG_DISCONNECT:
+				int discreason = p.getInt32();
+				String discreason1 = p.getString();
+				/* String discreason2 = p.getString(); */
+				//        System.out.println("SSH2: SSH2_MSG_DISCONNECT(" + discreason
+				// +
+				// "," + discreason1 + "," + /*discreason2+*/")");
+				return "\r\nSSH2 disconnect: " + discreason1 + "\r\n";
 
+			case SSH2_MSG_NEWKEYS: {
+				// Send response
+				sendPacket2( new SshPacket2( SSH2_MSG_NEWKEYS ) );
+
+				//byte[] session_key = new byte[24];
+				//crypto = new SshCrypto( cipher_type, session_key );
+				updateKeys( dhkex );
+
+				SshPacket2 pn = new SshPacket2( SSH2_MSG_SERVICE_REQUEST );
+				pn.putString( "ssh-userauth" );
+				
+				sendPacket2( pn );
+				break;
+			}
+			
+			case SSH2_MSG_SERVICE_ACCEPT: {
+				// Send login request
+				SshPacket2 buf = new SshPacket2( SSH2_MSG_USERAUTH_REQUEST );
+			    buf.putString( login );
+			    buf.putString( "ssh-connection" );
+			    buf.putString( "password" );
+			    buf.putByte( (byte)0 );
+			    buf.putString( password );
+			    
+			    sendPacket2( buf );
+				break;
+			}
+			
+			case SSH2_MSG_USERAUTH_SUCCESS: {
+				// Open channel
+				SshPacket2 pn = new SshPacket2( SSH2_MSG_CHANNEL_OPEN );
+				pn.putString( "session" );
+				pn.putInt32( 0 );
+				pn.putInt32( 0x100000 );
+				pn.putInt32( 0x4000 );
+				sendPacket2( pn );
+				break;
+			}
+			
+			case SSH2_MSG_CHANNEL_OPEN_CONFIRMATION: {
+				int localId = p.getInt32();
+				int remoteId = p.getInt32();
+				int remoteWindowSize = p.getInt32();
+				int remotePacketSize = p.getInt32();
+				
+				// Open PTY
+				SshPacket2 pn = new SshPacket2( SSH2_MSG_CHANNEL_REQUEST );
+				pn.putInt32( remoteId );
+				pn.putString( "pty-req" );
+				pn.putByte( (byte) 0 ); // want reply
+				pn.putString( getTerminalID() );
+				pn.putInt32( getTerminalWidth() );
+				pn.putInt32( getTerminalHeight() );
+				pn.putInt32( 0 );
+				pn.putInt32( 0 );
+				pn.putString( "" );
+				sendPacket2( pn );
+				
+				// Open Shell
+				pn = new SshPacket2( SSH2_MSG_CHANNEL_REQUEST );
+				pn.putInt32( remoteId );
+				pn.putString( "shell" );
+				pn.putByte( (byte) 0 ); // want reply
+				sendPacket2( pn );
+				
+				cansenddata = true;
+				break;
+			}
+			
+			case SSH2_MSG_CHANNEL_WINDOW_ADJUST: {
+				break;
+			}
+			
+			case SSH2_MSG_CHANNEL_DATA: {
+				int localId = p.getInt32();
+				String data = p.getString();
+				return data;
+			}
+				
+			case SSH2_MSG_USERAUTH_FAILURE:
+				String methods = p.getString();
+				int partial_success = p.getByte();
+				
+				return "SSH2: Authorisation failed, available methods are:\r\n" + methods + "\r\n";
+				
+			case SSH2_MSG_USERAUTH_BANNER: {
+				String message = p.getString();
+				String language = p.getString();
+				
+				System.out.println( "USERAUTH_BANNER " + message );
+				break;
+			}
+			
+			case SSH2_MSG_CHANNEL_EOF: {
+				break;
+			}
+			
+			case SSH2_MSG_CHANNEL_CLOSE: {
+				// TODO disconnect
+				break;
+			}
+			
+			case SSH2_MSG_CHANNEL_REQUEST: {
+				break;
+			}
+				
+			case SSH2_MSG_KEXINIT: {
+				byte[] fupp;
+				byte kexcookie[] = p.getBytes( 16 ); // unused.
+
+				String kexalgs = p.getString();
+				//          System.out.println("- " + kexalgs);
+				String hostkeyalgs = p.getString();
+				//          System.out.println("- " + hostkeyalgs);
+				String encalgc2s = p.getString();
+				//          System.out.println("- " + encalgc2s);
+				String encalgs2c = p.getString();
+				//          System.out.println("- " + encalgs2c);
+				String macalgc2s = p.getString();
+				//          System.out.println("- " + macalgc2s);
+				String macalgs2c = p.getString();
+				//          System.out.println("- " + macalgs2c);
+				String compalgc2s = p.getString();
+				//          System.out.println("- " + compalgc2s);
+				String compalgs2c = p.getString();
+				//          System.out.println("- " + compalgs2c);
+				String langc2s = p.getString();
+				//          System.out.println("- " + langc2s);
+				String langs2c = p.getString();
+				//          System.out.println("- " + langs2c);
+				fupp = p.getBytes( 1 );
+				//          System.out.println("- first_kex_follows: " + fupp[0]);
+				/* int32 reserved (0) */
+
+				SshPacket2 pn = new SshPacket2( SSH2_MSG_KEXINIT );
+				byte[] kexsend = new byte[16];
+				Random random = new Random();
+				for ( int i = 0; i < kexsend.length; i++ ) {
+					kexsend[i] = (byte) random.nextInt();
+				}
+				String ciphername;
+				pn.putBytes( kexsend );
+				pn.putString( "diffie-hellman-group1-sha1" );
+				pn.putString( "ssh-dss" );
+
+				cipher_type = "DES3";
+				ciphername = "3des-cbc";
+
+				pn.putString( ciphername );
+				pn.putString( ciphername );
+				pn.putString( "hmac-sha1" );
+				pn.putString( "hmac-sha1" );
+				pn.putString( "none" );
+				pn.putString( "none" );
+				pn.putString( "" );
+				pn.putString( "" );
+				pn.putByte( (byte) 0 );
+				pn.putInt32( 0 );
+				
+				byte [] I_C = pn.getData();
+				sendPacket2( pn );
+
+				dhkex = new DHKeyExchange();
+				dhkex.setV_S( idstr.trim().getBytes() );
+				dhkex.setV_C( idstr_sent.trim().getBytes() );
+				dhkex.setI_S( add20( p.getData() ) );
+				dhkex.setI_C( add20( I_C ) );
+				
+				pn = new SshPacket2( SSH2_MSG_KEXDH_INIT );
+				pn.putMpInt( dhkex.getE() );
+				sendPacket2( pn );
+				
+				return "Negotiating keys...";
+			}
+			
+			case SSH2_MSG_KEXDH_REPLY: {
+				byte [] K_S = p.getByteString();
+				//System.out.println( "K_S=" + K_S );
+				byte [] dhserverpub = p.getMpInt();
+				//result += "DH Server Pub: " + dhserverpub + "\n\r";
+
+				byte [] sig_of_h = p.getByteString();
+				
+				boolean ok = dhkex.next( K_S, dhserverpub, sig_of_h );
+				/* signature is a new blob, length is Int32. */
+				/*
+				 * RSA: String type (ssh-rsa) Int32/byte[] signed signature
+				 */
+				//int siglen = p.getInt32();
+				//String sigstr = p.getString();
+				//result += "Signature: ktype is " + sigstr + "\r\n";
+				//byte sigdata[] = p.getBytes( p.getInt32() );
+
+				if ( ok ) {
+					return "OK\r\n";
+				}
+				else {
+					// TODO disconnect
+					return "FAILED\r\n";
+				}
+			}
+			
+			case SSH2_MSG_UNIMPLEMENTED:
+				return "SSH2: Unimplemented\r\n";
+				
+			default:
+				return "SSH2: handlePacket2 Unknown type " + p.getType() + "\r\n";
+		}
+		return "";
+	}
+
+	private void sendPacket2( SshPacket2 packet ) throws IOException {
+		write( packet.getPayLoad( (SshCrypto2) crypto, outgoingseq ) );
+		outgoingseq++;
+		lastPacketSentType = packet.getType();
+	}
+
+	private DHKeyExchange dhkex;
+	
+	private byte [] session_id;
+	
+	// TODO marker to help me find this
+	private void updateKeys( DHKeyExchange kex ) {
+		byte [] K = kex.getK();
+		byte[] H = kex.getH();
+		SHA1Digest hash = new SHA1Digest();
+
+		if ( session_id == null ) {
+			session_id = new byte[H.length];
+			System.arraycopy( H, 0, session_id, 0, H.length );
+		}
+
+		/*
+		 * Initial IV client to server: HASH (K || H || "A" || session_id)
+		 * Initial IV server to client: HASH (K || H || "B" || session_id)
+		 * Encryption key client to server: HASH (K || H || "C" || session_id)
+		 * Encryption key server to client: HASH (K || H || "D" || session_id)
+		 * Integrity key client to server: HASH (K || H || "E" || session_id)
+		 * Integrity key server to client: HASH (K || H || "F" || session_id)
+		 */
+
+		SshPacket2 buf = new SshPacket2( null );
+		buf.putMpInt( K );
+		buf.putBytes( H );
+		buf.putByte( (byte) 0x41 );
+		buf.putBytes( session_id );
+		byte [] b = buf.getData();
+		
+		hash.update( b, 0, b.length );
+		byte [] IVc2s = new byte[hash.getDigestSize()];
+		hash.doFinal( IVc2s, 0 );
+
+		int j = b.length - session_id.length - 1;
+
+		b[j]++;
+		hash.update( b, 0, b.length );
+		byte [] IVs2c = new byte[hash.getDigestSize()];
+		hash.doFinal( IVs2c, 0 );
+
+		b[j]++;
+		hash.update( b, 0, b.length );
+		byte [] Ec2s = new byte[hash.getDigestSize()];
+		hash.doFinal( Ec2s, 0 );
+
+		b[j]++;
+		hash.update( b, 0, b.length );
+		byte [] Es2c = new byte[hash.getDigestSize()];
+		hash.doFinal( Es2c, 0 );
+
+		b[j]++;
+		hash.update( b, 0, b.length );
+		byte [] MACc2s = new byte[hash.getDigestSize()];
+		hash.doFinal( MACc2s, 0 );
+
+		b[j]++;
+		hash.update( b, 0, b.length );
+		byte [] MACs2c = new byte[hash.getDigestSize()];
+		hash.doFinal( MACs2c, 0 );
+
+		int keySize = 24;
+		
+		while ( keySize > Es2c.length ) {
+			buf = new SshPacket2( null );
+			buf.putMpInt( K );
+			buf.putBytes( H );
+			buf.putBytes( Es2c );
+			b = buf.getData();
+			
+			hash.update( b, 0, b.length );
+			byte[] foo = new byte[ hash.getDigestSize() ];
+			hash.doFinal( foo, 0 );
+			byte[] bar = new byte[Es2c.length + foo.length];
+			System.arraycopy( Es2c, 0, bar, 0, Es2c.length );
+			System.arraycopy( foo, 0, bar, Es2c.length, foo.length );
+			Es2c = bar;
+		}
+		while ( keySize > Ec2s.length ) {
+			buf = new SshPacket2( null );
+			buf.putMpInt( K );
+			buf.putBytes( H );
+			buf.putBytes( Ec2s );
+			b = buf.getData();
+			
+			hash.update( b, 0, b.length );
+			byte[] foo = new byte[ hash.getDigestSize() ];
+			hash.doFinal( foo, 0 );
+			byte[] bar = new byte[Ec2s.length + foo.length];
+			System.arraycopy( Ec2s, 0, bar, 0, Ec2s.length );
+			System.arraycopy( foo, 0, bar, Ec2s.length, foo.length );
+			Ec2s = bar;
+		}
+		
+		crypto = new SshCrypto2( IVc2s, IVs2c, Ec2s, Es2c, MACc2s, MACs2c );
+	}
+	
+	private byte [] add20( byte [] in ) {
+		byte [] out = new byte[ in.length + 1 ];
+		out[0] = 20;
+		System.arraycopy( in, 0, out, 1, in.length );
+		return out;
+	}
+//#endif
+	
 	//
 	// Send_SSH_CMSG_SESSION_KEY
 	// Create :
@@ -625,7 +1074,7 @@ public abstract class SshIO {
 		//	protocol_flags :protocol extension cf. page 18
 		int protocol_flags = 0; /* currently 0 */
 
-		SshPacket packet = new SshPacket( SSH_CMSG_SESSION_KEY );
+		SshPacket1 packet = new SshPacket1( SSH_CMSG_SESSION_KEY );
 		packet.putByte( (byte) cipher_types );
 		packet.putBytes( anti_spoofing_cookie );
 		packet.putBytes( encrypted_session_key );
@@ -642,7 +1091,7 @@ public abstract class SshIO {
 		//    if (debug > 0) System.err.println("Send_SSH_CMSG_USER(" + login +
 		// ")");
 
-		SshPacket p = new SshPacket( SSH_CMSG_USER );
+		SshPacket1 p = new SshPacket1( SSH_CMSG_USER );
 		p.putString( login );
 		sendPacket1( p );
 
@@ -653,7 +1102,7 @@ public abstract class SshIO {
 	 * Send_SSH_CMSG_AUTH_PASSWORD string user password
 	 */
 	private String Send_SSH_CMSG_AUTH_PASSWORD() throws IOException {
-		SshPacket p = new SshPacket( SSH_CMSG_AUTH_PASSWORD );
+		SshPacket1 p = new SshPacket1( SSH_CMSG_AUTH_PASSWORD );
 		p.putString( password );
 		sendPacket1( p );
 		return "";
@@ -664,7 +1113,7 @@ public abstract class SshIO {
 	 * interpreter), and enters interactive session mode.
 	 */
 	private String Send_SSH_CMSG_EXEC_SHELL() throws IOException {
-		SshPacket packet = new SshPacket( SSH_CMSG_EXEC_SHELL );
+		SshPacket1 packet = new SshPacket1( SSH_CMSG_EXEC_SHELL );
 		sendPacket1( packet );
 		return "";
 	}
@@ -674,7 +1123,7 @@ public abstract class SshIO {
 	 *  
 	 */
 	private String Send_SSH_CMSG_STDIN_DATA( String str ) throws IOException {
-		SshPacket packet = new SshPacket( SSH_CMSG_STDIN_DATA );
+		SshPacket1 packet = new SshPacket1( SSH_CMSG_STDIN_DATA );
 		packet.putString( str );
 		sendPacket1( packet );
 		return "";
@@ -687,7 +1136,7 @@ public abstract class SshIO {
 	 * graphics) (e.g., 480)
 	 */
 	private String Send_SSH_CMSG_REQUEST_PTY() throws IOException {
-		SshPacket p = new SshPacket( SSH_CMSG_REQUEST_PTY );
+		SshPacket1 p = new SshPacket1( SSH_CMSG_REQUEST_PTY );
 
 		p.putString( getTerminalID() );
 		p.putInt32( getTerminalHeight() ); // Int32 rows
@@ -700,7 +1149,7 @@ public abstract class SshIO {
 	}
 
 	private String Send_SSH_CMSG_EXIT_CONFIRMATION() throws IOException {
-		SshPacket packet = new SshPacket( SSH_CMSG_EXIT_CONFIRMATION );
+		SshPacket1 packet = new SshPacket1( SSH_CMSG_EXIT_CONFIRMATION );
 		sendPacket1( packet );
 		return "";
 	}
@@ -712,7 +1161,7 @@ public abstract class SshIO {
 		// KARL The specification states that this packet is never sent, however the OpenSSL source
 		// for keep alives indicates that SSH_MSG_IGNORE (the alternative) crashes some servers and
 		// advocates SSH_MSG_NONE instead.
-		SshPacket packet = new SshPacket( SSH_MSG_NONE );
+		SshPacket1 packet = new SshPacket1( SSH_MSG_NONE );
 		sendPacket1( packet );
 		return "";
 	}

@@ -32,7 +32,8 @@
  * following patents: PCT/CH91/00117, EP 0 482 154 B1, US Pat. 5,214,703.
  */
 
-package ssh;
+package ssh.v1;
+
 
 /**
  * @author Marcus Meissner

@@ -889,7 +889,6 @@ public abstract class SshIO {
 	
 	private byte [] session_id;
 	
-	// TODO marker to help me find this
 	private void updateKeys( DHKeyExchange kex ) {
 		byte [] K = kex.getK();
 		byte[] H = kex.getH();
@@ -1204,8 +1203,17 @@ public abstract class SshIO {
 		// KARL The specification states that this packet is never sent, however the OpenSSL source
 		// for keep alives indicates that SSH_MSG_IGNORE (the alternative) crashes some servers and
 		// advocates SSH_MSG_NONE instead.
-		SshPacket1 packet = new SshPacket1( SSH_MSG_NONE );
-		sendPacket1( packet );
+	    if ( useprotocol == 1 ) {
+			SshPacket1 packet = new SshPacket1( SSH_MSG_NONE );
+			sendPacket1( packet );
+	    }
+	    else {
+//#ifdef ssh2
+	        SshPacket2 packet = new SshPacket2( SSH2_MSG_IGNORE );
+	        packet.putString( "" );
+	        sendPacket2( packet );
+//#endif
+	    }
 		return "";
 	}
 

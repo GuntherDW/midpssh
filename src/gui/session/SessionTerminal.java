@@ -36,7 +36,6 @@ import terminal.Terminal;
 import terminal.vt320;
 import app.Main;
 import app.Settings;
-import app.SettingsManager;
 import app.session.Session;
 
 /**
@@ -198,26 +197,20 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		setCommandListener( this );
 		
 		// Settings
-		Settings settings;
-//#ifndef nosettings
-		settings = SettingsManager.getSettings();
-//#else
-		settings = new Settings();
-//#endif
 		if ( Main.useColors ) {
-			bgcolor = settings.bgcolor;
-			fgcolor = settings.fgcolor;
+			bgcolor = Settings.bgcolor;
+			fgcolor = Settings.fgcolor;
 		}
 		
 		boolean resized = false;
 		int cols = this.cols;
 		int rows = this.rows;
-		if ( settings.screenColumns != 0 ) {
-			cols = settings.screenColumns;
+		if ( Settings.terminalCols != 0 ) {
+			cols = Settings.terminalCols;
 			resized = true;
 		}
-		if ( settings.screenRows != 0 ) {
-			rows = settings.screenRows;
+		if ( Settings.terminalRows != 0 ) {
+			rows = Settings.terminalRows;
 			resized = true;
 		}
 		if ( resized ) {
@@ -352,6 +345,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	protected void keyPressed( int keycode ) {
 		switch ( mode ) {
+			case MODE_CONNECTED:
+				keyPressedConnected( keycode );
+				break;
 //#ifndef nocursororscroll
 			case MODE_CURSOR:
 				keyPressedCursor( keycode );
@@ -394,6 +390,32 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	}
 //#endif
 
+	protected void keyPressedConnected( int keycode ) {
+		// If a game action is used, allow it to operate the cursor even when not in cursor mode
+		if ( handleGameAction( keycode ) ) return;
+	}
+	
+	protected boolean handleGameAction( int keycode ) {
+		int gameAction = getGameAction( keycode );
+		if ( gameAction != 0 ) {
+			switch ( gameAction ) {
+			case Canvas.UP:
+				buffer.keyPressed( KeyEvent.VK_UP, vt320.KEY_ACTION );
+				return true;
+			case Canvas.DOWN:
+				buffer.keyPressed( KeyEvent.VK_DOWN, vt320.KEY_ACTION );
+				return true;
+			case Canvas.LEFT:
+				buffer.keyPressed( KeyEvent.VK_LEFT, vt320.KEY_ACTION );
+				return true;
+			case Canvas.RIGHT:
+				buffer.keyPressed( KeyEvent.VK_RIGHT, vt320.KEY_ACTION );
+				return true;
+			}
+		}
+		return false;
+	}
+
 	protected void keyReleasedConnected( int keycode ) {
 		int index = -1;
 		
@@ -426,6 +448,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	    if ( keycode == KEY_SHIFT ) {
 	        typingShift = true;
 	    }
+	    
+	    // If a game action is used, allow it to operate the cursor even when not in cursor mode
+		if ( handleGameAction( keycode ) ) return;
 	}
 	
 	protected void keyReleasedTyping( int keycode ) {

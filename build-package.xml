@@ -144,13 +144,14 @@
         		  debug="false"
         	      optimize="true"
                   preverify="false" target="1.4" />
-                  -->
+-->
+
         <javac srcdir="${build.dir}/src-proc/${filename}"
                   destdir="${build.dir}/bin/${filename}"
         		  debug="false"
         	      optimize="true"
-        	      target="${javac.target}" source="${javac.source}"
-        	      classpathref="${wtk.classpath}" />
+        	      target="1.1" 
+        	      bootclasspathref="${wtk.classpath}" />
 
         <!-- Package everything. Most of the necessary information is
              contained in the JAD file. Also preverify the result this

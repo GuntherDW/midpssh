@@ -1,208 +1,206 @@
+/* This file is part of "MidpSSH".
+ * 
+ * This file was adapted from Bouncy Castle JCE (www.bouncycastle.org)
+ * for MidpSSH by Karl von Randow
+ */
 package ssh.v2;
 
 /**
  * implements Cipher-Block-Chaining (CBC) mode on top of a simple cipher.
  */
-public class DESedeCBC
-{
-    private byte[]          IV;
-    private byte[]          cbcV;
-    private byte[]          cbcNextV;
+public class DESedeCBC {
+	private byte[] IV;
 
-    private int             blockSize;
-    private DESedeEngine     cipher = null;
-    private boolean         encrypting;
+	private byte[] cbcV;
 
-    /**
-     * Basic constructor.
-     *
-     * @param cipher the block cipher to be used as the basis of chaining.
-     */
-    public DESedeCBC()
-    {
-        this.cipher = new DESedeEngine();
-        this.blockSize = cipher.getBlockSize();
+	private byte[] cbcNextV;
 
-        this.IV = new byte[blockSize];
-        this.cbcV = new byte[blockSize];
-        this.cbcNextV = new byte[blockSize];
-    }
+	private int blockSize;
 
-    /**
-     * return the underlying block cipher that we are wrapping.
-     *
-     * @return the underlying block cipher that we are wrapping.
-     */
-    public DESedeEngine getUnderlyingCipher()
-    {
-        return cipher;
-    }
+	private DESedeEngine cipher = null;
 
-    /**
-     * Initialise the cipher and, possibly, the initialisation vector (IV).
-     * If an IV isn't passed as part of the parameter, the IV will be all zeros.
-     *
-     * @param encrypting if true the cipher is initialised for
-     *  encryption, if false for decryption.
-     * @param params the key and other data required by the cipher.
-     * @exception IllegalArgumentException if the params argument is
-     * inappropriate.
-     */
-    public void init(
-        boolean             encrypting,
-        byte [] iv, byte [] key )
-        throws IllegalArgumentException
-    {
-        this.encrypting = encrypting;
-        System.arraycopy(iv, 0, IV, 0, blockSize);
+	private boolean encrypting;
 
-        reset();
+	/**
+	 * Basic constructor.
+	 * 
+	 * @param cipher
+	 *            the block cipher to be used as the basis of chaining.
+	 */
+	public DESedeCBC() {
+		this.cipher = new DESedeEngine();
+		this.blockSize = cipher.getBlockSize();
 
-        cipher.init(encrypting, key);
-    }
+		this.IV = new byte[blockSize];
+		this.cbcV = new byte[blockSize];
+		this.cbcNextV = new byte[blockSize];
+	}
 
-    /**
-     * return the algorithm name and mode.
-     *
-     * @return the name of the underlying algorithm followed by "/CBC".
-     */
-    public String getAlgorithmName()
-    {
-        return cipher.getAlgorithmName() + "/CBC";
-    }
+	/**
+	 * return the underlying block cipher that we are wrapping.
+	 * 
+	 * @return the underlying block cipher that we are wrapping.
+	 */
+	public DESedeEngine getUnderlyingCipher() {
+		return cipher;
+	}
 
-    /**
-     * return the block size of the underlying cipher.
-     *
-     * @return the block size of the underlying cipher.
-     */
-    public int getBlockSize()
-    {
-        return cipher.getBlockSize();
-    }
+	/**
+	 * Initialise the cipher and, possibly, the initialisation vector (IV). If
+	 * an IV isn't passed as part of the parameter, the IV will be all zeros.
+	 * 
+	 * @param encrypting
+	 *            if true the cipher is initialised for encryption, if false for
+	 *            decryption.
+	 * @param params
+	 *            the key and other data required by the cipher.
+	 * @exception IllegalArgumentException
+	 *                if the params argument is inappropriate.
+	 */
+	public void init(boolean encrypting, byte[] iv, byte[] key)
+			throws IllegalArgumentException {
+		this.encrypting = encrypting;
+		System.arraycopy(iv, 0, IV, 0, blockSize);
 
-    /**
-     * Process one block of input from the array in and write it to
-     * the out array.
-     *
-     * @param in the array containing the input data.
-     * @param inOff offset into the in array the data starts at.
-     * @param out the array the output data will be copied into.
-     * @param outOff the offset into the out array the output will start at.
-     * @exception DataLengthException if there isn't enough data in in, or
-     * space in out.
-     * @exception IllegalStateException if the cipher isn't initialised.
-     * @return the number of bytes processed and produced.
-     */
-    public int processBlock(
-        byte[]      in,
-        int         inOff,
-        byte[]      out,
-        int         outOff)
-        throws IllegalStateException
-    {
-        return (encrypting) ? encryptBlock(in, inOff, out, outOff) : decryptBlock(in, inOff, out, outOff);
-    }
+		reset();
 
-    /**
-     * reset the chaining vector back to the IV and reset the underlying
-     * cipher.
-     */
-    public void reset()
-    {
-        System.arraycopy(IV, 0, cbcV, 0, IV.length);
+		cipher.init(encrypting, key);
+	}
 
-        cipher.reset();
-    }
+	/**
+	 * return the algorithm name and mode.
+	 * 
+	 * @return the name of the underlying algorithm followed by "/CBC".
+	 */
+	public String getAlgorithmName() {
+		return cipher.getAlgorithmName() + "/CBC";
+	}
 
-    /**
-     * Do the appropriate chaining step for CBC mode encryption.
-     *
-     * @param in the array containing the data to be encrypted.
-     * @param inOff offset into the in array the data starts at.
-     * @param out the array the encrypted data will be copied into.
-     * @param outOff the offset into the out array the output will start at.
-     * @exception DataLengthException if there isn't enough data in in, or
-     * space in out.
-     * @exception IllegalStateException if the cipher isn't initialised.
-     * @return the number of bytes processed and produced.
-     */
-    private int encryptBlock(
-        byte[]      in,
-        int         inOff,
-        byte[]      out,
-        int         outOff)
-        throws IllegalStateException
-    {
-        if ((inOff + blockSize) > in.length)
-        {
-            throw new IllegalStateException("input buffer too short");
-        }
+	/**
+	 * return the block size of the underlying cipher.
+	 * 
+	 * @return the block size of the underlying cipher.
+	 */
+	public int getBlockSize() {
+		return cipher.getBlockSize();
+	}
 
-        /*
-         * XOR the cbcV and the input,
-         * then encrypt the cbcV
-         */
-        for (int i = 0; i < blockSize; i++)
-        {
-            cbcV[i] ^= in[inOff + i];
-        }
+	/**
+	 * Process one block of input from the array in and write it to the out
+	 * array.
+	 * 
+	 * @param in
+	 *            the array containing the input data.
+	 * @param inOff
+	 *            offset into the in array the data starts at.
+	 * @param out
+	 *            the array the output data will be copied into.
+	 * @param outOff
+	 *            the offset into the out array the output will start at.
+	 * @exception DataLengthException
+	 *                if there isn't enough data in in, or space in out.
+	 * @exception IllegalStateException
+	 *                if the cipher isn't initialised.
+	 * @return the number of bytes processed and produced.
+	 */
+	public int processBlock(byte[] in, int inOff, byte[] out, int outOff)
+			throws IllegalStateException {
+		return (encrypting) ? encryptBlock(in, inOff, out, outOff)
+				: decryptBlock(in, inOff, out, outOff);
+	}
 
-        int length = cipher.processBlock(cbcV, 0, out, outOff);
+	/**
+	 * reset the chaining vector back to the IV and reset the underlying cipher.
+	 */
+	public void reset() {
+		System.arraycopy(IV, 0, cbcV, 0, IV.length);
 
-        /*
-         * copy ciphertext to cbcV
-         */
-        System.arraycopy(out, outOff, cbcV, 0, cbcV.length);
+		cipher.reset();
+	}
 
-        return length;
-    }
+	/**
+	 * Do the appropriate chaining step for CBC mode encryption.
+	 * 
+	 * @param in
+	 *            the array containing the data to be encrypted.
+	 * @param inOff
+	 *            offset into the in array the data starts at.
+	 * @param out
+	 *            the array the encrypted data will be copied into.
+	 * @param outOff
+	 *            the offset into the out array the output will start at.
+	 * @exception DataLengthException
+	 *                if there isn't enough data in in, or space in out.
+	 * @exception IllegalStateException
+	 *                if the cipher isn't initialised.
+	 * @return the number of bytes processed and produced.
+	 */
+	private int encryptBlock(byte[] in, int inOff, byte[] out, int outOff)
+			throws IllegalStateException {
+		if ((inOff + blockSize) > in.length) {
+			throw new IllegalStateException("input buffer too short");
+		}
 
-    /**
-     * Do the appropriate chaining step for CBC mode decryption.
-     *
-     * @param in the array containing the data to be decrypted.
-     * @param inOff offset into the in array the data starts at.
-     * @param out the array the decrypted data will be copied into.
-     * @param outOff the offset into the out array the output will start at.
-     * @exception DataLengthException if there isn't enough data in in, or
-     * space in out.
-     * @exception IllegalStateException if the cipher isn't initialised.
-     * @return the number of bytes processed and produced.
-     */
-    private int decryptBlock(
-        byte[]      in,
-        int         inOff,
-        byte[]      out,
-        int         outOff)
-        throws IllegalStateException
-    {
-        if ((inOff + blockSize) > in.length)
-        {
-            throw new IllegalStateException("input buffer too short");
-        }
+		/*
+		 * XOR the cbcV and the input, then encrypt the cbcV
+		 */
+		for (int i = 0; i < blockSize; i++) {
+			cbcV[i] ^= in[inOff + i];
+		}
 
-        System.arraycopy(in, inOff, cbcNextV, 0, blockSize);
+		int length = cipher.processBlock(cbcV, 0, out, outOff);
 
-        int length = cipher.processBlock(in, inOff, out, outOff);
+		/*
+		 * copy ciphertext to cbcV
+		 */
+		System.arraycopy(out, outOff, cbcV, 0, cbcV.length);
 
-        /*
-         * XOR the cbcV and the output
-         */
-        for (int i = 0; i < blockSize; i++)
-        {
-            out[outOff + i] ^= cbcV[i];
-        }
+		return length;
+	}
 
-        /*
-         * swap the back up buffer into next position
-         */
-        byte[]  tmp;
+	/**
+	 * Do the appropriate chaining step for CBC mode decryption.
+	 * 
+	 * @param in
+	 *            the array containing the data to be decrypted.
+	 * @param inOff
+	 *            offset into the in array the data starts at.
+	 * @param out
+	 *            the array the decrypted data will be copied into.
+	 * @param outOff
+	 *            the offset into the out array the output will start at.
+	 * @exception DataLengthException
+	 *                if there isn't enough data in in, or space in out.
+	 * @exception IllegalStateException
+	 *                if the cipher isn't initialised.
+	 * @return the number of bytes processed and produced.
+	 */
+	private int decryptBlock(byte[] in, int inOff, byte[] out, int outOff)
+			throws IllegalStateException {
+		if ((inOff + blockSize) > in.length) {
+			throw new IllegalStateException("input buffer too short");
+		}
 
-        tmp = cbcV;
-        cbcV = cbcNextV;
-        cbcNextV = tmp;
+		System.arraycopy(in, inOff, cbcNextV, 0, blockSize);
 
-        return length;
-    }
+		int length = cipher.processBlock(in, inOff, out, outOff);
+
+		/*
+		 * XOR the cbcV and the output
+		 */
+		for (int i = 0; i < blockSize; i++) {
+			out[outOff + i] ^= cbcV[i];
+		}
+
+		/*
+		 * swap the back up buffer into next position
+		 */
+		byte[] tmp;
+
+		tmp = cbcV;
+		cbcV = cbcNextV;
+		cbcNextV = tmp;
+
+		return length;
+	}
 }

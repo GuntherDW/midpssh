@@ -1,128 +1,111 @@
+/* This file is part of "MidpSSH".
+ * 
+ * This file was adapted from Bouncy Castle JCE (www.bouncycastle.org)
+ * for MidpSSH by Karl von Randow
+ */
 package ssh.v2;
-
 
 /**
  * HMAC implementation based on RFC2104
- *
+ * 
  * H(K XOR opad, H(K XOR ipad, text))
  */
-public class HMac
-{
-    private final static int BLOCK_LENGTH = 64;
+public class HMac {
+	private final static int BLOCK_LENGTH = 64;
 
-    private final static byte IPAD = (byte)0x36;
-    private final static byte OPAD = (byte)0x5C;
+	private final static byte IPAD = (byte) 0x36;
 
-    private SHA1Digest digest;
-    private int digestSize;
-    private byte[] inputPad = new byte[BLOCK_LENGTH];
-    private byte[] outputPad = new byte[BLOCK_LENGTH];
+	private final static byte OPAD = (byte) 0x5C;
 
-    public HMac(
-    		SHA1Digest digest)
-    {
-        this.digest = digest;
-        digestSize = digest.getDigestSize();
-    }
+	private SHA1Digest digest;
 
-    public String getAlgorithmName()
-    {
-        return digest.getAlgorithmName() + "/HMAC";
-    }
+	private int digestSize;
 
-    public SHA1Digest getUnderlyingDigest()
-    {
-        return digest;
-    }
+	private byte[] inputPad = new byte[BLOCK_LENGTH];
 
-    public void init(
-        byte [] key )
-    {
-        digest.reset();
+	private byte[] outputPad = new byte[BLOCK_LENGTH];
 
-        if (key.length > BLOCK_LENGTH)
-        {
-            digest.update(key, 0, key.length);
-            digest.doFinal(inputPad, 0);
-            for (int i = digestSize; i < inputPad.length; i++)
-            {
-                inputPad[i] = 0;
-            }
-        }
-        else
-        {
-            System.arraycopy(key, 0, inputPad, 0, key.length);
-            for (int i = key.length; i < inputPad.length; i++)
-            {
-                inputPad[i] = 0;
-            }
-        }
+	public HMac(SHA1Digest digest) {
+		this.digest = digest;
+		digestSize = digest.getDigestSize();
+	}
 
-        outputPad = new byte[inputPad.length];
-        System.arraycopy(inputPad, 0, outputPad, 0, inputPad.length);
+	public String getAlgorithmName() {
+		return digest.getAlgorithmName() + "/HMAC";
+	}
 
-        for (int i = 0; i < inputPad.length; i++)
-        {
-            inputPad[i] ^= IPAD;
-        }
+	public SHA1Digest getUnderlyingDigest() {
+		return digest;
+	}
 
-        for (int i = 0; i < outputPad.length; i++)
-        {
-            outputPad[i] ^= OPAD;
-        }
+	public void init(byte[] key) {
+		digest.reset();
 
-        digest.update(inputPad, 0, inputPad.length);
-    }
+		if (key.length > BLOCK_LENGTH) {
+			digest.update(key, 0, key.length);
+			digest.doFinal(inputPad, 0);
+			for (int i = digestSize; i < inputPad.length; i++) {
+				inputPad[i] = 0;
+			}
+		} else {
+			System.arraycopy(key, 0, inputPad, 0, key.length);
+			for (int i = key.length; i < inputPad.length; i++) {
+				inputPad[i] = 0;
+			}
+		}
 
-    public int getMacSize()
-    {
-        return digestSize;
-    }
+		outputPad = new byte[inputPad.length];
+		System.arraycopy(inputPad, 0, outputPad, 0, inputPad.length);
 
-    public void update(
-        byte in)
-    {
-        digest.update(in);
-    }
+		for (int i = 0; i < inputPad.length; i++) {
+			inputPad[i] ^= IPAD;
+		}
 
-    public void update(
-        byte[] in,
-        int inOff,
-        int len)
-    {
-        digest.update(in, inOff, len);
-    }
+		for (int i = 0; i < outputPad.length; i++) {
+			outputPad[i] ^= OPAD;
+		}
 
-    public int doFinal(
-        byte[] out,
-        int outOff)
-    {
-        byte[] tmp = new byte[digestSize];
-        digest.doFinal(tmp, 0);
+		digest.update(inputPad, 0, inputPad.length);
+	}
 
-        digest.update(outputPad, 0, outputPad.length);
-        digest.update(tmp, 0, tmp.length);
+	public int getMacSize() {
+		return digestSize;
+	}
 
-        int     len = digest.doFinal(out, outOff);
+	public void update(byte in) {
+		digest.update(in);
+	}
 
-        reset();
+	public void update(byte[] in, int inOff, int len) {
+		digest.update(in, inOff, len);
+	}
 
-        return len;
-    }
+	public int doFinal(byte[] out, int outOff) {
+		byte[] tmp = new byte[digestSize];
+		digest.doFinal(tmp, 0);
 
-    /**
-     * Reset the mac generator.
-     */
-    public void reset()
-    {
-        /*
-         * reset the underlying digest.
-         */
-        digest.reset();
+		digest.update(outputPad, 0, outputPad.length);
+		digest.update(tmp, 0, tmp.length);
 
-        /*
-         * reinitialize the digest.
-         */
-        digest.update(inputPad, 0, inputPad.length);
-    }
+		int len = digest.doFinal(out, outOff);
+
+		reset();
+
+		return len;
+	}
+
+	/**
+	 * Reset the mac generator.
+	 */
+	public void reset() {
+		/*
+		 * reset the underlying digest.
+		 */
+		digest.reset();
+
+		/*
+		 * reinitialize the digest.
+		 */
+		digest.update(inputPad, 0, inputPad.length);
+	}
 }

@@ -1,5 +1,6 @@
 1.3.3
 Large font?
+Added Midlet-Permission tag to JAD - does this help siemens phones?
 
 1.3.2
 

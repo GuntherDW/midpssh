@@ -2,7 +2,7 @@
 
 <project name="MidpSSH" basedir="." default="all">
 
-	<taskdef resource="antenna.properties"/>
+	<taskdef resource="antenna.properties" classpath="lib/antenna-bin-0.9.13.jar" />
 	
 	<target name="all">
 		<antcall target="clean"/>

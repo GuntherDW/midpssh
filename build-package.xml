@@ -2,8 +2,6 @@
 
 <project name="MidpSSH-package" basedir="." default="all">
 
-	<taskdef resource="antenna.properties"/>
-	
 	<target name="all" depends="init,build-uptodate">
 		<antcall target="build"/>
 		<antcall target="build-run"/>
@@ -55,6 +53,7 @@
 				target="http://www.xk72.com/midpssh">
 
             <midlet name="${name}" class="app.Main"/>
+            <attribute name="MIDlet-Permissions" value="javax.microedition.io.SocketConnection" />
         </wtkjad>
     </target>
 

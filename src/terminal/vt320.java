@@ -185,13 +185,13 @@ public abstract class vt320 extends VDUBuffer {
 	 * @param b
 	 *            the array of bytes to be sent
 	 */
-	protected void write( byte[] b ) {
+	protected void write( byte[] b, int offset, int length ) {
 		/** before sending data transform it using telnet (which is sending it) */
 		try {
 			if ( localecho ) {
-				putString( new String( b ) );
+				putString( new String( b, offset, length ) );
 			}
-			sendData( b, 0, b.length );
+			sendData( b, offset, length );
 		}
 		catch ( java.io.IOException e ) {
 			System.err.println( e );
@@ -266,7 +266,7 @@ public abstract class vt320 extends VDUBuffer {
 		b[4] = (byte) ( 0x20 + x + 1 );
 		b[5] = (byte) ( 0x20 + y + 1 );
 
-		write( b ); // FIXME: writeSpecial here
+		write( b, 0, b.length ); // FIXME: writeSpecial here
 	}
 
 	/**
@@ -300,7 +300,7 @@ public abstract class vt320 extends VDUBuffer {
 		b[3] = (byte) mousecode;
 		b[4] = (byte) ( 0x20 + x + 1 );
 		b[5] = (byte) ( 0x20 + y + 1 );
-		write( b ); // FIXME: writeSpecial here
+		write( b, 0, b.length ); // FIXME: writeSpecial here
 		mousebut = 0;
 	}
 
@@ -360,6 +360,8 @@ public abstract class vt320 extends VDUBuffer {
 		return terminalID;
 	}
 
+	private byte [] writeBuffer = new byte[10];
+	
 	/**
 	 * A small conveniance method thar converts the string to a byte array for
 	 * sending.
@@ -377,11 +379,13 @@ public abstract class vt320 extends VDUBuffer {
 		 * hand copy.
 		 */
 
-		byte arr[] = new byte[s.length()];
-		for ( int i = 0; i < s.length(); i++ ) {
-			arr[i] = (byte) s.charAt( i );
+		if ( writeBuffer.length < s.length() ) {
+			writeBuffer = new byte[ s.length() ];
 		}
-		write( arr );
+		for ( int i = 0; i < s.length(); i++ ) {
+			writeBuffer[i] = (byte) s.charAt( i );
+		}
+		write( writeBuffer, 0, s.length() );
 
 		if ( doecho )
 			putString( s );

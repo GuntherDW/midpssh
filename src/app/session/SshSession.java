@@ -62,8 +62,7 @@ public class SshSession extends Session {
          * 
          * @see app.session.SessionIOListener#receiveData(byte[], int, int)
          */
-        public void receiveData( byte[] data, int offset, int length )
-                throws IOException {
+        public void receiveData( byte[] data, int offset, int length ) throws IOException {
             byte[] result = sshIO.handleSSH( data, offset, length );
             SshSession.this.receiveData( result, 0, result.length );
         }
@@ -73,8 +72,7 @@ public class SshSession extends Session {
          * 
          * @see app.session.SessionIOListener#sendData(byte[], int, int)
          */
-        public void sendData( byte[] data, int offset, int length )
-                throws IOException {
+        public void sendData( byte[] data, int offset, int length ) throws IOException {
             sshIO.sendData( data, offset, length );
         }
     }

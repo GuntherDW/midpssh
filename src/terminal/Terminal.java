@@ -215,13 +215,11 @@ public class Terminal extends Canvas {
                     // determine the maximum of characters we can print in one
                     // go
                     while ( ( c + addr < buffer.width )
-                            && ( ( buffer.charArray[buffer.windowBase + l][c
-                                    + addr] < ' ' ) || ( buffer.charAttributes[buffer.windowBase
+                            && ( ( buffer.charArray[buffer.windowBase + l][c + addr] < ' ' ) || ( buffer.charAttributes[buffer.windowBase
                                     + l][c + addr] == currAttr ) ) ) {
                         if ( buffer.charArray[buffer.windowBase + l][c + addr] < ' ' ) {
                             buffer.charArray[buffer.windowBase + l][c + addr] = ' ';
-                            buffer.charAttributes[buffer.windowBase + l][c
-                                    + addr] = 0;
+                            buffer.charAttributes[buffer.windowBase + l][c + addr] = 0;
                             continue;
                         }
                         addr++;
@@ -234,8 +232,7 @@ public class Terminal extends Canvas {
                     else
                         g.setColor( bgcolor );
 
-                    g.fillRect( ( c - left ) * font.width, ( l - top )
-                            * font.height, addr * font.width, font.height );
+                    g.fillRect( ( c - left ) * font.width, ( l - top ) * font.height, addr * font.width, font.height );
 
                     if ( Main.useColors )
                         g.setColor( fg );
@@ -243,9 +240,8 @@ public class Terminal extends Canvas {
                         g.setColor( fgcolor );
 
                     // draw the characters
-                    font.drawChars( g, buffer.charArray[buffer.windowBase + l],
-                            c, addr, ( c - left ) * font.width, ( l - top )
-                                    * font.height );
+                    font.drawChars( g, buffer.charArray[buffer.windowBase + l], c, addr, ( c - left ) * font.width, ( l - top )
+                            * font.height );
 
                     c += addr - 1;
                 }
@@ -253,15 +249,11 @@ public class Terminal extends Canvas {
 
             // draw cursor
             if ( buffer.showcursor
-                    && ( buffer.screenBase + buffer.cursorY >= buffer.windowBase && buffer.screenBase
-                            + buffer.cursorY < buffer.windowBase
+                    && ( buffer.screenBase + buffer.cursorY >= buffer.windowBase && buffer.screenBase + buffer.cursorY < buffer.windowBase
                             + buffer.height ) ) {
                 g.setColor( fgcolor );
-                g
-                        .fillRect(
-                                ( buffer.cursorX - left ) * font.width,
-                                ( buffer.cursorY - top + buffer.screenBase - buffer.windowBase )
-                                        * font.height, font.width, font.height );
+                g.fillRect( ( buffer.cursorX - left ) * font.width, ( buffer.cursorY - top + buffer.screenBase - buffer.windowBase )
+                        * font.height, font.width, font.height );
             }
 
             invalid = false;

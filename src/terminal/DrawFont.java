@@ -66,8 +66,7 @@ public class DrawFont {
         }
     }
 
-    public void drawChars( Graphics g, char[] chars, int offset, int length,
-            int x, int y ) {
+    public void drawChars( Graphics g, char[] chars, int offset, int length, int x, int y ) {
         for ( int i = offset; i < offset + length; i++ ) {
             drawChar( g, chars[i], x, y );
             x += width;

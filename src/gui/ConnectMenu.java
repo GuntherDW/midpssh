@@ -26,18 +26,15 @@ import app.session.TelnetSession;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class ConnectMenu extends ExtendedList implements CommandListener,
-        Activatable {
+public class ConnectMenu extends ExtendedList implements CommandListener, Activatable {
 
-    private static Command selectCommand = new Command( "Select", Command.ITEM,
-            1 );
+    private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
 
     private static Command newCommand = new Command( "New", Command.SCREEN, 8 );
 
     private static Command editCommand = new Command( "Edit", Command.ITEM, 9 );
 
-    private static Command deleteCommand = new Command( "Delete", Command.ITEM,
-            10 );
+    private static Command deleteCommand = new Command( "Delete", Command.ITEM, 10 );
 
     private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 
@@ -45,8 +42,7 @@ public class ConnectMenu extends ExtendedList implements CommandListener,
 
     private NewConnectionForm newConnectionForm = new NewConnectionForm( this );
 
-    private EditConnectionForm editConnectionForm = new EditConnectionForm(
-            this );
+    private EditConnectionForm editConnectionForm = new EditConnectionForm( this );
 
     /**
      * @param arg0
@@ -75,8 +71,7 @@ public class ConnectMenu extends ExtendedList implements CommandListener,
         Vector connections = ConnectionManager.getConnections();
         if ( connections != null ) {
             for ( int i = 0; i < connections.size(); i++ ) {
-                ConnectionSpec conn = (ConnectionSpec) connections
-                        .elementAt( i );
+                ConnectionSpec conn = (ConnectionSpec) connections.elementAt( i );
                 append( conn.alias, null );
             }
         }

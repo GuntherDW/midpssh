@@ -208,10 +208,8 @@ public class VDUBuffer {
     public void insertChar( int c, int l, char ch, int attributes ) {
         c = checkBounds( c, 0, width - 1 );
         l = checkBounds( l, 0, height - 1 );
-        System.arraycopy( charArray[screenBase + l], c, charArray[screenBase
-                + l], c + 1, width - c - 1 );
-        System.arraycopy( charAttributes[screenBase + l], c,
-                charAttributes[screenBase + l], c + 1, width - c - 1 );
+        System.arraycopy( charArray[screenBase + l], c, charArray[screenBase + l], c + 1, width - c - 1 );
+        System.arraycopy( charAttributes[screenBase + l], c, charAttributes[screenBase + l], c + 1, width - c - 1 );
         putChar( c, l, ch, attributes );
     }
 
@@ -232,10 +230,8 @@ public class VDUBuffer {
         c = checkBounds( c, 0, width - 1 );
         l = checkBounds( l, 0, height - 1 );
         if ( c < width - 1 ) {
-            System.arraycopy( charArray[screenBase + l], c + 1,
-                    charArray[screenBase + l], c, width - c - 1 );
-            System.arraycopy( charAttributes[screenBase + l], c + 1,
-                    charAttributes[screenBase + l], c, width - c - 1 );
+            System.arraycopy( charArray[screenBase + l], c + 1, charArray[screenBase + l], c, width - c - 1 );
+            System.arraycopy( charAttributes[screenBase + l], c + 1, charAttributes[screenBase + l], c, width - c - 1 );
         }
         putChar( width - 1, l, (char) 0 );
     }
@@ -369,13 +365,8 @@ public class VDUBuffer {
                                  */{
             return;
         }
-        int top = ( l < topMargin ? 0
-                : ( l > bottomMargin ? ( bottomMargin + 1 < height ? bottomMargin + 1
-                        : height - 1 )
-                        : topMargin ) );
-        int bottom = ( l > bottomMargin ? height - 1
-                : ( l < topMargin ? ( topMargin > 0 ? topMargin - 1 : 0 )
-                        : bottomMargin ) );
+        int top = ( l < topMargin ? 0 : ( l > bottomMargin ? ( bottomMargin + 1 < height ? bottomMargin + 1 : height - 1 ) : topMargin ) );
+        int bottom = ( l > bottomMargin ? height - 1 : ( l < topMargin ? ( topMargin > 0 ? topMargin - 1 : 0 ) : bottomMargin ) );
 
         // System.out.println("l is "+l+", top is "+top+", bottom is "+bottom+",
         // bottomargin is "+bottomMargin+", topMargin is "+topMargin);
@@ -387,14 +378,10 @@ public class VDUBuffer {
             cbuf = new char[bottom - l - ( n - 1 )][width];
             abuf = new int[bottom - l - ( n - 1 )][width];
 
-            System.arraycopy( charArray, oldBase + l, cbuf, 0, bottom - l
-                    - ( n - 1 ) );
-            System.arraycopy( charAttributes, oldBase + l, abuf, 0, bottom - l
-                    - ( n - 1 ) );
-            System.arraycopy( cbuf, 0, charArray, oldBase + l + n, bottom - l
-                    - ( n - 1 ) );
-            System.arraycopy( abuf, 0, charAttributes, oldBase + l + n, bottom
-                    - l - ( n - 1 ) );
+            System.arraycopy( charArray, oldBase + l, cbuf, 0, bottom - l - ( n - 1 ) );
+            System.arraycopy( charAttributes, oldBase + l, abuf, 0, bottom - l - ( n - 1 ) );
+            System.arraycopy( cbuf, 0, charArray, oldBase + l + n, bottom - l - ( n - 1 ) );
+            System.arraycopy( abuf, 0, charAttributes, oldBase + l + n, bottom - l - ( n - 1 ) );
             cbuf = charArray;
             abuf = charAttributes;
         }
@@ -430,29 +417,22 @@ public class VDUBuffer {
                 // top
                 // up to the screenBase.
                 if ( oldBase > 0 ) {
-                    System.arraycopy( charArray, offset, cbuf, 0, oldBase
-                            - offset );
-                    System.arraycopy( charAttributes, offset, abuf, 0, oldBase
-                            - offset );
+                    System.arraycopy( charArray, offset, cbuf, 0, oldBase - offset );
+                    System.arraycopy( charAttributes, offset, abuf, 0, oldBase - offset );
                 }
                 // copy anything from the top of the screen (screenBase) up to
                 // the
                 // topMargin to the new screen
                 if ( top > 0 ) {
-                    System
-                            .arraycopy( charArray, oldBase, cbuf, screenBase,
-                                    top );
-                    System.arraycopy( charAttributes, oldBase, abuf,
-                            screenBase, top );
+                    System.arraycopy( charArray, oldBase, cbuf, screenBase, top );
+                    System.arraycopy( charAttributes, oldBase, abuf, screenBase, top );
                 }
                 // copy anything from the topMargin up to the amount of lines
                 // inserted
                 // to the gap left over between scrollback buffer and screenBase
                 if ( oldBase > 0 ) {
-                    System.arraycopy( charArray, oldBase + top, cbuf, oldBase
-                            - offset, n );
-                    System.arraycopy( charAttributes, oldBase + top, abuf,
-                            oldBase - offset, n );
+                    System.arraycopy( charArray, oldBase + top, cbuf, oldBase - offset, n );
+                    System.arraycopy( charAttributes, oldBase + top, abuf, oldBase - offset, n );
                 }
                 // copy anything from topMargin + n up to the line linserted to
                 // the
@@ -475,19 +455,15 @@ public class VDUBuffer {
                  */
                 // this works fine RADEK
                 for ( int i = 0; i < l - top - ( n - 1 ); i++ ) {
-                    cbuf[screenBase + top + i] = charArray[oldBase + top + n
-                            + i];
-                    abuf[screenBase + top + i] = charAttributes[oldBase + top
-                            + n + i];
+                    cbuf[screenBase + top + i] = charArray[oldBase + top + n + i];
+                    abuf[screenBase + top + i] = charAttributes[oldBase + top + n + i];
                 }
 
                 //
                 // copy the all lines next to the inserted to the new buffer
                 if ( l < height - 1 ) {
-                    System.arraycopy( charArray, oldBase + l + 1, cbuf,
-                            screenBase + l + 1, ( height - 1 ) - l );
-                    System.arraycopy( charAttributes, oldBase + l + 1, abuf,
-                            screenBase + l + 1, ( height - 1 ) - l );
+                    System.arraycopy( charArray, oldBase + l + 1, cbuf, screenBase + l + 1, ( height - 1 ) - l );
+                    System.arraycopy( charAttributes, oldBase + l + 1, abuf, screenBase + l + 1, ( height - 1 ) - l );
                 }
             }
             catch ( ArrayIndexOutOfBoundsException e ) {
@@ -499,17 +475,13 @@ public class VDUBuffer {
                 System.err.println( "--- BEGIN STACK TRACE ---" );
                 e.printStackTrace();
                 System.err.println( "--- END STACK TRACE ---" );
-                System.err.println( "bufSize=" + bufSize + ", maxBufSize="
-                        + maxBufSize );
+                System.err.println( "bufSize=" + bufSize + ", maxBufSize=" + maxBufSize );
                 System.err.println( "top=" + top + ", bottom=" + bottom );
                 System.err.println( "n=" + n + ", l=" + l );
-                System.err.println( "screenBase=" + screenBase
-                        + ", windowBase=" + windowBase );
+                System.err.println( "screenBase=" + screenBase + ", windowBase=" + windowBase );
                 System.err.println( "oldBase=" + oldBase );
-                System.err.println( "size.width=" + width + ", size.height="
-                        + height );
-                System.err.println( "abuf.length=" + abuf.length
-                        + ", cbuf.length=" + cbuf.length );
+                System.err.println( "size.width=" + width + ", size.height=" + height );
+                System.err.println( "abuf.length=" + abuf.length + ", cbuf.length=" + cbuf.length );
                 System.err.println( "*** done dumping debug information" );
             }
         }
@@ -553,12 +525,9 @@ public class VDUBuffer {
     public void deleteLine( int l ) {
         l = checkBounds( l, 0, height - 1 );
 
-        int bottom = ( l > bottomMargin ? height - 1
-                : ( l < topMargin ? topMargin : bottomMargin + 1 ) );
-        System.arraycopy( charArray, screenBase + l + 1, charArray, screenBase
-                + l, bottom - l - 1 );
-        System.arraycopy( charAttributes, screenBase + l + 1, charAttributes,
-                screenBase + l, bottom - l - 1 );
+        int bottom = ( l > bottomMargin ? height - 1 : ( l < topMargin ? topMargin : bottomMargin + 1 ) );
+        System.arraycopy( charArray, screenBase + l + 1, charArray, screenBase + l, bottom - l - 1 );
+        System.arraycopy( charAttributes, screenBase + l + 1, charAttributes, screenBase + l, bottom - l - 1 );
         charArray[screenBase + bottom - 1] = new char[width];
         charAttributes[screenBase + bottom - 1] = new int[width];
         markLine( l, bottom - l );
@@ -594,9 +563,7 @@ public class VDUBuffer {
         }
         for ( int i = 0; i < h && l + i < height; i++ ) {
             System.arraycopy( cbuf, 0, charArray[screenBase + l + i], c, w );
-            System
-                    .arraycopy( abuf, 0, charAttributes[screenBase + l + i], c,
-                            w );
+            System.arraycopy( abuf, 0, charAttributes[screenBase + l + i], c, w );
         }
         markLine( l, h );
     }
@@ -626,9 +593,7 @@ public class VDUBuffer {
 
         for ( int i = 0; i < h && l + i < height; i++ ) {
             System.arraycopy( cbuf, 0, charArray[screenBase + l + i], c, w );
-            System
-                    .arraycopy( abuf, 0, charAttributes[screenBase + l + i], c,
-                            w );
+            System.arraycopy( abuf, 0, charAttributes[screenBase + l + i], c, w );
         }
         markLine( l, h );
     }
@@ -783,9 +748,7 @@ public class VDUBuffer {
                 System.arraycopy( charArray, copyStart, cbuf, 0, copyCount );
             }
             if ( charAttributes != null ) {
-                System
-                        .arraycopy( charAttributes, copyStart, abuf, 0,
-                                copyCount );
+                System.arraycopy( charAttributes, copyStart, abuf, 0, copyCount );
             }
             charArray = cbuf;
             charAttributes = abuf;
@@ -859,10 +822,8 @@ public class VDUBuffer {
 
         if ( charArray != null && charAttributes != null ) {
             for ( int i = 0; i < bsize && i < bufSize; i++ ) {
-                System.arraycopy( charArray[i], 0, cbuf[i], 0, w < width ? w
-                        : width );
-                System.arraycopy( charAttributes[i], 0, abuf[i], 0,
-                        w < width ? w : width );
+                System.arraycopy( charArray[i], 0, cbuf[i], 0, w < width ? w : width );
+                System.arraycopy( charAttributes[i], 0, abuf[i], 0, w < width ? w : width );
             }
         }
 

@@ -23,8 +23,7 @@ import terminal.vt320;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class InputDialog extends TextBox implements Activatable,
-        CommandListener {
+public class InputDialog extends TextBox implements Activatable, CommandListener {
 
     private static Command enterCommand = new Command( "Enter", Command.OK, 1 );
 

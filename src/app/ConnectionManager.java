@@ -31,16 +31,13 @@ public class ConnectionManager {
     public static Vector getConnections() {
         if ( connections == null ) {
             try {
-                RecordStore rec = RecordStore.openRecordStore( "connections",
-                        false );
-                RecordEnumeration recs = rec.enumerateRecords( null, null,
-                        false );
+                RecordStore rec = RecordStore.openRecordStore( "connections", false );
+                RecordEnumeration recs = rec.enumerateRecords( null, null, false );
                 Vector connections = new Vector();
 
                 while ( recs.hasNextElement() ) {
                     byte[] data = recs.nextRecord();
-                    DataInputStream in = new DataInputStream(
-                            new ByteArrayInputStream( data ) );
+                    DataInputStream in = new DataInputStream( new ByteArrayInputStream( data ) );
                     ConnectionSpec conn = new ConnectionSpec();
                     try {
                         conn.read( in );
@@ -82,11 +79,9 @@ public class ConnectionManager {
 
                 }
 
-                RecordStore rec = RecordStore.openRecordStore( "connections",
-                        true );
+                RecordStore rec = RecordStore.openRecordStore( "connections", true );
                 for ( int i = 0; i < connections.size(); i++ ) {
-                    ConnectionSpec conn = (ConnectionSpec) connections
-                            .elementAt( i );
+                    ConnectionSpec conn = (ConnectionSpec) connections.elementAt( i );
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     DataOutputStream dout = new DataOutputStream( out );
                     try {

@@ -21,8 +21,7 @@ import app.ConnectionSpec;
  */
 public class NewConnectionForm extends ConnectionForm {
 
-    private static Command createCommand = new Command( "Create",
-            Command.SCREEN, 1 );
+    private static Command createCommand = new Command( "Create", Command.SCREEN, 1 );
 
     /**
      * @param title

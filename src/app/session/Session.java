@@ -28,8 +28,7 @@ import app.Main;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public abstract class Session implements SessionIOListener, Runnable,
-        Activatable {
+public abstract class Session implements SessionIOListener, Runnable, Activatable {
     /** Time to sleep between checks for new input from connection */
     public static int sleepTime = 1000;
 
@@ -85,8 +84,7 @@ public abstract class Session implements SessionIOListener, Runnable,
 
     public Session() {
         emulation = new vt320() {
-            public void sendData( byte[] b, int offset, int length )
-                    throws IOException {
+            public void sendData( byte[] b, int offset, int length ) throws IOException {
                 filter.sendData( b, offset, length );
             }
         };
@@ -108,8 +106,7 @@ public abstract class Session implements SessionIOListener, Runnable,
      * 
      * @see telnet.TelnetIOListener#receiveData(byte[])
      */
-    public void receiveData( byte[] buffer, int offset, int length )
-            throws IOException {
+    public void receiveData( byte[] buffer, int offset, int length ) throws IOException {
         if ( buffer != null && length > 0 ) {
             try {
                 emulation.putString( new String( buffer, offset, length ) );
@@ -153,8 +150,7 @@ public abstract class Session implements SessionIOListener, Runnable,
                 String conn = "socket://" + host;
                 if ( host.indexOf( ":" ) == -1 )
                     conn += ":" + defaultPort();
-                socket = (StreamConnection) Connector.open( conn,
-                        Connector.READ_WRITE, false );
+                socket = (StreamConnection) Connector.open( conn, Connector.READ_WRITE, false );
                 in = socket.openDataInputStream();
                 out = socket.openDataOutputStream();
                 emulation.putString( "OK" );

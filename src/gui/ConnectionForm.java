@@ -63,8 +63,7 @@ public abstract class ConnectionForm extends Form implements CommandListener {
         append( tfAlias );
         append( tfHost );
         append( cgType );
-        append( new StringItem( "Authentication:\n",
-                "For SSH connections only." ) );
+        append( new StringItem( "Authentication:\n", "For SSH connections only." ) );
         append( tfUsername );
         append( tfPassword );
 
@@ -99,8 +98,7 @@ public abstract class ConnectionForm extends Form implements CommandListener {
 
         if ( type != null ) {
             if ( type.equals( ConnectionSpec.TYPE_SSH ) ) {
-                if ( alias.length() > 0 && host.length() > 0
-                        && username.length() > 0 ) {
+                if ( alias.length() > 0 && host.length() > 0 && username.length() > 0 ) {
                     errorMessage = null;
                 }
                 else {

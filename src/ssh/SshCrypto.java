@@ -51,10 +51,8 @@ public class SshCrypto {
 
     //-------------------------------------------------------------------------
 
-    static public byte[] encrypteRSAPkcs1Twice( byte[] clearData,
-            byte[] server_key_public_exponent,
-            byte[] server_key_public_modulus, byte[] host_key_public_exponent,
-            byte[] host_key_public_modulus ) {
+    static public byte[] encrypteRSAPkcs1Twice( byte[] clearData, byte[] server_key_public_exponent, byte[] server_key_public_modulus,
+            byte[] host_key_public_exponent, byte[] host_key_public_modulus ) {
 
         // At each encryption step, a multiple-precision integer is constructed
         //

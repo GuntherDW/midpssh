@@ -41,8 +41,7 @@ public abstract class Cipher {
             return (Cipher) c.newInstance();
         }
         catch ( Throwable t ) {
-            System.err.println( "Cipher: unable to load instance of '"
-                    + algorithm + "'" );
+            System.err.println( "Cipher: unable to load instance of '" + algorithm + "'" );
             t.printStackTrace();
             return null;
         }
@@ -60,8 +59,7 @@ public abstract class Cipher {
     /**
      * The actual encryption takes place here.
      */
-    public abstract void encrypt( byte[] src, int srcOff, byte[] dest,
-            int destOff, int len );
+    public abstract void encrypt( byte[] src, int srcOff, byte[] dest, int destOff, int len );
 
     /**
      * Decrypt source byte array using the instantiated algorithm.
@@ -75,8 +73,7 @@ public abstract class Cipher {
     /**
      * The actual decryption takes place here.
      */
-    public abstract void decrypt( byte[] src, int srcOff, byte[] dest,
-            int destOff, int len );
+    public abstract void decrypt( byte[] src, int srcOff, byte[] dest, int destOff, int len );
 
     public abstract void setKey( byte[] key );
 

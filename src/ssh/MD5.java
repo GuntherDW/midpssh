@@ -126,12 +126,9 @@ public class MD5 {
         C = SWAP( C );
         D = SWAP( D );
         byte[] result = new byte[] {
-                (byte) ( A >>> 24 ), (byte) ( A >>> 16 ), (byte) ( A >>> 8 ),
-                (byte) A, (byte) ( B >>> 24 ), (byte) ( B >>> 16 ),
-                (byte) ( B >>> 8 ), (byte) B, (byte) ( C >>> 24 ),
-                (byte) ( C >>> 16 ), (byte) ( C >>> 8 ), (byte) C,
-                (byte) ( D >>> 24 ), (byte) ( D >>> 16 ), (byte) ( D >>> 8 ),
-                (byte) D
+                (byte) ( A >>> 24 ), (byte) ( A >>> 16 ), (byte) ( A >>> 8 ), (byte) A, (byte) ( B >>> 24 ), (byte) ( B >>> 16 ),
+                (byte) ( B >>> 8 ), (byte) B, (byte) ( C >>> 24 ), (byte) ( C >>> 16 ), (byte) ( C >>> 8 ), (byte) C, (byte) ( D >>> 24 ),
+                (byte) ( D >>> 16 ), (byte) ( D >>> 8 ), (byte) D
         };
 
         engineReset();
@@ -189,8 +186,7 @@ public class MD5 {
 
     private int SWAP( int n ) {
         //Copied from md5.c in FSF Gnu Privacy Guard 0.9.2
-        return ( ( ( 0xff & n ) << 24 ) | ( ( n & 0xff00 ) << 8 )
-                | ( ( n >>> 8 ) & 0xff00 ) | ( n >>> 24 ) );
+        return ( ( ( 0xff & n ) << 24 ) | ( ( n & 0xff00 ) << 8 ) | ( ( n >>> 8 ) & 0xff00 ) | ( n >>> 24 ) );
     }
 
     private void munch() {

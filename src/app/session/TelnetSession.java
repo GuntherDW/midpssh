@@ -69,8 +69,7 @@ public class TelnetSession extends Session {
          * 
          * @see terminal.TerminalIOListener#receiveData(byte[])
          */
-        public void receiveData( byte[] data, int offset, int length )
-                throws IOException {
+        public void receiveData( byte[] data, int offset, int length ) throws IOException {
             telnet.inputfeed( data, length );
             do {
                 length = telnet.negotiate( data );
@@ -86,8 +85,7 @@ public class TelnetSession extends Session {
          * 
          * @see terminal.TerminalIOListener#sendData(byte[])
          */
-        public void sendData( byte[] data, int offset, int length )
-                throws IOException {
+        public void sendData( byte[] data, int offset, int length ) throws IOException {
             TelnetSession.this.sendData( data, offset, length );
         }
     }

@@ -10,7 +10,6 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
-import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
 import terminal.vt320;
@@ -44,8 +43,7 @@ public class ModifierInputDialog extends Form implements Activatable,
         this.back = back;
         this.vt = vt;
 
-        append( new StringItem( null, "Enter one or more letters" ) );
-        tf = new TextField( "Control Keys", null, 10, TextField.ANY );
+        tf = new TextField( "Enter one or more letters", null, 10, TextField.ANY );
         append( tf );
         
         addCommand( enterCommand );

@@ -150,9 +150,8 @@ public class BigInteger {
 
         // Elements remaining in byte[] are a multiple of 4.
         while ( nwords > 0 )
-            words[--nwords] = bytes[bptr++] << 24
-                    | ( bytes[bptr++] & 0xff ) << 16
-                    | ( bytes[bptr++] & 0xff ) << 8 | ( bytes[bptr++] & 0xff );
+            words[--nwords] = bytes[bptr++] << 24 | ( bytes[bptr++] & 0xff ) << 16 | ( bytes[bptr++] & 0xff ) << 8
+                    | ( bytes[bptr++] & 0xff );
         return words;
     }
 
@@ -181,8 +180,7 @@ public class BigInteger {
                 words = null;
             }
         }
-        else if ( words == null || words.length < nwords
-                || words.length > nwords + 2 ) {
+        else if ( words == null || words.length < nwords || words.length > nwords + 2 ) {
             int[] new_words = new int[nwords];
             if ( words == null ) {
                 new_words[0] = ival;
@@ -244,8 +242,7 @@ public class BigInteger {
     }
 
     private BigInteger canonicalize() {
-        if ( words != null
-                && ( ival = BigInteger.wordsNeeded( words, ival ) ) <= 1 ) {
+        if ( words != null && ( ival = BigInteger.wordsNeeded( words, ival ) ) <= 1 ) {
             if ( ival == 1 )
                 ival = words[0];
             words = null;
@@ -400,8 +397,7 @@ public class BigInteger {
         return result.canonicalize();
     }
 
-    private static void divide( long x, long y, BigInteger quotient,
-            BigInteger remainder ) {
+    private static void divide( long x, long y, BigInteger quotient, BigInteger remainder ) {
         boolean xNegative, yNegative;
         if ( x < 0 ) {
             xNegative = true;
@@ -474,10 +470,8 @@ public class BigInteger {
      * @param rounding_mode
      *            one of FLOOR, CEILING, TRUNCATE, or ROUND.
      */
-    private static void divide( BigInteger x, BigInteger y,
-            BigInteger quotient, BigInteger remainder ) {
-        if ( ( x.words == null || x.ival <= 2 )
-                && ( y.words == null || y.ival <= 2 ) ) {
+    private static void divide( BigInteger x, BigInteger y, BigInteger quotient, BigInteger remainder ) {
+        if ( ( x.words == null || x.ival <= 2 ) && ( y.words == null || y.ival <= 2 ) ) {
             long x_l = x.longValue();
             long y_l = y.longValue();
             if ( x_l != Long.MIN_VALUE && y_l != Long.MIN_VALUE ) {

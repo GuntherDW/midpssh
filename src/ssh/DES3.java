@@ -34,15 +34,13 @@ public final class DES3 extends Cipher {
 
     DES des3 = new DES();
 
-    public synchronized void encrypt( byte[] src, int srcOff, byte[] dest,
-            int destOff, int len ) {
+    public synchronized void encrypt( byte[] src, int srcOff, byte[] dest, int destOff, int len ) {
         des1.encrypt( src, srcOff, dest, destOff, len );
         des2.decrypt( dest, destOff, dest, destOff, len );
         des3.encrypt( dest, destOff, dest, destOff, len );
     }
 
-    public synchronized void decrypt( byte[] src, int srcOff, byte[] dest,
-            int destOff, int len ) {
+    public synchronized void decrypt( byte[] src, int srcOff, byte[] dest, int destOff, int len ) {
         des3.decrypt( src, srcOff, dest, destOff, len );
         des2.encrypt( dest, destOff, dest, destOff, len );
         des1.decrypt( dest, destOff, dest, destOff, len );

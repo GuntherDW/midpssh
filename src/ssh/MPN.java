@@ -73,8 +73,7 @@ public class MPN {
     public static int add_n( int dest[], int[] x, int[] y, int len ) {
         long carry = 0;
         for ( int i = 0; i < len; i++ ) {
-            carry += ( (long) x[i] & 0xffffffffL )
-                    + ( (long) y[i] & 0xffffffffL );
+            carry += ( (long) x[i] & 0xffffffffL ) + ( (long) y[i] & 0xffffffffL );
             dest[i] = (int) carry;
             carry >>>= 32;
         }
@@ -138,8 +137,7 @@ public class MPN {
             long yword = (long) y[i] & 0xffffffffL;
             long carry = 0;
             for ( int j = 0; j < xlen; j++ ) {
-                carry += ( (long) x[j] & 0xffffffffL ) * yword
-                        + ( (long) dest[i + j] & 0xffffffffL );
+                carry += ( (long) x[j] & 0xffffffffL ) * yword + ( (long) dest[i + j] & 0xffffffffL );
                 dest[i + j] = (int) carry;
                 carry >>>= 32;
             }
@@ -227,8 +225,7 @@ public class MPN {
      * quotient==dividend.
      */
 
-    public static int divmod_1( int[] quotient, int[] dividend, int len,
-            int divisor ) {
+    public static int divmod_1( int[] quotient, int[] dividend, int len, int divisor ) {
         int i = len - 1;
         long r = dividend[i];
         if ( ( r & 0xffffffffL ) >= ( (long) divisor & 0xffffffffL ) )
@@ -263,9 +260,7 @@ public class MPN {
             prod_low += carry;
             // Invert the high-order bit, because: (unsigned) X > (unsigned) Y
             // iff: (int) (X^0x80000000) > (int) (Y^0x80000000).
-            carry = ( ( prod_low ^ 0x80000000 ) < ( carry ^ 0x80000000 ) ? 1
-                    : 0 )
-                    + prod_high;
+            carry = ( ( prod_low ^ 0x80000000 ) < ( carry ^ 0x80000000 ) ? 1 : 0 ) + prod_high;
             int x_j = dest[offset + j];
             prod_low = x_j - prod_low;
             if ( ( prod_low ^ 0x80000000 ) > ( x_j ^ 0x80000000 ) )
@@ -304,21 +299,18 @@ public class MPN {
             if ( zds[j] == y[ny - 1] )
                 qhat = -1; // 0xffffffff
             else {
-                long w = ( ( (long) ( zds[j] ) ) << 32 )
-                        + ( (long) zds[j - 1] & 0xffffffffL );
+                long w = ( ( (long) ( zds[j] ) ) << 32 ) + ( (long) zds[j - 1] & 0xffffffffL );
                 qhat = (int) udiv_qrnnd( w, y[ny - 1] );
             }
             if ( qhat != 0 ) {
                 int borrow = submul_1( zds, j - ny, y, ny, qhat );
                 int save = zds[j];
-                long num = ( (long) save & 0xffffffffL )
-                        - ( (long) borrow & 0xffffffffL );
+                long num = ( (long) save & 0xffffffffL ) - ( (long) borrow & 0xffffffffL );
                 while ( num != 0 ) {
                     qhat--;
                     long carry = 0;
                     for ( int i = 0; i < ny; i++ ) {
-                        carry += ( (long) zds[j - ny + i] & 0xffffffffL )
-                                + ( (long) y[i] & 0xffffffffL );
+                        carry += ( (long) zds[j - ny + i] & 0xffffffffL ) + ( (long) y[i] & 0xffffffffL );
                         zds[j - ny + i] = (int) carry;
                         carry >>>= 32;
                     }
@@ -457,8 +449,7 @@ public class MPN {
                 // Invert the high-order bit, because:
                 // (unsigned) X > (unsigned) Y iff
                 // (int) (X^0x80000000) > (int) (Y^0x80000000).
-                return ( x_word ^ 0x80000000 ) > ( y_word ^ 0x80000000 ) ? 1
-                        : -1;
+                return ( x_word ^ 0x80000000 ) > ( y_word ^ 0x80000000 ) ? 1 : -1;
             }
         }
         return 0;
@@ -480,8 +471,7 @@ public class MPN {
      * count < 32
      */
 
-    public static int rshift( int[] dest, int[] x, int x_start, int len,
-            int count ) {
+    public static int rshift( int[] dest, int[] x, int x_start, int len, int count ) {
         int count_2 = 32 - count;
         int low_word = x[x_start];
         int retval = low_word << count_2;
@@ -501,8 +491,7 @@ public class MPN {
      * OK if dest==x. Assumes: 0 <= count < 32 Same as rshift, but handles
      * count==0 (and has no return value).
      */
-    public static void rshift0( int[] dest, int[] x, int x_start, int len,
-            int count ) {
+    public static void rshift0( int[] dest, int[] x, int x_start, int len, int count ) {
         if ( count > 0 )
             rshift( dest, x, x_start, len, count );
         else
@@ -544,8 +533,7 @@ public class MPN {
      * if dest==x.
      */
 
-    public static int lshift( int[] dest, int d_offset, int[] x, int len,
-            int count ) {
+    public static int lshift( int[] dest, int d_offset, int[] x, int len, int count ) {
         int count_2 = 32 - count;
         int i = len - 1;
         int high_word = x[i];
@@ -553,8 +541,7 @@ public class MPN {
         d_offset++;
         while ( --i >= 0 ) {
             int low_word = x[i];
-            dest[d_offset + i] = ( high_word << count )
-                    | ( low_word >>> count_2 );
+            dest[d_offset + i] = ( high_word << count ) | ( low_word >>> count_2 );
             high_word = low_word;
         }
         dest[d_offset + i] = high_word << count;
@@ -653,8 +640,7 @@ public class MPN {
         }
         if ( initShiftWords + initShiftBits > 0 ) {
             if ( initShiftBits > 0 ) {
-                int sh_out = MPN.lshift( x, initShiftWords, x, len,
-                        initShiftBits );
+                int sh_out = MPN.lshift( x, initShiftWords, x, len, initShiftBits );
                 if ( sh_out != 0 )
                     x[( len++ ) + initShiftWords] = sh_out;
             }

@@ -65,14 +65,7 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 		removeCommand( this.selectCommand );
 		this.selectCommand = selectCommand;
 		
-		try {
-			setSelectCommand( selectCommand );
-		}
-		catch ( Error e ) {
-			// MIDP 1.0
-			e.printStackTrace();
-			addCommand( selectCommand );
-		}
+		setSelectCommand( selectCommand );
 	}
 	
 	protected abstract void addItems();
@@ -82,7 +75,6 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 	 */
 	public void commandAction( Command command, Displayable displayable ) {
 		if ( command == List.SELECT_COMMAND || command == selectCommand ) {
-			System.out.println( "COMMAND " + command );
 			doSelect( getSelectedIndex() );
 		}
 		else if ( command == newCommand ) {

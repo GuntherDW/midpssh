@@ -114,7 +114,6 @@ public class SessionManager {
 				}
 
 				rec.closeRecordStore();
-
 			}
 			catch ( RecordStoreFullException e ) {
 				e.printStackTrace();

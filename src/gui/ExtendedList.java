@@ -23,6 +23,7 @@
 
 package gui;
 
+import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
 
@@ -52,6 +53,17 @@ public class ExtendedList extends List {
 	public void deleteAll() {
 		while ( size() > 0 ) {
 			delete( size() - 1 );
+		}
+	}
+	
+	public void setSelectCommand( Command command ) {
+		try {
+			super.setSelectCommand( command );
+		}
+		catch ( Throwable t ) {
+			// MIDP 1.0 TODO does this actually happen on MIDP 1.0 devices?
+			t.printStackTrace();
+			addCommand( command );
 		}
 	}
 }

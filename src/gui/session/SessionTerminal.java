@@ -36,6 +36,8 @@ import terminal.KeyEvent;
 import terminal.Terminal;
 import terminal.vt320;
 import app.Main;
+import app.Settings;
+import app.SettingsManager;
 import app.session.Session;
 
 /**
@@ -124,6 +126,11 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		changeMode( MODE_DISCONNECTED );
 
 		setCommandListener( this );
+		
+		// Settings
+		Settings settings = SettingsManager.getSettings();
+		bgcolor = settings.getBgcolor();
+		fgcolor = settings.getFgcolor();
 	}
 	
 	public void connected() {

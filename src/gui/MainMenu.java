@@ -23,6 +23,7 @@
 package gui;
 
 import gui.session.macros.MacroSetsMenu;
+import gui.settings.SettingsForm;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -35,7 +36,7 @@ import app.Main;
  * @author Karl von Randow
  * 
  */
-public class MainMenu extends List implements CommandListener, Activatable {
+public class MainMenu extends ExtendedList implements CommandListener, Activatable {
 
 	private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
 
@@ -44,6 +45,8 @@ public class MainMenu extends List implements CommandListener, Activatable {
 	private SessionsMenu sessionsMenu;
 	
 	private MacroSetsMenu macrosMenu;
+	
+	private SettingsForm settingsForm;
 
 	/**
 	 * @param arg0
@@ -59,7 +62,7 @@ public class MainMenu extends List implements CommandListener, Activatable {
 		append( "Help", null );
 		append( "Quit", null );
 
-		addCommand( selectCommand );
+		setSelectCommand( selectCommand );
 		addCommand( quitCommand );
 
 		setCommandListener( this );
@@ -88,6 +91,15 @@ public class MainMenu extends List implements CommandListener, Activatable {
 			case 1:
 				doMacros();
 				break;
+			case 2:
+				doSettings();
+				break;
+			case 3:
+				doAbout();
+				break;
+			case 4:
+				doHelp();
+				break;
 			case 5:
 				doQuit();
 				break;
@@ -107,7 +119,22 @@ public class MainMenu extends List implements CommandListener, Activatable {
 		}
 		macrosMenu.activate( this );
 	}
+	
+	private void doSettings() {
+		if ( settingsForm == null ) {
+			settingsForm = new SettingsForm();
+		}
+		settingsForm.activate( this );
+	}
 
+	private void doAbout() {
+		
+	}
+	
+	private void doHelp() {
+		
+	}
+	
 	private void doQuit() {
 		Main.quitApp();
 	}

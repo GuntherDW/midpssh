@@ -11,6 +11,8 @@ import app.Main;
  * (c) Radek Polak 2003-2004. All Rights Reserved.
  *
  * Please visit project homepage at http://phoenix.inf.upol.cz/~polakr
+ * 
+ * Modified by Karl von Randow.
  *
  * --LICENSE NOTICE--
  * This program is free software; you can redistribute it and/or
@@ -67,11 +69,8 @@ public class Terminal extends Canvas {
 
 	public final static int COLOR_INVERT = 9;
 
-	//public java.util.Hashtable bindings = new java.util.Hashtable();
-
 	public Terminal( vt320 buffer ) {
-
-		this.buffer = buffer;
+		setVDUBuffer( buffer );
 
 		if ( Main.useColors ) {
 			fgcolor = 0xffffff;

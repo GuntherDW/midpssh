@@ -1,5 +1,5 @@
 /* This file is part of "MidpSSH".
- * Copyright (c) 2004 XK72 Ltd.
+ * Copyright (c) 2004 Karl von Randow.
  * 
  * MidpSSH is based upon Telnet Floyd and FloydSSH by Radek Polak.
  *
@@ -81,7 +81,9 @@ public class ModifierInputDialog extends TextBox implements Activatable, Command
 			String str = getString();
 			Session session = Main.currentSession();
 			if ( session != null ) {
-				session.typeString( str );
+				for ( int i = 0; i < str.length(); i++ ) {
+					session.typeChar( str.charAt( i ), modifier );
+				}
 			}
 		}
 

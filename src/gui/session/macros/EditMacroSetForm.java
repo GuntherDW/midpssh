@@ -1,5 +1,5 @@
 /* This file is part of "MidpSSH".
- * Copyright (c) 2004 XK72 Ltd.
+ * Copyright (c) 2004 Karl von Randow.
  * 
  * MidpSSH is based upon Telnet Floyd and FloydSSH by Radek Polak.
  *

@@ -1,5 +1,5 @@
 /* This file is part of "MidpSSH".
- * Copyright (c) 2004 XK72 Ltd.
+ * Copyright (c) 2004 Karl von Randow.
  * 
  * MidpSSH is based upon Telnet Floyd and FloydSSH by Radek Polak.
  *
@@ -39,7 +39,7 @@ import app.session.Session;
  */
 public class InputDialog extends TextBox implements Activatable, CommandListener {
 
-	private static Command enterCommand = new Command( "Enter", Command.OK, 1 );
+	private static Command enterCommand = new Command( "Enter", Command.ITEM, 1 );
 
 	private static Command typeCommand = new Command( "Type", Command.ITEM, 2 );
 

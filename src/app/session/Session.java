@@ -1,5 +1,5 @@
 /* This file is part of "MidpSSH".
- * Copyright (c) 2004 XK72 Ltd.
+ * Copyright (c) 2004 Karl von Randow.
  * 
  * MidpSSH is based upon Telnet Floyd and FloydSSH by Radek Polak.
  *
@@ -125,7 +125,6 @@ public abstract class Session implements SessionIOListener, Activatable {
 		if ( buffer != null && length > 0 ) {
 			try {
 				emulation.putString( new String( buffer, offset, length ) );
-				terminal.redraw();
 			}
 			catch ( Exception e ) {
 
@@ -158,9 +157,13 @@ public abstract class Session implements SessionIOListener, Activatable {
 		}
 	}
 	
+	public void typeChar( char c, int modifier ) {
+		emulation.keyTyped( 0, c, modifier );
+	}
+	
 	private boolean connect() throws IOException {
 		emulation.putString( "Connecting to " + host + "..." );
-		terminal.redraw();
+
 		String conn = "socket://" + host;
 		if ( host.indexOf( ":" ) == -1 )
 			conn += ":" + defaultPort();
@@ -169,7 +172,6 @@ public abstract class Session implements SessionIOListener, Activatable {
 		out = socket.openDataOutputStream();
 		emulation.putString( "OK\r\n" );
 
-		terminal.redraw();
 		return true;
 	}
 

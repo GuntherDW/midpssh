@@ -11,5 +11,5 @@ GNU Classpath project.
 MidpSSH has been enhanced by Karl von Randow from Floyd SSH.
 Including:
 * integration of Telnet and SSH into the one midlet;
-* user interface development
-* bug fixes
+* user interface development;
+* refactoring and bug fixes;

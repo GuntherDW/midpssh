@@ -5,6 +5,20 @@
 	<taskdef resource="antenna.properties"/>
 	<property file="build.properties"/>
 
+	<target name="init">
+		<mkdir dir="dist"/>
+	</target>
+		
+	<target name="init-normal" depends="init">
+		<property name="jad.file" value="${jad.file.normal}"/>
+		<property name="jar.file" value="${jar.file.normal}"/>
+	</target>
+
+	<target name="init-small" depends="init">
+		<property name="jad.file" value="${jad.file.small}"/>
+		<property name="jar.file" value="${jar.file.small}"/>
+	</target>
+		
     <target name="jad">
     	<!-- Create a JAD file. -->
     	        
@@ -15,19 +29,18 @@
                 version="1.0.0">
 
             <midlet name="${name}" class="app.Main"/>
-
         </wtkjad>
     </target>
 
 	<target name="clean">
 		<delete dir="classes"/>
-		<delete dir="src-proc"/>
 		<delete dir="output"/>
-		<delete file="${jar.file}"/>
-		<delete file="${zip.file}"/>
+		<delete dir="src-proc"/>
+		<delete dir="dist"/>
 	</target>
 	
 	<target name="preprocess">
+		<delete dir="src-proc"/>
 		<wtkpreprocess srcdir="src"
 					   destdir="src-proc"
 					   symbols="${preprocess.symbols}"
@@ -65,9 +78,8 @@
         </wtkpackage>
     </target>
 		
-	<target name="obfuscate" depends="package">
+	<target name="obfuscate">
     	<!-- Obfuscate -->
-    	
     	<wtkobfuscate jarfile="${jar.file}"
         			  jadfile="${jad.file}"
     				  obfuscator="proguard"
@@ -85,7 +97,7 @@
 		</wtkobfuscate>
     </target>
 	
-	<target name="obfuscatesmall" depends="package">
+	<target name="obfuscatesmall">
 		<!-- Obfuscate -->
     	<wtkobfuscate jarfile="${jar.file}"
         			  jadfile="${jad.file}"
@@ -105,24 +117,21 @@
                       jadfile="${jad.file}"/>
     </target>
 	
-	<target name="run" depends="package,preverify">
-		<!-- Start the MIDlet suite -->
-
+	<target name="run" depends="init-normal">
+		<antcall target="package"/>
+		<antcall target="preverify"/>
     	<wtkrun jadfile="${jad.file}" device="${deviceName}" wait="true"/>
 	</target>
-	<!--
-	<target name="runother">
-		<wtkrun jadfile="TelnetFloyd-1.1.jad" device="DefaultColorPhone" wait="true"/>
-	</target>
-	-->
-	<target name="all" depends="clean,package,obfuscate,preverify">
-	
+		
+	<target name="all" depends="init-normal">
+		<antcall target="package"/>
+		<antcall target="obfuscate"/>
+		<antcall target="preverify"/>
 	</target>
 	
-	<target name="small">
+	<target name="small" depends="init-small">
 		<property name="preprocess.symbols" value="${preprocess.symbols.tiny}"/>
-		<antcall target="clean"/>
-		<!--<antcall target="package"/>-->
+		<antcall target="package"/>
 		<antcall target="obfuscatesmall"/>
 		<antcall target="preverify"/>
 	</target>

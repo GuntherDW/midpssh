@@ -1022,6 +1022,7 @@ public abstract class vt320 extends VDUBuffer {
 				}
 				else {
 					switch ( keyChar ) {
+						case '@': keyChar = (char) 0; break;
 						case '[': keyChar = (char) 27; break;
 						case '\\': keyChar = (char) 28; break;
 						case ']': keyChar = (char) 29; break;

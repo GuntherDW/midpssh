@@ -127,29 +127,6 @@ public abstract class SshIO {
 
 	private final byte SSH_MSG_DEBUG = 36;
 
-	/* SSH v2 stuff */
-
-	private final byte SSH2_MSG_DISCONNECT = 1;
-
-	private final byte SSH2_MSG_IGNORE = 2;
-
-	private final byte SSH2_MSG_SERVICE_REQUEST = 5;
-
-	private final byte SSH2_MSG_SERVICE_ACCEPT = 6;
-
-	private final byte SSH2_MSG_KEXINIT = 20;
-
-	private final byte SSH2_MSG_NEWKEYS = 21;
-
-	private final byte SSH2_MSG_KEXDH_INIT = 30;
-
-	private final byte SSH2_MSG_KEXDH_REPLY = 31;
-
-	private String kexalgs, hostkeyalgs, encalgs2c, encalgc2s, macalgs2c, macalgc2s, compalgc2s, compalgs2c, langc2s,
-			langs2;
-
-	private int outgoingseq = 0, incomingseq = 0;
-
 	//
 	// encryption types
 	//
@@ -266,16 +243,9 @@ public abstract class SshIO {
 						return "Remote server does not support ssh1\n".getBytes();
 					}
 					else {
-						if ( false && ( remoteminor == 99 ) ) { // TODO SSH2 is disabled, see if it can be made to work
-							mymajor = 2;
-							myminor = 0;
-							useprotocol = 2;
-						}
-						else {
-							mymajor = 1;
-							myminor = 5;
-							useprotocol = 1;
-						}
+						mymajor = 1;
+						myminor = 5;
+						useprotocol = 1;
 					}
 					// this is how we tell the remote server what protocol we
 					// use.
@@ -294,154 +264,11 @@ public abstract class SshIO {
 		while ( boffset < boffsetend ) {
 			boffset = currentpacket.addPayload( buff, boffset, ( boffsetend - boffset ) );
 			if ( currentpacket.isFinished() ) {
-				if ( useprotocol == 1 ) {
-					result = result + handlePacket1( (SshPacket1) currentpacket );
-					currentpacket = new SshPacket1( crypto );
-				}
-				else {
-					result = result + handlePacket2( (SshPacket2) currentpacket );
-					currentpacket = new SshPacket2( crypto );
-				}
+				result = result + handlePacket1( (SshPacket1) currentpacket );
+				currentpacket = new SshPacket1( crypto );
 			}
 		}
 		return result.getBytes();
-	}
-
-	/**
-	 * Handle SSH protocol Version 2
-	 * 
-	 * @param p
-	 *            the packet we will process here.
-	 * @return a array of bytes
-	 */
-	private String handlePacket2( SshPacket2 p ) throws IOException {
-		switch ( p.getType() ) {
-			case SSH2_MSG_IGNORE:
-				//        System.out.println("SSH2: SSH2_MSG_IGNORE");
-				break;
-			case SSH2_MSG_DISCONNECT:
-				int discreason = p.getInt32();
-				String discreason1 = p.getString();
-				/* String discreason2 = p.getString(); */
-				//        System.out.println("SSH2: SSH2_MSG_DISCONNECT(" + discreason
-				// +
-				// "," + discreason1 + "," + /*discreason2+*/")");
-				return "\nSSH2 disconnect: " + discreason1 + "\n";
-
-			case SSH2_MSG_NEWKEYS: {
-				//          System.out.println("SSH2: SSH2_MSG_NEWKEYS");
-				sendPacket2( new SshPacket2( SSH2_MSG_NEWKEYS ) );
-
-				byte[] session_key = new byte[16];
-
-				crypto = new SshCrypto( cipher_type, session_key );
-
-				SshPacket2 pn = new SshPacket2( SSH2_MSG_SERVICE_REQUEST );
-				pn.putString( "ssh-userauth" );
-				sendPacket2( pn );
-				break;
-			}
-			case SSH2_MSG_SERVICE_ACCEPT: {
-				//          System.out.println("Service Accept: " + p.getString());
-				break;
-			}
-			case SSH2_MSG_KEXINIT: {
-				byte[] fupp;
-				//          System.out.println("SSH2: SSH2_MSG_KEXINIT");
-				byte kexcookie[] = p.getBytes( 16 ); // unused.
-
-				String kexalgs = p.getString();
-				//          System.out.println("- " + kexalgs);
-				String hostkeyalgs = p.getString();
-				//          System.out.println("- " + hostkeyalgs);
-				String encalgc2s = p.getString();
-				//          System.out.println("- " + encalgc2s);
-				String encalgs2c = p.getString();
-				//          System.out.println("- " + encalgs2c);
-				String macalgc2s = p.getString();
-				//          System.out.println("- " + macalgc2s);
-				String macalgs2c = p.getString();
-				//          System.out.println("- " + macalgs2c);
-				String compalgc2s = p.getString();
-				//          System.out.println("- " + compalgc2s);
-				String compalgs2c = p.getString();
-				//          System.out.println("- " + compalgs2c);
-				String langc2s = p.getString();
-				//          System.out.println("- " + langc2s);
-				String langs2c = p.getString();
-				//          System.out.println("- " + langs2c);
-				fupp = p.getBytes( 1 );
-				//          System.out.println("- first_kex_follows: " + fupp[0]);
-				/* int32 reserved (0) */
-
-				SshPacket2 pn = new SshPacket2( SSH2_MSG_KEXINIT );
-				byte[] kexsend = new byte[16];
-				String ciphername;
-				pn.putBytes( kexsend );
-				pn.putString( "diffie-hellman-group1-sha1" );
-				pn.putString( "ssh-rsa" );
-
-				/* FIXME: check if it really is in the encalgc2s */
-				cipher_type = "NONE";
-				ciphername = "none";
- 
-				/* FIXME: dito for HMAC */
-
-				pn.putString( "none" );
-				pn.putString( "none" );
-				pn.putString( "hmac-md5" );
-				pn.putString( "hmac-md5" );
-				pn.putString( "none" );
-				pn.putString( "none" );
-				pn.putString( "" );
-				pn.putString( "" );
-				pn.putByte( (byte) 0 );
-				pn.putInt32( 0 );
-				sendPacket2( pn );
-
-				pn = new SshPacket2( SSH2_MSG_KEXDH_INIT );
-				pn.putMpInt( BigInteger.valueOf( 0xdeadbeef ) );
-				sendPacket2( pn );
-				break;
-			}
-			case SSH2_MSG_KEXDH_REPLY: {
-				String result;
-
-				//          System.out.println("SSH2_MSG_KEXDH_REPLY");
-				int bloblen = p.getInt32();
-				//          System.out.println("bloblen is " + bloblen);
-				/*
-				 * the blob has a substructure: String type if RSA: bignum1
-				 * bignum2 if DSA: bignum1,2,3,4
-				 */
-				String keytype = p.getString();
-				//          System.out.println("KEXDH: " + keytype);
-				if ( keytype.equals( "ssh-rsa" ) ) {
-					rsa_e = p.getMpInt();
-					rsa_n = p.getMpInt();
-					result = "\n\rSSH-RSA (" + rsa_n + "," + rsa_e + ")\n\r";
-				}
-				else {
-					return "\n\rUnsupported kexdh algorithm " + keytype + "!\n\r";
-				}
-				BigInteger dhserverpub = p.getMpInt();
-				result += "DH Server Pub: " + dhserverpub + "\n\r";
-
-				/* signature is a new blob, length is Int32. */
-				/*
-				 * RSA: String type (ssh-rsa) Int32/byte[] signed signature
-				 */
-				int siglen = p.getInt32();
-				String sigstr = p.getString();
-				result += "Signature: ktype is " + sigstr + "\r\n";
-				byte sigdata[] = p.getBytes( p.getInt32() );
-
-				return result;
-			}
-			default:
-				return "SSH2: handlePacket2 Unknown type " + p.getType();
-		}
-		return "";
 	}
 
 	private String handlePacket1( SshPacket1 p ) throws IOException { //the
@@ -673,12 +500,6 @@ public abstract class SshIO {
 
 	private void sendPacket1( SshPacket1 packet ) throws IOException {
 		write( packet.getPayLoad( crypto ) );
-		lastPacketSentType = packet.getType();
-	}
-
-	private void sendPacket2( SshPacket2 packet ) throws IOException {
-		write( packet.getPayLoad( crypto, outgoingseq ) );
-		outgoingseq++;
 		lastPacketSentType = packet.getType();
 	}
 

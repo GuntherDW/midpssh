@@ -32,8 +32,8 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 	protected SettingsMenu( String title ) {
 		super( title, List.IMPLICIT );
 		
-		append( "Back Colour", null );
-		append( "Fore Colour", null );
+		append( "Background Colour", null );
+		append( "Foreground Colour", null );
 		append( "Screen Size", null );
 		
 		setSelectCommand( selectCommand );

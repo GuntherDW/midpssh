@@ -137,8 +137,11 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		
 		// Settings
 		Settings settings = SettingsManager.getSettings();
-		bgcolor = settings.bgcolor;
-		fgcolor = settings.fgcolor;
+		
+		if ( Main.useColors ) {
+			bgcolor = settings.bgcolor;
+			fgcolor = settings.fgcolor;
+		}
 		
 		boolean resized = false;
 		int cols = this.cols;
@@ -261,6 +264,17 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			case MODE_CONNECTED:
 				keyPressedConnected( keycode );
 				break;
+			case MODE_CURSOR:
+				keyPressedCursor( keycode );
+				break;
+			case MODE_SCROLL:
+				keyPressedScroll( keycode );
+				break;
+		}
+	}
+
+	protected void keyRepeated( int keycode ) {
+		switch ( mode ) {
 			case MODE_CURSOR:
 				keyPressedCursor( keycode );
 				break;

@@ -14,7 +14,7 @@ import app.SettingsManager;
  */
 public class BackColourForm extends ColourForm {
 	public BackColourForm() {
-		super( "Back Colour" );
+		super( "Background Colour" );
 	}
 	/* (non-Javadoc)
 	 * @see gui.Activatable#activate()
@@ -37,5 +37,16 @@ public class BackColourForm extends ColourForm {
 			
 			doBack();
 		}
+	}
+	/* (non-Javadoc)
+	 * @see gui.settings.ColourForm#doDefault()
+	 */
+	protected void doDefault() {
+		Settings settings = SettingsManager.getSettings();
+		
+		settings.bgcolor = Settings.DEFAULT_BGCOLOR;
+		SettingsManager.saveSettings( settings );
+			
+		doBack();
 	}
 }

@@ -18,6 +18,8 @@ import javax.microedition.lcdui.TextField;
 public abstract class ColourForm extends EditableForm {
 
 	private static Command saveCommand = new Command( "Save", Command.OK, 1 );
+
+	private static Command defaultCommand = new Command( "Default", Command.ITEM, 10 );
 	
 	protected TextField tfRed = new TextField( "Red", "", 3, TextField.NUMERIC );
 	
@@ -33,6 +35,7 @@ public abstract class ColourForm extends EditableForm {
 		append( tfBlue );
 		
 		addCommand( saveCommand );
+		addCommand( defaultCommand );
 	}
 	/* (non-Javadoc)
 	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable)
@@ -41,12 +44,17 @@ public abstract class ColourForm extends EditableForm {
 		if ( command == saveCommand ) {
 			doSave();
 		}
+		else if ( command == defaultCommand ) {
+			doDefault();
+		}
 		else {
 			super.commandAction( command, arg1 );
 		}
 	}
 	
 	protected abstract void doSave();
+	
+	protected abstract void doDefault();
 	
 	protected int parseColour() {
 		try {

@@ -24,6 +24,8 @@ import app.SettingsManager;
 public class ScreenSizeForm extends EditableForm {
 
 	private static Command saveCommand = new Command( "Save", Command.OK, 1 );
+
+	private static Command defaultCommand = new Command( "Default", Command.ITEM, 10 );
 	
 	protected TextField tfCols = new TextField( "Columns", "", 3, TextField.NUMERIC );
 	
@@ -36,6 +38,7 @@ public class ScreenSizeForm extends EditableForm {
 		append( tfRows );
 		
 		addCommand( saveCommand );
+		addCommand( defaultCommand );
 	}
 	/* (non-Javadoc)
 	 * @see gui.Activatable#activate()
@@ -67,6 +70,9 @@ public class ScreenSizeForm extends EditableForm {
 		if ( command == saveCommand ) {
 			doSave();
 		}
+		else if ( command == defaultCommand ) {
+			doDefault();
+		}
 		else {
 			super.commandAction( command, arg1 );
 		}
@@ -91,6 +97,16 @@ public class ScreenSizeForm extends EditableForm {
 		
 		settings.screenColumns = cols;
 		settings.screenRows = rows;
+		SettingsManager.saveSettings( settings );
+		
+		doBack();
+	}
+	
+	private void doDefault() {
+		Settings settings = SettingsManager.getSettings();
+		
+		settings.screenColumns = 0;
+		settings.screenRows = 0;
 		SettingsManager.saveSettings( settings );
 		
 		doBack();

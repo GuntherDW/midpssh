@@ -14,7 +14,7 @@ import app.SettingsManager;
  */
 public class ForeColourForm extends ColourForm {
 	public ForeColourForm() {
-		super( "Fore Colour" );
+		super( "Foreground Colour" );
 	}
 	/* (non-Javadoc)
 	 * @see gui.Activatable#activate()
@@ -37,5 +37,16 @@ public class ForeColourForm extends ColourForm {
 			
 			doBack();
 		}
+	}
+	/* (non-Javadoc)
+	 * @see gui.settings.ColourForm#doDefault()
+	 */
+	protected void doDefault() {
+		Settings settings = SettingsManager.getSettings();
+		
+		settings.fgcolor = Settings.DEFAULT_FGCOLOR;
+		SettingsManager.saveSettings( settings );
+			
+		doBack();
 	}
 }

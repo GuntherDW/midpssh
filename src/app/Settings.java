@@ -17,6 +17,9 @@ import java.io.IOException;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class Settings {
+	
+	public static final int DEFAULT_BGCOLOR = 0x000000, DEFAULT_FGCOLOR = 0xffffff;
+	
 	public int bgcolor, fgcolor;
 	
 	public int screenColumns, screenRows;
@@ -43,8 +46,8 @@ public class Settings {
 	}
 	
 	private void defaults() {
-		fgcolor = 0xffffff;
-		bgcolor = 0x000000;
+		fgcolor = DEFAULT_FGCOLOR;
+		bgcolor = DEFAULT_BGCOLOR;
 		screenColumns = 0;
 		screenRows = 0;
 	}

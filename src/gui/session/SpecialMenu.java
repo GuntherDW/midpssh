@@ -28,20 +28,28 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
 	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 
     private static final String[] MAIN_OPTIONS = new String[] {
-        "Function Keys", "Cursor", "Scroll",
+//#ifndef nocursororscroll
+        "Cursor", "Scroll",
+//#endif
+//#ifndef small        
         "BACKSPACE",
+        "Function Keys", 
         "|", "\\", "~", ":", ";", "'", "\"",
         ",", "<", ".", ">", "/", "?",
         "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")",
         "-", "_", "+", "=",
         "[", "{", "]", "}"
+//#endif
     };
     
+//#ifndef small
     private static final String[] FUNCTION_KEY_OPTIONS = new String[] {
         "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"
     };
     
     private SpecialMenu menuFunctionKeys;
+
+//#endif
     
     private Activatable back, done;
     
@@ -78,35 +86,40 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
 			    int i = find( MAIN_OPTIONS, option );
 			    if ( i != -1 ) {
 			        switch ( i ) {
-			            case 0:
+//#ifndef nocursororscroll
+					    case 0:
+					        ((SessionTerminal)done).doCursor();
+					        done.activate();
+					        break;
+					    case 1:
+					        ((SessionTerminal)done).doScroll();
+					        done.activate();
+					        break;
+//#endif
+//#ifndef small
+			            case 2:
+			                keyCode = KeyEvent.VK_BACK_SPACE;
+			                break;
+			            case 3:
 			                if ( menuFunctionKeys == null ) {
 					            menuFunctionKeys = new SpecialMenu( "Function Keys", FUNCTION_KEY_OPTIONS );
 					        }
 					        menuFunctionKeys.activate( this, done );
 					        break;
-					    case 1:
-					        ((SessionTerminal)done).doCursor();
-					        done.activate();
-					        break;
-					    case 2:
-					        ((SessionTerminal)done).doScroll();
-					        done.activate();
-					        break;
-			            case 3:
-			                keyCode = KeyEvent.VK_BACK_SPACE;
-			                break;
 			            default:
 			                str = option;
 			            	break;
+//#endif
 			        }
 			    }
 			    
+//#ifndef small
 			    // Function keys
 			    i = find( FUNCTION_KEY_OPTIONS, option );
 			    if ( i != -1 ) {
 			        keyCode = KeyEvent.VK_F1 + i;
 			    }
-			    
+//#endif
 			    if ( keyCode != 0 ) {
 			        session.typeKey( keyCode, 0 );
 					done.activate();

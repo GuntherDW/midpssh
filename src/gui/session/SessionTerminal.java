@@ -49,11 +49,15 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private static final int MODE_CONNECTED = 1;
 
+//#ifndef nocursororscroll
 	private static final int MODE_CURSOR = 2;
 
 	private static final int MODE_SCROLL = 3;
-
+//#endif
+	
+//#ifndef notyping
 	private static final int MODE_TYPING = 4;
+//#endif
 	
 	private static int commandPriority = 1;
 
@@ -63,7 +67,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private static final Command textInputCommand = new Command( "Input", Command.ITEM, commandPriority++ );
 
+//#ifndef notyping
 	private static final Command typeCommand = new Command( "Type", Command.ITEM, commandPriority++ );
+//#endif
 	
 	private static final Command macrosCommand = new Command( "Macros", Command.ITEM, commandPriority++ );
 
@@ -83,7 +89,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private static final Command shiftCommand = new Command( "SHIFT", Command.ITEM, commandPriority++ );
 
+//#ifndef nospecialmenu
 	private static final Command specialCommand = new Command( "Special", Command.ITEM, commandPriority++ );
+//#endif
 	
 	//private static final Command cursorCommand = new Command( "Cursor", Command.ITEM, commandPriority++ );
 
@@ -105,7 +113,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private static final Command[] commandsConnected = new Command[] {
 		textInputCommand,
+//#ifndef notyping
 		typeCommand,
+//#endif
 		macrosCommand, 
 		tabCommand,
 		spaceCommand,
@@ -116,16 +126,21 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		altCommand,
 		shiftCommand,
 		//cursorCommand, scrollCommand,
+//#ifndef nospecialmenu		
 		specialCommand,
+//#endif		
 		showBindingsCommand,
 		//settingsCommand,
 		disconnectCommand
 	};
 
+//#ifndef nocursororscroll
 	private static final Command[] commandsCursor = new Command[] {
 		backCommand
 	};
+//#endif
 
+//#ifndef notyping
 	private static final Command[] commandsTyping = new Command[] {
 	    backMainCommand,
 		backCommand,
@@ -140,8 +155,11 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		altCommand,
 		shiftCommand,
 		//cursorCommand, scrollCommand,
+//#ifndef nospecialmenu
 		specialCommand
+//#endif
 	};
+//#endif
 	
 	private static final int [] bindingKeys = new int[] {
 			Canvas.KEY_NUM1, Canvas.KEY_NUM2, Canvas.KEY_NUM3,
@@ -156,7 +174,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private static MacroSetsMenu macrosMenu;
 	
+//#ifndef nospecialmenu	
 	private SpecialMenu menuSpecialKeys;
+//#endif
 	
 	//private static SessionSettingsMenu settingsMenu;
 
@@ -223,13 +243,17 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			case MODE_CONNECTED:
 				changeCurrentCommands( commandsConnected );
 				break;
+//#ifndef nocursororscroll
 			case MODE_CURSOR:
 			case MODE_SCROLL:
 				changeCurrentCommands( commandsCursor );
 				break;
+//#endif
+//#ifndef notyping
 			case MODE_TYPING:
 			    changeCurrentCommands( commandsTyping );
 			    break;
+//#endif
 		}
 	}
 
@@ -302,15 +326,19 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		else if ( command == scrollCommand ) {
 			doScroll();
 		}*/
+//#ifndef notyping
 		else if ( command == typeCommand ) {
 		    doTyping();
 		}
+//#endif
+//#ifndef nospecialmenu
 		else if ( command == specialCommand ) {
 		    if ( menuSpecialKeys == null ) {
 		        menuSpecialKeys = new SpecialMenu();
 		    }
 		    menuSpecialKeys.activate( this );
 		}
+//#endif		
 		else if ( command == backCommand  || command == backMainCommand ) {
 			changeMode( MODE_CONNECTED );
 		}
@@ -324,15 +352,19 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	protected void keyPressed( int keycode ) {
 		switch ( mode ) {
+//#ifndef nocursororscroll
 			case MODE_CURSOR:
 				keyPressedCursor( keycode );
 				break;
 			case MODE_SCROLL:
 				keyPressedScroll( keycode );
 				break;
+//#endif				
+//#ifndef notyping
 			case MODE_TYPING:
 			    keyPressedTyping( keycode );
 			    break;
+//#endif
 		}
 	}
 
@@ -341,12 +373,15 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			case MODE_CONNECTED:
 				keyReleasedConnected( keycode );
 				break;
+//#ifndef notyping
 			case MODE_TYPING:
 			    keyReleasedTyping( keycode );
 			    break;
+//#endif
 		}
 	}
 
+//#ifndef nocursororscroll
 	protected void keyRepeated( int keycode ) {
 		switch ( mode ) {
 			case MODE_CURSOR:
@@ -357,6 +392,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 				break;
 		}
 	}
+//#endif
 
 	protected void keyReleasedConnected( int keycode ) {
 		int index = -1;
@@ -378,10 +414,11 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		    }
 		}
 	}
-	
-	private static final int KEY_SHIFT = 137; // Keycode for shift on blackberry
-	
+
 	private static final int KEY_BACKSPACE = -8; // Keycode for clear on sony
+	
+//#ifndef notyping
+	private static final int KEY_SHIFT = 137; // Keycode for shift on blackberry
 	
 	private boolean typingShift;
 	
@@ -429,7 +466,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	        }
 	    }
 	}
+//#endif
 	
+//#ifndef nocursororscroll
 	private int gameKeysToNumeric( int keycode ) {
 		// Convert game actions to keys
 		int gameAction = getGameAction( keycode );
@@ -537,7 +576,8 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 				break;
 		}
 	}
-
+//#endif
+	
 	private void doDisconnect() {
 		session.disconnect();
 		session.goMainMenu();
@@ -578,6 +618,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		shiftKeyDialog.activate( this );
 	}
 
+//#ifndef nocursororscroll
 	public void doCursor() {
 		changeMode( MODE_CURSOR );
 	}
@@ -585,10 +626,13 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	public void doScroll() {
 		changeMode( MODE_SCROLL );
 	}
-
+//#endif
+	
+//#ifndef notyping
 	public void doTyping() {
 		changeMode( MODE_TYPING );
 	}
+//#endif
 	
 	private void doShowBindings() {
 		StringBuffer str = new StringBuffer();

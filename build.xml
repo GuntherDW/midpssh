@@ -61,6 +61,20 @@
 		<antcall target="blackberry" />
 	</target>
 	
+	<target name="build-lite">
+
+		<antcall target="build">
+			<param name="filename" value="midpssh-ssh2-lite"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="ssh2-lite"/>
+		</antcall>
+		<antcall target="build">
+			<param name="filename" value="midpssh-ssh1-lite"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="ssh1-lite"/>
+		</antcall>
+	</target>
+	
 	<target name="build">
 		<ant antfile="build-package.xml" />
 	</target>

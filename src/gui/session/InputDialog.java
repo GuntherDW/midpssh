@@ -74,6 +74,9 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 		this.back = back;
 		activate();
 	}
+	
+	private StringBuffer commandBuffer = new StringBuffer();
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -84,10 +87,12 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 		if ( command != backCommand ) {
 			Session session = Main.currentSession();
 			if ( session != null ) {
-				session.typeString( getString() );
+			    commandBuffer.setLength( 0 );
+			    commandBuffer.append( getString() );
 				if ( command == enterCommand ) {
-					session.typeString( "\n" );
+				    commandBuffer.append( '\n' );
 				}
+				session.typeString( commandBuffer.toString() );
 				session.activate();
 			}
 			

@@ -177,6 +177,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 */
 	private void read() throws IOException {
 	    byte [] buf;
+//#ifndef blackberry
 		buf = new byte[512]; // try a smaller buffer, maybe works better on some phones
 		
 		// Read at least 1 byte, and at most the number of bytes available
@@ -194,7 +195,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 			a = in.available();
 			n = in.read( buf, 0, Math.max( 1, Math.min( a, buf.length ) ) );
 		}
-		/*
+//#else
 	    buf = new byte[1];
 	    int c = in.read();
 	    while ( c != -1 ) {
@@ -208,7 +209,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 			}
 			c = in.read();
 	    }
-	    */
+//#endif
 	}
 	
 	private void write() throws IOException {

@@ -11,7 +11,7 @@ import gui.EditableForm;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
 
-import app.SettingsManager;
+import app.Settings;
 
 /**
  * @author Karl
@@ -53,7 +53,7 @@ public abstract class SettingsForm extends EditableForm {
 	private void save( boolean doDefault ) {
 		boolean ok = doSave( doDefault );
 		if ( ok ) {
-			SettingsManager.saveSettings( );
+			Settings.saveSettings( );
 			doBack();
 		}
 	}

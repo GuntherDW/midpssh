@@ -45,6 +45,8 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	
 	private MacroSetsMenu macrosMenu;
 	
+	private Activatable settingsMenu;
+	
 	private static final String ITEM_SESSIONS = "Sessions";
 //#ifndef nomacros
 	private static final String ITEM_MACROS = "Macros";
@@ -137,10 +139,15 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 		macrosMenu.activate( this );
 	}
 	
+//#ifndef nosettings
 	private void doSettings() {
-		new SettingsMenu().activate( this );
+		if ( settingsMenu == null ) {
+			settingsMenu = new SettingsMenu();
+		}
+		settingsMenu.activate( this );
 	}
-
+//#endif
+	
 	private void doAbout() {
 		new MessageForm( "About MidpSSH",
 				"Version @VERSION@\n\n" +

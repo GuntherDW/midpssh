@@ -22,6 +22,7 @@
  */
 package gui.settings;
 
+import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
@@ -42,17 +43,29 @@ public class TerminalSettingsForm extends SettingsForm {
 	
 	protected TextField tfBg = new TextField( "Background", "", 6, TextField.ANY );
 	
+	protected ChoiceGroup cgRotated = new ChoiceGroup( "Orientation", ChoiceGroup.EXCLUSIVE );
+	
 	public TerminalSettingsForm() {
 		super( "Terminal Settings" );
 
 		append( new StringItem( "Terminal Type", "The terminal type reported to the remote server. The default type is VT320." ) );
 		append( tfType );
+		
 		append( new StringItem( "Terminal Size", "The size of the terminal. The default is to use the maximum available screen area." ) );
 		append( tfCols );
 		append( tfRows );
+		
 		append( new StringItem( "Terminal Colour", "Enter colours in hexadecimal, eg. 6699cc" ) );
 		append( tfFg );
 		append( tfBg );
+		
+		cgRotated.append( "Normal", null );
+		cgRotated.append( "Landscape", null );
+//#ifdef midp2
+		append( cgRotated );
+//#else
+		append( new StringItem( "Orientation", "Not available on this device." ) );
+//#endif
 	}
 	/* (non-Javadoc)
 	 * @see gui.Activatable#activate()
@@ -78,6 +91,8 @@ public class TerminalSettingsForm extends SettingsForm {
 		
 		tfFg.setString( toHex( Settings.fgcolor ) );
 		tfBg.setString( toHex( Settings.bgcolor ) );
+		
+		cgRotated.setSelectedIndex( 0, true );
 		
 		super.activate();
 	}
@@ -114,6 +129,8 @@ public class TerminalSettingsForm extends SettingsForm {
 			catch ( NumberFormatException e ) {
 				
 			}
+			
+			Settings.terminalRotated = cgRotated.getSelectedIndex() == 1;
 		}
 		else {
 			Settings.terminalType = "";
@@ -121,6 +138,7 @@ public class TerminalSettingsForm extends SettingsForm {
 			Settings.terminalRows = 0;
 			Settings.fgcolor = Settings.DEFAULT_FGCOLOR;
 			Settings.bgcolor = Settings.DEFAULT_BGCOLOR;
+			Settings.terminalRotated = false;
 		}
 		return true;
 	}

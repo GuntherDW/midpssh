@@ -30,7 +30,6 @@ package ssh;
 import java.io.IOException;
 import java.util.Random;
 
-
 import ssh.v1.BigInteger;
 import ssh.v1.Cipher;
 import ssh.v1.MD5;
@@ -40,6 +39,7 @@ import ssh.v2.DHKeyExchange;
 import ssh.v2.SHA1Digest;
 import ssh.v2.SshCrypto2;
 import ssh.v2.SshPacket2;
+import app.session.SshSession;
 
 /**
  * Secure Shell IO
@@ -47,7 +47,7 @@ import ssh.v2.SshPacket2;
  * @author Marcus Meissner
  * @version $Id$
  */
-public abstract class SshIO {
+public class SshIO {
 
 	private static MD5 md5 = new MD5();
 
@@ -228,17 +228,22 @@ public abstract class SshIO {
 
 	private boolean cansenddata = false;
 
+    private SshSession sshSession;
+    
 	/**
 	 * Initialise SshIO
 	 */
-	public SshIO() {
+	public SshIO( SshSession sshSession ) {
+        this.sshSession = sshSession;
 		crypto = null;
 	}
 
 	SshPacket currentpacket;
 
 	/** write data to our back end */
-	public abstract void write( byte[] b ) throws IOException;
+	public void write( byte[] b ) throws IOException {
+	    sshSession.sendData( b );
+    }
 
 	byte[] one = new byte[1];
 
@@ -1197,7 +1202,7 @@ public abstract class SshIO {
 	/**
 	 * Send_SSH_NOOP (no arguments) Sends a NOOP packet to keep the connection alive.
 	 */
-	protected String Send_SSH_NOOP() throws IOException {
+	public String Send_SSH_NOOP() throws IOException {
 		// KARL The specification states that this packet is never sent, however the OpenSSL source
 		// for keep alives indicates that SSH_MSG_IGNORE (the alternative) crashes some servers and
 		// advocates SSH_MSG_NONE instead.
@@ -1205,21 +1210,27 @@ public abstract class SshIO {
 			SshPacket1 packet = new SshPacket1( SSH_MSG_NONE );
 			sendPacket1( packet );
 	    }
-	    else {
 //#ifdef ssh2
+	    else {
 	        SshPacket2 packet = new SshPacket2( SSH2_MSG_IGNORE );
 	        packet.putString( "" );
 	        sendPacket2( packet );
-//#endif
 	    }
+//#endif
 		return "";
 	}
 
-	protected abstract String getTerminalID();
+	protected String getTerminalID() {
+        return sshSession.getTerminalID();
+    }
 
-	protected abstract int getTerminalHeight();
+	protected int getTerminalHeight() {
+        return sshSession.getTerminalHeight();
+    }
 
-	protected abstract int getTerminalWidth();
+	protected int getTerminalWidth() {
+        return sshSession.getTerminalWidth();
+    }
     
     
     

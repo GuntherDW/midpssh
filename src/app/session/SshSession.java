@@ -33,8 +33,10 @@ import app.Settings;
  */
 public class SshSession extends Session implements SessionIOHandler {
 
+    private SshIO sshIO;
+    
 	public void connect( String host, String username, String password ) {
-        sshIO = new MySshIO();
+        sshIO = new SshIO( this );
         sshIO.login = username;
         sshIO.password = password;
         
@@ -71,36 +73,31 @@ public class SshSession extends Session implements SessionIOHandler {
             sshIO.sendData( data, offset, length );
         }
         else {
-            sshIO.sendNOOP();
+            sshIO.Send_SSH_NOOP();
         }
     }
+    
+    /*
+     * Receive data send back by SshIO and send it out onto the network
+     */
+    public void sendData( byte [] data ) throws IOException {
+        super.sendData( data, 0, data.length );
+    }
 
-	private MySshIO sshIO;
+	public String getTerminalID() {
+		if ( Settings.terminalType.length() > 0 ) {
+			return Settings.terminalType;
+		}
+		else {
+			return emulation.getTerminalID();
+		}
+	}
 
-	private class MySshIO extends SshIO {
-		public void write( byte[] data ) throws IOException {
-			SshSession.this.sendData( data, 0, data.length );
-		}
+	public int getTerminalWidth() {
+		return emulation.width;
+	}
 
-		public String getTerminalID() {
-			if ( Settings.terminalType.length() > 0 ) {
-				return Settings.terminalType;
-			}
-			else {
-				return emulation.getTerminalID();
-			}
-		}
-
-		public int getTerminalWidth() {
-			return emulation.width;
-		}
-
-		public int getTerminalHeight() {
-			return emulation.height;
-		}
-		
-		public void sendNOOP() throws IOException {
-			Send_SSH_NOOP();
-		}
+	public int getTerminalHeight() {
+		return emulation.height;
 	}
 }

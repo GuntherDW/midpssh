@@ -10,17 +10,21 @@
 	<property name="wtk.home" value="c:\SonyEricsson\J2ME_SDK\PC_Emulation\WTK2" />
 	<property name="deviceName" value="SonyEricsson_K700" />
 	<property name="wtk.midp.version" value="1.0"/>
+	
+	<property name="jad.file" value="MidpSSH.jad"/>
+	<property name="jar.file" value="MidpSSH.jar"/>
+	<property name="name" value="MidpSSH"/>
 
     <target name="jad">
     	<!-- Create a JAD file. -->
     	        
-        <wtkjad jadfile="FloydSSHx.jad"
-                jarfile="FloydSSHx.jar"
-                name="FloydSSHx"
+        <wtkjad jadfile="${jad.file}"
+                jarfile="${jar.file}"
+                name="${name}"
                 vendor="XK72"
                 version="1.0.0">
 
-            <midlet name="FloydSSHx" class="app.Main"/>
+            <midlet name="${name}" class="app.Main"/>
 
         </wtkjad>
     </target>
@@ -46,8 +50,8 @@
 	</target>
    		
 	<target name="package" depends="compile">
-        <wtkpackage jarfile="FloydSSHx.jar"
-                    jadfile="FloydSSHx.jad"
+        <wtkpackage jarfile="${jar.file}"
+                    jadfile="${jad.file}"
                     obfuscate="false"
                     preverify="false">
 
@@ -61,30 +65,32 @@
 	<target name="obfuscate" depends="package">
     	<!-- Obfuscate -->
     	
-    	<wtkobfuscate jarfile="FloydSSHx.jar"
-        			  jadfile="FloydSSHx.jad"
+    	<wtkobfuscate jarfile="${jar.file}"
+        			  jadfile="${jad.file}"
     				  obfuscator="proguard">
-    		<argument value="-dontshrink" />
-    		<argument value="-keepnames class ssh.Blowfish" />
-    		<argument value="-keepnames class ssh.DES" />
-    		<argument value="-keepnames class ssh.DES3" />
-    		<argument value="-keepnames class ssh.IDEA" />
-			<argument value="-keepnames class ssh.MD5" />
-			<argument value="-keepnames class ssh.MPN" />
-			<argument value="-keepnames class ssh.NONE" />
+    		<!--<argument value="-dontshrink" />-->
+    		<argument value="-keep class ssh.Blowfish" />
+    		<argument value="-keep class ssh.DES" />
+    		<argument value="-keep class ssh.DES3" />
+    		<argument value="-keep class ssh.IDEA" />
+			<argument value="-keep class ssh.MD5" />
+			<argument value="-keep class ssh.MPN" />
+			<argument value="-keep class ssh.NONE" />
+    		<argument value="-defaultpackage" />
+    		<argument value="-verbose" />
 		</wtkobfuscate>
     </target>
 		
 	<target name="preverify">
         <!-- Preverify. -->
-        <wtkpreverify jarfile="FloydSSHx.jar"
-                      jadfile="FloydSSHx.jad"/>
+        <wtkpreverify jarfile="${jar.file}"
+                      jadfile="${jad.file}"/>
     </target>
 	
 	<target name="run" depends="package,preverify">
 		<!-- Start the MIDlet suite -->
 
-    	<wtkrun jadfile="FloydSSHx.jad" device="${deviceName}" wait="true"/>
+    	<wtkrun jadfile="${jad.file}" device="${deviceName}" wait="true"/>
 	</target>
 	<!--
 	<target name="runother">
@@ -94,5 +100,17 @@
 	<target name="all" depends="clean,package,obfuscate,preverify">
 	
 	</target>
+	
+	<target name="runobfuscated" depends="package,obfuscate,preverify">
+		<!-- Start the MIDlet suite -->
 
+    	<wtkrun jadfile="${jad.file}" device="${deviceName}" wait="true"/>
+	</target>
+
+	<target name="deploy">
+		<exec executable="C:\SonyEricsson\J2ME_SDK\OnDeviceDebug\bin\ejava">
+			<arg value="install" />
+			<arg value="${jad.file}" />
+		</exec>
+	</target>
 </project>

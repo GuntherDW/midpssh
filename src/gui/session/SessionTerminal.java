@@ -35,32 +35,36 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	private static final int MODE_CONNECTED = 1;
 
 	private static final int MODE_CURSOR = 2;
+	
+	private static int commandPriority = 1;
 
-	private static final Command textInputCommand = new Command( "Input", Command.ITEM, 10 );
+	private static final Command textInputCommand = new Command( "Input", Command.ITEM, commandPriority++ );
 
-	private static final Command macrosCommand = new Command( "Macros", Command.ITEM, 11 );
+	private static final Command macrosCommand = new Command( "Macros", Command.ITEM, commandPriority++ );
 
-	private static final Command cursorCommand = new Command( "Cursor", Command.ITEM, 15 );
+	private static final Command cursorCommand = new Command( "Cursor", Command.ITEM, commandPriority++ );
 
-	private static final Command scrollCommand = new Command( "Scroll", Command.ITEM, 16 );
+	private static final Command scrollCommand = new Command( "Scroll", Command.ITEM, commandPriority++ );
 
-	private static final Command tabCommand = new Command( "TAB", Command.ITEM, 20 );
+	private static final Command tabCommand = new Command( "TAB", Command.ITEM, commandPriority++ );
 
-	private static final Command spaceCommand = new Command( "SPACE", Command.ITEM, 21 );
+	private static final Command spaceCommand = new Command( "SPACE", Command.ITEM, commandPriority++ );
 
-	private static final Command enterCommand = new Command( "ENTER", Command.ITEM, 22 );
+	private static final Command enterCommand = new Command( "ENTER", Command.ITEM, commandPriority++ );
 
-	private static final Command escCommand = new Command( "ESC", Command.ITEM, 30 );
+	private static final Command escCommand = new Command( "ESC", Command.ITEM, commandPriority++ );
 
-	private static final Command backspaceCommand = new Command( "BACKSPACE", Command.ITEM, 31 );
+	private static final Command backspaceCommand = new Command( "BACKSPACE", Command.ITEM, commandPriority++ );
 
-	private static final Command ctrlCommand = new Command( "CTRL", Command.ITEM, 50 );
+	private static final Command ctrlCommand = new Command( "CTRL", Command.ITEM, commandPriority++ );
 
-	private static final Command altCommand = new Command( "ALT", Command.ITEM, 51 );
+	private static final Command altCommand = new Command( "ALT", Command.ITEM, commandPriority++ );
 
-	private static final Command disconnectCommand = new Command( "Close", Command.STOP, 100 );
+	private static final Command backCommand = new Command( "Back", Command.BACK, commandPriority++ );
+	
+	private static final Command showBindingsCommand = new Command( "Show Bindings", Command.ITEM, commandPriority++ );
 
-	private static final Command backCommand = new Command( "Back", Command.BACK, 90 );
+	private static final Command disconnectCommand = new Command( "Close", Command.STOP, commandPriority++ );
 
 	private static final Command[] commandsDisconnected = new Command[] {
 			disconnectCommand
@@ -69,12 +73,19 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	private static final Command[] commandsConnected = new Command[] {
 			textInputCommand, macrosCommand, cursorCommand, scrollCommand,
 			tabCommand, spaceCommand, enterCommand, escCommand, backspaceCommand,
-			ctrlCommand, altCommand, 
+			ctrlCommand, altCommand, showBindingsCommand,
 			disconnectCommand
 	};
 
 	private static final Command[] commandsCursor = new Command[] {
 		backCommand
+	};
+	
+	private static final int [] bindingKeys = new int[] {
+			Canvas.KEY_NUM1, Canvas.KEY_NUM2, Canvas.KEY_NUM3,
+			Canvas.KEY_NUM4, Canvas.KEY_NUM5, Canvas.KEY_NUM6,
+			Canvas.KEY_NUM7, Canvas.KEY_NUM8, Canvas.KEY_NUM9,
+			Canvas.KEY_STAR, Canvas.KEY_NUM0, Canvas.KEY_POUND
 	};
 
 	private Session session;
@@ -189,6 +200,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		else if ( command == backCommand ) {
 			changeMode( MODE_CONNECTED );
 		}
+		else if ( command == showBindingsCommand ) {
+			doShowBindings();
+		}
 	}
 
 	protected void keyPressed( int keycode ) {
@@ -204,7 +218,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	protected void keyPressedConnected( int keycode ) {
 		int index = -1;
-		
+		/*
 		// Map keys to actions
 		if ( keycode >= Canvas.KEY_NUM1 && keycode <= Canvas.KEY_NUM9 ) {
 			index = keycode - Canvas.KEY_NUM1;
@@ -220,6 +234,13 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 				case Canvas.KEY_POUND:
 					index = 12;
 					break;
+			}
+		}*/
+		
+		for ( int i = 0; i < bindingKeys.length; i++ ) {
+			if ( bindingKeys[i] == keycode ) {
+				index = i;
+				break;
 			}
 		}
 		
@@ -308,16 +329,27 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		modifierInputDialog.activate( this );
 	}
 
-	private static final Alert doCursorAlert = new Alert( "Cursor Mode",
-			"Move the cursor using the stick or numeric keys.", null, AlertType.INFO );
-
-	private static boolean doneCursorAlert = false;
-
 	private void doCursor() {
-		if ( !doneCursorAlert ) {
-			Main.setDisplay( doCursorAlert );
-			doneCursorAlert = true;
-		}
 		changeMode( MODE_CURSOR );
+	}
+	
+	private void doShowBindings() {
+		StringBuffer str = new StringBuffer();
+		
+		if ( currentCommands != null ) {
+			for ( int i = 0; i < bindingKeys.length && i < currentCommands.length; i++ ) {
+				int keycode = bindingKeys[i];
+				Command comm = currentCommands[i];
+				String keyName = getKeyName( keycode );
+				str.append( keyName );
+				str.append( ": " );
+				str.append( comm.getLabel() );
+				str.append( "\n" );
+			}
+		}
+		
+		Alert showBindingsAlert = new Alert( "Bindings", str.toString(), null, AlertType.INFO );
+		showBindingsAlert.setTimeout( Alert.FOREVER );
+		Main.setDisplay( showBindingsAlert );
 	}
 }

@@ -69,7 +69,7 @@ public class SessionsMenu extends EditableMenu {
 
 	protected void doDelete( int i ) {
 		SessionManager.deleteSession( i );
-		addItems();
+		delete( i );
 	}
 
 	protected void doNew() {

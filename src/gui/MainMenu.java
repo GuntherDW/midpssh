@@ -36,12 +36,12 @@ public class MainMenu extends List implements CommandListener, Activatable {
 	 * @param arg1
 	 */
 	public MainMenu() {
-		super( "FloydSSHx", List.IMPLICIT );
+		super( "MidpSSH", List.IMPLICIT );
 
 		append( "Sessions", null );
 		append( "Macros", null );
 		append( "Settings", null );
-		append( "About FloydSSHx", null );
+		append( "About MidpSSH", null );
 		append( "Help", null );
 		append( "Quit", null );
 

@@ -27,7 +27,7 @@ import javax.microedition.rms.RecordStoreNotFoundException;
  */
 public class SessionManager {
 	
-	private static final String RMS_NAME = "connections";
+	private static final String RMS_NAME = "sessions";
 	
 	private static Vector sessions;
 

@@ -214,7 +214,31 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
      * @param buffer
      */
     public Terminal( VT320 buffer, Session session ) {
-        this( buffer );
+        this.buffer = buffer;
+        buffer.setDisplay( this );
+        
+//#ifdef midp2
+        if ( Settings.terminalFullscreen ) {
+            setFullScreenMode( true );
+        }
+//#endif
+
+        if ( Main.useColors ) {
+            fgcolor = 0xffffff;
+            bgcolor = 0x000000;
+        }
+
+        initFont();
+
+//#ifdef midp2
+        rotated = Settings.terminalRotated;
+//#else
+        rotated = Settings.ROT_NORMAL;
+//#endif
+
+        top = 0;
+        left = 0;
+        
         this.session = session;
 
         changeMode( MODE_DISCONNECTED );
@@ -227,20 +251,43 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
             fgcolor = Settings.fgcolor;
         }
         
-        boolean resized = false;
-        int cols = this.cols;
-        int rows = this.rows;
+        sizeChanged();
+    }
+
+//#ifdef midp2
+    /* (non-Javadoc)
+     * @see javax.microedition.lcdui.Displayable#sizeChanged(int, int)
+     */
+    protected void sizeChanged(int w, int h) {
+        super.sizeChanged(w, h);
+        sizeChanged();
+    }
+//#endif
+    
+    protected void sizeChanged() {
+        width = getWidth();
+        height = getHeight();
+        if ( rotated != Settings.ROT_NORMAL ) {
+            width = getHeight();
+            height = getWidth();
+        }
+        cols = width / fontWidth;
+        rows = height / fontHeight;
+        backingStore = Image.createImage( width, height );
+        
+        int virtualCols = cols;
+        int virtualRows = rows;
+        
         if ( Settings.terminalCols != 0 ) {
-            cols = Settings.terminalCols;
-            resized = true;
+            virtualCols = Settings.terminalCols;
         }
         if ( Settings.terminalRows != 0 ) {
-            rows = Settings.terminalRows;
-            resized = true;
+            virtualRows = Settings.terminalRows;
         }
-        if ( resized ) {
-            buffer.setScreenSize( cols, rows );
-        }
+        
+        //System.out.println( "ROWS " + virtualRows + " COLS " + virtualCols );
+        
+        buffer.setScreenSize( virtualCols, virtualRows );
     }
     
     public void connected() {
@@ -764,60 +811,6 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 	};
 
 	public final static int COLOR_INVERT = 9;
-	
-	protected Terminal( VT320 buffer ) {
-		setVDUBuffer( buffer );
-        
-//#ifdef midp2
-        if ( Settings.terminalFullscreen ) {
-            setFullScreenMode( true );
-        }
-//#endif
-
-		if ( Main.useColors ) {
-			fgcolor = 0xffffff;
-			bgcolor = 0x000000;
-		}
-
-		initFont();
-
-//#ifdef midp2
-		rotated = Settings.terminalRotated;
-//#else
-		rotated = Settings.ROT_NORMAL;
-//#endif
-		
-        sizeChanged();
-
-		top = 0;
-		left = 0;
-	}
-
-//#ifdef midp2
-    /* (non-Javadoc)
-     * @see javax.microedition.lcdui.Displayable#sizeChanged(int, int)
-     */
-    protected void sizeChanged(int w, int h) {
-        super.sizeChanged(w, h);
-        sizeChanged();
-    }
-//#endif
-    
-    protected void sizeChanged() {
-        width = getWidth();
-        height = getHeight();
-        if ( rotated != Settings.ROT_NORMAL ) {
-            width = getHeight();
-            height = getWidth();
-        }
-        cols = width / fontWidth;
-        rows = height / fontHeight;
-        backingStore = Image.createImage( width, height );
-        
-        //System.out.println( "ROWS " + rows + " COLS " + cols );
-        
-        buffer.setScreenSize( cols, rows );
-    }
     
 	/**
 	 * Create a color representation that is brighter than the standard color
@@ -1005,21 +998,6 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 
 			invalid = false;
 		}
-	}
-
-	/**
-	 * Set a new terminal (VDU) buffer.
-	 * 
-	 * @param buffer
-	 *            new buffer
-	 */
-	public void setVDUBuffer( VT320 buffer ) {
-		this.buffer = buffer;
-		buffer.setDisplay( this );
-	}
-	
-	public VT320 getVDUBuffer() {
-		return buffer;
 	}
 	
 	private void initFont() {

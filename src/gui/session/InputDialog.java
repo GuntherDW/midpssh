@@ -51,6 +51,7 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 
 	public InputDialog() {
 		super( "Input", "", 255, TextField.ANY );
+        setString( "" );
 
 		addCommand( enterCommand );
 		addCommand( typeCommand );
@@ -66,7 +67,6 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 	 * @see gui.Activatable#activate()
 	 */
 	public void activate() {
-		setString( "" );
 		Main.setDisplay( this );
 	}
 
@@ -101,7 +101,7 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 				session.typeString( commandBuffer.toString() );
 				session.activate();
 			}
-			
+            setString( "" );
 		}
 		
 		back.activate();

@@ -41,6 +41,8 @@ public class Main extends MIDlet {
 	private static MainMenu mainMenu = new MainMenu();
 	
 	private static Session currentSession;
+    
+    private static boolean paused;
 	
 	/** Constructor */
 	public Main() {
@@ -50,16 +52,20 @@ public class Main extends MIDlet {
 	}
 
 	/** Main method */
-	public void startApp() {
-		setDisplay( mainMenu );
+	protected void startApp() {
+        //if ( !paused ) {
+            setDisplay( mainMenu );
+        //}
 	}
 
 	/** Handle pausing the MIDlet */
-	public void pauseApp() {
+	protected void pauseApp() {
+        paused = true;
 	}
 
 	/** Handle destroying the MIDlet */
-	public void destroyApp( boolean unconditional ) {
+	protected void destroyApp( boolean unconditional ) {
+        paused = false;
 	}
 
 	/** Quit the MIDlet */

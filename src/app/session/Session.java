@@ -55,7 +55,7 @@ public abstract class Session implements Activatable {
 
 	private Terminal terminal;
 
-	private boolean disconnecting;
+	private boolean disconnecting, erroredDisconnect;
 	
 	private boolean forcedDisconnect;
 
@@ -282,8 +282,6 @@ public abstract class Session implements Activatable {
 
 	private void handleException( String where, Throwable t ) {
 		if ( !disconnecting ) {
-			//t.printStackTrace();
-			
 			Alert alert = new Alert( "Session Error" );
 			alert.setType( AlertType.ERROR );
 
@@ -349,22 +347,24 @@ public abstract class Session implements Activatable {
 	}
 	
 	private void sessionReport() {
-		String report = "Traffic Report\n" +
-			"IN " + bytesToString( bytesRead ) + "\n" +
-			"OUT " + bytesToString( bytesWritten ) + "\n" +
-			"TOTAL " + bytesToString( bytesRead + bytesWritten ) + "\n";
-		Alert alert = new Alert( "Session Report" );
-		alert.setType( AlertType.INFO );
-	
-		alert.setString( report );
-		alert.setTimeout( Alert.FOREVER );
-		
-		if ( forcedDisconnect ) {
-		    Main.alertBackToMain( alert );
-		}
-		else {
-		    Main.alert( alert, terminal );
-		}
+        if ( !erroredDisconnect ) {
+    		String report = "Traffic Report\n" +
+    			"IN " + bytesToString( bytesRead ) + "\n" +
+    			"OUT " + bytesToString( bytesWritten ) + "\n" +
+    			"TOTAL " + bytesToString( bytesRead + bytesWritten ) + "\n";
+    		Alert alert = new Alert( "Session Report" );
+    		alert.setType( AlertType.INFO );
+    	
+    		alert.setString( report );
+    		alert.setTimeout( Alert.FOREVER );
+    		
+    		if ( forcedDisconnect ) {
+    		    Main.alertBackToMain( alert );
+    		}
+    		else {
+    		    Main.alert( alert, terminal );
+    		}
+        }
 	}
 	
 	public void goMainMenu() {
@@ -395,6 +395,7 @@ public abstract class Session implements Activatable {
 			}
 			catch ( Exception e ) {
 				handleException( "Reader", e );
+                erroredDisconnect = true;
 				doDisconnect();
 			}
 		}
@@ -414,6 +415,7 @@ public abstract class Session implements Activatable {
 			}
 			catch ( Exception e ) {
 				handleException( "Writer", e );
+                erroredDisconnect = true;
 				doDisconnect();
 				terminal.disconnected();
 			}

@@ -101,7 +101,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	private static final Command showBindingsCommand = new Command( "Show Key Bindings", Command.ITEM, commandPriority++ );
 
 	//private static final Command settingsCommand = new Command( "Settings", Command.ITEM, commandPriority++ );
-
+    
 	private static final Command disconnectCommand = new Command( "Disconnect", Command.ITEM, commandPriority++ );
 	
 	private static final Command closeCommand = new Command( "Close", Command.STOP, commandPriority++ );
@@ -155,8 +155,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		shiftCommand,
 		//cursorCommand, scrollCommand,
 //#ifndef nospecialmenu
-		specialCommand
+		specialCommand,
 //#endif
+        disconnectCommand
 	};
 //#endif
 	

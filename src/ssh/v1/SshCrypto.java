@@ -168,5 +168,5 @@ public class SshCrypto {
 		for ( int i = 0; i < host_key_public_modulus.length; i++ )
 			encrypted_session_key[i + 2] = messageByte[i];
 		return encrypted_session_key;
-	};
+	}
 }

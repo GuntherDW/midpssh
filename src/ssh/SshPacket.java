@@ -98,14 +98,14 @@ abstract class SshPacket {
 	public String getString() {
 		int length = getInt32();
 
-		String str = "";
+		StringBuffer str = new StringBuffer();
 		for ( int i = 0; i < length; i++ ) {
 			if ( byteArray[offset] >= 0 )
-				str += (char) ( byteArray[offset++] );
+				str.append( (char) ( byteArray[offset++] ) );
 			else
-				str += (char) ( 256 + byteArray[offset++] );
+				str.append( (char) ( 256 + byteArray[offset++] ) );
 		}
-		return str;
+		return str.toString();
 	}
 
 	public byte getByte() {

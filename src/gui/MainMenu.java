@@ -34,7 +34,7 @@ import app.Main;
 
 /**
  * @author Karl von Randow
- * 
+ * @version $Revision$
  */
 public class MainMenu extends ExtendedList implements CommandListener, Activatable {
 
@@ -140,11 +140,6 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 				"To connect to a remote server choose the Sessions option " +
 				"from the main menu - create a new session, entering in the host and other details. " +
 				"You can then connect to that server by choosing the new session.\n\n" +
-				
-				"Problems Connecting\n\n" +
-				"Check that your Internet settings for Java are configured for " +
-				"Internet access rather than WAP access, and that your provider allows Internet access " +
-				"from your device.\n\n" +
 				
 				"More Information\n\n" +
 				"For more information please visit the project website http://www.xk72.com/midpssh/"

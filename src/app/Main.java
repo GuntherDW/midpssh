@@ -1,20 +1,7 @@
-package app;
-
-import gui.Console;
-import gui.MainMenu;
-
-import javax.microedition.lcdui.Alert;
-import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.Displayable;
-import javax.microedition.midlet.MIDlet;
-
-import app.session.Session;
-
-/* This file is part of "Telnet Floyd".
- *
- * (c) Radek Polak 2003-2004. All Rights Reserved.
- *
- * Please visit project homepage at http://phoenix.inf.upol.cz/~polakr
+/* This file is part of "MidpSSH".
+ * Copyright (c) 2004 XK72 Ltd.
+ * 
+ * MidpSSH is based upon Telnet Floyd and FloydSSH by Radek Polak.
  *
  * --LICENSE NOTICE--
  * This program is free software; you can redistribute it and/or
@@ -34,6 +21,17 @@ import app.session.Session;
  *
  */
 
+package app;
+
+import gui.MainMenu;
+
+import javax.microedition.lcdui.Alert;
+import javax.microedition.lcdui.Display;
+import javax.microedition.lcdui.Displayable;
+import javax.microedition.midlet.MIDlet;
+
+import app.session.Session;
+
 /**
  * Main class for whole application. Here are all important variables defined as
  * public static members, so that they can be easily accessed. See also method
@@ -43,8 +41,6 @@ import app.session.Session;
 public class Main extends MIDlet {
 
 	private static Main instance;
-
-	public static Console console = new Console();
 
 	public static boolean useColors;
 

@@ -1,20 +1,34 @@
+/* This file is part of "MidpSSH".
+ * Copyright (c) 2004 XK72 Ltd.
+ * 
+ * MidpSSH is based upon Telnet Floyd and FloydSSH by Radek Polak.
+ *
+ * --LICENSE NOTICE--
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * --LICENSE NOTICE--
+ *
+ */
+
 package gui;
 
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
 
-/*
- * Created on Oct 1, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-
 /**
- * @author Karl
+ * @author Karl von Randow
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
 public class ExtendedList extends List {
 	/**
@@ -23,7 +37,6 @@ public class ExtendedList extends List {
 	 */
 	public ExtendedList( String arg0, int arg1 ) {
 		super( arg0, arg1 );
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -34,7 +47,6 @@ public class ExtendedList extends List {
 	 */
 	public ExtendedList( String arg0, int arg1, String[] arg2, Image[] arg3 ) {
 		super( arg0, arg1, arg2, arg3 );
-		// TODO Auto-generated constructor stub
 	}
 
 	public void deleteAll() {

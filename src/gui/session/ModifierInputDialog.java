@@ -1,8 +1,24 @@
-/*
- * Created on Oct 2, 2004
+/* This file is part of "MidpSSH".
+ * Copyright (c) 2004 XK72 Ltd.
+ * 
+ * MidpSSH is based upon Telnet Floyd and FloydSSH by Radek Polak.
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * --LICENSE NOTICE--
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * --LICENSE NOTICE--
+ *
  */
 package gui.session;
 
@@ -11,40 +27,28 @@ import gui.Activatable;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
-import javax.microedition.lcdui.Form;
+import javax.microedition.lcdui.TextBox;
 import javax.microedition.lcdui.TextField;
 
-import terminal.vt320;
 import app.Main;
+import app.session.Session;
 
 /**
- * @author Karl
+ * @author Karl von Randow
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
-public class ModifierInputDialog extends Form implements Activatable, CommandListener {
+public class ModifierInputDialog extends TextBox implements Activatable, CommandListener {
 
 	private static Command enterCommand = new Command( "Type", Command.OK, 1 );
 
 	private static Command backCommand = new Command( "Back", Command.CANCEL, 2 );
 
-	private vt320 vt;
-
-	private TextField tf;
-
 	private Activatable back;
 
 	public int modifier;
 
-	public ModifierInputDialog( vt320 vt ) {
-		super( "Control Keys" );
-		//super("Control Keys", "", 10, TextField.ANY);
-
-		this.vt = vt;
-
-		tf = new TextField( "Enter one or more letters", null, 10, TextField.ANY );
-		append( tf );
+	public ModifierInputDialog() {
+		super( "Control Keys", "", 10, TextField.ANY );
 
 		addCommand( enterCommand );
 		addCommand( backCommand );
@@ -58,7 +62,6 @@ public class ModifierInputDialog extends Form implements Activatable, CommandLis
 	 * @see gui.Activatable#activate()
 	 */
 	public void activate() {
-		tf.setString( "" );
 		Main.setDisplay( this );
 	}
 	
@@ -75,9 +78,10 @@ public class ModifierInputDialog extends Form implements Activatable, CommandLis
 	 */
 	public void commandAction( Command command, Displayable arg1 ) {
 		if ( command == enterCommand ) {
-			String str = tf.getString();
-			for ( int i = 0; i < str.length(); i++ ) {
-				vt.keyTyped( 0, str.charAt( i ), modifier );
+			String str = getString();
+			Session session = Main.currentSession();
+			if ( session != null ) {
+				session.typeString( str );
 			}
 		}
 

@@ -656,6 +656,7 @@ public class SshIO {
 
             }
         } catch (RuntimeException e) {
+            e.printStackTrace();
             throw new RuntimeException("HP1b " + p.getType() + ": " + e);
         }
         return "";
@@ -1135,11 +1136,24 @@ public class SshIO {
                 random_bits2);
 
         // We encrypt now!!
-        byte[] encrypted_session_key = SshCrypto.encrypteRSAPkcs1Twice(
-                session_keyXored, server_key_public_exponent,
-                server_key_public_modulus, host_key_public_exponent,
-                host_key_public_modulus);
-
+        byte[] encrypted_session_key;
+        /* Karl: according to SSH 1.5 protocol spec we encrypt first with the key with the shortest
+         * modulus. Usually this was the server key but some servers have bigger keys than the host key!
+         * So check here and swap around if necessary.
+         */
+        if ( server_key_public_modulus.length <= host_key_public_modulus.length ) {
+            encrypted_session_key = SshCrypto.encrypteRSAPkcs1Twice(
+                    session_keyXored, server_key_public_exponent,
+                    server_key_public_modulus, host_key_public_exponent,
+                    host_key_public_modulus);
+        }
+        else {
+            encrypted_session_key = SshCrypto.encrypteRSAPkcs1Twice(
+                    session_keyXored, host_key_public_exponent,
+                    host_key_public_modulus, server_key_public_exponent,
+                    server_key_public_modulus);
+        }
+        
         // protocol_flags :protocol extension cf. page 18
         int protocol_flags = 0; /* currently 0 */
 

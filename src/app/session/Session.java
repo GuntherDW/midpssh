@@ -144,27 +144,19 @@ public abstract class Session implements SessionIOListener, Activatable {
 		}
 	}
 	
-	private boolean connect() {
-		try {
-			emulation.putString( "Connecting to " + host + "..." );
-			terminal.redraw();
-			String conn = "socket://" + host;
-			if ( host.indexOf( ":" ) == -1 )
-				conn += ":" + defaultPort();
-			socket = (StreamConnection) Connector.open( conn, Connector.READ_WRITE, false );
-			in = socket.openDataInputStream();
-			out = socket.openDataOutputStream();
-			emulation.putString( "OK\r\n" );
+	private boolean connect() throws IOException {
+		emulation.putString( "Connecting to " + host + "..." );
+		terminal.redraw();
+		String conn = "socket://" + host;
+		if ( host.indexOf( ":" ) == -1 )
+			conn += ":" + defaultPort();
+		socket = (StreamConnection) Connector.open( conn, Connector.READ_WRITE, false );
+		in = socket.openDataInputStream();
+		out = socket.openDataOutputStream();
+		emulation.putString( "OK\r\n" );
 
-			terminal.redraw();
-			return true;
-		}
-		catch ( Exception e ) {
-			emulation.putString( "FAILED\r\n" );
-			emulation.putString( e.toString() );
-			terminal.redraw();
-			return false;
-		}
+		terminal.redraw();
+		return true;
 	}
 
 	/**
@@ -253,9 +245,9 @@ public abstract class Session implements SessionIOListener, Activatable {
 			synchronized ( writer ) {
 				disconnecting = true;
 				try {
-					in.close();
-					out.close();
-					socket.close();
+					if ( in != null ) in.close();
+					if ( out != null ) out.close();
+					if ( socket != null ) socket.close();
 				}
 				catch ( IOException e ) {
 					handleException( e );

@@ -62,6 +62,8 @@ public class Settings extends MyRecordStore {
     public static int fontMode = FONT_NORMAL;
 	
 	private static Settings me = new Settings();
+
+    public static boolean terminalFullscreen = false;
 	
 	public static void init() {
 		me.load( RMS_NAME, false );
@@ -87,6 +89,7 @@ public class Settings extends MyRecordStore {
 		terminalType = in.readUTF();
 		terminalRotated = in.readInt();
         fontMode = in.readInt();
+        terminalFullscreen = in.readBoolean();
         return null;
     }
     
@@ -101,5 +104,6 @@ public class Settings extends MyRecordStore {
 		out.writeUTF( terminalType );
 		out.writeInt( terminalRotated );
         out.writeInt( fontMode );
+        out.writeBoolean( terminalFullscreen );
     }
 }

@@ -79,13 +79,15 @@ public class Terminal extends Canvas {
 	};
 
 	public final static int COLOR_INVERT = 9;
-
-	public Terminal( vt320 buffer ) {
-		this( buffer, Settings.ROT_NORMAL );
-	}
 	
-	public Terminal( vt320 buffer, int rotated ) {
+	public Terminal( vt320 buffer ) {
 		setVDUBuffer( buffer );
+        
+//#ifdef midp2
+        if ( Settings.terminalFullscreen ) {
+            setFullScreenMode( true );
+        }
+//#endif
 
 		if ( Main.useColors ) {
 			fgcolor = 0xffffff;
@@ -95,9 +97,9 @@ public class Terminal extends Canvas {
 		initFont();
 
 //#ifdef midp2
-		this.rotated = rotated;
+		rotated = Settings.terminalRotated;
 //#else
-		this.rotated = rotated = Settings.ROT_NORMAL;
+		rotated = Settings.ROT_NORMAL;
 //#endif
 		
 		width = getWidth();
@@ -224,7 +226,7 @@ public class Terminal extends Canvas {
 		// time not redrawing our backingStore each time
 		if ( invalid ) {
 			Graphics g = backingStore.getGraphics();
-			g.setColor( fgcolor );
+			g.setColor( bgcolor );
 			g.fillRect( 0, 0, width, height );
 
 			for ( int l = top; l < buffer.height && l < ( top + rows ); l++ ) {
@@ -322,6 +324,9 @@ public class Terminal extends Canvas {
 	}
 	
 	private void initFont() {
+//#ifdef small
+        initInternalFont();
+//#else
 	    switch ( fontMode ) {
         case Settings.FONT_NORMAL:
 	        initInternalFont();
@@ -336,6 +341,7 @@ public class Terminal extends Canvas {
             initSystemFont( Font.SIZE_LARGE );
             break;
         }
+//#endif
 	}
 
 	private void initInternalFont() {
@@ -374,11 +380,14 @@ public class Terminal extends Canvas {
 	}
 	
 	protected void drawChars( Graphics g, char[] chars, int offset, int length, int x, int y ) {
+//#ifndef small
 	    if ( fontMode == Settings.FONT_NORMAL ) {
+//#endif
 	        for ( int i = offset; i < offset + length; i++ ) {
 				drawChar( g, chars[i], x, y );
 				x += fontWidth;
 			}
+//#ifndef small
 	    }
 	    else {
 	        g.setFont( font );
@@ -387,6 +396,7 @@ public class Terminal extends Canvas {
 				x += fontWidth;
 			}
 	    }
+//#endif
 	}
 
 	private void drawChar( Graphics g, char c, int x, int y ) {

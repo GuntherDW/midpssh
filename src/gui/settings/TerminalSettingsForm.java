@@ -42,7 +42,9 @@ public class TerminalSettingsForm extends SettingsForm {
 	protected TextField tfFg = new TextField( "Foreground", "", 6, TextField.ANY );
 	
 	protected TextField tfBg = new TextField( "Background", "", 6, TextField.ANY );
-    
+//#ifdef midp2    
+    protected ChoiceGroup cgFullscreen = new ChoiceGroup( "Full Screen", ChoiceGroup.EXCLUSIVE );
+//#endif
     protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size", ChoiceGroup.EXCLUSIVE );
 	
 	protected ChoiceGroup cgRotated = new ChoiceGroup( "Orientation", ChoiceGroup.EXCLUSIVE );
@@ -57,6 +59,12 @@ public class TerminalSettingsForm extends SettingsForm {
 		append( tfCols );
 		append( tfRows );
 		
+//#ifdef midp2
+        cgFullscreen.append( "Off", null );
+        cgFullscreen.append( "On", null );
+        append( cgFullscreen );
+//#endif
+        
         cgFont.append( "Tiny", null );
         cgFont.append( "Small", null );
         cgFont.append( "Medium", null );
@@ -97,7 +105,9 @@ public class TerminalSettingsForm extends SettingsForm {
 		else {
 			tfRows.setString( "" );
 		}
-		
+//#ifdef midp2
+        cgFullscreen.setSelectedIndex( Settings.terminalFullscreen ? 1 : 0, true );
+//#endif        
 		tfFg.setString( toHex( Settings.fgcolor ) );
 		tfBg.setString( toHex( Settings.bgcolor ) );
 		
@@ -148,7 +158,9 @@ public class TerminalSettingsForm extends SettingsForm {
 			catch ( NumberFormatException e ) {
 				
 			}
-			
+//#ifdef midp2
+            Settings.terminalFullscreen = cgFullscreen.getSelectedIndex() == 1;
+//#endif
 			try {
 				int col = fromHex( tfFg.getString() );
 				Settings.fgcolor = col;
@@ -195,6 +207,7 @@ public class TerminalSettingsForm extends SettingsForm {
 			Settings.terminalType = "";
 			Settings.terminalCols = 0;
 			Settings.terminalRows = 0;
+            Settings.terminalFullscreen = false;
 			Settings.fgcolor = Settings.DEFAULT_FGCOLOR;
 			Settings.bgcolor = Settings.DEFAULT_BGCOLOR;
 			Settings.terminalRotated = Settings.ROT_NORMAL;

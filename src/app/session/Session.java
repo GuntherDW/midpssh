@@ -203,6 +203,10 @@ public abstract class Session implements SessionIOHandler, Activatable {
 		}
 //#else
 	    buf = new byte[1];
+//#ifdef debug
+		emulation.putString( "Waiting for first byte.\r\n" );
+//#endif
+	    
 	    int c = in.read();
 //#ifdef debug
 		emulation.putString( "Read first byte.\r\n" );

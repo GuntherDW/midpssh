@@ -41,8 +41,7 @@ public abstract class Cipher {
 			return (Cipher) c.newInstance();
 		}
 		catch ( Throwable t ) {
-			System.err.println( "Cipher: unable to load instance of '" + algorithm + "'" );
-			t.printStackTrace();
+			System.err.println( "Cipher: " + algorithm + " " + t );
 			return null;
 		}
 	}

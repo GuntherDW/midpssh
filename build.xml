@@ -75,7 +75,7 @@
 		<antcall target="build">
 			<param name="filename" value="midpssh-lite"/>
 			<param name="midp2" value="true"/>
-			<param name="mode" value="ssh2"/>
+			<param name="mode" value="lite"/>
     		<param name="run" value="true"/>
 		</antcall>
 	</target>
@@ -193,7 +193,8 @@
         			  jadfile="${dist.dir}/${jad.file}"
     				  obfuscator="proguard"
     				  classpath="lib/proguard.jar">
-    		<argument value="-keep class ssh.v1.Blowfish" />
+    		<!--<argument value="-keep class ssh.v1.Blowfish" />-->
+    		<argument value="-keep class ssh.v1.DES3" />
     		<argument value="-defaultpackage" />
     		<argument value="-allowaccessmodification" />
     		<argument value="-overloadaggressively" />

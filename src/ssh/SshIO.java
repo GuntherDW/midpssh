@@ -32,6 +32,7 @@ import java.util.Random;
 
 
 import ssh.v1.BigInteger;
+import ssh.v1.Cipher;
 import ssh.v1.MD5;
 import ssh.v1.SshCrypto;
 import ssh.v1.SshPacket1;
@@ -252,6 +253,32 @@ public abstract class SshIO {
 		phase = 0;
 		crypto = null;
 	}
+	
+	protected void sendDisconnect() throws IOException {
+		sendDisconnect( 11, "Finished" );
+	}
+	
+	protected void sendDisconnect( int reason, String reasonStr ) throws IOException {
+//#ifdef ssh2
+		if ( crypto instanceof SshCrypto2 ) {
+			SshPacket2 pn = new SshPacket2( SSH_MSG_DISCONNECT );
+			pn.putInt32( reason );
+			pn.putString( reasonStr );
+			pn.putString( "en" );
+			sendPacket2( pn );
+		}
+		else
+//#endif
+		{
+			SshPacket1 pn = new SshPacket1( SSH_MSG_DISCONNECT );
+			pn.putInt32( reason );
+			pn.putString( reasonStr );
+			pn.putString( "en" );
+			sendPacket1( pn );
+		}
+		
+		disconnect();
+	}
 
 	synchronized public void sendData( byte[] data, int offset, int length ) throws IOException {
 		String str = new String( data, offset, length );
@@ -261,7 +288,18 @@ public abstract class SshIO {
 		else
 			dataToSend += str;
 		if ( cansenddata ) {
-			Send_SSH_CMSG_STDIN_DATA( dataToSend );
+//#ifdef ssh2
+			if ( crypto instanceof SshCrypto2 ) {
+				SshPacket2 pn = new SshPacket2( SSH2_MSG_CHANNEL_DATA );
+				pn.putInt32( 0 );
+				pn.putString( dataToSend );
+				sendPacket2( pn );
+			}
+			else
+//#endif
+			{
+				Send_SSH_CMSG_STDIN_DATA( dataToSend );
+			}
 			dataToSend = null;
 		}
 	}
@@ -325,6 +363,7 @@ public abstract class SshIO {
 					}
 //#else
 					if ( remotemajor == 2 ) {
+						// TODO disconnect
 						return "Remote server does not support ssh1\r\n".getBytes();
 					}
 					else {
@@ -727,7 +766,7 @@ public abstract class SshIO {
 			}
 			
 			case SSH2_MSG_CHANNEL_CLOSE: {
-				// TODO disconnect
+				sendDisconnect();
 				break;
 			}
 			
@@ -826,7 +865,7 @@ public abstract class SshIO {
 					return "OK\r\n";
 				}
 				else {
-					// TODO disconnect
+					sendDisconnect( 3, "Key exchange failed" );
 					return "FAILED\r\n";
 				}
 			}
@@ -997,22 +1036,22 @@ public abstract class SshIO {
 		//	    mp-int double-encrypted session key (uses the session-id)
 		//	    32-bit int protocol_flags
 		//
-		if ( ( supported_ciphers_mask[3] & (byte) ( 1 << SSH_CIPHER_BLOWFISH ) ) != 0 ) {
+		if ( ( supported_ciphers_mask[3] & (byte) ( 1 << SSH_CIPHER_BLOWFISH ) ) != 0 && hasCipher( "Blowfish" ) ) {
 			cipher_types = (byte) SSH_CIPHER_BLOWFISH;
 			cipher_type = "Blowfish";
 		}
 		else {
-			if ( ( supported_ciphers_mask[3] & ( 1 << SSH_CIPHER_IDEA ) ) != 0 ) {
+			if ( ( supported_ciphers_mask[3] & ( 1 << SSH_CIPHER_IDEA ) ) != 0 && hasCipher( "IDEA" ) ) {
 				cipher_types = (byte) SSH_CIPHER_IDEA;
 				cipher_type = "IDEA";
 			}
 			else {
-				if ( ( supported_ciphers_mask[3] & ( 1 << SSH_CIPHER_3DES ) ) != 0 ) {
+				if ( ( supported_ciphers_mask[3] & ( 1 << SSH_CIPHER_3DES ) ) != 0 && hasCipher( "DES3" ) ) {
 					cipher_types = (byte) SSH_CIPHER_3DES;
 					cipher_type = "DES3";
 				}
 				else {
-					if ( ( supported_ciphers_mask[3] & ( 1 << SSH_CIPHER_DES ) ) != 0 ) {
+					if ( ( supported_ciphers_mask[3] & ( 1 << SSH_CIPHER_DES ) ) != 0 && hasCipher( "DES" ) ) {
 						cipher_types = (byte) SSH_CIPHER_DES;
 						cipher_type = "DES";
 					}
@@ -1021,7 +1060,7 @@ public abstract class SshIO {
 						// supported IDEA, BlowFish or 3DES, support cypher mask
 						// is " + supported_ciphers_mask[3] + ".\n");
 						disconnect();
-						return "\rRemote server does not support IDEA/Blowfish/3DES blockcipher, closing connection.\r\n";
+						return "\rIncompatible ciphers, closing connection.\r\n";
 					}
 				}
 			}
@@ -1082,6 +1121,10 @@ public abstract class SshIO {
 		sendPacket1( packet );
 		crypto = new SshCrypto( cipher_type, session_key );
 		return "";
+	}
+	
+	private boolean hasCipher( String cipherName ) {
+		return ( Cipher.getInstance( cipherName ) != null );
 	}
 
 	/**

@@ -19,7 +19,7 @@ public class DHBasicKeyPairGenerator {
         // Use a smaller qLength so that's it's quicker to generate
         qLength = 32;
         
-        System.out.println( "Generating private key" );
+        //System.out.println( "Generating private key" );
         //
         // calculate the private key
         //
@@ -27,13 +27,13 @@ public class DHBasicKeyPairGenerator {
         //this.x = new BigInteger( "101010101" );
 
         //System.out.println( "PRIVATE KEY=" + this.x );
-        System.out.println( "Generating public key" );
+        //System.out.println( "Generating public key" );
         //
         // calculate the public key.
         //
         this.y = g.modPow(x, p);
         //System.out.println( "PUBLIC KEY=" + this.y );
-        System.out.println( "Generated both keys" );
+        //System.out.println( "Generated both keys" );
     }
 	/**
 	 * @return Returns the x.

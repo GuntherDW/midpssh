@@ -221,6 +221,8 @@ public abstract class vt320 extends VDUBuffer {
 	}
 	
 	protected void flush() {
+        //putString( "\r\nWRITING " + writeBufferIndex + "=" + new String( writeBuffer, 0, writeBufferIndex ) + "\r\n" );
+        
 	    try {
 			sendData( writeBuffer, 0, writeBufferIndex );
 		}
@@ -1132,12 +1134,6 @@ public abstract class vt320 extends VDUBuffer {
 		}
 	}
 
-	private void handle_dcs( String dcs ) {
-	}
-
-	private void handle_osc( String osc ) {
-	}
-
 //#ifndef simplevt320
 	private final static char unimap[] = {
 			//
@@ -1682,13 +1678,13 @@ public abstract class vt320 extends VDUBuffer {
 			case TSTATE_OSC:
 				if ( ( c < 0x20 ) && ( c != ESC ) ) {// NP - No printing
 					// character
-					handle_osc( osc );
+					//handle_osc( osc );
 					term_state = TSTATE_DATA;
 					break;
 				}
 				//but check for vt102 ESC \
 				if ( c == '\\' && osc.charAt( osc.length() - 1 ) == ESC ) {
-					handle_osc( osc );
+					//handle_osc( osc );
 					term_state = TSTATE_DATA;
 					break;
 				}
@@ -1936,7 +1932,7 @@ public abstract class vt320 extends VDUBuffer {
 				break;
 			case TSTATE_DCS:
 				if ( c == '\\' && dcs.charAt( dcs.length() - 1 ) == ESC ) {
-					handle_dcs( dcs );
+					//handle_dcs( dcs );
 					term_state = TSTATE_DATA;
 					break;
 				}

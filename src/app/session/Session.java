@@ -176,6 +176,9 @@ public abstract class Session implements Activatable {
         if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_PROXY ) {
             conn += ";deviceside=false";
         }
+        else if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_DEVICESIDE ) {
+            conn += ";deviceside=true";
+        }
 //#endif
         
 		socket = (StreamConnection) Connector.open( conn, Connector.READ_WRITE, false );

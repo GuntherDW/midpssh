@@ -98,6 +98,7 @@ public class SessionForm extends EditableForm {
 //#ifdef blackberry
         cgBlackberryConnType = new ChoiceGroup( "Connection Type", ChoiceGroup.EXCLUSIVE);
         cgBlackberryConnType.append( "Default", null );
+        cgBlackberryConnType.append( "TCP/IP", null );
         cgBlackberryConnType.append( "BES", null );
         append(cgBlackberryConnType);
 //#endif
@@ -146,10 +147,10 @@ public class SessionForm extends EditableForm {
                 cgBlackberryConnType.setSelectedIndex( 0, true );
                 break;
             case SessionSpec.BLACKBERRY_CONN_TYPE_DEVICESIDE:
-                cgBlackberryConnType.setSelectedIndex( 0, true );
+                cgBlackberryConnType.setSelectedIndex( 1, true );
                 break;
             case SessionSpec.BLACKBERRY_CONN_TYPE_PROXY:
-                cgBlackberryConnType.setSelectedIndex( 1, true );
+                cgBlackberryConnType.setSelectedIndex( 2, true );
                 break;
             }
 //#endif
@@ -281,6 +282,8 @@ public class SessionForm extends EditableForm {
         case 0:
             return SessionSpec.BLACKBERRY_CONN_TYPE_DEFAULT;
         case 1:
+            return SessionSpec.BLACKBERRY_CONN_TYPE_DEVICESIDE;
+        case 2:
             return SessionSpec.BLACKBERRY_CONN_TYPE_PROXY;
         }
         return SessionSpec.BLACKBERRY_CONN_TYPE_DEFAULT;

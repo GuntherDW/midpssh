@@ -326,94 +326,115 @@ public class SshIO {
 		// ")");
 
 		if ( phase == PHASE_INIT ) {
-			byte b; // of course, byte is a signed entity (-128 -> 127)
-
-			while ( boffset < boffsetend ) {
-				b = buff[boffset++];
-				// both sides MUST send an identification string of the form
-				// "SSH-protoversion-softwareversion comments",
-				// followed by newline character(ascii 10 = '\n' or '\r')
-				idstr += (char) b;
-				if ( b == '\n' ) {
-					phase++;
-					//          if (!idstr.substring(0, 4).equals("SSH-")) {
-					//            System.out.println("Received invalid ID string: " + idstr
-					// + ", (substr " + idstr.substring(0, 4) + ")");
-					//            throw (new IOException());
-					//          }
-					remotemajor = Integer.parseInt( idstr.substring( 4, 5 ) );
-					String minorverstr = idstr.substring( 6, 8 );
-					if ( !Character.isDigit( minorverstr.charAt( 1 ) ) )
-						minorverstr = minorverstr.substring( 0, 1 );
-					remoteminor = Integer.parseInt( minorverstr );
-
-					//        System.out.println("remotemajor " + remotemajor);
-					//          System.out.println("remoteminor " + remoteminor);
-
+            // TODO REMOVE THIS EXCEPTION CATCHING
+            try {
+    			byte b; // of course, byte is a signed entity (-128 -> 127)
+    
+    			while ( boffset < boffsetend ) {
+    				b = buff[boffset++];
+    				// both sides MUST send an identification string of the form
+    				// "SSH-protoversion-softwareversion comments",
+    				// followed by newline character(ascii 10 = '\n' or '\r')
+    				idstr += (char) b;
+    				if ( b == '\n' ) {
+    					phase++;
+    					//          if (!idstr.substring(0, 4).equals("SSH-")) {
+    					//            System.out.println("Received invalid ID string: " + idstr
+    					// + ", (substr " + idstr.substring(0, 4) + ")");
+    					//            throw (new IOException());
+    					//          }
+    					remotemajor = Integer.parseInt( idstr.substring( 4, 5 ) );
+    					String minorverstr = idstr.substring( 6, 8 );
+    					if ( !Character.isDigit( minorverstr.charAt( 1 ) ) )
+    						minorverstr = minorverstr.substring( 0, 1 );
+    					remoteminor = Integer.parseInt( minorverstr );
+    
+    					//        System.out.println("remotemajor " + remotemajor);
+    					//          System.out.println("remoteminor " + remoteminor);
+    
 //#ifdef ssh2
-					if ( remotemajor == 2 ) {
-						mymajor = 2;
-						myminor = 0;
-						useprotocol = 2;
-					}
-					else {
-						if ( false && ( remoteminor == 99 ) ) {
-							mymajor = 2;
-							myminor = 0;
-							useprotocol = 2;
-						}
-						else {
-							mymajor = 1;
-							myminor = 5;
-							useprotocol = 1;
-						}
-					}
+    					if ( remotemajor == 2 ) {
+    						mymajor = 2;
+    						myminor = 0;
+    						useprotocol = 2;
+    					}
+    					else {
+    						if ( false && ( remoteminor == 99 ) ) {
+    							mymajor = 2;
+    							myminor = 0;
+    							useprotocol = 2;
+    						}
+    						else {
+    							mymajor = 1;
+    							myminor = 5;
+    							useprotocol = 1;
+    						}
+    					}
 //#else
-					if ( remotemajor == 2 ) {
-						// TODO disconnect
-						return "Remote server does not support ssh1\r\n".getBytes();
-					}
-					else {
-						mymajor = 1;
-						myminor = 5;
-						useprotocol = 1;
-					}
+    					if ( remotemajor == 2 ) {
+    						// TODO disconnect
+    						return "Remote server does not support ssh1\r\n".getBytes();
+    					}
+    					else {
+    						mymajor = 1;
+    						myminor = 5;
+    						useprotocol = 1;
+    					}
 //#endif
-					// this is how we tell the remote server what protocol we
-					// use.
-					idstr_sent = "SSH-" + mymajor + "." + myminor + "-" + idstr_sent;
-					write( idstr_sent.getBytes() );
-
+    					// this is how we tell the remote server what protocol we
+    					// use.
+    					idstr_sent = "SSH-" + mymajor + "." + myminor + "-" + idstr_sent;
+    					write( idstr_sent.getBytes() );
+    
 //#ifdef ssh2
-					if ( useprotocol == 2 )
-						currentpacket = new SshPacket2( null );
-					else
-						currentpacket = new SshPacket1( null );
+    					if ( useprotocol == 2 )
+    						currentpacket = new SshPacket2( null );
+    					else
+    						currentpacket = new SshPacket1( null );
 //#else
-					currentpacket = new SshPacket1( null );
+    					currentpacket = new SshPacket1( null );
 //#endif
-				}
-			}
-			if ( boffset == boffsetend )
-				return "".getBytes();
-			return "Must not have left over data after PHASE_INIT!\n".getBytes();
-		}
+    				}
+    			}
+    			if ( boffset == boffsetend )
+    				return "".getBytes();
+    			return "Must not have left over data after PHASE_INIT!\n".getBytes();
+    		}
+            catch ( RuntimeException e ) {
+                throw new RuntimeException( "HSINIT: " + e );
+            }
+        }
 
 		result = "";
 		while ( boffset < boffsetend ) {
-			boffset = currentpacket.addPayload( buff, boffset, ( boffsetend - boffset ) );
+            boffset = currentpacket.addPayload( buff, boffset, ( boffsetend - boffset ) );
 			if ( currentpacket.isFinished() ) {
 //#ifdef ssh2
 				if ( useprotocol == 1 ) {
-					result = result + handlePacket1( (SshPacket1) currentpacket );
+                    try {
+                        result = result + handlePacket1( (SshPacket1) currentpacket );
+                    }
+                    catch ( RuntimeException e ) {
+                        throw new RuntimeException( "HP1: " + e );
+                    }
 					currentpacket = new SshPacket1( crypto );
 				}
 				else {
-					result = result + handlePacket2( (SshPacket2) currentpacket );
+                    try {
+                        result = result + handlePacket2( (SshPacket2) currentpacket );
+                    }
+                    catch ( RuntimeException e ) {
+                        throw new RuntimeException( "HP2: " + e );
+                    }
 					currentpacket = new SshPacket2( (SshCrypto2)crypto );
 				}
-//#else				
-				result = result + handlePacket1( (SshPacket1) currentpacket );
+//#else
+                try {
+                    result = result + handlePacket1( (SshPacket1) currentpacket );
+                }
+                catch ( RuntimeException e ) {
+                    throw new RuntimeException( "HP1a: " + e );
+                }
 				currentpacket = new SshPacket1( crypto );
 //#endif
 			}

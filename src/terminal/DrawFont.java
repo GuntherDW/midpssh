@@ -74,7 +74,7 @@ public class DrawFont {
     }
 
     public void drawChar( Graphics g, char c, int x, int y ) {
-        if ( data[c] == null )
+        if ( c >= data.length || data[c] == null )
             return;
         for ( int j = 1; j < data[c].length; j++ ) {
             int x1 = data[c][j] & 3;

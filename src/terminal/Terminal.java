@@ -803,7 +803,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 	private int color[] = {
 			0x000000, 0xff0000, 0x00ff00, 0xffff00, // yellow
 			0x0000ff, // blue
-			0x00ffff, // magenta
+			0xff00ff, // magenta
 			0x00ffff, // cyan
 			0xffffff, // white
 			0xffffff, // bold color

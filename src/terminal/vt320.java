@@ -933,7 +933,9 @@ public abstract class vt320 extends VDUBuffer {
 		if ( ( ( keyCode == KeyEvent.VK_ENTER ) || ( keyChar == 10 ) ) && !control ) {
 			// KARL changed from \r to \n. \r doesn't work with telnet sessions such as to SMTP
 			// This seems to work now with everything
-			write( "\n", false );
+            // KARL 27/5/2005 changed from \n to \r\n, I think this is what we're supposed to send
+            // and it appears to work with SSH and SMTP sessions
+			write( "\r\n", false );
 			if ( localecho )
 				putString( "\r\n" ); // bad hack
 			return;

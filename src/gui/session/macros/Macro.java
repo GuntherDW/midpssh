@@ -50,6 +50,12 @@ public class Macro {
 	 * @return Returns the value.
 	 */
 	public String getValue() {
-		return value;
+        if ( value.endsWith( "\n" ) && !value.endsWith( "\r\n" ) ) {
+            // Fix old macro values that just ended \n
+            return value.substring( 0, value.length() - 1 ) + "\r\n";
+        }
+        else {
+            return value;
+        }
 	}
 }

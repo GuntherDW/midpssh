@@ -296,7 +296,8 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			buffer.keyTyped( 0, ' ', 0 );
 		}
 		else if ( command == enterCommand ) {
-			buffer.keyTyped( 0, '\n', 0 );
+			//buffer.keyTyped( 0, '\n', 0 );
+            buffer.stringTyped( "\r\n" );
 		}
 		else if ( command == escCommand ) {
 			buffer.keyTyped( 0, (char) 27, 0 );

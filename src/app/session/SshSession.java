@@ -59,9 +59,20 @@ public class SshSession extends Session implements SessionIOHandler {
      */
     public void handleReceiveData( byte[] data, int offset, int length ) throws IOException {
         byte[] result;
-        result = sshIO.handleSSH( data, offset, length );
+        // TODO remove these try catches, they are for tracking down the ArrayIndexOutOfBoundsException
+        try {
+            result = sshIO.handleSSH( data, offset, length );
+        }
+        catch ( RuntimeException e ) {
+            throw new RuntimeException( "HRD1: " + e );
+        }
         
-        super.receiveData( result, 0, result.length );
+        try {
+            super.receiveData( result, 0, result.length );
+        }
+        catch ( RuntimeException e ) {
+            throw new RuntimeException( "HRD2: " + e );
+        }
     }
 
     /*

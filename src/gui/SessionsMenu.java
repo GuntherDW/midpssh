@@ -62,33 +62,39 @@ public class SessionsMenu extends EditableMenu {
 	}
 
 	protected void doSelect( int i ) {
-		SessionSpec conn = SessionManager.getSession( i );
-		if ( conn != null ) {
+		if ( i != -1 ) {
+			SessionSpec conn = SessionManager.getSession( i );
+			if ( conn != null ) {
 //#ifndef nossh
-			if ( conn.type.equals( SessionSpec.TYPE_SSH ) ) {
-				SshSession session = new SshSession();
-				session.connect( conn.host, conn.username, conn.password );
-				Main.openSession( session );
-			}
+				if ( conn.type.equals( SessionSpec.TYPE_SSH ) ) {
+					SshSession session = new SshSession();
+					session.connect( conn.host, conn.username, conn.password );
+					Main.openSession( session );
+				}
 //#endif
 //#ifndef notelnet
-			if ( conn.type.equals( SessionSpec.TYPE_TELNET ) ) {
-				TelnetSession session = new TelnetSession();
-				session.connect( conn.host );
-				Main.openSession( session );
-			}
+				if ( conn.type.equals( SessionSpec.TYPE_TELNET ) ) {
+					TelnetSession session = new TelnetSession();
+					session.connect( conn.host );
+					Main.openSession( session );
+				}
 //#endif
+			}
 		}
 	}
 
 	protected void doEdit( int i ) {
-		editConnectionForm.setConnectionIndex( i );
-		editConnectionForm.activate( this );
+		if ( i != -1 ) {
+			editConnectionForm.setConnectionIndex( i );
+			editConnectionForm.activate( this );
+		}
 	}
 
 	protected void doDelete( int i ) {
-		SessionManager.deleteSession( i );
-		delete( i );
+		if ( i != -1 ) {
+			SessionManager.deleteSession( i );
+			delete( i );
+		}
 	}
 
 	protected void doNew() {

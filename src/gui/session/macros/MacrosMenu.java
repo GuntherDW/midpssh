@@ -70,28 +70,34 @@ public class MacrosMenu extends EditableMenu {
 	 * @see gui.EditableMenu#doDelete(int)
 	 */
 	protected void doDelete( int i ) {
-		macroSet.deleteMacro( i );
-		delete( i );
+		if ( i != -1 ) {
+			macroSet.deleteMacro( i );
+			delete( i );
+		}
 	}
 	/* (non-Javadoc)
 	 * @see gui.EditableMenu#doSelect(int)
 	 */
 	protected void doSelect( int i ) {
-		Session session = Main.currentSession();
-		if ( session != null ) {
-			Macro macro = macroSet.getMacro( i );
-			if ( macro != null ) {
-				session.typeString( macro.getValue() );
-				session.activate();
+		if ( i != -1 ) {
+			Session session = Main.currentSession();
+			if ( session != null ) {
+				Macro macro = macroSet.getMacro( i );
+				if ( macro != null ) {
+					session.typeString( macro.getValue() );
+					session.activate();
+				}
 			}
-		}
-		else {
-			doEdit( i );
+			else {
+				doEdit( i );
+			}
 		}
 	}
 	protected void doEdit( int i ) {
-		editMacroForm.setMacroIndices( macroSetIndex, i );
-		editMacroForm.activate( this );
+		if ( i != -1 ) {
+			editMacroForm.setMacroIndices( macroSetIndex, i );
+			editMacroForm.activate( this );
+		}
 	}
 
 	protected void doNew() {

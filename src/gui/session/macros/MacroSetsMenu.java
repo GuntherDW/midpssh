@@ -60,20 +60,26 @@ public class MacroSetsMenu extends EditableMenu {
 	 * @see gui.EditableMenu#doDelete(int)
 	 */
 	protected void doDelete( int i ) {
-		MacroSetManager.deleteMacroSet( i );
-		delete( i );
+		if ( i != -1 ) {
+			MacroSetManager.deleteMacroSet( i );
+			delete( i );
+		}
 	}
 	/* (non-Javadoc)
 	 * @see gui.EditableMenu#doSelect(int)
 	 */
 	protected void doSelect( int i ) {
-		MacroSet macroSet = MacroSetManager.getMacroSet( i );
-		MacrosMenu macrosMenu = new MacrosMenu( macroSet, i );
-		macrosMenu.activate( this );
+		if ( i != -1 ) {
+			MacroSet macroSet = MacroSetManager.getMacroSet( i );
+			MacrosMenu macrosMenu = new MacrosMenu( macroSet, i );
+			macrosMenu.activate( this );
+		}
 	}
 	protected void doEdit( int i ) {
-		editMacroSetForm.setMacroSetIndex( i );
-		editMacroSetForm.activate( this );
+		if ( i != -1 ) {
+			editMacroSetForm.setMacroSetIndex( i );
+			editMacroSetForm.activate( this );
+		}
 	}
 
 	protected void doNew() {

@@ -1220,7 +1220,7 @@ public class SshIO {
 	        packet.putString( "" );
 	        sendPacket2( packet );
 	    }
-//    #endif
+//#endif
 		return "";
 	}
 

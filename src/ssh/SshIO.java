@@ -534,7 +534,7 @@ public abstract class SshIO {
 				if ( lastPacketSentType == SSH_CMSG_USER ) {
 					// authentication is NOT needed for this user
 					Send_SSH_CMSG_REQUEST_PTY(); //request a pseudo-terminal
-					return "\nEmpty password login.\r\n";
+					return "Empty password login.\r\n";
 				}
 
 				if ( lastPacketSentType == SSH_CMSG_AUTH_PASSWORD ) {// password
@@ -545,7 +545,7 @@ public abstract class SshIO {
 
 					//now we have to start the interactive session ...
 					Send_SSH_CMSG_REQUEST_PTY(); //request a pseudo-terminal
-					return "\nLogin & password accepted\r\n";
+					return "Login & password accepted\r\n";
 				}
 
 				if ( lastPacketSentType == SSH_CMSG_REQUEST_PTY ) {// pty
@@ -576,7 +576,7 @@ public abstract class SshIO {
 					// incorrect ???
 					//          System.out.println("failed to log in");
 					disconnect();
-					return "\nLogin & password not accepted\r\n";
+					return "Login & password not accepted\r\n";
 				}
 				if ( lastPacketSentType == SSH_CMSG_USER ) {
 					// authentication is needed for the given user

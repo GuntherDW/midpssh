@@ -227,6 +227,8 @@
     		<argument value="-keep class ssh.v1.IDEA" />
 			<argument value="-keep class ssh.v1.MD5" />
 			<argument value="-keep class ssh.v1.NONE" />
+			<!-- Don't obfuscate as the Blackberry COD is already obfuscated -->
+			<argument value="-dontobfuscate" />
 		</wtkobfuscate>
 	</target>
 	

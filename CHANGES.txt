@@ -1,3 +1,6 @@
+1.3.3
+Large font?
+
 1.3.2
 
 terminal type preference, eg. vt320 etc

@@ -82,8 +82,10 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     private static final Command typeCommand = new Command( "Type", Command.ITEM, commandPriority++ );
 //#endif
     
+//#ifndef nomacros
     private static final Command macrosCommand = new Command( "Macros", Command.ITEM, commandPriority++ );
-
+//#endif
+    
     private static final Command tabCommand = new Command( "TAB", Command.ITEM, commandPriority++ );
 
     private static final Command spaceCommand = new Command( "SPACE", Command.ITEM, commandPriority++ );
@@ -129,7 +131,9 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 //#ifndef notyping
         typeCommand,
 //#endif
-        macrosCommand, 
+//#ifndef nomacros
+        macrosCommand,
+//#endif
         tabCommand,
         spaceCommand,
         enterCommand,
@@ -160,7 +164,9 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         backMainCommand,
         backCommand,
         textInputCommand,
-        macrosCommand, 
+//#ifndef nomacros
+        macrosCommand,
+//#endif
         tabCommand,
         spaceCommand,
         enterCommand,
@@ -190,7 +196,9 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 
     private static InputDialog inputDialog;
     
+//#ifndef nomacros
     private static MacrosMenu macrosMenu;
+//#endif
     
 //#ifndef nospecialmenu 
     private SpecialMenu menuSpecialKeys;
@@ -301,11 +309,11 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         else if ( command == textInputCommand ) {
             doTextInput();
         }
-        else if ( command == macrosCommand ) {
 //#ifndef nomacros
+        else if ( command == macrosCommand ) {
             MainMenu.doMacros(this);
-//#endif
         }
+//#endif
         else if ( command == tabCommand ) {
             buffer.keyTyped( 0, '\t', 0 );
         }

@@ -42,9 +42,9 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	private static Command quitCommand = new Command( "Quit", Command.EXIT, 2 );
 
 	private SessionsMenu sessionsMenu;
-	
+//#ifndef nomacros
 	private static MacrosMenu macrosMenu;
-	
+//#endif	
 	private static Activatable settingsMenu;
 	
 	private static final String ITEM_SESSIONS = "Sessions";
@@ -132,12 +132,14 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 		sessionsMenu.activate( this );
 	}
 	
+//#ifndef nomacros
 	public static void doMacros( Activatable back ) {
 		if ( macrosMenu == null ) {
 			macrosMenu = new MacrosMenu();
 		}
 		macrosMenu.activate( back );
 	}
+//#endif
 	
 //#ifndef nosettings
 	private void doSettings() {

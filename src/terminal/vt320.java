@@ -2,6 +2,7 @@
  *
  * (c) Matthias L. Jugel, Marcus Meiﬂner 1996-2002. All Rights Reserved.
  * The file was changed by Radek Polak to work as midlet in MIDP 1.0
+ * The file was changed by Karl von Randow for bug fixes and integration
  *
  * Please visit http://javatelnet.org/ for updates and contact.
  *

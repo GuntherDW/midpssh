@@ -193,10 +193,6 @@ public class SshPacket1 extends SshPacket {
 					}
 
 					if ( position == block.length ) { //the block is complete
-						/*if ( boffsetend > boffset ) { //there is more than 1 packet in buff
-							newbuf = new byte[boffsetend - boffset];
-							System.arraycopy( buff, boffset, newbuf, 0, boffsetend - boffset );
-						}*/
 						int blockOffset = 0;
 						//padding
 						int padding_length = (int) ( 8 - ( packet_length % 8 ) );

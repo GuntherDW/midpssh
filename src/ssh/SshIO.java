@@ -389,7 +389,7 @@ public abstract class SshIO {
 				/* FIXME: check if it really is in the encalgc2s */
 				cipher_type = "NONE";
 				ciphername = "none";
-
+ 
 				/* FIXME: dito for HMAC */
 
 				pn.putString( "none" );

@@ -111,7 +111,7 @@ public class SshPacket2 extends SshPacket {
 			padlen += blocksize;
 
 		byte[] padding = new byte[padlen];
-		System.out.println( "packet length is " + packet_length + ", padlen is " + padlen );
+		//System.out.println( "packet length is " + packet_length + ", padlen is " + padlen );
 		if ( xcrypt == null )
 			for ( int i = 0; i < padlen; i++ )
 				padding[i] = 0;
@@ -165,11 +165,12 @@ public class SshPacket2 extends SshPacket {
 		byte b;
 		byte[] newbuf = null;
 		int hmaclen = 0;
+		int boffsetend = boffset + length;
 
 		if ( crypto != null )
 			hmaclen = 16;
 
-		System.out.println( "addPayload2 " + length );
+		//System.out.println( "addPayload2 " + length + " mac length " + hmaclen );
 
 		/*
 		 * Note: The whole packet is encrypted, except for the MAC.
@@ -177,7 +178,7 @@ public class SshPacket2 extends SshPacket {
 		 * (So I have to rewrite it again).
 		 */
 
-		while ( boffset < length ) {
+		while ( boffset < boffsetend ) {
 			switch ( phase_packet ) {
 				// 4 bytes
 				// Packet length: 32 bit unsigned integer
@@ -193,8 +194,8 @@ public class SshPacket2 extends SshPacket {
 								+ ( ( packet_length_array[0] & 0xff ) << 24 );
 						padlen = packet_length_array[4];
 						position = 0;
-						System.out.println( "SSH2: packet length " + packet_length );
-						System.out.println( "SSH2: padlen " + padlen );
+						//System.out.println( "SSH2: packet length " + packet_length );
+						//System.out.println( "SSH2: padlen " + padlen );
 						packet_length += hmaclen; /* len(md5) */
 						block = new byte[packet_length - 1]; /*
 															  * padlen already
@@ -207,9 +208,9 @@ public class SshPacket2 extends SshPacket {
 				//8*(packet_length/8 +1) bytes
 
 				case PHASE_block:
-					if ( position < block.length ) {
-						int amount = length - boffset;
-						if ( amount > 0 ) {
+					if ( block.length > position ) {
+						if ( boffset < boffsetend ) {
+							int amount = boffsetend - boffset;
 							if ( amount > block.length - position )
 								amount = block.length - position;
 							System.arraycopy( buff, boffset, block, position, amount );
@@ -217,11 +218,8 @@ public class SshPacket2 extends SshPacket {
 							position += amount;
 						}
 					}
+					
 					if ( position == block.length ) { //the block is complete
-						if ( length > boffset ) {
-							newbuf = new byte[length - boffset];
-							System.arraycopy( buff, boffset, newbuf, 0, length - boffset );
-						}
 						byte[] decryptedBlock = new byte[block.length - hmaclen];
 						byte[] data;
 						packet_length -= hmaclen;
@@ -236,12 +234,12 @@ public class SshPacket2 extends SshPacket {
 						System.out.println( "" );
 
 						setType( decryptedBlock[0] );
-						System.err.println( "Packet type: " + getType() );
-						System.err.println( "Packet len: " + packet_length );
+						System.err.println( "IN Packet type: " + getType() );
+						//System.err.println( "Packet len: " + packet_length );
 
 						//data
-						if ( packet_length > padlen + 1 + 1 ) {
-							data = new byte[packet_length - 1 - padlen - 1];
+						if ( packet_length > padlen + 1 + hmaclen ) {
+							data = new byte[packet_length - 1 - padlen - hmaclen];
 							System.arraycopy( decryptedBlock, 1, data, 0, data.length );
 							putData( data );
 						}
@@ -255,7 +253,7 @@ public class SshPacket2 extends SshPacket {
 			}
 		}
 		return boffset;
-	};
+	}
 	/*
 	 * 
 	 * private boolean checkCrc(){ byte[] crc_arrayCheck = new byte[4]; long

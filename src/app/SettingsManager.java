@@ -34,47 +34,32 @@ public class SettingsManager extends MyRecordStore {
 	
 	private static final String RMS_NAME = "settings";
 	
-	private static Settings settings;
-	
 	private static SettingsManager me = new SettingsManager();
 	
-	public static Settings getSettings() {
-		if ( settings == null ) {
-			Vector v = me.load( RMS_NAME, false );
-			if ( v != null && !v.isEmpty() ) {
-			    settings = (Settings) v.elementAt( 0 );
-			}
-			else {
-			    settings = new Settings();
-			}
-		}
-		return settings;
+	public static void init() {
+		me.load( RMS_NAME, false );
 	}
 
 	/**
 	 * @param settings2
 	 */
-	public static void saveSettings( Settings settings ) {
+	public static void saveSettings() {
 		Vector v = new Vector();
-		v.addElement( settings );
+		v.addElement( null );
 		me.save( RMS_NAME, v );
-		
-		SettingsManager.settings = settings;
 	}
 	
     /* (non-Javadoc)
      * @see app.MyRecordStore#read(java.io.DataInputStream)
      */
     protected Object read(DataInputStream in) throws IOException {
-        Settings settings = new Settings();
-        settings.read( in );
-        return settings;
+        Settings.read( in );
+        return null;
     }
     /* (non-Javadoc)
      * @see app.MyRecordStore#write(java.io.DataOutputStream, java.lang.Object)
      */
     protected void write(DataOutputStream out, Object ob) throws IOException {
-        Settings settings = (Settings) ob;
-        settings.write( out );
+        Settings.write( out );
     }
 }

@@ -33,35 +33,36 @@ public class Settings {
 	
 	public static final int DEFAULT_BGCOLOR = 0x000000, DEFAULT_FGCOLOR = 0xffffff;
 	
-	public int bgcolor, fgcolor;
+	public static int bgcolor, fgcolor;
 	
-	public int screenColumns, screenRows;
+	public static int terminalCols, terminalRows;
 	
-	public Settings() {
-		defaults();
-	}
+	public static String terminalType;
 
 	/**
 	 * @param in
 	 */
-	public void read( DataInputStream in ) throws IOException {
+	public static void read( DataInputStream in ) throws IOException {
 		fgcolor = in.readInt();
 		bgcolor = in.readInt();
-		screenColumns = in.readInt();
-		screenRows = in.readInt();
+		terminalCols = in.readInt();
+		terminalRows = in.readInt();
+		terminalType = in.readUTF();
 	}
 	
-	public void write( DataOutputStream out ) throws IOException {
+	public static void write( DataOutputStream out ) throws IOException {
 		out.writeInt( fgcolor );
 		out.writeInt( bgcolor );
-		out.writeInt( screenColumns );
-		out.writeInt( screenRows );
+		out.writeInt( terminalCols );
+		out.writeInt( terminalRows );
+		out.writeUTF( terminalType );
 	}
 	
-	private void defaults() {
+	public static void defaults() {
 		fgcolor = DEFAULT_FGCOLOR;
 		bgcolor = DEFAULT_BGCOLOR;
-		screenColumns = 0;
-		screenRows = 0;
+		terminalCols = 0;
+		terminalRows = 0;
+		terminalType = "";
 	}
 }

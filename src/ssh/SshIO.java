@@ -263,9 +263,7 @@ public abstract class SshIO {
 					//          System.out.println("remoteminor " + remoteminor);
 
 					if ( remotemajor == 2 ) {
-						mymajor = 2;
-						myminor = 0;
-						useprotocol = 2;
+						return "Remote server does not support ssh1\n".getBytes();
 					}
 					else {
 						if ( false && ( remoteminor == 99 ) ) { // TODO SSH2 is disabled, see if it can be made to work
@@ -284,10 +282,7 @@ public abstract class SshIO {
 					idstr_sent = "SSH-" + mymajor + "." + myminor + "-" + idstr_sent;
 					write( idstr_sent.getBytes() );
 
-					if ( useprotocol == 2 )
-						currentpacket = new SshPacket2( null );
-					else
-						currentpacket = new SshPacket1( null );
+					currentpacket = new SshPacket1( null );
 				}
 			}
 			if ( boffset == boffsetend )

@@ -11,6 +11,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.microedition.rms.RecordComparator;
 import javax.microedition.rms.RecordEnumeration;
 import javax.microedition.rms.RecordStore;
 import javax.microedition.rms.RecordStoreException;
@@ -26,9 +27,18 @@ public abstract class MyRecordStore {
     protected Vector load( String rmsName, boolean sort ) {
 		try {
 			RecordStore rec = RecordStore.openRecordStore( rmsName, false );
-			RecordEnumeration recs = rec.enumerateRecords( null,
-			        sort ? new BytewiseRecordComparator() : null,
-			                false );
+			RecordComparator comparator;
+//#ifndef small
+			if ( sort ) {
+			    comparator = new BytewiseRecordComparator();
+			}
+			else {
+			    comparator = null;
+			}
+//#else
+			comparator = null;
+//#endif
+			RecordEnumeration recs = rec.enumerateRecords( null, comparator, false );
 			Vector vector = new Vector();
 
 			while ( recs.hasNextElement() ) {

@@ -252,7 +252,7 @@ public abstract class SshIO {
 					idstr_sent = "SSH-" + mymajor + "." + myminor + "-" + idstr_sent;
 					write( idstr_sent.getBytes() );
 
-					currentpacket = new SshPacket1( null );
+					currentpacket = new SshPacket( null );
 				}
 			}
 			if ( boffset == boffsetend )
@@ -264,14 +264,14 @@ public abstract class SshIO {
 		while ( boffset < boffsetend ) {
 			boffset = currentpacket.addPayload( buff, boffset, ( boffsetend - boffset ) );
 			if ( currentpacket.isFinished() ) {
-				result = result + handlePacket1( (SshPacket1) currentpacket );
-				currentpacket = new SshPacket1( crypto );
+				result = result + handlePacket1( (SshPacket) currentpacket );
+				currentpacket = new SshPacket( crypto );
 			}
 		}
 		return result.getBytes();
 	}
 
-	private String handlePacket1( SshPacket1 p ) throws IOException { //the
+	private String handlePacket1( SshPacket p ) throws IOException { //the
 		// message
 		// to handle
 		// is data
@@ -498,7 +498,7 @@ public abstract class SshIO {
 		return "";
 	} // handlePacket
 
-	private void sendPacket1( SshPacket1 packet ) throws IOException {
+	private void sendPacket1( SshPacket packet ) throws IOException {
 		write( packet.getPayLoad( crypto ) );
 		lastPacketSentType = packet.getType();
 	}
@@ -625,7 +625,7 @@ public abstract class SshIO {
 		//	protocol_flags :protocol extension cf. page 18
 		int protocol_flags = 0; /* currently 0 */
 
-		SshPacket1 packet = new SshPacket1( SSH_CMSG_SESSION_KEY );
+		SshPacket packet = new SshPacket( SSH_CMSG_SESSION_KEY );
 		packet.putByte( (byte) cipher_types );
 		packet.putBytes( anti_spoofing_cookie );
 		packet.putBytes( encrypted_session_key );
@@ -642,7 +642,7 @@ public abstract class SshIO {
 		//    if (debug > 0) System.err.println("Send_SSH_CMSG_USER(" + login +
 		// ")");
 
-		SshPacket1 p = new SshPacket1( SSH_CMSG_USER );
+		SshPacket p = new SshPacket( SSH_CMSG_USER );
 		p.putString( login );
 		sendPacket1( p );
 
@@ -653,7 +653,7 @@ public abstract class SshIO {
 	 * Send_SSH_CMSG_AUTH_PASSWORD string user password
 	 */
 	private String Send_SSH_CMSG_AUTH_PASSWORD() throws IOException {
-		SshPacket1 p = new SshPacket1( SSH_CMSG_AUTH_PASSWORD );
+		SshPacket p = new SshPacket( SSH_CMSG_AUTH_PASSWORD );
 		p.putString( password );
 		sendPacket1( p );
 		return "";
@@ -664,7 +664,7 @@ public abstract class SshIO {
 	 * interpreter), and enters interactive session mode.
 	 */
 	private String Send_SSH_CMSG_EXEC_SHELL() throws IOException {
-		SshPacket1 packet = new SshPacket1( SSH_CMSG_EXEC_SHELL );
+		SshPacket packet = new SshPacket( SSH_CMSG_EXEC_SHELL );
 		sendPacket1( packet );
 		return "";
 	}
@@ -674,7 +674,7 @@ public abstract class SshIO {
 	 *  
 	 */
 	private String Send_SSH_CMSG_STDIN_DATA( String str ) throws IOException {
-		SshPacket1 packet = new SshPacket1( SSH_CMSG_STDIN_DATA );
+		SshPacket packet = new SshPacket( SSH_CMSG_STDIN_DATA );
 		packet.putString( str );
 		sendPacket1( packet );
 		return "";
@@ -687,7 +687,7 @@ public abstract class SshIO {
 	 * graphics) (e.g., 480)
 	 */
 	private String Send_SSH_CMSG_REQUEST_PTY() throws IOException {
-		SshPacket1 p = new SshPacket1( SSH_CMSG_REQUEST_PTY );
+		SshPacket p = new SshPacket( SSH_CMSG_REQUEST_PTY );
 
 		p.putString( getTerminalID() );
 		p.putInt32( getTerminalHeight() ); // Int32 rows
@@ -700,7 +700,7 @@ public abstract class SshIO {
 	}
 
 	private String Send_SSH_CMSG_EXIT_CONFIRMATION() throws IOException {
-		SshPacket1 packet = new SshPacket1( SSH_CMSG_EXIT_CONFIRMATION );
+		SshPacket packet = new SshPacket( SSH_CMSG_EXIT_CONFIRMATION );
 		sendPacket1( packet );
 		return "";
 	}
@@ -712,7 +712,7 @@ public abstract class SshIO {
 		// KARL The specification states that this packet is never sent, however the OpenSSL source
 		// for keep alives indicates that SSH_MSG_IGNORE (the alternative) crashes some servers and
 		// advocates SSH_MSG_NONE instead.
-		SshPacket1 packet = new SshPacket1( SSH_MSG_NONE );
+		SshPacket packet = new SshPacket( SSH_MSG_NONE );
 		sendPacket1( packet );
 		return "";
 	}

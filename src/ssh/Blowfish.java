@@ -160,6 +160,7 @@ public final class Blowfish extends Cipher {
 		R = xR;
 
 		L ^= P[0];
+//#ifndef small
 		R ^= ( ( ( ( S0[(int) ( ( L >>> 24 ) & 0xff )] + S1[(int) ( ( L >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( L >>> 8 ) & 0xff )] ) + S3[(int) ( L & 0xff )] ) ^ P[1] );
 		L ^= ( ( ( ( S0[(int) ( ( R >>> 24 ) & 0xff )] + S1[(int) ( ( R >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( R >>> 8 ) & 0xff )] ) + S3[(int) ( R & 0xff )] ) ^ P[2] );
 		R ^= ( ( ( ( S0[(int) ( ( L >>> 24 ) & 0xff )] + S1[(int) ( ( L >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( L >>> 8 ) & 0xff )] ) + S3[(int) ( L & 0xff )] ) ^ P[3] );
@@ -176,6 +177,12 @@ public final class Blowfish extends Cipher {
 		L ^= ( ( ( ( S0[(int) ( ( R >>> 24 ) & 0xff )] + S1[(int) ( ( R >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( R >>> 8 ) & 0xff )] ) + S3[(int) ( R & 0xff )] ) ^ P[14] );
 		R ^= ( ( ( ( S0[(int) ( ( L >>> 24 ) & 0xff )] + S1[(int) ( ( L >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( L >>> 8 ) & 0xff )] ) + S3[(int) ( L & 0xff )] ) ^ P[15] );
 		L ^= ( ( ( ( S0[(int) ( ( R >>> 24 ) & 0xff )] + S1[(int) ( ( R >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( R >>> 8 ) & 0xff )] ) + S3[(int) ( R & 0xff )] ) ^ P[16] );
+//#else
+		for ( int i = 1; i<= 15; i+=2 ) {
+		    R ^= ( ( ( ( S0[(int) ( ( L >>> 24 ) & 0xff )] + S1[(int) ( ( L >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( L >>> 8 ) & 0xff )] ) + S3[(int) ( L & 0xff )] ) ^ P[i] );
+			L ^= ( ( ( ( S0[(int) ( ( R >>> 24 ) & 0xff )] + S1[(int) ( ( R >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( R >>> 8 ) & 0xff )] ) + S3[(int) ( R & 0xff )] ) ^ P[i+1] );
+		}
+//#endif
 		R ^= P[17];
 
 		out[0] = R;
@@ -218,6 +225,7 @@ public final class Blowfish extends Cipher {
 		R = xR;
 
 		L ^= P[17];
+//#ifndef small
 		R ^= ( ( ( ( S0[(int) ( ( L >>> 24 ) & 0xff )] + S1[(int) ( ( L >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( L >>> 8 ) & 0xff )] ) + S3[(int) ( L & 0xff )] ) ^ P[16] );
 		L ^= ( ( ( ( S0[(int) ( ( R >>> 24 ) & 0xff )] + S1[(int) ( ( R >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( R >>> 8 ) & 0xff )] ) + S3[(int) ( R & 0xff )] ) ^ P[15] );
 		R ^= ( ( ( ( S0[(int) ( ( L >>> 24 ) & 0xff )] + S1[(int) ( ( L >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( L >>> 8 ) & 0xff )] ) + S3[(int) ( L & 0xff )] ) ^ P[14] );
@@ -234,6 +242,12 @@ public final class Blowfish extends Cipher {
 		L ^= ( ( ( ( S0[(int) ( ( R >>> 24 ) & 0xff )] + S1[(int) ( ( R >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( R >>> 8 ) & 0xff )] ) + S3[(int) ( R & 0xff )] ) ^ P[3] );
 		R ^= ( ( ( ( S0[(int) ( ( L >>> 24 ) & 0xff )] + S1[(int) ( ( L >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( L >>> 8 ) & 0xff )] ) + S3[(int) ( L & 0xff )] ) ^ P[2] );
 		L ^= ( ( ( ( S0[(int) ( ( R >>> 24 ) & 0xff )] + S1[(int) ( ( R >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( R >>> 8 ) & 0xff )] ) + S3[(int) ( R & 0xff )] ) ^ P[1] );
+//#else
+		for ( int i = 15; i >= 1; i-=2 ) {
+		    R ^= ( ( ( ( S0[(int) ( ( L >>> 24 ) & 0xff )] + S1[(int) ( ( L >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( L >>> 8 ) & 0xff )] ) + S3[(int) ( L & 0xff )] ) ^ P[i+1] );
+			L ^= ( ( ( ( S0[(int) ( ( R >>> 24 ) & 0xff )] + S1[(int) ( ( R >>> 16 ) & 0xff )] ) ^ S2[(int) ( ( R >>> 8 ) & 0xff )] ) + S3[(int) ( R & 0xff )] ) ^ P[i] );
+		}
+//#endif
 		R ^= P[0];
 
 		out[0] = R;

@@ -188,7 +188,7 @@ public class DHKeyExchange {
 			result = sig.verifySignature(H, sig_of_h);
 		}
 		else {
-			System.out.println("unknow alg");
+			//System.out.println("unknow alg");
 			result = false;
 		}
 		

@@ -48,7 +48,7 @@ public abstract class MyRecordStore {
 					vector.addElement( read( in ) );
 				}
 				catch ( IOException e ) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 				in.close();
 			}
@@ -56,16 +56,16 @@ public abstract class MyRecordStore {
 			return vector;
 		}
 		catch ( RecordStoreFullException e ) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		catch ( RecordStoreNotFoundException e ) {
 			// Start with an empty Vector
 		}
 		catch ( RecordStoreException e ) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		catch ( IOException e ) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return new Vector();
 	}
@@ -93,20 +93,20 @@ public abstract class MyRecordStore {
 						rec.addRecord( data, 0, data.length );
 					}
 					catch ( IOException e ) {
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 				}
 
 				rec.closeRecordStore();
 			}
 			catch ( RecordStoreFullException e ) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			catch ( RecordStoreNotFoundException e ) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			catch ( RecordStoreException e ) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 	}

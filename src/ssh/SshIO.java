@@ -757,7 +757,7 @@ public abstract class SshIO {
 				String message = p.getString();
 				String language = p.getString();
 				
-				System.out.println( "USERAUTH_BANNER " + message );
+				//System.out.println( "USERAUTH_BANNER " + message );
 				break;
 			}
 			

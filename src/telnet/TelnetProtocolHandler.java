@@ -587,7 +587,7 @@ public abstract class TelnetProtocolHandler {
 						neg_state = STATE_IACSBDATA;
 					}
 					else {
-						System.err.println( "(bad) " + b + " " );
+						//System.err.println( "(bad) " + b + " " );
 						neg_state = STATE_DATA;
 					}
 					break;

@@ -41,7 +41,7 @@ public abstract class Cipher {
 			return (Cipher) c.newInstance();
 		}
 		catch ( Exception e ) {
-		    System.err.println( "Cipher: " + algorithm + " " + e );
+		    //System.err.println( "Cipher: " + algorithm + " " + e );
 		    return null;
 		}
 	}

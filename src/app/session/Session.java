@@ -270,7 +270,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 
 	private void handleException( String where, Throwable t ) {
 		if ( !disconnecting ) {
-			t.printStackTrace();
+			//t.printStackTrace();
 			
 			Alert alert = new Alert( "Session Error" );
 			alert.setType( AlertType.ERROR );

@@ -256,12 +256,12 @@ public class SshPacket1 extends SshPacket {
 		crc_arrayCheck[1] = (byte) ( ( crcCheck >> 16 ) & 0xff );
 		crc_arrayCheck[0] = (byte) ( ( crcCheck >> 24 ) & 0xff );
 
-		if ( debug ) {
+		/*if ( debug ) {
 			System.err.println( crc_arrayCheck[3] + " == " + crc_array[3] );
 			System.err.println( crc_arrayCheck[2] + " == " + crc_array[2] );
 			System.err.println( crc_arrayCheck[1] + " == " + crc_array[1] );
 			System.err.println( crc_arrayCheck[0] + " == " + crc_array[0] );
-		}
+		}*/
 		if ( crc_arrayCheck[3] != crc_array[3] )
 			return false;
 		if ( crc_arrayCheck[2] != crc_array[2] )

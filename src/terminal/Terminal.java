@@ -112,7 +112,7 @@ public class Terminal extends Canvas {
 		rows = height / fontHeight;
 		backingStore = Image.createImage( width, height );
 		
-		System.out.println( "ROWS " + rows + " COLS " + cols );
+		//System.out.println( "ROWS " + rows + " COLS " + cols );
 		
 		buffer.setScreenSize( cols, rows );
 
@@ -369,7 +369,7 @@ public class Terminal extends Canvas {
 			in.close();
 		}
 		catch ( Exception e ) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	

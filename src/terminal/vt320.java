@@ -227,7 +227,7 @@ public abstract class vt320 extends VDUBuffer {
 			sendData( writeBuffer, 0, writeBufferIndex );
 		}
 		catch ( java.io.IOException e ) {
-			System.err.println( e );
+			//System.err.println( e );
 		}
 		writeBufferIndex = 0;
 	}

@@ -99,19 +99,12 @@ abstract public class SshPacket {
 		int length = getInt32();
 
 		StringBuffer str = new StringBuffer();
-		try {
-			for ( int i = 0; i < length; i++ ) {
-				/*if ( byteArray[offset] >= 0 )
-					str.append( (char) ( byteArray[offset++] ) );
-				else
-					str.append( (char) ( 256 + byteArray[offset++] ) );*/
-				str.append( (char) byteArray[offset++] );
-			}
-		}
-		catch ( ArrayIndexOutOfBoundsException e ) {
-			System.out.println( "ARRAY INDEX OUT OF BOUNDS EXCEPTION AT " + offset );
-			System.out.println( "STRING SO FAR: " + str.toString() );
-			throw e;
+		for ( int i = 0; i < length; i++ ) {
+			/*if ( byteArray[offset] >= 0 )
+				str.append( (char) ( byteArray[offset++] ) );
+			else
+				str.append( (char) ( 256 + byteArray[offset++] ) );*/
+			str.append( (char) byteArray[offset++] );
 		}
 		return str.toString();
 	}

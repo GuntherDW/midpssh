@@ -389,11 +389,6 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		}
 	}
 //#endif
-
-	protected void keyPressedConnected( int keycode ) {
-		// If a game action is used, allow it to operate the cursor even when not in cursor mode
-		if ( handleGameAction( keycode ) ) return;
-	}
 	
 	protected boolean handleGameAction( int keycode ) {
 		int gameAction = getGameAction( keycode );
@@ -414,6 +409,11 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			}
 		}
 		return false;
+	}
+
+	protected void keyPressedConnected( int keycode ) {
+		// If a game action is used, allow it to operate the cursor even when not in cursor mode
+		if ( handleGameAction( keycode ) ) return;
 	}
 
 	protected void keyReleasedConnected( int keycode ) {
@@ -454,20 +454,23 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	}
 	
 	protected void keyReleasedTyping( int keycode ) {
-	    if ( keycode > 0 && keycode < 128 ) {
+		if ( keycode == 8 || keycode == KEY_BACKSPACE ) {
+			// Backspace
+	        buffer.keyPressed( KeyEvent.VK_BACK_SPACE, 0 );
+		}
+		else if ( keycode == 10 || keycode == 13 ) {
+			buffer.keyTyped( keycode, (char) keycode, 0 );
+		}
+	    else if ( keycode == KEY_SHIFT ) {
+	        typingShift = false;
+	    }
+	    else if ( keycode >= 32 && keycode < 128 ) {
 	        char c = (char) keycode;
 	        if ( typingShift ) {
 	            c = shiftChar( c );
 	        }
 	        
             buffer.keyTyped( keycode, c, 0 );
-	    }
-	    else if ( keycode == KEY_BACKSPACE ) {
-	        // Backspace
-	        buffer.keyPressed( KeyEvent.VK_BACK_SPACE, 0 );
-	    }
-	    else if ( keycode == KEY_SHIFT ) {
-	        typingShift = false;
 	    }
 	}
 	

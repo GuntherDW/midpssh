@@ -62,7 +62,6 @@
 	</target>
 	
 	<target name="build-lite">
-
 		<antcall target="build">
 			<param name="filename" value="midpssh-ssh2-lite"/>
 			<param name="midp2" value="true"/>
@@ -75,7 +74,7 @@
 		</antcall>
 	</target>
 	
-	<target name="build">
+	<target name="build" if="filename">
 		<ant antfile="build-package.xml" />
 	</target>
 	

@@ -10,6 +10,9 @@ import gui.EditableMenu;
 
 import java.util.Vector;
 
+import app.Main;
+import app.session.Session;
+
 /**
  * @author Karl
  *
@@ -42,7 +45,7 @@ public class MacrosMenu extends EditableMenu {
 			for ( int i = 0; i < macros.size(); i++ ) {
 				Macro macro = (Macro) macros.elementAt( i );
 				String name = macro.getName();
-				if ( name == null ) {
+				if ( name == null || name.length() == 0 ) {
 					name = macro.getValue();
 				}
 				append( name, null );
@@ -59,7 +62,17 @@ public class MacrosMenu extends EditableMenu {
 	 * @see gui.EditableMenu#doSelect(int)
 	 */
 	protected void doSelect( int i ) {
-		
+		Session session = Main.currentSession();
+		if ( session != null ) {
+			Macro macro = macroSet.getMacro( i );
+			if ( macro != null ) {
+				session.typeString( macro.getValue() );
+				session.activate();
+			}
+		}
+		else {
+			doEdit( i );
+		}
 	}
 	protected void doEdit( int i ) {
 		editMacroForm.setMacroIndices( macroSetIndex, i );

@@ -14,8 +14,8 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.TextBox;
 import javax.microedition.lcdui.TextField;
 
-import terminal.vt320;
 import app.Main;
+import app.session.Session;
 
 /**
  * @author Karl
@@ -29,14 +29,10 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 
 	private static Command typeCommand = new Command( "Type", Command.ITEM, 2 );
 
-	private vt320 vt;
-
 	private Activatable back;
 
-	public InputDialog( vt320 vt ) {
+	public InputDialog() {
 		super( "Input", "", 255, TextField.ANY );
-
-		this.vt = vt;
 
 		addCommand( enterCommand );
 		addCommand( typeCommand );
@@ -68,19 +64,15 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 	 *      javax.microedition.lcdui.Displayable)
 	 */
 	public void commandAction( Command command, Displayable arg1 ) {
-		doInput();
-
+		Session session = Main.currentSession();
+		if ( session != null ) {
+			session.typeString( getString() );
+			session.activate();
+		}
+		
 		if ( command == enterCommand ) {
-			vt.keyTyped( 0, '\n', 0 );
+			session.typeString( "\n" );
 		}
 		back.activate();
-	}
-
-	private void doInput() {
-		String str = getString();
-		for ( int i = 0; i < str.length(); i++ ) {
-			vt.keyTyped( 0, str.charAt( i ), 0 );
-		}
-
 	}
 }

@@ -40,7 +40,16 @@ public class EditMacroForm extends MacroForm {
 		MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
 		Macro macro = macroSet.getMacro( macroIndex );
 		tfName.setString( macro.getName() );
-		tfValue.setString( macro.getValue() );
+		
+		String value = macro.getValue();
+		if ( value.endsWith( "\n" ) ) {
+			cgType.setSelectedIndex( 0, true );
+			value = value.substring( 0, value.length() - 1 );
+		}
+		else {
+			cgType.setSelectedIndex( 1, true );
+		}
+		tfValue.setString( value );
 	}
 
 	/*
@@ -62,7 +71,11 @@ public class EditMacroForm extends MacroForm {
 		if ( macroSetIndex != -1 ) {
 			if ( validateForm() ) {
 				MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
-				Macro macro = new Macro( tfName.getString(), tfValue.getString() );
+				String value = tfValue.getString();
+				if ( cgType.getSelectedIndex() == 0 ) {
+					value += "\n";
+				}
+				Macro macro = new Macro( tfName.getString(), value );
 				macroSet.replaceMacro( macroIndex, macro );
 
 				doBack();

@@ -84,14 +84,14 @@ public class MainMenu extends List implements CommandListener, Activatable {
 		if ( sessionsMenu == null ) {
 			sessionsMenu = new SessionsMenu();
 		}
-		sessionsMenu.activate();
+		sessionsMenu.activate( this );
 	}
 	
 	private void doMacros() {
 		if ( macrosMenu == null ) {
 			macrosMenu = new MacroSetsMenu();
 		}
-		macrosMenu.activate();
+		macrosMenu.activate( this );
 	}
 
 	private void doQuit() {

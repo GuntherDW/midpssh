@@ -77,9 +77,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	private Session session;
 
-	private InputDialog inputDialog;
+	private static InputDialog inputDialog;
 	
-	private MacroSetsMenu macrosMenu;
+	private static MacroSetsMenu macrosMenu;
 
 	private ModifierInputDialog modifierInputDialog;
 
@@ -283,7 +283,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private void doTextInput() {
 		if ( inputDialog == null ) {
-			inputDialog = new InputDialog( buffer );
+			inputDialog = new InputDialog();
 		}
 		inputDialog.activate( this );
 	}
@@ -300,7 +300,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			modifierInputDialog = new ModifierInputDialog( buffer );
 		}
 		modifierInputDialog.modifier = modifier;
-		modifierInputDialog.activate();
+		modifierInputDialog.activate( this );
 	}
 
 	private static final Alert doCursorAlert = new Alert( "Cursor Mode",

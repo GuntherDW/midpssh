@@ -138,6 +138,12 @@ public abstract class Session implements SessionIOListener, Activatable {
 		}
 	}
 	
+	public void typeString( String str ) {
+		for ( int i = 0; i < str.length(); i++ ) {
+			emulation.keyTyped( 0, str.charAt( i ), 0 );
+		}
+	}
+	
 	private boolean connect() {
 		try {
 			emulation.putString( "Connecting to " + host + "..." );

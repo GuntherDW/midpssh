@@ -8,6 +8,8 @@ import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.midlet.MIDlet;
 
+import app.session.Session;
+
 /* This file is part of "Telnet Floyd".
  *
  * (c) Radek Polak 2003-2004. All Rights Reserved.
@@ -47,6 +49,8 @@ public class Main extends MIDlet {
 	public static boolean useColors;
 
 	private static MainMenu mainMenu = new MainMenu();
+	
+	private static Session currentSession;
 	
 	/** Constructor */
 	public Main() {
@@ -94,5 +98,14 @@ public class Main extends MIDlet {
 	 */
 	public static void alertBackToMain( Alert alert ) {
 		instance.getDisplay().setCurrent( alert, mainMenu );
+	}
+	
+	public static void openSession( Session session ) {
+		currentSession = session;
+		session.activate();
+	}
+	
+	public static Session currentSession() {
+		return currentSession;
 	}
 }

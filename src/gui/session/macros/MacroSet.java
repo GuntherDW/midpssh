@@ -104,10 +104,10 @@ public class MacroSet {
 		if ( i < 0 )
 			return;
 		if ( i >= macros.size() ) {
-			macros.addElement( macros );
+			macros.addElement( macro );
 		}
 		else {
-			macros.setElementAt( macros, i );
+			macros.setElementAt( macro, i );
 		}
 		MacroSetManager.saveMacroSets();
 	}

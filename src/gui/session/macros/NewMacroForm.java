@@ -55,7 +55,11 @@ public class NewMacroForm extends MacroForm {
 	private void doCreate() {
 		if ( validateForm() ) {
 			MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
-			Macro macro = new Macro( tfName.getString(), tfValue.getString() );
+			String value = tfValue.getString();
+			if ( cgType.getSelectedIndex() == 0 ) {
+				value += "\n";
+			}
+			Macro macro = new Macro( tfName.getString(), value );
 			macroSet.addMacro( macro );
 			
 			doBack();

@@ -52,12 +52,12 @@ public class SessionsMenu extends EditableMenu {
 			if ( conn.type.equals( ConnectionSpec.TYPE_SSH ) ) {
 				SshSession session = new SshSession();
 				session.connect( conn.host, conn.username, conn.password );
-				session.activate();
+				Main.openSession( session );
 			}
 			else if ( conn.type.equals( ConnectionSpec.TYPE_TELNET ) ) {
 				TelnetSession session = new TelnetSession();
 				session.connect( conn.host );
-				session.activate();
+				Main.openSession( session );
 			}
 		}
 	}

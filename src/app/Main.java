@@ -32,12 +32,6 @@ import javax.microedition.midlet.MIDlet;
 
 import app.session.Session;
 
-/**
- * Main class for whole application. Here are all important variables defined as
- * public static members, so that they can be easily accessed. See also method
- * run, that handles main telnet loop.
- */
-
 public class Main extends MIDlet {
 
 	private static Main instance;

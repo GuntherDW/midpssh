@@ -260,6 +260,40 @@ public abstract class Session implements SessionIOHandler, Activatable {
 			}
 		}
 	}
+	
+	private String bytesToString( int bytes ) {
+		if ( bytes < 1024 ) {
+			return bytes + " bytes";
+		}
+		else if ( bytes < 1024 * 1024 ) {
+			return to2dp( bytes * 100 / 1024 ) + " KB";
+		}
+		else {
+			return to2dp( bytes * 100 / ( 1024 * 1024 ) ) + " MB";
+		}
+	}
+	
+	private String to2dp( int i ) {
+		String str = "" + i;
+		return str.substring( 0, str.length() - 2 ) + "." + str.substring( str.length() - 2 );
+	}
+	
+	private void sessionReport() {
+		String report = "Traffic Report\n" +
+			"IN " + bytesToString( bytesRead ) + "\n" +
+			"OUT " + bytesToString( bytesWritten ) + "\n" +
+			"TOTAL " + bytesToString( bytesRead + bytesWritten ) + "\n";
+		Alert alert = new Alert( "Session Report" );
+		alert.setType( AlertType.INFO );
+	
+		alert.setString( report );
+		alert.setTimeout( Alert.FOREVER );
+		Main.setDisplay( alert );
+	}
+	
+	public void goMainMenu() {
+		Main.goMainMenu();
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -297,10 +331,12 @@ public abstract class Session implements SessionIOHandler, Activatable {
 				
 				disconnect();
 				terminal.disconnected();
+				sessionReport();
 			}
 			catch ( Exception e ) {
 				handleException( e );
 				disconnect();
+				terminal.disconnected();
 			}
 		}
 	}

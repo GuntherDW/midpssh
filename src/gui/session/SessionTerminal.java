@@ -427,8 +427,8 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	}
 
 	private void doDisconnect() {
-		Main.goMainMenu();
 		session.disconnect();
+		session.goMainMenu();
 	}
 	
 	private void doTextInput() {

@@ -49,23 +49,23 @@ public class Settings extends MyRecordStore {
     public static final int FONT_LARGE = 3;
     
     private static final String RMS_NAME = "settings";
-    
 	
-	public static int bgcolor = DEFAULT_BGCOLOR, fgcolor = DEFAULT_FGCOLOR;
+	public static int bgcolor, fgcolor;
 	
 	public static int terminalCols, terminalRows;
 	
-	public static String terminalType = "";
+	public static String terminalType;
 
-	public static int terminalRotated = ROT_NORMAL;
+	public static int terminalRotated ;
     
-    public static int fontMode = FONT_NORMAL;
+    public static int fontMode;
 	
 	private static Settings me = new Settings();
 
-    public static boolean terminalFullscreen = false;
+    public static boolean terminalFullscreen ;
 	
 	public static void init() {
+        defaults();
 		me.load( RMS_NAME, false );
 	}
 
@@ -77,6 +77,17 @@ public class Settings extends MyRecordStore {
 		v.addElement( null );
 		me.save( RMS_NAME, v );
 	}
+    
+    public static void defaults() {
+        bgcolor = DEFAULT_BGCOLOR;
+        fgcolor = DEFAULT_FGCOLOR;
+        terminalCols = 0;
+        terminalRows = 0;
+        terminalType = "";
+        terminalRotated = ROT_NORMAL;
+        fontMode = FONT_NORMAL;
+        terminalFullscreen = false;
+    }
 	
     /* (non-Javadoc)
      * @see app.MyRecordStore#read(java.io.DataInputStream)

@@ -23,8 +23,6 @@ public abstract class SettingsForm extends EditableForm {
 
 	protected static final Command saveCommand = new Command( "Save", Command.OK, 1 );
 
-	protected static final Command defaultCommand = new Command( "Default", Command.ITEM, 10 );
-
 	/**
 	 * @param title
 	 */
@@ -32,7 +30,6 @@ public abstract class SettingsForm extends EditableForm {
 		super(title);
 		
 		addCommand( saveCommand );
-		addCommand( defaultCommand );
 	}
 	
 	/* (non-Javadoc)
@@ -40,24 +37,21 @@ public abstract class SettingsForm extends EditableForm {
 	 */
 	public void commandAction( Command command, Displayable arg1 ) {
 		if ( command == saveCommand ) {
-			save( false );
-		}
-		else if ( command == defaultCommand ) {
-			save( true );
+			save();
 		}
 		else {
 			super.commandAction( command, arg1 );
 		}
 	}
 	
-	private void save( boolean doDefault ) {
-		boolean ok = doSave( doDefault );
+	private void save() {
+		boolean ok = doSave();
 		if ( ok ) {
 			Settings.saveSettings( );
 			doBack();
 		}
 	}
 	
-	protected abstract boolean doSave( boolean doDefault );
+	protected abstract boolean doSave();
 	
 }

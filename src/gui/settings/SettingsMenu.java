@@ -25,12 +25,15 @@ package gui.settings;
 import gui.Activatable;
 import gui.ExtendedList;
 
+import javax.microedition.lcdui.Alert;
+import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
 import app.Main;
+import app.Settings;
 
 /**
  * @author Karl von Randow
@@ -48,7 +51,10 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 	protected SettingsMenu( String title ) {
 		super( title, List.IMPLICIT );
 		
-		append( "Terminal Settings", null );
+		append( "Terminal", null );
+        append( "Display", null );
+        append( "Fonts", null );
+        append( "Restore Defaults", null );
 		
 		//setSelectCommand( selectCommand );
 		addCommand( backCommand );
@@ -74,9 +80,30 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 	protected void doSelect( int i ) {
 		switch ( i ) {
 			case 0:
-				TerminalSettingsForm screenSizeForm = new TerminalSettingsForm();
-				screenSizeForm.activate( this );
-				break;
+            {
+				TerminalSettingsForm f = new TerminalSettingsForm( getString( i ), TerminalSettingsForm.MODE_TERMINAL );
+				f.activate( this );
+            }
+			break;
+            case 1:
+            {
+                TerminalSettingsForm f = new TerminalSettingsForm( getString( i ), TerminalSettingsForm.MODE_DISPLAY );
+                f.activate( this );
+            }
+            break;
+            case 2:
+            {
+                TerminalSettingsForm f = new TerminalSettingsForm( getString( i ), TerminalSettingsForm.MODE_FONTS );
+                f.activate( this );
+            }
+            break;
+            case 3:
+            {
+                Settings.defaults();
+                Settings.saveSettings();
+                Main.alertBackToMain( new Alert("Settings","Default settings have been restored.",null,AlertType.INFO) );
+            }
+            break;
 		}
 	}
 	

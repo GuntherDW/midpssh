@@ -33,6 +33,12 @@ import app.Settings;
  */
 public class TerminalSettingsForm extends SettingsForm {
     
+    public static final int MODE_TERMINAL = 1;
+    public static final int MODE_DISPLAY = 2;
+    public static final int MODE_FONTS = 3;
+    
+    private int mode;
+    
 	protected TextField tfType = new TextField( "Type", "", 20, TextField.ANY );
 	
 	protected TextField tfCols = new TextField( "Cols", "", 3, TextField.NUMERIC );
@@ -44,139 +50,175 @@ public class TerminalSettingsForm extends SettingsForm {
 	protected TextField tfBg = new TextField( "Background", "", 6, TextField.ANY );
 //#ifdef midp2    
     protected ChoiceGroup cgFullscreen = new ChoiceGroup( "Full Screen", ChoiceGroup.EXCLUSIVE );
+    
+    protected ChoiceGroup cgRotated = new ChoiceGroup( "Orientation", ChoiceGroup.EXCLUSIVE );
 //#endif
     protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size", ChoiceGroup.EXCLUSIVE );
 	
-	protected ChoiceGroup cgRotated = new ChoiceGroup( "Orientation", ChoiceGroup.EXCLUSIVE );
-	
-	public TerminalSettingsForm() {
-		super( "Terminal Settings" );
+	public TerminalSettingsForm( String title, int mode ) {
+		super( title );
         
-		append( new StringItem( "Type", "The terminal type reported to the remote server. The default type is VT320." ) );
-		append( tfType );
-		
-		append( new StringItem( "Size", "The size of the terminal. The default is to use the maximum available screen area." ) );
-		append( tfCols );
-		append( tfRows );
-		
+        this.mode = mode;
+        
+        switch ( mode ) {
+        case MODE_TERMINAL:
+        {
+            append( new StringItem( "Terminal Type", "The terminal type reported to the remote server. The default type is VT320." ) );
+            append( tfType );
+        }
+        break;
+        case MODE_DISPLAY:
+        {
 //#ifdef midp2
-        cgFullscreen.append( "Off", null );
-        cgFullscreen.append( "On", null );
-        append( cgFullscreen );
+            cgFullscreen.append( "Off", null );
+            cgFullscreen.append( "On", null );
+            append( cgFullscreen );
 //#endif
-        
-        cgFont.append( "Tiny", null );
-        cgFont.append( "Small", null );
-        cgFont.append( "Medium", null );
-        cgFont.append( "Large", null );
-        append( cgFont );
-        
-		append( new StringItem( "Colour", "Enter colours in hexadecimal, eg. 6699cc" ) );
-		append( tfFg );
-		append( tfBg );
-		
-		cgRotated.append( "Normal", null );
-		cgRotated.append( "Landscape", null );
-        cgRotated.append( "Landscape 2", null );
+            
 //#ifdef midp2
-		append( cgRotated );
+            cgRotated.append( "Normal", null );
+            cgRotated.append( "Landscape", null );
+            cgRotated.append( "Landscape Flipped", null );
+            append( cgRotated );
 //#else
-		append( new StringItem( "Orientation", "Not available on this device." ) );
+            append( new StringItem( "Orientation", "Not available on this device." ) );
 //#endif
+
+            append( new StringItem( "Terminal Size", "The default is to use the maximum available screen area." ) );
+            append( tfCols );
+            append( tfRows );
+        }
+        break;
+        case MODE_FONTS:
+        {
+            cgFont.append( "Tiny", null );
+            cgFont.append( "Small", null );
+            cgFont.append( "Medium", null );
+            cgFont.append( "Large", null );
+            append( cgFont );
+            
+            append( tfFg );
+            append( tfBg );
+        }
+        break;
+        }
 	}
 	/* (non-Javadoc)
 	 * @see gui.Activatable#activate()
 	 */
 	public void activate() {
-		int cols = Settings.terminalCols;
-		int rows = Settings.terminalRows;
-		
-		tfType.setString( Settings.terminalType );
-		
-		if ( cols > 0 ) {
-			tfCols.setString( "" + cols );
-		}
-		else {
-			tfCols.setString( "" );
-		}
-		if ( rows > 0 ) {
-			tfRows.setString( "" + rows );
-		}
-		else {
-			tfRows.setString( "" );
-		}
+        switch ( mode ) {
+        case MODE_TERMINAL:
+        {
+            tfType.setString( Settings.terminalType );
+            
+        }
+        break;
+        case MODE_DISPLAY:
+        {
 //#ifdef midp2
-        cgFullscreen.setSelectedIndex( Settings.terminalFullscreen ? 1 : 0, true );
-//#endif        
-		tfFg.setString( toHex( Settings.fgcolor ) );
-		tfBg.setString( toHex( Settings.bgcolor ) );
-		
-        switch ( Settings.fontMode ) {
-        case Settings.FONT_NORMAL:
-            cgFont.setSelectedIndex( 0, true );
-            break;
-        case Settings.FONT_SMALL:
-            cgFont.setSelectedIndex( 1, true );
-            break;
-        case Settings.FONT_MEDIUM:
-            cgFont.setSelectedIndex( 2, true );
-            break;
-        case Settings.FONT_LARGE:
-            cgFont.setSelectedIndex( 3, true );
-            break;
+            cgFullscreen.setSelectedIndex( Settings.terminalFullscreen ? 1 : 0, true );
+//#endif
+            
+//#ifdef midp2
+            switch ( Settings.terminalRotated ) {
+            case Settings.ROT_NORMAL:
+                cgRotated.setSelectedIndex( 0, true );
+                break;
+            case Settings.ROT_270:
+                cgRotated.setSelectedIndex( 1, true );
+                break;
+            case Settings.ROT_90:
+                cgRotated.setSelectedIndex( 2, true );
+                break;
+            }
+//#endif
+            
+            int cols = Settings.terminalCols;
+            int rows = Settings.terminalRows;
+            if ( cols > 0 ) {
+                tfCols.setString( "" + cols );
+            }
+            else {
+                tfCols.setString( "" );
+            }
+            if ( rows > 0 ) {
+                tfRows.setString( "" + rows );
+            }
+            else {
+                tfRows.setString( "" );
+            }
         }
-        
-        switch ( Settings.terminalRotated ) {
-        case Settings.ROT_NORMAL:
-            cgRotated.setSelectedIndex( 0, true );
-            break;
-        case Settings.ROT_270:
-            cgRotated.setSelectedIndex( 1, true );
-            break;
-        case Settings.ROT_90:
-            cgRotated.setSelectedIndex( 2, true );
-            break;
+        break;
+        case MODE_FONTS:
+        {
+            switch ( Settings.fontMode ) {
+            case Settings.FONT_NORMAL:
+                cgFont.setSelectedIndex( 0, true );
+                break;
+            case Settings.FONT_SMALL:
+                cgFont.setSelectedIndex( 1, true );
+                break;
+            case Settings.FONT_MEDIUM:
+                cgFont.setSelectedIndex( 2, true );
+                break;
+            case Settings.FONT_LARGE:
+                cgFont.setSelectedIndex( 3, true );
+                break;
+            }
+            
+            tfFg.setString( toHex( Settings.fgcolor ) );
+            tfBg.setString( toHex( Settings.bgcolor ) );
         }
-		
+        break;
+        }
 		
 		super.activate();
 	}
 	
-	protected boolean doSave( boolean doDefault ) {
-		if ( !doDefault ) {
-			Settings.terminalType = tfType.getString();
-			
-			try {
-				Settings.terminalCols = Integer.parseInt( tfCols.getString() );
-			}
-			catch ( NumberFormatException e ) {
-				Settings.terminalCols = 0;
-			}
-			try {
-				Settings.terminalRows = Integer.parseInt( tfRows.getString() );
-			}
-			catch ( NumberFormatException e ) {
-				Settings.terminalRows = 0;
-			}
+	protected boolean doSave() {
+        switch ( mode ) {
+        case MODE_TERMINAL:
+        {
+            Settings.terminalType = tfType.getString();
+        }
+        break;
+        case MODE_DISPLAY:
+        {
 //#ifdef midp2
             Settings.terminalFullscreen = cgFullscreen.getSelectedIndex() == 1;
 //#endif
-			try {
-				int col = fromHex( tfFg.getString() );
-				Settings.fgcolor = col;
-			}
-			catch ( NumberFormatException e ) {
-				Settings.fgcolor = Settings.DEFAULT_FGCOLOR;
-			}
-			
-			try {
-				int col = fromHex( tfBg.getString() );
-				Settings.bgcolor = col;
-			}
-			catch ( NumberFormatException e ) {
-				Settings.bgcolor = Settings.DEFAULT_BGCOLOR;
-			}
-			
+                
+//#ifdef midp2
+            switch ( cgRotated.getSelectedIndex() ) {
+            case 0:
+                Settings.terminalRotated = Settings.ROT_NORMAL;
+                break;
+            case 1:
+                Settings.terminalRotated = Settings.ROT_270;
+                break;
+            case 2:
+                Settings.terminalRotated = Settings.ROT_90;
+                break;
+            }
+//#endif
+                
+            try {
+                Settings.terminalCols = Integer.parseInt( tfCols.getString() );
+            }
+            catch ( NumberFormatException e ) {
+                Settings.terminalCols = 0;
+            }
+            try {
+                Settings.terminalRows = Integer.parseInt( tfRows.getString() );
+            }
+            catch ( NumberFormatException e ) {
+                Settings.terminalRows = 0;
+            }
+        }
+        break;
+        case MODE_FONTS:
+        {
             switch (cgFont.getSelectedIndex()) {
             case 0:
                 Settings.fontMode = Settings.FONT_NORMAL;
@@ -191,27 +233,24 @@ public class TerminalSettingsForm extends SettingsForm {
                 Settings.fontMode = Settings.FONT_LARGE;
                 break;
             }
-            switch ( cgRotated.getSelectedIndex() ) {
-            case 0:
-                Settings.terminalRotated = Settings.ROT_NORMAL;
-                break;
-            case 1:
-                Settings.terminalRotated = Settings.ROT_270;
-                break;
-            case 2:
-                Settings.terminalRotated = Settings.ROT_90;
-                break;
+            try {
+                int col = fromHex( tfFg.getString() );
+                Settings.fgcolor = col;
             }
-		}
-		else {
-			Settings.terminalType = "";
-			Settings.terminalCols = 0;
-			Settings.terminalRows = 0;
-            Settings.terminalFullscreen = false;
-			Settings.fgcolor = Settings.DEFAULT_FGCOLOR;
-			Settings.bgcolor = Settings.DEFAULT_BGCOLOR;
-			Settings.terminalRotated = Settings.ROT_NORMAL;
-		}
+            catch ( NumberFormatException e ) {
+                Settings.fgcolor = Settings.DEFAULT_FGCOLOR;
+            }
+            
+            try {
+                int col = fromHex( tfBg.getString() );
+                Settings.bgcolor = col;
+            }
+            catch ( NumberFormatException e ) {
+                Settings.bgcolor = Settings.DEFAULT_BGCOLOR;
+            }
+        }
+        break;
+        }
 		return true;
 	}
 	

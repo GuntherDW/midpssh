@@ -34,25 +34,26 @@
 		<property name="wtk.midp.version" value="1.0"/>
 		<property name="preprocess.symbols.midp" value="midp1"/>
 		
-		
-	    <path id="wtk.classpath">
+	    <path id="wtk.classpath.midp1">
 	        <fileset dir="${wtk.home}">
 	            <include name="lib/midpapi10.jar"/>
 	            <include name="lib/cldcapi10.jar"/>
 	        </fileset>
 	    </path>
+	    <property name="wtk.classpath" value="wtk.classpath.midp1" />
 	</target>
 	
 	<target name="init-midp2" if="midp2">
 		<property name="wtk.midp.version" value="2.0"/>
 		<property name="preprocess.symbols.midp" value="midp2"/>
 		
-	    <path id="wtk.classpath">
+	    <path id="wtk.classpath.midp2">
 	        <fileset dir="${wtk.home}">
 	            <include name="lib/midpapi20.jar"/>
 	            <include name="lib/cldcapi10.jar"/>
 	        </fileset>
 	    </path>
+	    <property name="wtk.classpath" value="wtk.classpath.midp2" />
 	</target>
 	
 	<target name="build-run" if="run">
@@ -149,7 +150,7 @@
         		  debug="false"
         	      optimize="true"
         	      target="${javac.target}" source="${javac.source}"
-        	      classpathref="wtk.classpath" />
+        	      classpathref="${wtk.classpath}" />
 
         <!-- Package everything. Most of the necessary information is
              contained in the JAD file. Also preverify the result this

@@ -1,3 +1,16 @@
+1.3.8
+
+Fix fullscreen on some devices.
+Reduction in file size.
+Improved functionality on lite builds.
+Added program icon
+
+1.3.7
+
+Settings reorganisation
+"Use" option on macros
+Default macro set when none exist
+
 1.3.6
 
 Fixed game actions interfering in connected mode
@@ -39,7 +52,6 @@ Fixed SSH2 idle disconnect problem
 
 1.2.2
 Fixed exceptions when using edit/delete etc on empty lists (session menu, macros menu)
-
 
 1.2.1
 Reinstated special midp2 enhancements; preprocess symbol wasn't being set correctly

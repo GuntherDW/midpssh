@@ -95,6 +95,7 @@ public class MacrosMenu extends EditableMenu {
 	}
 
 	protected void doNew() {
+	    newMacroForm.setMacroSetIndex( macroSetIndex );
 		newMacroForm.activate( this );
 	}
 }

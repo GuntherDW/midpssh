@@ -26,7 +26,7 @@
                 jarfile="${jar.file}"
                 name="${name}"
                 vendor="XK72"
-                version="1.0.0">
+                version="1.1.0">
 
             <midlet name="${name}" class="app.Main"/>
         </wtkjad>
@@ -122,8 +122,14 @@
 		<antcall target="preverify"/>
     	<wtkrun jadfile="${jad.file}" device="${deviceName}" wait="true"/>
 	</target>
+	
+	<target name="all">
+		<antcall target="clean"/>
+		<antcall target="normal"/>
+		<antcall target="small"/>
+	</target>
 		
-	<target name="all" depends="init-normal">
+	<target name="normal" depends="init-normal">
 		<antcall target="package"/>
 		<antcall target="obfuscate"/>
 		<antcall target="preverify"/>
@@ -163,8 +169,7 @@
 				<include name="lib"/>
 				<include name="*.txt"/>
 				<include name="*.xml"/>
-				<include name="${jad.file}"/>
-				<include name="${jar.file}"/>
+				<include name="*.properties"/>
 			</fileset>
 		</zip>
 	</target>

@@ -40,59 +40,59 @@ import javax.microedition.midlet.MIDlet;
 
 public class Main extends MIDlet {
 
-    private static Main instance;
+	private static Main instance;
 
-    public static Console console = new Console();
+	public static Console console = new Console();
 
-    public static boolean useColors;
+	public static boolean useColors;
 
-    private static MainMenu mainMenu = new MainMenu();
+	private static MainMenu mainMenu = new MainMenu();
+	
+	/** Constructor */
+	public Main() {
+		instance = this;
+		useColors = getDisplay().isColor();
+	}
 
-    /** Constructor */
-    public Main() {
-        instance = this;
-        useColors = getDisplay().isColor();
-    }
+	/** Main method */
+	public void startApp() {
+		setDisplay( mainMenu );
+	}
 
-    /** Main method */
-    public void startApp() {
-        setDisplay( mainMenu );
-    }
+	/** Handle pausing the MIDlet */
+	public void pauseApp() {
+	}
 
-    /** Handle pausing the MIDlet */
-    public void pauseApp() {
-    }
+	/** Handle destroying the MIDlet */
+	public void destroyApp( boolean unconditional ) {
+	}
 
-    /** Handle destroying the MIDlet */
-    public void destroyApp( boolean unconditional ) {
-    }
+	/** Quit the MIDlet */
+	public static void quitApp() {
+		instance.destroyApp( true );
+		instance.notifyDestroyed();
+		instance = null;
+	}
 
-    /** Quit the MIDlet */
-    public static void quitApp() {
-        instance.destroyApp( true );
-        instance.notifyDestroyed();
-        instance = null;
-    }
+	public static void setDisplay( Displayable display ) {
+		instance.getDisplay().setCurrent( display );
+	}
 
-    public static void setDisplay( Displayable display ) {
-        instance.getDisplay().setCurrent( display );
-    }
+	public Display getDisplay() {
+		return Display.getDisplay( this );
+	}
 
-    public Display getDisplay() {
-        return Display.getDisplay( this );
-    }
+	/**
+	 *  
+	 */
+	public static void goMainMenu() {
+		setDisplay( mainMenu );
+	}
 
-    /**
-     *  
-     */
-    public static void goMainMenu() {
-        setDisplay( mainMenu );
-    }
-
-    /**
-     * @param alert
-     */
-    public static void alertBackToMain( Alert alert ) {
-        instance.getDisplay().setCurrent( alert, mainMenu );
-    }
+	/**
+	 * @param alert
+	 */
+	public static void alertBackToMain( Alert alert ) {
+		instance.getDisplay().setCurrent( alert, mainMenu );
+	}
 }

@@ -37,243 +37,244 @@ import app.Main;
 
 public class Terminal extends Canvas {
 
-    /** the VDU buffer */
-    protected vt320 buffer;
+	/** the VDU buffer */
+	protected vt320 buffer;
 
-    /** first top and left character in buffer, that is displayed */
-    private int top, left;
+	/** first top and left character in buffer, that is displayed */
+	private int top, left;
 
-    /** display size in characters */
-    public int rows, cols;
+	/** display size in characters */
+	public int rows, cols;
 
-    private Image backingStore = null;
+	private Image backingStore = null;
 
-    private DrawFont font;
+	private DrawFont font;
 
-    public int fgcolor = 0x000000;
+	public int fgcolor = 0x000000;
 
-    public int bgcolor = 0xffffff;
+	public int bgcolor = 0xffffff;
 
-    /** A list of colors used for representation of the display */
-    private int color[] = {
-            0x000000, 0xff0000, 0x00ff00, 0xffff00, // yellow
-            0x0000ff, // blue
-            0x00ffff, // magenta
-            0x00ffff, // cyan
-            0xffffff, // white
-            0xffffff, // bold color
-            0xffffff, // inverted color
-    };
+	/** A list of colors used for representation of the display */
+	private int color[] = {
+			0x000000, 0xff0000, 0x00ff00, 0xffff00, // yellow
+			0x0000ff, // blue
+			0x00ffff, // magenta
+			0x00ffff, // cyan
+			0xffffff, // white
+			0xffffff, // bold color
+			0xffffff, // inverted color
+	};
 
-    public final static int COLOR_INVERT = 9;
+	public final static int COLOR_INVERT = 9;
 
-    //public java.util.Hashtable bindings = new java.util.Hashtable();
+	//public java.util.Hashtable bindings = new java.util.Hashtable();
 
-    public Terminal( vt320 buffer ) {
+	public Terminal( vt320 buffer ) {
 
-        this.buffer = buffer;
+		this.buffer = buffer;
 
-        if ( Main.useColors ) {
-            fgcolor = 0xffffff;
-            bgcolor = 0x000000;
-        }
+		if ( Main.useColors ) {
+			fgcolor = 0xffffff;
+			bgcolor = 0x000000;
+		}
 
-        font = new DrawFont();
-        backingStore = Image.createImage( this.getWidth(), this.getHeight() );
+		font = new DrawFont();
+		backingStore = Image.createImage( this.getWidth(), this.getHeight() );
 
-        cols = this.getWidth() / font.width;
-        rows = this.getHeight() / font.height;
+		cols = this.getWidth() / font.width;
+		rows = this.getHeight() / font.height;
 
-        buffer.setScreenSize( cols, rows );
+		buffer.setScreenSize( cols, rows );
 
-        top = 0;
-        left = 0;
-    }
+		top = 0;
+		left = 0;
+	}
 
-    /**
-     * Create a color representation that is brighter than the standard color
-     * but not what we would like to use for bold characters.
-     * 
-     * @param clr
-     *            the standard color
-     * @return the new brighter color
-     */
-    private int brighten( int color ) {
-        int r = ( color & 0xff0000 ) >> 16;
-        int g = ( color & 0x00ff00 ) >> 8;
-        int b = ( color & 0x0000ff );
+	/**
+	 * Create a color representation that is brighter than the standard color
+	 * but not what we would like to use for bold characters.
+	 * 
+	 * @param clr
+	 *            the standard color
+	 * @return the new brighter color
+	 */
+	private int brighten( int color ) {
+		int r = ( color & 0xff0000 ) >> 16;
+		int g = ( color & 0x00ff00 ) >> 8;
+		int b = ( color & 0x0000ff );
 
-        r *= 12;
-        r /= 10;
-        if ( r > 255 ) {
-            r = 255;
-        }
-        g *= 12;
-        g /= 10;
-        if ( g > 255 ) {
-            g = 255;
-        }
-        b *= 12;
-        b /= 10;
-        if ( b > 255 ) {
-            b = 255;
-        }
-        return b | ( g << 8 ) | ( r << 16 );
-    }
+		r *= 12;
+		r /= 10;
+		if ( r > 255 ) {
+			r = 255;
+		}
+		g *= 12;
+		g /= 10;
+		if ( g > 255 ) {
+			g = 255;
+		}
+		b *= 12;
+		b /= 10;
+		if ( b > 255 ) {
+			b = 255;
+		}
+		return b | ( g << 8 ) | ( r << 16 );
+	}
 
-    /**
-     * Create a color representation that is darker than the standard color but
-     * not what we would like to use for bold characters.
-     * 
-     * @param clr
-     *            the standard color
-     * @return the new darker color
-     */
-    private int darken( int color ) {
-        int r = ( color & 0xff0000 ) >> 16;
-        int g = ( color & 0x00ff00 ) >> 8;
-        int b = ( color & 0x0000ff );
+	/**
+	 * Create a color representation that is darker than the standard color but
+	 * not what we would like to use for bold characters.
+	 * 
+	 * @param clr
+	 *            the standard color
+	 * @return the new darker color
+	 */
+	private int darken( int color ) {
+		int r = ( color & 0xff0000 ) >> 16;
+		int g = ( color & 0x00ff00 ) >> 8;
+		int b = ( color & 0x0000ff );
 
-        r *= 8;
-        r /= 10;
-        g *= 8;
-        g /= 10;
-        b *= 8;
-        b /= 10;
-        return b | ( g << 8 ) | ( r << 16 );
-    }
+		r *= 8;
+		r /= 10;
+		g *= 8;
+		g /= 10;
+		b *= 8;
+		b /= 10;
+		return b | ( g << 8 ) | ( r << 16 );
+	}
 
-    protected void paint( Graphics g ) {
-        // Redraw backing store if necessary
-        redrawBackingStore();
+	protected void paint( Graphics g ) {
+		// Redraw backing store if necessary
+		redrawBackingStore();
 
-        // Erase display
-        g.setColor( bgcolor );
-        g.fillRect( 0, 0, getWidth(), getHeight() );
+		// Erase display
+		g.setColor( bgcolor );
+		g.fillRect( 0, 0, getWidth(), getHeight() );
 
-        // Draw terminal image
-        synchronized ( this ) {
-            g.drawImage( backingStore, 0, 1, Graphics.TOP | Graphics.LEFT );
-            // KARL the y coord 1 is because with 0 it sometimes fails to draw
-            // on my SonyEricsson K700i
-        }
-    }
+		// Draw terminal image
+		synchronized ( this ) {
+			g.drawImage( backingStore, 0, 1, Graphics.TOP | Graphics.LEFT );
+			// KARL the y coord 1 is because with 0 it sometimes fails to draw
+			// on my SonyEricsson K700i
+		}
+	}
 
-    private boolean invalid = true;
+	private boolean invalid = true;
 
-    public synchronized void redraw() {
-        invalid = true;
-        repaint();
-    }
+	public synchronized void redraw() {
+		invalid = true;
+		repaint();
+	}
 
-    /** Required paint implementation */
-    /*
-     * protected void paint(Graphics g) { g.setColor(bgcolor); g.fillRect( 0, 0,
-     * getWidth(), getHeight() ); g.drawImage(backingStore, 0, 0, 0); }
-     */
+	/** Required paint implementation */
+	/*
+	 * protected void paint(Graphics g) { g.setColor(bgcolor); g.fillRect( 0, 0,
+	 * getWidth(), getHeight() ); g.drawImage(backingStore, 0, 0, 0); }
+	 */
 
-    protected synchronized void redrawBackingStore() {
-        // Only redraw if we've been marked as invalid by a call to redraw
-        // The idea is that if multiple calls to redraw occur before the call to
-        // paint then we save
-        // time not redrawing our backingStore each time
-        if ( invalid ) {
-            Graphics g = backingStore.getGraphics();
-            g.setColor( fgcolor );
-            g.fillRect( 0, 0, getWidth(), getHeight() );
+	protected synchronized void redrawBackingStore() {
+		// Only redraw if we've been marked as invalid by a call to redraw
+		// The idea is that if multiple calls to redraw occur before the call to
+		// paint then we save
+		// time not redrawing our backingStore each time
+		if ( invalid ) {
+			Graphics g = backingStore.getGraphics();
+			g.setColor( fgcolor );
+			g.fillRect( 0, 0, getWidth(), getHeight() );
 
-            for ( int l = top; l < buffer.height && l < ( top + rows ); l++ ) {
-                if ( !buffer.update[0] && !buffer.update[l + 1] ) {
-                    continue;
-                }
-                buffer.update[l + 1] = false;
-                for ( int c = left; c < buffer.width && c < ( left + cols ); c++ ) {
-                    int addr = 0;
-                    int currAttr = buffer.charAttributes[buffer.windowBase + l][c];
+			for ( int l = top; l < buffer.height && l < ( top + rows ); l++ ) {
+				if ( !buffer.update[0] && !buffer.update[l + 1] ) {
+					continue;
+				}
+				buffer.update[l + 1] = false;
+				for ( int c = left; c < buffer.width && c < ( left + cols ); c++ ) {
+					int addr = 0;
+					int currAttr = buffer.charAttributes[buffer.windowBase + l][c];
 
-                    int fg = darken( fgcolor );
-                    int bg = darken( bgcolor );
+					int fg = darken( fgcolor );
+					int bg = darken( bgcolor );
 
-                    if ( ( currAttr & VDUBuffer.COLOR_FG ) != 0 ) {
-                        fg = darken( color[( ( currAttr & VDUBuffer.COLOR_FG ) >> 4 ) - 1] );
-                    }
-                    if ( ( currAttr & VDUBuffer.COLOR_BG ) != 0 ) {
-                        bg = darken( darken( color[( ( currAttr & VDUBuffer.COLOR_BG ) >> 8 ) - 1] ) );
+					if ( ( currAttr & VDUBuffer.COLOR_FG ) != 0 ) {
+						fg = darken( color[( ( currAttr & VDUBuffer.COLOR_FG ) >> 4 ) - 1] );
+					}
+					if ( ( currAttr & VDUBuffer.COLOR_BG ) != 0 ) {
+						bg = darken( darken( color[( ( currAttr & VDUBuffer.COLOR_BG ) >> 8 ) - 1] ) );
 
-                        // bold font handling was DELETED
+						// bold font handling was DELETED
 
-                    }
-                    if ( ( currAttr & VDUBuffer.LOW ) != 0 ) {
-                        fg = darken( fg );
-                    }
-                    if ( ( currAttr & VDUBuffer.INVERT ) != 0 ) {
-                        int swapc = bg;
-                        bg = fg;
-                        fg = swapc;
-                    }
+					}
+					if ( ( currAttr & VDUBuffer.LOW ) != 0 ) {
+						fg = darken( fg );
+					}
+					if ( ( currAttr & VDUBuffer.INVERT ) != 0 ) {
+						int swapc = bg;
+						bg = fg;
+						fg = swapc;
+					}
 
-                    // determine the maximum of characters we can print in one
-                    // go
-                    while ( ( c + addr < buffer.width )
-                            && ( ( buffer.charArray[buffer.windowBase + l][c + addr] < ' ' ) || ( buffer.charAttributes[buffer.windowBase
-                                    + l][c + addr] == currAttr ) ) ) {
-                        if ( buffer.charArray[buffer.windowBase + l][c + addr] < ' ' ) {
-                            buffer.charArray[buffer.windowBase + l][c + addr] = ' ';
-                            buffer.charAttributes[buffer.windowBase + l][c + addr] = 0;
-                            continue;
-                        }
-                        addr++;
-                    }
+					// determine the maximum of characters we can print in one
+					// go
+					while ( ( c + addr < buffer.width )
+							&& ( ( buffer.charArray[buffer.windowBase + l][c + addr] < ' ' ) || ( buffer.charAttributes[buffer.windowBase
+									+ l][c + addr] == currAttr ) ) ) {
+						if ( buffer.charArray[buffer.windowBase + l][c + addr] < ' ' ) {
+							buffer.charArray[buffer.windowBase + l][c + addr] = ' ';
+							buffer.charAttributes[buffer.windowBase + l][c + addr] = 0;
+							continue;
+						}
+						addr++;
+					}
 
-                    // clear the part of the screen we want to change (fill
-                    // rectangle)
-                    if ( Main.useColors )
-                        g.setColor( bg );
-                    else
-                        g.setColor( bgcolor );
+					// clear the part of the screen we want to change (fill
+					// rectangle)
+					if ( Main.useColors )
+						g.setColor( bg );
+					else
+						g.setColor( bgcolor );
 
-                    g.fillRect( ( c - left ) * font.width, ( l - top ) * font.height, addr * font.width, font.height );
+					g.fillRect( ( c - left ) * font.width, ( l - top ) * font.height, addr * font.width, font.height );
 
-                    if ( Main.useColors )
-                        g.setColor( fg );
-                    else
-                        g.setColor( fgcolor );
+					if ( Main.useColors )
+						g.setColor( fg );
+					else
+						g.setColor( fgcolor );
 
-                    // draw the characters
-                    font.drawChars( g, buffer.charArray[buffer.windowBase + l], c, addr, ( c - left ) * font.width, ( l - top )
-                            * font.height );
+					// draw the characters
+					font.drawChars( g, buffer.charArray[buffer.windowBase + l], c, addr, ( c - left ) * font.width,
+							( l - top ) * font.height );
 
-                    c += addr - 1;
-                }
-            }
+					c += addr - 1;
+				}
+			}
 
-            // draw cursor
-            if ( buffer.showcursor
-                    && ( buffer.screenBase + buffer.cursorY >= buffer.windowBase && buffer.screenBase + buffer.cursorY < buffer.windowBase
-                            + buffer.height ) ) {
-                g.setColor( fgcolor );
-                g.fillRect( ( buffer.cursorX - left ) * font.width, ( buffer.cursorY - top + buffer.screenBase - buffer.windowBase )
-                        * font.height, font.width, font.height );
-            }
+			// draw cursor
+			if ( buffer.showcursor
+					&& ( buffer.screenBase + buffer.cursorY >= buffer.windowBase && buffer.screenBase + buffer.cursorY < buffer.windowBase
+							+ buffer.height ) ) {
+				g.setColor( fgcolor );
+				g.fillRect( ( buffer.cursorX - left ) * font.width,
+						( buffer.cursorY - top + buffer.screenBase - buffer.windowBase ) * font.height, font.width,
+						font.height );
+			}
 
-            invalid = false;
-        }
-    }
+			invalid = false;
+		}
+	}
 
-    /**
-     * Set a new terminal (VDU) buffer.
-     * 
-     * @param buffer
-     *            new buffer
-     */
-    public void setVDUBuffer( vt320 buffer ) {
-        // TODO KARL note this is never called, and this means that the vt320
-        // never calls redraw on the terminal
-        // it is always triggered manually, maybe we can ditch all external
-        // calls to redraw and just let the terminal
-        // call them?
-        this.buffer = buffer;
-        buffer.setDisplay( this );
-    }
+	/**
+	 * Set a new terminal (VDU) buffer.
+	 * 
+	 * @param buffer
+	 *            new buffer
+	 */
+	public void setVDUBuffer( vt320 buffer ) {
+		// TODO KARL note this is never called, and this means that the vt320
+		// never calls redraw on the terminal
+		// it is always triggered manually, maybe we can ditch all external
+		// calls to redraw and just let the terminal
+		// call them?
+		this.buffer = buffer;
+		buffer.setDisplay( this );
+	}
 
 }

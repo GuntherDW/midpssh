@@ -21,48 +21,48 @@ import app.ConnectionSpec;
  */
 public class NewConnectionForm extends ConnectionForm {
 
-    private static Command createCommand = new Command( "Create", Command.SCREEN, 1 );
+	private static Command createCommand = new Command( "Create", Command.SCREEN, 1 );
 
-    /**
-     * @param title
-     */
-    public NewConnectionForm( Activatable back ) {
-        super( back, "New Connection" );
-        addCommand( createCommand );
-    }
+	/**
+	 * @param title
+	 */
+	public NewConnectionForm( Activatable back ) {
+		super( back, "New Connection" );
+		addCommand( createCommand );
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
-     *      javax.microedition.lcdui.Displayable)
-     */
-    public void commandAction( Command command, Displayable displayed ) {
-        if ( command == createCommand ) {
-            doCreate();
-        }
-        else {
-            super.commandAction( command, displayed );
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
+	 *      javax.microedition.lcdui.Displayable)
+	 */
+	public void commandAction( Command command, Displayable displayed ) {
+		if ( command == createCommand ) {
+			doCreate();
+		}
+		else {
+			super.commandAction( command, displayed );
+		}
+	}
 
-    private void doCreate() {
-        if ( validateForm() ) {
-            String alias = tfAlias.getString();
-            String type = selectedConnectionType();
-            String host = tfHost.getString();
-            String username = tfUsername.getString();
-            String password = tfPassword.getString();
+	private void doCreate() {
+		if ( validateForm() ) {
+			String alias = tfAlias.getString();
+			String type = selectedConnectionType();
+			String host = tfHost.getString();
+			String username = tfUsername.getString();
+			String password = tfPassword.getString();
 
-            ConnectionSpec conn = new ConnectionSpec();
-            conn.alias = alias;
-            conn.type = type;
-            conn.host = host;
-            conn.username = username;
-            conn.password = password;
-            ConnectionManager.addConnection( conn );
+			ConnectionSpec conn = new ConnectionSpec();
+			conn.alias = alias;
+			conn.type = type;
+			conn.host = host;
+			conn.username = username;
+			conn.password = password;
+			ConnectionManager.addConnection( conn );
 
-            doBack();
-        }
-    }
+			doBack();
+		}
+	}
 }

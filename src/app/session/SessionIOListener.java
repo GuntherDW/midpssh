@@ -15,7 +15,7 @@ import java.io.IOException;
  * Preferences - Java - Code Style - Code Templates
  */
 public interface SessionIOListener {
-    public void sendData( byte[] data, int offset, int length ) throws IOException;
+	public void sendData( byte[] data, int offset, int length ) throws IOException;
 
-    public void receiveData( byte[] data, int offset, int length ) throws IOException;
+	public void receiveData( byte[] data, int offset, int length ) throws IOException;
 }

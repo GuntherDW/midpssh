@@ -17,25 +17,25 @@ import java.io.IOException;
  * Preferences - Java - Code Style - Code Templates
  */
 public class ConnectionSpec {
-    public static final String TYPE_SSH = "ssh";
+	public static final String TYPE_SSH = "ssh";
 
-    public static final String TYPE_TELNET = "telnet";
+	public static final String TYPE_TELNET = "telnet";
 
-    public String alias, type, host, username, password;
+	public String alias, type, host, username, password;
 
-    public void read( DataInputStream in ) throws IOException {
-        alias = in.readUTF();
-        type = in.readUTF();
-        host = in.readUTF();
-        username = in.readUTF();
-        password = in.readUTF();
-    }
+	public void read( DataInputStream in ) throws IOException {
+		alias = in.readUTF();
+		type = in.readUTF();
+		host = in.readUTF();
+		username = in.readUTF();
+		password = in.readUTF();
+	}
 
-    public void write( DataOutputStream out ) throws IOException {
-        out.writeUTF( alias );
-        out.writeUTF( type );
-        out.writeUTF( host );
-        out.writeUTF( username );
-        out.writeUTF( password );
-    }
+	public void write( DataOutputStream out ) throws IOException {
+		out.writeUTF( alias );
+		out.writeUTF( type );
+		out.writeUTF( host );
+		out.writeUTF( username );
+		out.writeUTF( password );
+	}
 }

@@ -24,58 +24,58 @@ import app.Main;
  */
 public class ModifierInputDialog extends Form implements Activatable, CommandListener {
 
-    private static Command enterCommand = new Command( "Enter", Command.OK, 1 );
+	private static Command enterCommand = new Command( "Enter", Command.OK, 1 );
 
-    private static Command backCommand = new Command( "Back", Command.CANCEL, 2 );
+	private static Command backCommand = new Command( "Back", Command.CANCEL, 2 );
 
-    private vt320 vt;
+	private vt320 vt;
 
-    private TextField tf;
+	private TextField tf;
 
-    private Activatable back;
+	private Activatable back;
 
-    public int modifier;
+	public int modifier;
 
-    public ModifierInputDialog( Activatable back, vt320 vt ) {
-        super( "Control Keys" );
-        //super("Control Keys", "", 10, TextField.ANY);
+	public ModifierInputDialog( Activatable back, vt320 vt ) {
+		super( "Control Keys" );
+		//super("Control Keys", "", 10, TextField.ANY);
 
-        this.back = back;
-        this.vt = vt;
+		this.back = back;
+		this.vt = vt;
 
-        tf = new TextField( "Enter one or more letters", null, 10, TextField.ANY );
-        append( tf );
+		tf = new TextField( "Enter one or more letters", null, 10, TextField.ANY );
+		append( tf );
 
-        addCommand( enterCommand );
-        addCommand( backCommand );
+		addCommand( enterCommand );
+		addCommand( backCommand );
 
-        setCommandListener( this );
-    }
+		setCommandListener( this );
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see gui.Activatable#activate()
-     */
-    public void activate() {
-        tf.setString( "" );
-        Main.setDisplay( this );
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gui.Activatable#activate()
+	 */
+	public void activate() {
+		tf.setString( "" );
+		Main.setDisplay( this );
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
-     *      javax.microedition.lcdui.Displayable)
-     */
-    public void commandAction( Command command, Displayable arg1 ) {
-        if ( command == enterCommand ) {
-            String str = tf.getString();
-            for ( int i = 0; i < str.length(); i++ ) {
-                vt.keyTyped( 0, str.charAt( i ), modifier );
-            }
-        }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
+	 *      javax.microedition.lcdui.Displayable)
+	 */
+	public void commandAction( Command command, Displayable arg1 ) {
+		if ( command == enterCommand ) {
+			String str = tf.getString();
+			for ( int i = 0; i < str.length(); i++ ) {
+				vt.keyTyped( 0, str.charAt( i ), modifier );
+			}
+		}
 
-        back.activate();
-    }
+		back.activate();
+	}
 }

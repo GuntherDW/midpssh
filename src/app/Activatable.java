@@ -13,5 +13,5 @@ package app;
  * Preferences - Java - Code Style - Code Templates
  */
 public interface Activatable {
-    public void activate();
+	public void activate();
 }

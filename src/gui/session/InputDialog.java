@@ -25,56 +25,56 @@ import terminal.vt320;
  */
 public class InputDialog extends TextBox implements Activatable, CommandListener {
 
-    private static Command enterCommand = new Command( "Enter", Command.OK, 1 );
+	private static Command enterCommand = new Command( "Enter", Command.OK, 1 );
 
-    private static Command typeCommand = new Command( "Type", Command.ITEM, 2 );
+	private static Command typeCommand = new Command( "Type", Command.ITEM, 2 );
 
-    private vt320 vt;
+	private vt320 vt;
 
-    private Activatable back;
+	private Activatable back;
 
-    public InputDialog( Activatable back, vt320 vt ) {
-        super( "Input", "", 255, TextField.ANY );
+	public InputDialog( Activatable back, vt320 vt ) {
+		super( "Input", "", 255, TextField.ANY );
 
-        this.back = back;
-        this.vt = vt;
+		this.back = back;
+		this.vt = vt;
 
-        addCommand( enterCommand );
-        addCommand( typeCommand );
+		addCommand( enterCommand );
+		addCommand( typeCommand );
 
-        setCommandListener( this );
-    }
+		setCommandListener( this );
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see gui.Activatable#activate()
-     */
-    public void activate() {
-        setString( "" );
-        Main.setDisplay( this );
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gui.Activatable#activate()
+	 */
+	public void activate() {
+		setString( "" );
+		Main.setDisplay( this );
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
-     *      javax.microedition.lcdui.Displayable)
-     */
-    public void commandAction( Command command, Displayable arg1 ) {
-        doInput();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
+	 *      javax.microedition.lcdui.Displayable)
+	 */
+	public void commandAction( Command command, Displayable arg1 ) {
+		doInput();
 
-        if ( command == enterCommand ) {
-            vt.keyTyped( 0, '\n', 0 );
-        }
-        back.activate();
-    }
+		if ( command == enterCommand ) {
+			vt.keyTyped( 0, '\n', 0 );
+		}
+		back.activate();
+	}
 
-    private void doInput() {
-        String str = getString();
-        for ( int i = 0; i < str.length(); i++ ) {
-            vt.keyTyped( 0, str.charAt( i ), 0 );
-        }
+	private void doInput() {
+		String str = getString();
+		for ( int i = 0; i < str.length(); i++ ) {
+			vt.keyTyped( 0, str.charAt( i ), 0 );
+		}
 
-    }
+	}
 }

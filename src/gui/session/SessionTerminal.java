@@ -189,7 +189,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	 * @param buffer
 	 */
 	public SessionTerminal( vt320 buffer, Session session ) {
-		super( buffer );
+		super( buffer, Settings.terminalRotated );
 		this.session = session;
 
 		changeMode( MODE_DISCONNECTED );

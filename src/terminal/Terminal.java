@@ -3,6 +3,7 @@ package terminal;
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
+import javax.microedition.lcdui.game.Sprite;
 
 import app.Main;
 
@@ -44,6 +45,10 @@ public class Terminal extends Canvas {
 
 	/** first top and left character in buffer, that is displayed */
 	protected int top, left;
+	
+	protected int width, height;
+	
+	protected boolean rotated;
 
 	/** display size in characters */
 	public int rows, cols;
@@ -70,6 +75,10 @@ public class Terminal extends Canvas {
 	public final static int COLOR_INVERT = 9;
 
 	public Terminal( vt320 buffer ) {
+		this( buffer, false );
+	}
+	
+	public Terminal( vt320 buffer, boolean rotated ) {
 		setVDUBuffer( buffer );
 
 		if ( Main.useColors ) {
@@ -78,10 +87,24 @@ public class Terminal extends Canvas {
 		}
 
 		font = new DrawFont();
-		backingStore = Image.createImage( this.getWidth(), this.getHeight() );
 
-		cols = this.getWidth() / font.width;
-		rows = this.getHeight() / font.height;
+//#ifdef midp2
+		this.rotated = rotated;
+//#else
+		this.rotated = rotated = false;
+//#endif
+		
+		width = getWidth();
+		height = getHeight();
+		if ( rotated ) {
+			width = getHeight();
+			height = getWidth();
+		}
+		cols = width / font.width;
+		rows = height / font.height;
+		backingStore = Image.createImage( width, height );
+		
+		System.out.println( "ROWS " + rows + " COLS " + cols );
 
 		buffer.setScreenSize( cols, rows );
 
@@ -155,7 +178,14 @@ public class Terminal extends Canvas {
 			// Redraw backing store if necessary
 			redrawBackingStore();
 			
-			g.drawImage( backingStore, 0, 1, Graphics.TOP | Graphics.LEFT );
+			if ( !rotated ) {
+				g.drawImage( backingStore, 0, 1, Graphics.TOP | Graphics.LEFT );
+			}
+			else {
+//#ifdef midp2
+				g.drawRegion( backingStore, 0, 0, width - 1, height, Sprite.TRANS_ROT270, 0, 1, Graphics.TOP | Graphics.LEFT );
+//#endif
+			}
 			// KARL the y coord 1 is because with 0 it sometimes fails to draw
 			// on my SonyEricsson K700i
 		}
@@ -184,7 +214,7 @@ public class Terminal extends Canvas {
 		if ( invalid ) {
 			Graphics g = backingStore.getGraphics();
 			g.setColor( fgcolor );
-			g.fillRect( 0, 0, getWidth(), getHeight() );
+			g.fillRect( 0, 0, width, height );
 
 			for ( int l = top; l < buffer.height && l < ( top + rows ); l++ ) {
 				if ( !buffer.update[0] && !buffer.update[l + 1] ) {

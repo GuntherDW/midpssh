@@ -168,12 +168,12 @@ public class SshPacket1 extends SshPacket {
 						phase_packet++;
 						
 						if ( packet_length > 262144 ) {
-							throw new RuntimeException( "SshPacket1: Invalid packet_length " + packet_length );
+							throw new IllegalStateException( "SshPacket1: Invalid packet_length " + packet_length );
 						}
 						
 						int block_length = 8 * ( packet_length / 8 + 1 );
 						block = new byte[ block_length ];
-						System.out.println( "PACKET LENGTH " + packet_length + " BLOCK LENGTH " + block_length );
+						//System.out.println( "PACKET LENGTH " + packet_length + " BLOCK LENGTH " + block_length );
 					}
 					break; //switch (phase_packet)
 
@@ -207,7 +207,7 @@ public class SshPacket1 extends SshPacket {
 							decryptedBlock = block;
 
 						if ( decryptedBlock.length != padding_length + packet_length ) {
-							throw new RuntimeException( "SshPacket1: invalid decrypted packet length" );
+							throw new IllegalStateException( "SshPacket1: invalid decrypted packet length" );
 						}
 
 						for ( int i = 0; i < padding.length; i++ )
@@ -230,7 +230,7 @@ public class SshPacket1 extends SshPacket {
 						for ( int i = 0; i < crc_array.length; i++ )
 							crc_array[i] = decryptedBlock[blockOffset++];
 						if ( !checkCrc() ) {
-							throw new RuntimeException( "SshPacket1: CRC wrong in received packet!" );
+							throw new IllegalStateException( "SshPacket1: CRC wrong in received packet!" );
 						}
 
 						return boffset;

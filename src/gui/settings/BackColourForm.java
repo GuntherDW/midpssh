@@ -21,7 +21,7 @@ public class BackColourForm extends ColourForm {
 	 */
 	public void activate() {
 		Settings settings = SettingsManager.getSettings();
-		initColour( settings.getBgcolor() );
+		initColour( settings.bgcolor );
 		super.activate();
 	}
 	/* (non-Javadoc)
@@ -32,7 +32,7 @@ public class BackColourForm extends ColourForm {
 		
 		int color = parseColour();
 		if ( color != -1 ) {
-			settings.setBgcolor( color );
+			settings.bgcolor = color;
 			SettingsManager.saveSettings( settings );
 			
 			doBack();

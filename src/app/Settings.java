@@ -17,54 +17,35 @@ import java.io.IOException;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class Settings {
-	private int bgcolor;
+	public int bgcolor, fgcolor;
 	
-	private int fgcolor;
+	public int screenColumns, screenRows;
 	
 	public Settings() {
 		defaults();
-	}
-	
-	private void defaults() {
-		fgcolor = 0xffffff;
-		bgcolor = 0x000000;
-	}
-	
-	/**
-	 * @return Returns the bgcolor.
-	 */
-	public int getBgcolor() {
-		return bgcolor;
-	}
-	/**
-	 * @param bgcolor The bgcolor to set.
-	 */
-	public void setBgcolor( int bgcolor ) {
-		this.bgcolor = bgcolor;
-	}
-	/**
-	 * @return Returns the fgcolor.
-	 */
-	public int getFgcolor() {
-		return fgcolor;
-	}
-	/**
-	 * @param fgcolor The fgcolor to set.
-	 */
-	public void setFgcolor( int fgcolor ) {
-		this.fgcolor = fgcolor;
 	}
 
 	/**
 	 * @param in
 	 */
 	public void read( DataInputStream in ) throws IOException {
-		setFgcolor( in.readInt() );
-		setBgcolor( in.readInt() );
+		fgcolor = in.readInt();
+		bgcolor = in.readInt();
+		screenColumns = in.readInt();
+		screenRows = in.readInt();
 	}
 	
 	public void write( DataOutputStream out ) throws IOException {
-		out.writeInt( getFgcolor() );
-		out.writeInt( getBgcolor() );
+		out.writeInt( fgcolor );
+		out.writeInt( bgcolor );
+		out.writeInt( screenColumns );
+		out.writeInt( screenRows );
+	}
+	
+	private void defaults() {
+		fgcolor = 0xffffff;
+		bgcolor = 0x000000;
+		screenColumns = 0;
+		screenRows = 0;
 	}
 }

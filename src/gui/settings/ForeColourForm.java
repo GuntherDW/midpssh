@@ -21,7 +21,7 @@ public class ForeColourForm extends ColourForm {
 	 */
 	public void activate() {
 		Settings settings = SettingsManager.getSettings();
-		initColour( settings.getFgcolor() );
+		initColour( settings.fgcolor );
 		super.activate();
 	}
 	/* (non-Javadoc)
@@ -32,7 +32,7 @@ public class ForeColourForm extends ColourForm {
 		
 		int color = parseColour();
 		if ( color != -1 ) {
-			settings.setFgcolor( color );
+			settings.fgcolor = color;
 			SettingsManager.saveSettings( settings );
 			
 			doBack();

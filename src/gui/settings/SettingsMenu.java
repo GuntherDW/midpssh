@@ -19,24 +19,31 @@ import app.Main;
 /**
  * @author Karl von Randow
  */
-public class SettingsForm extends ExtendedList implements Activatable, CommandListener {
+public class SettingsMenu extends ExtendedList implements Activatable, CommandListener {
 
 	private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
 	
 	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 	
+	protected static final int SETTINGS_OPTIONS = 2;
+	
 	private Activatable back;
 	
-	public SettingsForm() {
-		super( "Settings", List.IMPLICIT );
+	protected SettingsMenu( String title ) {
+		super( title, List.IMPLICIT );
 		
 		append( "Back Colour", null );
 		append( "Fore Colour", null );
+		append( "Screen Size", null );
 		
 		setSelectCommand( selectCommand );
 		addCommand( backCommand );
 		
 		setCommandListener( this );
+	}
+	
+	public SettingsMenu() {
+		this( "Settings" );
 	}
 	/* (non-Javadoc)
 	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable)
@@ -50,13 +57,19 @@ public class SettingsForm extends ExtendedList implements Activatable, CommandLi
 		}
 	}
 	
-	private void doSelect( int i ) {
+	protected void doSelect( int i ) {
 		switch ( i ) {
 			case 0:
-				ColourForm form = new BackColourForm();
-				form.activate( this );
+				ColourForm backForm = new BackColourForm();
+				backForm.activate( this );
 				break;
 			case 1:
+				ColourForm foreForm = new ForeColourForm();
+				foreForm.activate( this );
+				break;
+			case 2:
+				ScreenSizeForm screenSizeForm = new ScreenSizeForm();
+				screenSizeForm.activate( this );
 				break;
 		}
 	}

@@ -23,7 +23,7 @@
 package gui;
 
 import gui.session.macros.MacroSetsMenu;
-import gui.settings.SettingsForm;
+import gui.settings.SettingsMenu;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -46,7 +46,7 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	
 	private MacroSetsMenu macrosMenu;
 	
-	private SettingsForm settingsForm;
+	private SettingsMenu settingsForm;
 
 	/**
 	 * @param arg0
@@ -122,7 +122,7 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	
 	private void doSettings() {
 		if ( settingsForm == null ) {
-			settingsForm = new SettingsForm();
+			settingsForm = new SettingsMenu();
 		}
 		settingsForm.activate( this );
 	}

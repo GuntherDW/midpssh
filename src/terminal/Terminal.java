@@ -43,7 +43,7 @@ public class Terminal extends Canvas {
 	protected vt320 buffer;
 
 	/** first top and left character in buffer, that is displayed */
-	private int top, left;
+	protected int top, left;
 
 	/** display size in characters */
 	public int rows, cols;
@@ -267,13 +267,12 @@ public class Terminal extends Canvas {
 	 *            new buffer
 	 */
 	public void setVDUBuffer( vt320 buffer ) {
-		// TODO KARL note this is never called, and this means that the vt320
-		// never calls redraw on the terminal
-		// it is always triggered manually, maybe we can ditch all external
-		// calls to redraw and just let the terminal
-		// call them?
 		this.buffer = buffer;
 		buffer.setDisplay( this );
+	}
+	
+	public vt320 getVDUBuffer() {
+		return buffer;
 	}
 
 }

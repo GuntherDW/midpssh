@@ -24,6 +24,7 @@ package gui.session;
 
 import gui.Activatable;
 import gui.session.macros.MacroSetsMenu;
+import gui.settings.SessionSettingsMenu;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
@@ -51,6 +52,8 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	private static final int MODE_CONNECTED = 1;
 
 	private static final int MODE_CURSOR = 2;
+
+	private static final int MODE_SCROLL = 3;
 	
 	private static int commandPriority = 1;
 
@@ -78,7 +81,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	private static final Command backCommand = new Command( "Back", Command.BACK, commandPriority++ );
 	
-	private static final Command showBindingsCommand = new Command( "Show Bindings", Command.ITEM, commandPriority++ );
+	private static final Command showBindingsCommand = new Command( "Show Key Bindings", Command.ITEM, commandPriority++ );
+
+	private static final Command settingsCommand = new Command( "Settings", Command.ITEM, commandPriority++ );
 
 	private static final Command disconnectCommand = new Command( "Close", Command.STOP, commandPriority++ );
 
@@ -90,6 +95,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			textInputCommand, macrosCommand, cursorCommand, scrollCommand,
 			tabCommand, spaceCommand, enterCommand, escCommand, backspaceCommand,
 			ctrlCommand, altCommand, showBindingsCommand,
+			//settingsCommand,
 			disconnectCommand
 	};
 
@@ -109,6 +115,8 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	private static InputDialog inputDialog;
 	
 	private static MacroSetsMenu macrosMenu;
+	
+	private static SessionSettingsMenu settingsMenu;
 
 	private ModifierInputDialog controlKeyDialog, altKeyDialog;
 
@@ -129,8 +137,23 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		
 		// Settings
 		Settings settings = SettingsManager.getSettings();
-		bgcolor = settings.getBgcolor();
-		fgcolor = settings.getFgcolor();
+		bgcolor = settings.bgcolor;
+		fgcolor = settings.fgcolor;
+		
+		boolean resized = false;
+		int cols = this.cols;
+		int rows = this.rows;
+		if ( settings.screenColumns != 0 ) {
+			cols = settings.screenColumns;
+			resized = true;
+		}
+		if ( settings.screenRows != 0 ) {
+			rows = settings.screenRows;
+			resized = true;
+		}
+		if ( resized ) {
+			buffer.setScreenSize( cols, rows );
+		}
 	}
 	
 	public void connected() {
@@ -152,6 +175,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 				changeCurrentCommands( commandsConnected );
 				break;
 			case MODE_CURSOR:
+			case MODE_SCROLL:
 				changeCurrentCommands( commandsCursor );
 				break;
 		}
@@ -218,11 +242,17 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		else if ( command == cursorCommand ) {
 			doCursor();
 		}
+		else if ( command == scrollCommand ) {
+			doScroll();
+		}
 		else if ( command == backCommand ) {
 			changeMode( MODE_CONNECTED );
 		}
 		else if ( command == showBindingsCommand ) {
 			doShowBindings();
+		}
+		else if ( command == settingsCommand ) {
+			doSettings();
 		}
 	}
 
@@ -233,6 +263,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 				break;
 			case MODE_CURSOR:
 				keyPressedCursor( keycode );
+				break;
+			case MODE_SCROLL:
+				keyPressedScroll( keycode );
 				break;
 		}
 	}
@@ -269,8 +302,8 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			commandAction( commandsConnected[index], this );
 		}
 	}
-
-	protected void keyPressedCursor( int keycode ) {
+	
+	private int gameKeysToNumeric( int keycode ) {
 		// Convert game actions to keys
 		int gameAction = getGameAction( keycode );
 		switch ( gameAction ) {
@@ -287,6 +320,11 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 				keycode = Canvas.KEY_NUM6;
 				break;
 		}
+		return keycode;
+	}
+
+	protected void keyPressedCursor( int keycode ) {
+		keycode = gameKeysToNumeric( keycode );
 		
 		switch ( keycode ) {
 			case Canvas.KEY_NUM2:
@@ -319,6 +357,56 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			case Canvas.KEY_POUND:
 				keyPressedCursor( Canvas.DOWN );
 				keyPressedCursor( Canvas.RIGHT );
+				break;
+		}
+	}
+
+	protected void keyPressedScroll( int keycode ) {
+		keycode = gameKeysToNumeric( keycode );
+		
+		switch ( keycode ) {
+			case Canvas.KEY_NUM2:
+				if ( top > 0 ) {
+					top--;
+				}
+				redraw();
+				break;
+			case Canvas.KEY_NUM8:
+			case Canvas.KEY_NUM0:
+				if ( top + rows < buffer.height ) {
+					top++;
+				}
+				redraw();
+				break;
+			case Canvas.KEY_NUM4:
+				if ( left > 0 ) {
+					left--;
+				}
+		        redraw();
+				break;
+			case Canvas.KEY_NUM6:
+				if ( left + cols < buffer.width ) {
+					left++;
+				}
+				redraw();
+				break;
+			case Canvas.KEY_NUM1:
+				keyPressedScroll( Canvas.UP );
+			keyPressedScroll( Canvas.LEFT );
+				break;
+			case Canvas.KEY_NUM3:
+				keyPressedScroll( Canvas.UP );
+			keyPressedScroll( Canvas.RIGHT );
+				break;
+			case Canvas.KEY_NUM7:
+			case Canvas.KEY_STAR:
+				keyPressedScroll( Canvas.DOWN );
+				keyPressedScroll( Canvas.LEFT );
+				break;
+			case Canvas.KEY_NUM9:
+			case Canvas.KEY_POUND:
+				keyPressedScroll( Canvas.DOWN );
+				keyPressedScroll( Canvas.RIGHT );
 				break;
 		}
 	}
@@ -359,6 +447,10 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	private void doCursor() {
 		changeMode( MODE_CURSOR );
 	}
+
+	private void doScroll() {
+		changeMode( MODE_SCROLL );
+	}
 	
 	private void doShowBindings() {
 		StringBuffer str = new StringBuffer();
@@ -375,8 +467,15 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			}
 		}
 		
-		Alert showBindingsAlert = new Alert( "Bindings", str.toString(), null, AlertType.INFO );
+		Alert showBindingsAlert = new Alert( "Key Bindings", str.toString(), null, AlertType.INFO );
 		showBindingsAlert.setTimeout( Alert.FOREVER );
 		Main.setDisplay( showBindingsAlert );
+	}
+	
+	private void doSettings() {
+		if ( settingsMenu == null ) {
+			settingsMenu = new SessionSettingsMenu();
+		}
+		settingsMenu.activate( this );
 	}
 }

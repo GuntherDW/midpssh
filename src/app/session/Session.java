@@ -27,7 +27,7 @@ import app.Main;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public abstract class Session implements SessionIOListener, Runnable, Activatable {
+public abstract class Session implements SessionIOListener, Activatable {
 	/** Time to sleep between checks for new input from connection */
 	public static int sleepTime = 1000;
 
@@ -63,7 +63,7 @@ public abstract class Session implements SessionIOListener, Runnable, Activatabl
 
 	private String host;
 
-	private Thread reader;
+	private Thread reader, writer;
 
 	/**
 	 * We will collect here data for writing. Data will be sent when nothing is
@@ -71,7 +71,7 @@ public abstract class Session implements SessionIOListener, Runnable, Activatabl
 	 * 
 	 * @see #run
 	 */
-	private static byte[] output = new byte[16]; // this will grow if needed
+	private static byte[] outputBuffer = new byte[16]; // this will grow if needed
 
 	/**
 	 * Number of bytes to be written, from output array, because it has fixed
@@ -88,14 +88,16 @@ public abstract class Session implements SessionIOListener, Runnable, Activatabl
 			}
 		};
 		terminal = new SessionTerminal( emulation, this );
-		reader = new Thread( this );
+		reader = new Reader();
+		writer = new Writer();
 	}
 
 	protected void connect( String host, SessionIOListener filter ) {
 		this.host = host;
 		this.filter = filter;
 
-		reader.start();
+		//reader.start();
+		writer.start();
 	}
 
 	protected abstract int defaultPort();
@@ -123,112 +125,102 @@ public abstract class Session implements SessionIOListener, Runnable, Activatabl
 	 * @see telnet.TelnetIOListener#sendData(byte[])
 	 */
 	public void sendData( byte[] b, int offset, int length ) throws IOException {
-		if ( outputCount + length > output.length ) {
-			byte[] newOutput = new byte[outputCount + length];
-			System.arraycopy( output, 0, newOutput, 0, outputCount );
-			output = newOutput;
+		synchronized ( writer ) {
+			if ( outputCount + length > outputBuffer.length ) {
+				byte[] newOutput = new byte[outputCount + length];
+				System.arraycopy( outputBuffer, 0, newOutput, 0, outputCount );
+				outputBuffer = newOutput;
+			}
+			System.arraycopy( b, offset, outputBuffer, outputCount, length );
+			outputCount += length;
+			
+			writer.notify();
 		}
-		System.arraycopy( b, offset, output, outputCount, length );
-		outputCount += length;
+	}
+	
+	private boolean connect() {
+		try {
+			emulation.putString( "Connecting to " + host + "..." );
+			terminal.redraw();
+			String conn = "socket://" + host;
+			if ( host.indexOf( ":" ) == -1 )
+				conn += ":" + defaultPort();
+			socket = (StreamConnection) Connector.open( conn, Connector.READ_WRITE, false );
+			in = socket.openDataInputStream();
+			out = socket.openDataOutputStream();
+			emulation.putString( "OK\r\n" );
+
+			terminal.redraw();
+			return true;
+		}
+		catch ( Exception e ) {
+			emulation.putString( "FAILED\r\n" );
+			emulation.putString( e.toString() );
+			terminal.redraw();
+			return false;
+		}
 	}
 
 	/**
 	 * Continuously read from remote host and display the data on screen.
 	 */
-	public void run() {
-		Throwable terminator = null;
-
-		try {
-			int n;
-			int noInputCycles = 0;
-
-			// Connect
-			try {
-				emulation.putString( "Connecting to " + host + "..." );
-				terminal.redraw();
-				String conn = "socket://" + host;
-				if ( host.indexOf( ":" ) == -1 )
-					conn += ":" + defaultPort();
-				socket = (StreamConnection) Connector.open( conn, Connector.READ_WRITE, false );
-				in = socket.openDataInputStream();
-				out = socket.openDataOutputStream();
-				emulation.putString( "OK" );
-			}
-			catch ( Exception e ) {
-				emulation.putString( "FAILED\n\n" );
-				emulation.putString( e.toString() );
-				terminal.redraw();
-				return;
-			}
-			emulation.putString( "\n\r" );
-
-			terminal.redraw();
-
-			// Main loop
-			try {
-				for ( ;; ) {
-					n = in.available();
-
-					if ( n <= 0 ) {
-						if ( outputCount > 0 ) // Writing
-						{
-							traffic += outputCount;
-							out.write( output, 0, outputCount );
-							outputCount = 0;
-						}
-						else // Sleeping
-						{
-							Thread.sleep( sleepTime );
-							if ( noInputCycles++ > keepAliveCycles ) {
-								emulation.keyTyped( 0, 'a', 0 ); // BAD HACK - SHOULD SEND AYA...
-								emulation.keyPressed( 8, '\b', 0 );
-								noInputCycles = 0;
-							}
-						}
+	private void read() throws IOException {
+		byte [] buf = new byte[100];
+		
+		int n = in.read( buf, 0, buf.length );
+		while ( n != -1 ) {
+			filter.receiveData( buf, 0, n );
+			
+			n = in.read( buf, 0, buf.length );
+		}
+		
+		System.out.println( "Conn closed" );
+	}
+	
+	private void write() throws IOException {
+		while ( !disconnecting ) {
+			synchronized ( writer ) {
+				while ( outputCount == 0 && !disconnecting ) {
+					try {
+						writer.wait( sleepTime * keepAliveCycles );
 					}
-					else // Reading
-					{
-						byte[] b = new byte[n]; // TODO keep one buffer
-						in.read( b, 0, n );
-						
-						filter.receiveData( b, 0, n );
+					catch ( InterruptedException e ) {
+					}
+					// TODO send keepalive
+				}
+				
+				if ( !disconnecting ) {
+					out.write( outputBuffer, 0, outputCount );
+					outputCount = 0;
+				}
+				
+				/*
+				 * if ( outputCount > 0 ) // Writing
+				{
+					traffic += outputCount;
+					out.write( outputBuffer, 0, outputCount );
+					outputCount = 0;
+				}
+				else // Sleeping
+				{
+					Thread.sleep( sleepTime );
+					if ( noInputCycles++ > keepAliveCycles ) {
+						emulation.keyTyped( 0, 'a', 0 ); // BAD HACK - SHOULD SEND AYA...
+						emulation.keyPressed( 8, '\b', 0 );
 						noInputCycles = 0;
 					}
-				} // while( connected )
-			}
-			catch ( Exception e ) {
-				terminator = e;
+				}
+				 */
 			}
 		}
-		catch ( Throwable t ) {
-			terminator = t;
-		}
-
-		if ( terminator != null && !disconnecting ) {
-			terminator.printStackTrace();
-			
-			Alert alert = new Alert( "Session Error" );
-			alert.setType( AlertType.ERROR );
-
-			String msg = terminator.getMessage();
-			if ( msg == null )
-				msg = terminator.toString();
-			
-			alert.setString( msg );
-			Main.alertBackToMain( alert );
-		}
-		else {
-			Main.goMainMenu();
-		}
-
-		disconnect();
-		emulation.putString( "Connection closed" );
 	}
 
+
 	private void handleException( Throwable t ) {
-		t.printStackTrace();
 		if ( !disconnecting ) {
-			Alert alert = new Alert( "Error" );
+			t.printStackTrace();
+			
+			Alert alert = new Alert( "Session Error" );
 			alert.setType( AlertType.ERROR );
 
 			String msg = t.getMessage();
@@ -254,15 +246,19 @@ public abstract class Session implements SessionIOListener, Runnable, Activatabl
 	 */
 	public void disconnect() {
 		if ( !disconnecting ) {
-			try {
-				in.close();
-				out.close();
-				socket.close();
+			synchronized ( writer ) {
+				disconnecting = true;
+				try {
+					in.close();
+					out.close();
+					socket.close();
+				}
+				catch ( IOException e ) {
+					handleException( e );
+				}
+				
+				writer.notify();
 			}
-			catch ( IOException e ) {
-				handleException( e );
-			}
-			disconnecting = true;
 		}
 	}
 
@@ -273,5 +269,36 @@ public abstract class Session implements SessionIOListener, Runnable, Activatabl
 	 */
 	public void activate() {
 		terminal.activate();
+	}
+	
+	private class Reader extends Thread {
+		public void run() {
+			try {
+				read();
+				disconnect();
+			}
+			catch ( Exception e ) {
+				handleException( e );
+				disconnect();
+			}
+		}
+	}
+	
+	private class Writer extends Thread {
+		public void run() {
+			try {
+				connect();
+				terminal.connected();
+				reader.start();
+				write();
+				
+				disconnect();
+				terminal.disconnected();
+			}
+			catch ( Exception e ) {
+				handleException( e );
+				disconnect();
+			}
+		}
 	}
 }

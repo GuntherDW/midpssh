@@ -3,7 +3,12 @@
 <project name="MidpSSH" basedir="." default="all">
 
 	<taskdef resource="antenna.properties"/>
+	<!--
 	<property name="wtk.home" value="c:\WTK21"/>
+	<property name="deviceName" value="DefaultColorPhone" />
+	-->
+	<property name="wtk.home" value="c:\SonyEricsson\J2ME_SDK\PC_Emulation\WTK2" />
+	<property name="deviceName" value="SonyEricsson_K700" />
 	<property name="wtk.midp.version" value="1.0"/>
 
     <target name="jad">
@@ -79,7 +84,7 @@
 	<target name="run" depends="package,preverify">
 		<!-- Start the MIDlet suite -->
 
-    	<wtkrun jadfile="FloydSSHx.jad" device="DefaultColorPhone" wait="true"/>
+    	<wtkrun jadfile="FloydSSHx.jad" device="${deviceName}" wait="true"/>
 	</target>
 	<!--
 	<target name="runother">

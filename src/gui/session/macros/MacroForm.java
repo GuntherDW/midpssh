@@ -38,6 +38,9 @@ import app.session.MacroSetManager;
  */
 public class MacroForm extends EditableForm {
 
+    public static final int MODE_MACRO_SET = 1;
+    public static final int MODE_MACRO = 2;
+    
 	private static Command saveCommand = new Command( "Save", Command.SCREEN, 1 );
 
 	private static Command createCommand = new Command( "Create", Command.SCREEN, 1 );
@@ -49,22 +52,33 @@ public class MacroForm extends EditableForm {
 	private TextField tfName, tfValue;
 	
 	private ChoiceGroup cgType;
+    
+    private boolean isMacroSet;
 
 	/**
 	 * @param arg0
 	 */
-	public MacroForm( boolean edit ) {
-	    super( edit ? "Edit Macro" : "New Macro" );
+	public MacroForm( boolean edit, boolean isMacroSet ) {
+	    super( ( !isMacroSet ? ( edit ? "Edit Macro" : "New Macro" ) :
+            ( edit ? "Edit Macro Set" : "New Macro Set" ) ) );
 
-		tfValue = new TextField( "Value:", null, 255, TextField.ANY );
-		tfName = new TextField( "Name (Optional):", null, 255, TextField.ANY );
-		cgType = new ChoiceGroup( "Mode", ChoiceGroup.EXCLUSIVE );
-		cgType.append( "Enter", null );
-		cgType.append( "Type", null );
-		
-		append( tfName );
-		append( tfValue );
-		append( cgType );
+        this.isMacroSet = isMacroSet;
+        
+        if ( isMacroSet ) {
+            tfName = new TextField( "Macro Set Name:", null, 255, TextField.ANY );
+            append( tfName );
+        }
+        else {
+    		tfValue = new TextField( "Value:", null, 255, TextField.ANY );
+    		tfName = new TextField( "Name (Optional):", null, 255, TextField.ANY );
+    		cgType = new ChoiceGroup( "Mode", ChoiceGroup.EXCLUSIVE );
+    		cgType.append( "Enter", null );
+    		cgType.append( "Type", null );
+    		
+    		append( tfName );
+    		append( tfValue );
+    		append( cgType );
+        }
 
 		this.edit = edit;
 		if ( edit ) {
@@ -81,7 +95,9 @@ public class MacroForm extends EditableForm {
 	public void activate() {
 	    if ( !edit ) {
 	        tfName.setString( "" );
-	        tfValue.setString( "" );
+            if ( tfValue != null ) {
+                tfValue.setString( "" );
+            }
 	    }
 		super.activate();
 	}
@@ -91,6 +107,13 @@ public class MacroForm extends EditableForm {
 	 */
 	public void setMacroSetIndex( int macroSetIndex ) {
 		this.macroSetIndex = macroSetIndex;
+        
+        if ( isMacroSet ) {
+            MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
+            if ( macroSet != null ) {
+                tfName.setString( macroSet.getName() );
+            }
+        }
 	}
 
 	public void setMacroIndices( int macroSetIndex, int macroIndex ) {
@@ -133,13 +156,20 @@ public class MacroForm extends EditableForm {
 	private void doSave() {
 		if ( macroSetIndex != -1 ) {
 			if ( validateForm() ) {
-				MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
-				String value = tfValue.getString();
-				if ( cgType.getSelectedIndex() == 0 ) {
-					value += "\n";
-				}
-				Macro macro = new Macro( tfName.getString(), value );
-				macroSet.replaceMacro( macroIndex, macro );
+                if ( isMacroSet ) {
+                    MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
+                    macroSet.setName( tfName.getString() );
+                    MacroSetManager.replaceMacroSet( macroSetIndex, macroSet );
+                }
+                else {
+    				MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
+    				String value = tfValue.getString();
+    				if ( cgType.getSelectedIndex() == 0 ) {
+    					value += "\n";
+    				}
+    				Macro macro = new Macro( tfName.getString(), value );
+    				macroSet.replaceMacro( macroIndex, macro );
+                }
 
 				doBack();
 			}
@@ -148,14 +178,21 @@ public class MacroForm extends EditableForm {
 
 	private void doCreate() {
 		if ( validateForm() ) {
-			MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
-			String value = tfValue.getString();
-			if ( cgType.getSelectedIndex() == 0 ) {
-				value += "\n";
-			}
-			Macro macro = new Macro( tfName.getString(), value );
-			macroSet.addMacro( macro );
-			
+            if ( isMacroSet ) {
+                MacroSet macroSet = new MacroSet();
+                macroSet.setName( tfName.getString() );
+                MacroSetManager.addMacroSet( macroSet );
+            }
+            else {
+    			MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
+    			String value = tfValue.getString();
+    			if ( cgType.getSelectedIndex() == 0 ) {
+    				value += "\n";
+    			}
+    			Macro macro = new Macro( tfName.getString(), value );
+    			macroSet.addMacro( macro );
+            }
+            
 			doBack();
 		}
 	}
@@ -163,9 +200,16 @@ public class MacroForm extends EditableForm {
 	protected boolean validateForm() {
 		String errorMessage = null;
 		
-		if ( tfValue.getString() == null || tfValue.getString().length() == 0 ) {
-			errorMessage = "Please fill in the value";
-		}
+        if ( isMacroSet ) {
+            if ( tfName.getString() == null || tfName.getString().length() == 0 ) {
+                errorMessage = "Please fill in the Macro Set Name";
+            }
+        }
+        else {
+    		if ( tfValue.getString() == null || tfValue.getString().length() == 0 ) {
+    			errorMessage = "Please fill in the value";
+    		}
+        }
 
 		if ( errorMessage != null ) {
 			showErrorMessage( errorMessage );

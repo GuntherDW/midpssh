@@ -31,6 +31,7 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
 
 import app.Main;
+import app.session.MacroSetManager;
 import app.session.Session;
 
 /**
@@ -38,18 +39,23 @@ import app.session.Session;
  *
  */
 public class MacrosMenu extends EditableMenu {
-	private static MacroForm newMacroForm = new MacroForm( false );
-	
-	private static MacroForm editMacroForm = new MacroForm( true );
     
     protected static Command useCommand = new Command( "Use", Command.ITEM, 1 );
 	
 	private MacroSet macroSet;
 	
 	private int macroSetIndex;
+    
+    private boolean isMacroSets;
 	
+    public MacrosMenu() {
+        super( "Macro Sets" );
+        isMacroSets = true;
+    }
+    
 	public MacrosMenu( MacroSet macroSet, int macroSetIndex ) {
 		super( "Macros: " + macroSet.getName() );
+        isMacroSets = false;
 		this.macroSet = macroSet;
 		this.macroSetIndex = macroSetIndex;
         
@@ -89,24 +95,40 @@ public class MacrosMenu extends EditableMenu {
 	protected void addItems() {
 		deleteAll();
 
-		Vector macros = macroSet.getMacros();
-		if ( macros != null ) {
-			for ( int i = 0; i < macros.size(); i++ ) {
-				Macro macro = (Macro) macros.elementAt( i );
-				String name = macro.getName();
-				if ( name == null || name.length() == 0 ) {
-					name = macro.getValue().trim(); // trim off whitespace as it may end with a newline
-				}
-				append( name, null );
-			}
-		}
+        if ( isMacroSets ) {
+            Vector macroSets = MacroSetManager.getMacroSets();
+            if ( macroSets != null ) {
+                for ( int i = 0; i < macroSets.size(); i++ ) {
+                    MacroSet macroSet = (MacroSet) macroSets.elementAt( i );
+                    append( macroSet.getName(), null );
+                }
+            }
+        }
+        else {
+    		Vector macros = macroSet.getMacros();
+    		if ( macros != null ) {
+    			for ( int i = 0; i < macros.size(); i++ ) {
+    				Macro macro = (Macro) macros.elementAt( i );
+    				String name = macro.getName();
+    				if ( name == null || name.length() == 0 ) {
+    					name = macro.getValue().trim(); // trim off whitespace as it may end with a newline
+    				}
+    				append( name, null );
+    			}
+    		}
+        }
 	}
 	/* (non-Javadoc)
 	 * @see gui.EditableMenu#doDelete(int)
 	 */
 	protected void doDelete( int i ) {
 		if ( i != -1 ) {
-			macroSet.deleteMacro( i );
+            if ( isMacroSets ) {
+                MacroSetManager.deleteMacroSet( i );
+            }
+            else {
+                macroSet.deleteMacro( i );
+            }
 			delete( i );
 		}
 	}
@@ -115,28 +137,44 @@ public class MacrosMenu extends EditableMenu {
 	 */
 	protected void doSelect( int i ) {
 		if ( i != -1 ) {
-			Session session = Main.currentSession();
-			if ( session != null ) {
-				Macro macro = macroSet.getMacro( i );
-				if ( macro != null ) {
-					session.typeString( macro.getValue() );
-					session.activate();
-				}
-			}
-			else {
-				doEdit( i );
-			}
+            if ( isMacroSets ) {
+                MacroSet macroSet = MacroSetManager.getMacroSet( i );
+                MacrosMenu macrosMenu = new MacrosMenu( macroSet, i );
+                macrosMenu.activate( this );
+            }
+            else {
+    			Session session = Main.currentSession();
+    			if ( session != null ) {
+    				Macro macro = macroSet.getMacro( i );
+    				if ( macro != null ) {
+    					session.typeString( macro.getValue() );
+    					session.activate();
+    				}
+    			}
+    			else {
+    				doEdit( i );
+    			}
+            }
 		}
 	}
 	protected void doEdit( int i ) {
 		if ( i != -1 ) {
-			editMacroForm.setMacroIndices( macroSetIndex, i );
-			editMacroForm.activate( this );
+            MacroForm editMacroForm = new MacroForm( true, isMacroSets );
+            if ( isMacroSets ) {
+                editMacroForm.setMacroSetIndex( i );
+            }
+            else {
+    			editMacroForm.setMacroIndices( macroSetIndex, i );
+            }
+            editMacroForm.activate( this );
 		}
 	}
 
 	protected void doNew() {
-	    newMacroForm.setMacroSetIndex( macroSetIndex );
+        MacroForm newMacroForm = new MacroForm( false, isMacroSets );
+        if ( !isMacroSets ) {
+            newMacroForm.setMacroSetIndex( macroSetIndex );
+        }
 		newMacroForm.activate( this );
 	}
 }

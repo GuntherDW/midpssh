@@ -23,7 +23,6 @@
 package app.session;
 
 import gui.Activatable;
-import gui.session.SessionTerminal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,25 +33,26 @@ import javax.microedition.io.StreamConnection;
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 
-import terminal.vt320;
+import terminal.Terminal;
+import terminal.VT320;
 import app.Main;
 
 /**
  * @author Karl von Randow
  * 
  */
-public abstract class Session implements SessionIOHandler, Activatable {
+public abstract class Session implements Activatable {
 	/**
 	 * After this count of millisends without communication on connection we will
 	 * send something just to keep connection alive
 	 */
 	public static int keepAliveTime = 1000 * 60 * 1; // 1 minute
 
-	protected vt320 emulation;
+	protected VT320 emulation;
 
 	protected SessionIOHandler filter;
 
-	private SessionTerminal terminal;
+	private Terminal terminal;
 
 	private boolean disconnecting;
 	
@@ -97,12 +97,12 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	private int bytesWritten = 0, bytesRead = 0;
 
 	public Session() {
-		emulation = new vt320() {
+		emulation = new VT320() {
 			public void sendData( byte[] b, int offset, int length ) throws IOException {
-				filter.sendData( b, offset, length );
+				filter.handleSendData( b, offset, length );
 			}
 		};
-		terminal = new SessionTerminal( emulation, this );
+		terminal = new Terminal( emulation, this );
 		reader = new Reader();
 		writer = new Writer();
 	}
@@ -121,7 +121,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 * 
 	 * @see telnet.TelnetIOListener#receiveData(byte[])
 	 */
-	public void receiveData( byte[] buffer, int offset, int length ) throws IOException {
+	protected void receiveData( byte[] buffer, int offset, int length ) throws IOException {
 		if ( buffer != null && length > 0 ) {
 			try {
 				emulation.putString( new String( buffer, offset, length ) );
@@ -137,7 +137,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 * 
 	 * @see telnet.TelnetIOListener#sendData(byte[])
 	 */
-	public void sendData( byte[] b, int offset, int length ) throws IOException {
+	protected void sendData( byte[] b, int offset, int length ) throws IOException {
 		synchronized ( writerMutex ) {
 		    if ( outputCount + length > outputBuffer.length ) {
 				byte[] newOutput = new byte[outputCount + length];
@@ -192,7 +192,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 		while ( n != -1 ) {
 			bytesRead += n;
 			try {
-			    filter.receiveData( buf, 0, n );
+			    filter.handleReceiveData( buf, 0, n );
 			}
 			catch ( RuntimeException e ) {
 			    throw new RuntimeException( "read.filter: " + e );
@@ -215,7 +215,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	        bytesRead++;
 	        buf[0] = (byte) ( c & 0xff );
 	        try {
-			    filter.receiveData( buf, 0, 1 );
+			    filter.handleReceiveData( buf, 0, 1 );
 			}
 			catch ( RuntimeException e ) {
 			    throw new RuntimeException( "read.filter: " + e );
@@ -240,7 +240,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 						// No data to send after timeout so send an empty array through the filter which will trigger the
 						// sending of a NOOP (see TelnetSession and SshSession) - this has the effect of a keepalive
 						//emulation.putString( "NOOP\r\n" );
-					    filter.sendData( empty, 0, 0 );
+					    filter.handleSendData( empty, 0, 0 );
 					}
 				}
 				
@@ -287,7 +287,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	/**
 	 * @return Returns the terminal.
 	 */
-	public SessionTerminal getTerminal() {
+	public Terminal getTerminal() {
 		return terminal;
 	}
 

@@ -37,8 +37,256 @@ import java.io.IOException;
  * @version $Id$
  * @author Matthias L. Jugel, Marcus Meiﬂner
  */
-public abstract class vt320 extends VDUBuffer {
+public abstract class VT320 {
 
+    /* Virtual key codes. */
+
+    public static final int VK_ENTER = '\n';
+
+    public static final int VK_BACK_SPACE = '\b';
+
+    public static final int VK_TAB = '\t';
+
+    public static final int VK_CANCEL = 0x03;
+
+    public static final int VK_CLEAR = 0x0C;
+
+    public static final int VK_SHIFT = 0x10;
+
+    public static final int VK_CONTROL = 0x11;
+
+    public static final int VK_ALT = 0x12;
+
+    public static final int VK_PAUSE = 0x13;
+
+    public static final int VK_CAPS_LOCK = 0x14;
+
+    public static final int VK_ESCAPE = 0x1B;
+
+    public static final int VK_SPACE = 0x20;
+
+    public static final int VK_PAGE_UP = 0x21;
+
+    public static final int VK_PAGE_DOWN = 0x22;
+
+    public static final int VK_END = 0x23;
+
+    public static final int VK_HOME = 0x24;
+
+    /**
+     * Constant for the non-numpad <b>left </b> arrow key.
+     * 
+     * @see #VK_KP_LEFT
+     */
+    public static final int VK_LEFT = 0x25;
+
+    /**
+     * Constant for the non-numpad <b>up </b> arrow key.
+     * 
+     * @see #VK_KP_UP
+     */
+    public static final int VK_UP = 0x26;
+
+    /**
+     * Constant for the non-numpad <b>right </b> arrow key.
+     * 
+     * @see #VK_KP_RIGHT
+     */
+    public static final int VK_RIGHT = 0x27;
+
+    /**
+     * Constant for the non-numpad <b>down </b> arrow key.
+     * 
+     * @see #VK_KP_DOWN
+     */
+    public static final int VK_DOWN = 0x28;
+
+    public static final int VK_COMMA = 0x2C;
+
+    /**
+     * Constant for the "-" key.
+     * 
+     * @since 1.2
+     */
+    public static final int VK_MINUS = 0x2D;
+
+    public static final int VK_PERIOD = 0x2E;
+
+    public static final int VK_SLASH = 0x2F;
+
+    /** VK_0 thru VK_9 are the same as ASCII '0' thru '9' (0x30 - 0x39) */
+    public static final int VK_0 = 0x30;
+
+    public static final int VK_1 = 0x31;
+
+    public static final int VK_2 = 0x32;
+
+    public static final int VK_3 = 0x33;
+
+    public static final int VK_4 = 0x34;
+
+    public static final int VK_5 = 0x35;
+
+    public static final int VK_6 = 0x36;
+
+    public static final int VK_7 = 0x37;
+
+    public static final int VK_8 = 0x38;
+
+    public static final int VK_9 = 0x39;
+
+    public static final int VK_SEMICOLON = 0x3B;
+
+    public static final int VK_EQUALS = 0x3D;
+
+    /** VK_A thru VK_Z are the same as ASCII 'A' thru 'Z' (0x41 - 0x5A) */
+    public static final int VK_A = 0x41;
+
+    public static final int VK_B = 0x42;
+
+    public static final int VK_C = 0x43;
+
+    public static final int VK_D = 0x44;
+
+    public static final int VK_E = 0x45;
+
+    public static final int VK_F = 0x46;
+
+    public static final int VK_G = 0x47;
+
+    public static final int VK_H = 0x48;
+
+    public static final int VK_I = 0x49;
+
+    public static final int VK_J = 0x4A;
+
+    public static final int VK_K = 0x4B;
+
+    public static final int VK_L = 0x4C;
+
+    public static final int VK_M = 0x4D;
+
+    public static final int VK_N = 0x4E;
+
+    public static final int VK_O = 0x4F;
+
+    public static final int VK_P = 0x50;
+
+    public static final int VK_Q = 0x51;
+
+    public static final int VK_R = 0x52;
+
+    public static final int VK_S = 0x53;
+
+    public static final int VK_T = 0x54;
+
+    public static final int VK_U = 0x55;
+
+    public static final int VK_V = 0x56;
+
+    public static final int VK_W = 0x57;
+
+    public static final int VK_X = 0x58;
+
+    public static final int VK_Y = 0x59;
+
+    public static final int VK_Z = 0x5A;
+
+    public static final int VK_OPEN_BRACKET = 0x5B;
+
+    public static final int VK_BACK_SLASH = 0x5C;
+
+    public static final int VK_CLOSE_BRACKET = 0x5D;
+
+    public static final int VK_NUMPAD0 = 0x60;
+
+    public static final int VK_NUMPAD1 = 0x61;
+
+    public static final int VK_NUMPAD2 = 0x62;
+
+    public static final int VK_NUMPAD3 = 0x63;
+
+    public static final int VK_NUMPAD4 = 0x64;
+
+    public static final int VK_NUMPAD5 = 0x65;
+
+    public static final int VK_NUMPAD6 = 0x66;
+
+    public static final int VK_NUMPAD7 = 0x67;
+
+    public static final int VK_NUMPAD8 = 0x68;
+
+    public static final int VK_NUMPAD9 = 0x69;
+
+    public static final int VK_MULTIPLY = 0x6A;
+
+    public static final int VK_ADD = 0x6B;
+
+    /**
+     * This constant is obsolete, and is included only for backwards
+     * compatibility.
+     * 
+     * @see VK_SEPARATOR
+     */
+    public static final int VK_SEPARATER = 0x6C;
+
+    /**
+     * Constant for the Numpad Separator key.
+     * 
+     * @since 1.4
+     */
+    public static final int VK_SEPARATOR = VK_SEPARATER;
+
+    public static final int VK_SUBTRACT = 0x6D;
+
+    public static final int VK_DECIMAL = 0x6E;
+
+    public static final int VK_DIVIDE = 0x6F;
+
+    public static final int VK_DELETE = 0x7F; /* ASCII DEL */
+
+    public static final int VK_NUM_LOCK = 0x90;
+
+    public static final int VK_SCROLL_LOCK = 0x91;
+
+    /** Constant for the F1 function key. */
+    public static final int VK_F1 = 0x70;
+
+    /** Constant for the F2 function key. */
+    public static final int VK_F2 = 0x71;
+
+    /** Constant for the F3 function key. */
+    public static final int VK_F3 = 0x72;
+
+    /** Constant for the F4 function key. */
+    public static final int VK_F4 = 0x73;
+
+    /** Constant for the F5 function key. */
+    public static final int VK_F5 = 0x74;
+
+    /** Constant for the F6 function key. */
+    public static final int VK_F6 = 0x75;
+
+    /** Constant for the F7 function key. */
+    public static final int VK_F7 = 0x76;
+
+    /** Constant for the F8 function key. */
+    public static final int VK_F8 = 0x77;
+
+    /** Constant for the F9 function key. */
+    public static final int VK_F9 = 0x78;
+
+    /** Constant for the F10 function key. */
+    public static final int VK_F10 = 0x79;
+
+    /** Constant for the F11 function key. */
+    public static final int VK_F11 = 0x7A;
+
+    /** Constant for the F12 function key. */
+    public static final int VK_F12 = 0x7B;
+
+    public static final int VK_INSERT = 0x9B;
+    
 	public final static int KEY_CONTROL = 0x01;
 
 	public final static int KEY_SHIFT = 0x02;
@@ -50,8 +298,8 @@ public abstract class vt320 extends VDUBuffer {
 	/**
 	 * Create a new vt320 terminal and intialize it with useful settings.
 	 */
-	public vt320( int width, int height ) {
-		super( width, height );
+	public VT320( int width, int height ) {
+        setScreenSize( width, height );
 
 		setVMS( false );
 		setIBMCharset( false );
@@ -183,7 +431,7 @@ public abstract class vt320 extends VDUBuffer {
 	/**
 	 * Create a default vt320 terminal with 80 columns and 24 lines.
 	 */
-	public vt320() {
+	public VT320() {
 		this( 80, 24 );
 	}
 
@@ -779,74 +1027,74 @@ public abstract class vt320 extends VDUBuffer {
 
 		switch ( keyCode ) {
 //#ifndef simplevt320
-			case KeyEvent.VK_PAUSE:
+			case VT320.VK_PAUSE:
 				if ( shift || control )
 					sendTelnetCommand( (byte) 243 ); // BREAK
 				break;
-			case KeyEvent.VK_F1:
+			case VT320.VK_F1:
 				writeSpecial( fmap[1] );
 				break;
-			case KeyEvent.VK_F2:
+			case VT320.VK_F2:
 				writeSpecial( fmap[2] );
 				break;
-			case KeyEvent.VK_F3:
+			case VT320.VK_F3:
 				writeSpecial( fmap[3] );
 				break;
-			case KeyEvent.VK_F4:
+			case VT320.VK_F4:
 				writeSpecial( fmap[4] );
 				break;
-			case KeyEvent.VK_F5:
+			case VT320.VK_F5:
 				writeSpecial( fmap[5] );
 				break;
-			case KeyEvent.VK_F6:
+			case VT320.VK_F6:
 				writeSpecial( fmap[6] );
 				break;
-			case KeyEvent.VK_F7:
+			case VT320.VK_F7:
 				writeSpecial( fmap[7] );
 				break;
-			case KeyEvent.VK_F8:
+			case VT320.VK_F8:
 				writeSpecial( fmap[8] );
 				break;
-			case KeyEvent.VK_F9:
+			case VT320.VK_F9:
 				writeSpecial( fmap[9] );
 				break;
-			case KeyEvent.VK_F10:
+			case VT320.VK_F10:
 				writeSpecial( fmap[10] );
 				break;
-			case KeyEvent.VK_F11:
+			case VT320.VK_F11:
 				writeSpecial( fmap[11] );
 				break;
-			case KeyEvent.VK_F12:
+			case VT320.VK_F12:
 				writeSpecial( fmap[12] );
 				break;
 //#endif
-			case KeyEvent.VK_UP:
+			case VT320.VK_UP:
 				writeSpecial( KeyUp[xind] );
 				break;
-			case KeyEvent.VK_DOWN:
+			case VT320.VK_DOWN:
 				writeSpecial( KeyDown[xind] );
 				break;
-			case KeyEvent.VK_LEFT:
+			case VT320.VK_LEFT:
 				writeSpecial( KeyLeft[xind] );
 				break;
-			case KeyEvent.VK_RIGHT:
+			case VT320.VK_RIGHT:
 				writeSpecial( KeyRight[xind] );
 				break;
-			case KeyEvent.VK_PAGE_DOWN:
+			case VT320.VK_PAGE_DOWN:
 				writeSpecial( NextScn[xind] );
 				break;
-			case KeyEvent.VK_PAGE_UP:
+			case VT320.VK_PAGE_UP:
 				writeSpecial( PrevScn[xind] );
 				break;
 //#ifndef simplevt320
-			case KeyEvent.VK_INSERT:
+			case VT320.VK_INSERT:
 				writeSpecial( Insert[xind] );
 				break;
-			case KeyEvent.VK_DELETE:
+			case VT320.VK_DELETE:
 				writeSpecial( Remove[xind] );
 				break;
 //#endif
-			case KeyEvent.VK_BACK_SPACE:
+			case VT320.VK_BACK_SPACE:
 				writeSpecial( BackSpace[xind] );
 				if ( localecho ) {
 					if ( BackSpace[xind] == "\b" ) {
@@ -857,26 +1105,26 @@ public abstract class vt320 extends VDUBuffer {
 					}
 				}
 				break;
-			case KeyEvent.VK_HOME:
+			case VT320.VK_HOME:
 				writeSpecial( KeyHome[xind] );
 				break;
-			case KeyEvent.VK_END:
+			case VT320.VK_END:
 				writeSpecial( KeyEnd[xind] );
 				break;
 //#ifndef simplevt320
-			case KeyEvent.VK_NUM_LOCK:
+			case VT320.VK_NUM_LOCK:
 				if ( vms && control ) {
 					writeSpecial( PF1 );
 				}
 				if ( !control )
 					numlock = !numlock;
 				break;
-			case KeyEvent.VK_CAPS_LOCK:
+			case VT320.VK_CAPS_LOCK:
 				capslock = !capslock;
 				break;
-			case KeyEvent.VK_SHIFT:
-			case KeyEvent.VK_CONTROL:
-			case KeyEvent.VK_ALT:
+			case VT320.VK_SHIFT:
+			case VT320.VK_CONTROL:
+			case VT320.VK_ALT:
 				break;
 //#endif
 		}
@@ -931,7 +1179,7 @@ public abstract class vt320 extends VDUBuffer {
 			return;
 		}
 
-		if ( ( ( keyCode == KeyEvent.VK_ENTER ) || ( keyChar == 10 ) ) && !control ) {
+		if ( ( ( keyCode == VT320.VK_ENTER ) || ( keyChar == 10 ) ) && !control ) {
 			// KARL changed from \r to \n. \r doesn't work with telnet sessions such as to SMTP
 			// This seems to work now with everything
             // KARL 27/5/2005 changed from \n to \r\n, I think this is what we're supposed to send
@@ -1052,47 +1300,47 @@ public abstract class vt320 extends VDUBuffer {
 		}
 //#endif
 		
-		if ( keyCode == KeyEvent.VK_ESCAPE ) {
+		if ( keyCode == VT320.VK_ESCAPE ) {
 			writeSpecial( Escape[xind] );
 			return;
 		}
 //#ifndef simplevt320
 		if ( ( modifiers & KEY_ACTION ) != 0 )
 			switch ( keyCode ) {
-				case KeyEvent.VK_NUMPAD0:
+				case VT320.VK_NUMPAD0:
 					writeSpecial( Numpad[0] );
 					return;
-				case KeyEvent.VK_NUMPAD1:
+				case VT320.VK_NUMPAD1:
 					writeSpecial( Numpad[1] );
 					return;
-				case KeyEvent.VK_NUMPAD2:
+				case VT320.VK_NUMPAD2:
 					writeSpecial( Numpad[2] );
 					return;
-				case KeyEvent.VK_NUMPAD3:
+				case VT320.VK_NUMPAD3:
 					writeSpecial( Numpad[3] );
 					return;
-				case KeyEvent.VK_NUMPAD4:
+				case VT320.VK_NUMPAD4:
 					writeSpecial( Numpad[4] );
 					return;
-				case KeyEvent.VK_NUMPAD5:
+				case VT320.VK_NUMPAD5:
 					writeSpecial( Numpad[5] );
 					return;
-				case KeyEvent.VK_NUMPAD6:
+				case VT320.VK_NUMPAD6:
 					writeSpecial( Numpad[6] );
 					return;
-				case KeyEvent.VK_NUMPAD7:
+				case VT320.VK_NUMPAD7:
 					writeSpecial( Numpad[7] );
 					return;
-				case KeyEvent.VK_NUMPAD8:
+				case VT320.VK_NUMPAD8:
 					writeSpecial( Numpad[8] );
 					return;
-				case KeyEvent.VK_NUMPAD9:
+				case VT320.VK_NUMPAD9:
 					writeSpecial( Numpad[9] );
 					return;
-				case KeyEvent.VK_DECIMAL:
+				case VT320.VK_DECIMAL:
 					writeSpecial( NUMDot[xind] );
 					return;
-				case KeyEvent.VK_ADD:
+				case VT320.VK_ADD:
 					writeSpecial( NUMPlus[xind] );
 					return;
 			}
@@ -2637,4 +2885,860 @@ public abstract class vt320 extends VDUBuffer {
 		/* FIXME: */
 		term_state = TSTATE_DATA;
 	}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public int height, width; /* rows and columns */
+
+    public boolean[] update; /* contains the lines that need update */
+
+    public char[][] charArray; /* contains the characters */
+
+    public int[][] charAttributes; /* contains character attrs */
+
+    public int bufSize;
+
+    public int maxBufSize; /* buffer sizes */
+
+    public int screenBase; /* the actual screen start */
+
+    public int windowBase; /* where the start displaying */
+
+    public int scrollMarker; /* marks the last line inserted */
+
+    private int topMargin; /* top scroll margin */
+
+    private int bottomMargin; /* bottom scroll margin */
+
+    // cursor variables
+    protected boolean showcursor = true;
+
+    protected int cursorX, cursorY;
+
+    /** Scroll up when inserting a line. */
+    public final static boolean SCROLL_UP = false;
+
+    /** Scroll down when inserting a line. */
+    public final static boolean SCROLL_DOWN = true;
+
+    /** Make character normal. */
+    public final static int NORMAL = 0x00;
+
+    /** Make character bold. */
+    public final static int BOLD = 0x01;
+
+    /** Underline character. */
+    public final static int UNDERLINE = 0x02;
+
+    /** Invert character. */
+    public final static int INVERT = 0x04;
+
+    /** Lower intensity character. */
+    public final static int LOW = 0x08;
+
+    public final static int COLOR = 0xff0;
+
+    public final static int COLOR_FG = 0xf0;
+
+    public final static int COLOR_BG = 0xf00;
+
+
+    /**
+     * Put a character on the screen with normal font and outline. The character
+     * previously on that position will be overwritten. You need to call
+     * redraw() to update the screen.
+     * 
+     * @param c
+     *            x-coordinate (column)
+     * @param l
+     *            y-coordinate (line)
+     * @param ch
+     *            the character to show on the screen
+     * @see #insertChar
+     * @see #deleteChar
+     * @see #redraw
+     */
+    public void putChar( int c, int l, char ch ) {
+        putChar( c, l, ch, NORMAL );
+    }
+
+    /**
+     * Put a character on the screen with specific font and outline. The
+     * character previously on that position will be overwritten. You need to
+     * call redraw() to update the screen.
+     * 
+     * @param c
+     *            x-coordinate (column)
+     * @param l
+     *            y-coordinate (line)
+     * @param ch
+     *            the character to show on the screen
+     * @param attributes
+     *            the character attributes
+     * @see #BOLD
+     * @see #UNDERLINE
+     * @see #INVERT
+     * @see #NORMAL
+     * @see #insertChar
+     * @see #deleteChar
+     * @see #redraw
+     */
+
+    public void putChar( int c, int l, char ch, int attributes ) {
+
+        c = checkBounds( c, 0, width - 1 );
+        l = checkBounds( l, 0, height - 1 );
+        charArray[screenBase + l][c] = ch;
+        charAttributes[screenBase + l][c] = attributes;
+        markLine( l, 1 );
+    }
+
+    /**
+     * Get the character at the specified position.
+     * 
+     * @param c
+     *            x-coordinate (column)
+     * @param l
+     *            y-coordinate (line)
+     * @see #putChar
+     */
+    public char getChar( int c, int l ) {
+        c = checkBounds( c, 0, width - 1 );
+        l = checkBounds( l, 0, height - 1 );
+        return charArray[screenBase + l][c];
+    }
+
+    /**
+     * Get the attributes for the specified position.
+     * 
+     * @param c
+     *            x-coordinate (column)
+     * @param l
+     *            y-coordinate (line)
+     * @see #putChar
+     */
+    public int getAttributes( int c, int l ) {
+        c = checkBounds( c, 0, width - 1 );
+        l = checkBounds( l, 0, height - 1 );
+        return charAttributes[screenBase + l][c];
+    }
+
+    /**
+     * Insert a character at a specific position on the screen. All character
+     * right to from this position will be moved one to the right. You need to
+     * call redraw() to update the screen.
+     * 
+     * @param c
+     *            x-coordinate (column)
+     * @param l
+     *            y-coordinate (line)
+     * @param ch
+     *            the character to insert
+     * @param attributes
+     *            the character attributes
+     * @see #BOLD
+     * @see #UNDERLINE
+     * @see #INVERT
+     * @see #NORMAL
+     * @see #putChar
+     * @see #deleteChar
+     * @see #redraw
+     */
+    public void insertChar( int c, int l, char ch, int attributes ) {
+        c = checkBounds( c, 0, width - 1 );
+        l = checkBounds( l, 0, height - 1 );
+        System.arraycopy( charArray[screenBase + l], c, charArray[screenBase + l], c + 1, width - c - 1 );
+        System.arraycopy( charAttributes[screenBase + l], c, charAttributes[screenBase + l], c + 1, width - c - 1 );
+        putChar( c, l, ch, attributes );
+    }
+
+    /**
+     * Delete a character at a given position on the screen. All characters
+     * right to the position will be moved one to the left. You need to call
+     * redraw() to update the screen.
+     * 
+     * @param c
+     *            x-coordinate (column)
+     * @param l
+     *            y-coordinate (line)
+     * @see #putChar
+     * @see #insertChar
+     * @see #redraw
+     */
+    public void deleteChar( int c, int l ) {
+        c = checkBounds( c, 0, width - 1 );
+        l = checkBounds( l, 0, height - 1 );
+        if ( c < width - 1 ) {
+            System.arraycopy( charArray[screenBase + l], c + 1, charArray[screenBase + l], c, width - c - 1 );
+            System.arraycopy( charAttributes[screenBase + l], c + 1, charAttributes[screenBase + l], c, width - c - 1 );
+        }
+        putChar( width - 1, l, (char) 0 );
+    }
+
+    /**
+     * Put a String at a specific position. Any characters previously on that
+     * position will be overwritten. You need to call redraw() for screen
+     * update.
+     * 
+     * @param c
+     *            x-coordinate (column)
+     * @param l
+     *            y-coordinate (line)
+     * @param s
+     *            the string to be shown on the screen
+     * @see #BOLD
+     * @see #UNDERLINE
+     * @see #INVERT
+     * @see #NORMAL
+     * @see #putChar
+     * @see #insertLine
+     * @see #deleteLine
+     * @see #redraw
+     */
+    public void putString( int c, int l, String s ) {
+        putString( c, l, s, NORMAL );
+    }
+
+    /**
+     * Put a String at a specific position giving all characters the same
+     * attributes. Any characters previously on that position will be
+     * overwritten. You need to call redraw() to update the screen.
+     * 
+     * @param c
+     *            x-coordinate (column)
+     * @param l
+     *            y-coordinate (line)
+     * @param s
+     *            the string to be shown on the screen
+     * @param attributes
+     *            character attributes
+     * @see #BOLD
+     * @see #UNDERLINE
+     * @see #INVERT
+     * @see #NORMAL
+     * @see #putChar
+     * @see #insertLine
+     * @see #deleteLine
+     * @see #redraw
+     */
+    public void putString( int c, int l, String s, int attributes ) {
+        for ( int i = 0; i < s.length() && c + i < width; i++ ) {
+            putChar( c + i, l, s.charAt( i ), attributes );
+        }
+    }
+
+    /**
+     * Insert a blank line at a specific position. The current line and all
+     * previous lines are scrolled one line up. The top line is lost. You need
+     * to call redraw() to update the screen.
+     * 
+     * @param l
+     *            the y-coordinate to insert the line
+     * @see #deleteLine
+     * @see #redraw
+     */
+    public void insertLine( int l ) {
+        insertLine( l, 1, SCROLL_UP );
+    }
+
+    /**
+     * Insert blank lines at a specific position. You need to call redraw() to
+     * update the screen
+     * 
+     * @param l
+     *            the y-coordinate to insert the line
+     * @param n
+     *            amount of lines to be inserted
+     * @see #deleteLine
+     * @see #redraw
+     */
+    public void insertLine( int l, int n ) {
+        insertLine( l, n, SCROLL_UP );
+    }
+
+    /**
+     * Insert a blank line at a specific position. Scroll text according to the
+     * argument. You need to call redraw() to update the screen
+     * 
+     * @param l
+     *            the y-coordinate to insert the line
+     * @param scrollDown
+     *            scroll down
+     * @see #deleteLine
+     * @see #SCROLL_UP
+     * @see #SCROLL_DOWN
+     * @see #redraw
+     */
+    public void insertLine( int l, boolean scrollDown ) {
+        insertLine( l, 1, scrollDown );
+    }
+
+    /**
+     * Insert blank lines at a specific position. The current line and all
+     * previous lines are scrolled one line up. The top line is lost. You need
+     * to call redraw() to update the screen.
+     * 
+     * @param l
+     *            the y-coordinate to insert the line
+     * @param n
+     *            number of lines to be inserted
+     * @param scrollDown
+     *            scroll down
+     * @see #deleteLine
+     * @see #SCROLL_UP
+     * @see #SCROLL_DOWN
+     * @see #redraw
+     */
+    public void insertLine( int l, int n, boolean scrollDown ) {
+
+        l = checkBounds( l, 0, height - 1 );
+
+        char cbuf[][] = null;
+        int abuf[][] = null;
+        int offset = 0;
+        int oldBase = screenBase;
+
+        if ( l > bottomMargin ) /*
+                                 * We do not scroll below bottom margin (below
+                                 * the scrolling region).
+                                 */{
+            return;
+        }
+        int top = ( l < topMargin ? 0 : ( l > bottomMargin ? ( bottomMargin + 1 < height ? bottomMargin + 1
+                : height - 1 ) : topMargin ) );
+        int bottom = ( l > bottomMargin ? height - 1 : ( l < topMargin ? ( topMargin > 0 ? topMargin - 1 : 0 )
+                : bottomMargin ) );
+
+        // System.out.println("l is "+l+", top is "+top+", bottom is "+bottom+",
+        // bottomargin is "+bottomMargin+", topMargin is "+topMargin);
+
+        if ( scrollDown ) {
+            if ( n > ( bottom - top ) ) {
+                n = ( bottom - top );
+            }
+            cbuf = new char[bottom - l - ( n - 1 )][width];
+            abuf = new int[bottom - l - ( n - 1 )][width];
+
+            System.arraycopy( charArray, oldBase + l, cbuf, 0, bottom - l - ( n - 1 ) );
+            System.arraycopy( charAttributes, oldBase + l, abuf, 0, bottom - l - ( n - 1 ) );
+            System.arraycopy( cbuf, 0, charArray, oldBase + l + n, bottom - l - ( n - 1 ) );
+            System.arraycopy( abuf, 0, charAttributes, oldBase + l + n, bottom - l - ( n - 1 ) );
+            cbuf = charArray;
+            abuf = charAttributes;
+        }
+        else {
+            try {
+                if ( n > ( bottom - top ) + 1 ) {
+                    n = ( bottom - top ) + 1;
+                }
+                if ( bufSize < maxBufSize ) {
+                    if ( bufSize + n > maxBufSize ) {
+                        offset = n - ( maxBufSize - bufSize );
+                        scrollMarker += offset;
+                        bufSize = maxBufSize;
+                        screenBase = maxBufSize - height - 1;
+                        windowBase = screenBase;
+                    }
+                    else {
+                        scrollMarker += n;
+                        screenBase += n;
+                        windowBase += n;
+                        bufSize += n;
+                    }
+
+                    cbuf = new char[bufSize][width];
+                    abuf = new int[bufSize][width];
+                }
+                else {
+                    offset = n;
+                    cbuf = charArray;
+                    abuf = charAttributes;
+                }
+                // copy anything from the top of the buffer (+offset) to the new
+                // top
+                // up to the screenBase.
+                if ( oldBase > 0 ) {
+                    System.arraycopy( charArray, offset, cbuf, 0, oldBase - offset );
+                    System.arraycopy( charAttributes, offset, abuf, 0, oldBase - offset );
+                }
+                // copy anything from the top of the screen (screenBase) up to
+                // the
+                // topMargin to the new screen
+                if ( top > 0 ) {
+                    System.arraycopy( charArray, oldBase, cbuf, screenBase, top );
+                    System.arraycopy( charAttributes, oldBase, abuf, screenBase, top );
+                }
+                // copy anything from the topMargin up to the amount of lines
+                // inserted
+                // to the gap left over between scrollback buffer and screenBase
+                if ( oldBase > 0 ) {
+                    System.arraycopy( charArray, oldBase + top, cbuf, oldBase - offset, n );
+                    System.arraycopy( charAttributes, oldBase + top, abuf, oldBase - offset, n );
+                }
+                // copy anything from topMargin + n up to the line linserted to
+                // the
+                // topMargin
+                //        Telnet.console.println( "scrolling up line:" );
+                //        Telnet.console.println( new String( charArray[screenBase+top]
+                // ));
+
+                // ERROR for mobile phones
+                //        Telnet.console.println( "arraycopy: " );
+                //        Telnet.console.println( "len:" + (l - top - (n - 1)));
+                //        Telnet.console.println( "from:" + (oldBase + top + n));
+                //        Telnet.console.println( "to:" + (screenBase + top));
+
+                /*
+                 * System.arraycopy(charArray, oldBase + top + n, cbuf,
+                 * screenBase + top, l - top - (n - 1));
+                 * System.arraycopy(charAttributes, oldBase + top + n, abuf,
+                 * screenBase + top, l - top - (n - 1));
+                 */
+                // this works fine RADEK
+                for ( int i = 0; i < l - top - ( n - 1 ); i++ ) {
+                    cbuf[screenBase + top + i] = charArray[oldBase + top + n + i];
+                    abuf[screenBase + top + i] = charAttributes[oldBase + top + n + i];
+                }
+
+                //
+                // copy the all lines next to the inserted to the new buffer
+                if ( l < height - 1 ) {
+                    System.arraycopy( charArray, oldBase + l + 1, cbuf, screenBase + l + 1, ( height - 1 ) - l );
+                    System.arraycopy( charAttributes, oldBase + l + 1, abuf, screenBase + l + 1, ( height - 1 ) - l );
+                }
+            }
+            catch ( ArrayIndexOutOfBoundsException e ) {
+                // this should not happen anymore, but I will leave the code
+                // here in case something happens anyway. That code above is
+                // so complex I always have a hard time understanding what
+                // I did, even though there are comments
+//#ifndef simplevt320
+                /*
+                System.err.println( "*** Error while scrolling up:" );
+                System.err.println( "--- BEGIN STACK TRACE ---" );
+                e.printStackTrace();
+                System.err.println( "--- END STACK TRACE ---" );
+                System.err.println( "bufSize=" + bufSize + ", maxBufSize=" + maxBufSize );
+                System.err.println( "top=" + top + ", bottom=" + bottom );
+                System.err.println( "n=" + n + ", l=" + l );
+                System.err.println( "screenBase=" + screenBase + ", windowBase=" + windowBase );
+                System.err.println( "oldBase=" + oldBase );
+                System.err.println( "size.width=" + width + ", size.height=" + height );
+                System.err.println( "abuf.length=" + abuf.length + ", cbuf.length=" + cbuf.length );
+                System.err.println( "*** done dumping debug information" );
+                */
+//#endif
+            }
+        }
+
+        // this is a little helper to mark the scrolling
+        scrollMarker -= n;
+
+        for ( int i = 0; i < n; i++ ) {
+            cbuf[( screenBase + l ) + ( scrollDown ? i : -i )] = new char[width];
+            abuf[( screenBase + l ) + ( scrollDown ? i : -i )] = new int[width];
+        }
+
+        charArray = cbuf;
+        charAttributes = abuf;
+
+        if ( scrollDown ) {
+            markLine( l, bottom - l + 1 );
+        }
+        else {
+            markLine( top, l - top + 1 );
+
+            //    System.out.println( "14:" + new String( charArray[14]) );
+            //    System.out.println( "15:" + new String( charArray[15]) );
+
+            /*
+             * FIXME: needs to be in VDU if(scrollBar != null)
+             * scrollBar.setValues(windowBase, height, 0, bufSize);
+             */
+        }
+    }
+
+    /**
+     * Delete a line at a specific position. Subsequent lines will be scrolled
+     * up to fill the space and a blank line is inserted at the end of the
+     * screen.
+     * 
+     * @param l
+     *            the y-coordinate to insert the line
+     * @see #deleteLine
+     */
+    public void deleteLine( int l ) {
+        l = checkBounds( l, 0, height - 1 );
+
+        int bottom = ( l > bottomMargin ? height - 1 : ( l < topMargin ? topMargin : bottomMargin + 1 ) );
+        System.arraycopy( charArray, screenBase + l + 1, charArray, screenBase + l, bottom - l - 1 );
+        System.arraycopy( charAttributes, screenBase + l + 1, charAttributes, screenBase + l, bottom - l - 1 );
+        charArray[screenBase + bottom - 1] = new char[width];
+        charAttributes[screenBase + bottom - 1] = new int[width];
+        markLine( l, bottom - l );
+    }
+
+    /**
+     * Delete a rectangular portion of the screen. You need to call redraw() to
+     * update the screen.
+     * 
+     * @param c
+     *            x-coordinate (column)
+     * @param l
+     *            y-coordinate (row)
+     * @param w
+     *            with of the area in characters
+     * @param h
+     *            height of the area in characters
+     * @param curAttr
+     *            attribute to fill
+     * @see #deleteChar
+     * @see #deleteLine
+     * @see #redraw
+     */
+    public void deleteArea( int c, int l, int w, int h, int curAttr ) {
+        c = checkBounds( c, 0, width - 1 );
+        l = checkBounds( l, 0, height - 1 );
+
+        char cbuf[] = new char[w];
+        int abuf[] = new int[w];
+
+        for ( int i = 0; i < w; i++ ) {
+            abuf[i] = curAttr;
+        }
+        for ( int i = 0; i < h && l + i < height; i++ ) {
+            System.arraycopy( cbuf, 0, charArray[screenBase + l + i], c, w );
+            System.arraycopy( abuf, 0, charAttributes[screenBase + l + i], c, w );
+        }
+        markLine( l, h );
+    }
+
+    /**
+     * Delete a rectangular portion of the screen. You need to call redraw() to
+     * update the screen.
+     * 
+     * @param c
+     *            x-coordinate (column)
+     * @param l
+     *            y-coordinate (row)
+     * @param w
+     *            with of the area in characters
+     * @param h
+     *            height of the area in characters
+     * @see #deleteChar
+     * @see #deleteLine
+     * @see #redraw
+     */
+    public void deleteArea( int c, int l, int w, int h ) {
+        c = checkBounds( c, 0, width - 1 );
+        l = checkBounds( l, 0, height - 1 );
+
+        char cbuf[] = new char[w];
+        int abuf[] = new int[w];
+
+        for ( int i = 0; i < h && l + i < height; i++ ) {
+            System.arraycopy( cbuf, 0, charArray[screenBase + l + i], c, w );
+            System.arraycopy( abuf, 0, charAttributes[screenBase + l + i], c, w );
+        }
+        markLine( l, h );
+    }
+
+    /**
+     * Sets whether the cursor is visible or not.
+     * 
+     * @param doshow
+     */
+    public void showCursor( boolean doshow ) {
+        if ( doshow != showcursor ) {
+            markLine( cursorY, 1 );
+        }
+        showcursor = doshow;
+    }
+
+    /**
+     * Puts the cursor at the specified position.
+     * 
+     * @param c
+     *            column
+     * @param l
+     *            line
+     */
+    public void setCursorPosition( int c, int l ) {
+        cursorX = checkBounds( c, 0, width - 1 );
+        cursorY = checkBounds( l, 0, height - 1 );
+        markLine( cursorY, 1 );
+    }
+
+    /**
+     * Get the current column of the cursor position.
+     */
+    public int getCursorColumn() {
+        return cursorX;
+    }
+
+    /**
+     * Get the current line of the cursor position.
+     */
+    public int getCursorRow() {
+        return cursorY;
+    }
+
+    /**
+     * Set the current window base. This allows to view the scrollback buffer.
+     * 
+     * @param line
+     *            the line where the screen window starts
+     * @see #setBufferSize
+     * @see #getBufferSize
+     */
+    public void setWindowBase( int line ) {
+        if ( line > screenBase ) {
+            line = screenBase;
+        }
+        else if ( line < 0 ) {
+            line = 0;
+        }
+        windowBase = line;
+        update[0] = true;
+        redraw();
+    }
+
+    /**
+     * Get the current window base.
+     * 
+     * @see #setWindowBase
+     */
+    public int getWindowBase() {
+        return windowBase;
+    }
+
+    /**
+     * Set the top scroll margin for the screen. If the current bottom margin is
+     * smaller it will become the top margin and the line will become the bottom
+     * margin.
+     * 
+     * @param l
+     *            line that is the margin
+     */
+    public void setTopMargin( int l ) {
+        if ( l > bottomMargin ) {
+            topMargin = bottomMargin;
+            bottomMargin = l;
+        }
+        else {
+            topMargin = l;
+        }
+        if ( topMargin < 0 ) {
+            topMargin = 0;
+        }
+        if ( bottomMargin > height - 1 ) {
+            bottomMargin = height - 1;
+        }
+    }
+
+    /**
+     * Get the top scroll margin.
+     */
+    public int getTopMargin() {
+        return topMargin;
+    }
+
+    /**
+     * Set the bottom scroll margin for the screen. If the current top margin is
+     * bigger it will become the bottom margin and the line will become the top
+     * margin.
+     * 
+     * @param l
+     *            line that is the margin
+     */
+    public void setBottomMargin( int l ) {
+        if ( l < topMargin ) {
+            bottomMargin = topMargin;
+            topMargin = l;
+        }
+        else {
+            bottomMargin = l;
+        }
+        if ( topMargin < 0 ) {
+            topMargin = 0;
+        }
+        if ( bottomMargin > height - 1 ) {
+            bottomMargin = height - 1;
+        }
+    }
+
+    /**
+     * Get the bottom scroll margin.
+     */
+    public int getBottomMargin() {
+        return bottomMargin;
+    }
+
+    /**
+     * Set scrollback buffer size.
+     * 
+     * @param amount
+     *            new size of the buffer
+     */
+    public void setBufferSize( int amount ) {
+        if ( amount < height ) {
+            amount = height;
+        }
+        if ( amount < maxBufSize ) {
+            char cbuf[][] = new char[amount][width];
+            int abuf[][] = new int[amount][width];
+            int copyStart = bufSize - amount < 0 ? 0 : bufSize - amount;
+            int copyCount = bufSize - amount < 0 ? bufSize : amount;
+            if ( charArray != null ) {
+                System.arraycopy( charArray, copyStart, cbuf, 0, copyCount );
+            }
+            if ( charAttributes != null ) {
+                System.arraycopy( charAttributes, copyStart, abuf, 0, copyCount );
+            }
+            charArray = cbuf;
+            charAttributes = abuf;
+            bufSize = copyCount;
+            screenBase = bufSize - height;
+            windowBase = screenBase;
+        }
+        maxBufSize = amount;
+
+        update[0] = true;
+        redraw();
+    }
+
+    /**
+     * Retrieve current scrollback buffer size.
+     * 
+     * @see #setBufferSize
+     */
+    public int getBufferSize() {
+        return bufSize;
+    }
+
+    /**
+     * Retrieve maximum buffer Size.
+     * 
+     * @see #getBufferSize
+     */
+    public int getMaxBufferSize() {
+        return maxBufSize;
+    }
+
+    /**
+     * Change the size of the screen. This will include adjustment of the
+     * scrollback buffer.
+     * 
+     * @param w
+     *            of the screen
+     * @param h
+     *            of the screen
+     */
+    public void setScreenSize( int w, int h ) {
+        char cbuf[][];
+        int abuf[][];
+        int bsize = bufSize;
+
+        if ( w < 1 || h < 1 ) {
+            return;
+        }
+
+        if ( h > maxBufSize ) {
+            maxBufSize = h;
+
+        }
+        if ( h > bufSize ) {
+            bufSize = h;
+            screenBase = 0;
+            windowBase = 0;
+        }
+
+        if ( windowBase + h >= bufSize ) {
+            windowBase = bufSize - h;
+
+        }
+        if ( screenBase + h >= bufSize ) {
+            screenBase = bufSize - h;
+
+        }
+
+        cbuf = new char[bufSize][w];
+        abuf = new int[bufSize][w];
+
+        if ( charArray != null && charAttributes != null ) {
+            for ( int i = 0; i < bsize && i < bufSize; i++ ) {
+                System.arraycopy( charArray[i], 0, cbuf[i], 0, w < width ? w : width );
+                System.arraycopy( charAttributes[i], 0, abuf[i], 0, w < width ? w : width );
+            }
+        }
+
+        charArray = cbuf;
+        charAttributes = abuf;
+        width = w;
+        height = h;
+        topMargin = 0;
+        bottomMargin = h - 1;
+        update = new boolean[h + 1];
+        update[0] = true;
+        /*
+         * FIXME: ??? if(resizeStrategy == RESIZE_FONT) setBounds(getBounds());
+         */
+    }
+
+    /**
+     * Mark lines to be updated with redraw().
+     * 
+     * @param l
+     *            starting line
+     * @param n
+     *            amount of lines to be updated
+     * @see #redraw
+     */
+    public void markLine( int l, int n ) {
+        l = checkBounds( l, 0, height - 1 );
+        for ( int i = 0; ( i < n ) && ( l + i < height ); i++ ) {
+            update[l + i + 1] = true;
+        }
+    }
+
+    private int checkBounds( int value, int lower, int upper ) {
+        if ( value < lower ) {
+            return lower;
+        }
+        if ( value > upper ) {
+            return upper;
+        }
+        return value;
+    }
+
+    /** a generic display that should redraw on demand */
+    protected Terminal display;
+
+    public void setDisplay( Terminal display ) {
+        this.display = display;
+    }
+
+    /**
+     * Trigger a redraw on the display.
+     */
+    protected void redraw() {
+        if ( display != null ) {
+            display.redraw();
+        }
+    }
 }

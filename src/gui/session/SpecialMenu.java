@@ -4,18 +4,17 @@
  */
 package gui.session;
 
+import gui.Activatable;
+import gui.ExtendedList;
+
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
-import terminal.KeyEvent;
-
+import terminal.VT320;
 import app.Main;
 import app.session.Session;
-
-import gui.Activatable;
-import gui.ExtendedList;
 
 /**
  * @author Karl
@@ -23,15 +22,9 @@ import gui.ExtendedList;
  */
 public class SpecialMenu extends ExtendedList implements CommandListener, Activatable {
 
-	//private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
-
 	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 
-    private static final String[] MAIN_OPTIONS = new String[] {
-//#ifndef nocursororscroll
-        "Cursor", "Scroll",
-//#endif
-//#ifndef small        
+    private static final String[] MAIN_OPTIONS = new String[] {      
         "BACKSPACE", "Home", "End", "Page Up", "Page Down",
         "Function Keys", 
         "|", "\\", "~", ":", ";", "'", "\"",
@@ -39,17 +32,13 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
         "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")",
         "-", "_", "+", "=",
         "[", "{", "]", "}"
-//#endif
     };
     
-//#ifndef small
     private static final String[] FUNCTION_KEY_OPTIONS = new String[] {
         "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"
     };
     
     private SpecialMenu menuFunctionKeys;
-
-//#endif
     
     private Activatable back, done;
     
@@ -86,33 +75,22 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
 			    int i = find( MAIN_OPTIONS, option );
 			    if ( i != -1 ) {
 			        switch ( i ) {
-//#ifndef nocursororscroll
-					    case 0:
-					        ((SessionTerminal)done).doCursor();
-					        done.activate();
-					        break;
-					    case 1:
-					        ((SessionTerminal)done).doScroll();
-					        done.activate();
-					        break;
-//#endif
-//#ifndef small
-			            case 2:
-			                keyCode = KeyEvent.VK_BACK_SPACE;
+			            case 0:
+			                keyCode = VT320.VK_BACK_SPACE;
 			                break;
+                        case 1:
+                            keyCode = VT320.VK_HOME;
+                            break;
+                        case 2:
+                            keyCode = VT320.VK_END;
+                            break;
                         case 3:
-                            keyCode = KeyEvent.VK_HOME;
+                            keyCode = VT320.VK_PAGE_UP;
                             break;
                         case 4:
-                            keyCode = KeyEvent.VK_END;
+                            keyCode = VT320.VK_PAGE_DOWN;
                             break;
-                        case 5:
-                            keyCode = KeyEvent.VK_PAGE_UP;
-                            break;
-                        case 6:
-                            keyCode = KeyEvent.VK_PAGE_DOWN;
-                            break;
-			            case 7:
+			            case 5:
 			                if ( menuFunctionKeys == null ) {
 					            menuFunctionKeys = new SpecialMenu( "Function Keys", FUNCTION_KEY_OPTIONS );
 					        }
@@ -121,17 +99,14 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
 			            default:
 			                str = option;
 			            	break;
-//#endif
 			        }
 			    }
 			    
-//#ifndef small
 			    // Function keys
 			    i = find( FUNCTION_KEY_OPTIONS, option );
 			    if ( i != -1 ) {
-			        keyCode = KeyEvent.VK_F1 + i;
+			        keyCode = VT320.VK_F1 + i;
 			    }
-//#endif
 			    if ( keyCode != 0 ) {
 			        session.typeKey( keyCode, 0 );
 					done.activate();

@@ -22,7 +22,7 @@
  */
 package gui;
 
-import gui.session.macros.MacroSetsMenu;
+import gui.session.macros.MacrosMenu;
 import gui.settings.SettingsMenu;
 
 import javax.microedition.lcdui.Command;
@@ -43,9 +43,9 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 
 	private SessionsMenu sessionsMenu;
 	
-	private MacroSetsMenu macrosMenu;
+	private static MacrosMenu macrosMenu;
 	
-	private Activatable settingsMenu;
+	private static Activatable settingsMenu;
 	
 	private static final String ITEM_SESSIONS = "Sessions";
 //#ifndef nomacros
@@ -100,7 +100,7 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 			}
 //#ifndef nomacros
 			else if ( command.equals( ITEM_MACROS ) ) {
-				doMacros();
+				doMacros( this );
 			}
 //#endif
 //#ifndef nosettings			
@@ -132,11 +132,11 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 		sessionsMenu.activate( this );
 	}
 	
-	private void doMacros() {
+	public static void doMacros( Activatable back ) {
 		if ( macrosMenu == null ) {
-			macrosMenu = new MacroSetsMenu();
+			macrosMenu = new MacrosMenu();
 		}
-		macrosMenu.activate( this );
+		macrosMenu.activate( back );
 	}
 	
 //#ifndef nosettings

@@ -29,7 +29,7 @@ import java.io.IOException;
  * 
  */
 public interface SessionIOHandler {
-	public void sendData( byte[] data, int offset, int length ) throws IOException;
+	public void handleSendData( byte[] data, int offset, int length ) throws IOException;
 
-	public void receiveData( byte[] data, int offset, int length ) throws IOException;
+	public void handleReceiveData( byte[] data, int offset, int length ) throws IOException;
 }

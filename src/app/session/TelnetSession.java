@@ -32,7 +32,7 @@ import app.Settings;
  * @author Karl von Randow
  * 
  */
-public class TelnetSession extends Session {
+public class TelnetSession extends Session implements SessionIOHandler {
 	public TelnetSession() {
 		super();
 		
@@ -41,7 +41,42 @@ public class TelnetSession extends Session {
 	}
 	
 	public void connect( String host ) {
-		super.connect( host, new TelnetIOFilter() );
+        telnet = new TelnetProtocolHandler() {
+            /** get the current terminal type */
+            public String getTerminalType() {
+                if ( Settings.terminalType.length() > 0 ) {
+                    return Settings.terminalType;
+                }
+                else {
+                    return emulation.getTerminalID();
+                }
+            }
+
+            /** get the current window size */
+            public Dimension getWindowSize() {
+                return new Dimension( emulation.width, emulation.height );
+            }
+
+            /** notify about local echo */
+            public void setLocalEcho( boolean echo ) {
+                emulation.localecho = echo;
+            }
+
+            /** notify about EOR end of record */
+            public void notifyEndOfRecord() {
+                // only used when EOR needed, like for line mode
+            }
+
+            /** write data to our back end */
+            public void write( byte[] b ) throws IOException {
+                /*for ( int i = 0; i < b.length; i++ ) {
+                    System.out.println( "SEND " + b[i] + "=" + (char) b[i] );
+                }*/
+                TelnetSession.this.sendData( b, 0, b.length );
+            }
+        };
+        
+		super.connect( host, this );
 	}
 
 	/*
@@ -53,79 +88,39 @@ public class TelnetSession extends Session {
 		return 23;
 	}
 
-	private class TelnetIOFilter implements SessionIOHandler {
+	private TelnetProtocolHandler telnet;
 
-		private TelnetProtocolHandler telnet;
-
-		public TelnetIOFilter() {
-			telnet = new TelnetProtocolHandler() {
-				/** get the current terminal type */
-				public String getTerminalType() {
-					if ( Settings.terminalType.length() > 0 ) {
-						return Settings.terminalType;
-					}
-					else {
-						return emulation.getTerminalID();
-					}
-				}
-
-				/** get the current window size */
-				public Dimension getWindowSize() {
-					return new Dimension( emulation.width, emulation.height );
-				}
-
-				/** notify about local echo */
-				public void setLocalEcho( boolean echo ) {
-					emulation.localecho = echo;
-				}
-
-				/** notify about EOR end of record */
-				public void notifyEndOfRecord() {
-					// only used when EOR needed, like for line mode
-				}
-
-				/** write data to our back end */
-				public void write( byte[] b ) throws IOException {
-					/*for ( int i = 0; i < b.length; i++ ) {
-						System.out.println( "SEND " + b[i] + "=" + (char) b[i] );
-					}*/
-					TelnetSession.this.sendData( b, 0, b.length );
-				}
-			};
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see terminal.TerminalIOListener#receiveData(byte[])
+	 */
+	public void handleReceiveData( byte[] data, int offset, int length ) throws IOException {
+		telnet.inputfeed( data, offset, length );
+		int n;
+		do {
+			n = telnet.negotiate( data, offset, length );
+			if ( n > 0 ) {
+				/*for ( int i = offset; i < offset + n; i++ ) {
+					System.out.println( "RECV " + data[i] + "=" + (char) data[i] );
+				}*/
+				TelnetSession.this.receiveData( data, offset, n );
+			}
 		}
+		while ( n != -1 );
+	}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see terminal.TerminalIOListener#receiveData(byte[])
-		 */
-		public void receiveData( byte[] data, int offset, int length ) throws IOException {
-			telnet.inputfeed( data, offset, length );
-			int n;
-			do {
-				n = telnet.negotiate( data, offset, length );
-				if ( n > 0 ) {
-					/*for ( int i = offset; i < offset + n; i++ ) {
-						System.out.println( "RECV " + data[i] + "=" + (char) data[i] );
-					}*/
-					TelnetSession.this.receiveData( data, offset, n );
-				}
-			}
-			while ( n != -1 );
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see terminal.TerminalIOListener#sendData(byte[])
+	 */
+	public void handleSendData( byte[] data, int offset, int length ) throws IOException {
+		if ( length > 0 ) {
+			telnet.transpose( data, offset, length );
 		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see terminal.TerminalIOListener#sendData(byte[])
-		 */
-		public void sendData( byte[] data, int offset, int length ) throws IOException {
-			if ( length > 0 ) {
-				telnet.transpose( data, offset, length );
-			}
-			else {
-				telnet.sendTelnetNOP();
-			}
+		else {
+			telnet.sendTelnetNOP();
 		}
 	}
 }

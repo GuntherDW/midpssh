@@ -25,9 +25,9 @@ package app.session;
 import gui.Activatable;
 import gui.session.SessionTerminal;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
@@ -65,12 +65,12 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	/**
 	 * Holds the InputStream associated with the socket.
 	 */
-	private DataInputStream in;
+	private InputStream in;
 
 	/**
 	 * Holds the OutputStream associated with the socket.
 	 */
-	private DataOutputStream out;
+	private OutputStream out;
 
 	private String host;
 
@@ -107,7 +107,6 @@ public abstract class Session implements SessionIOHandler, Activatable {
 		this.host = host;
 		this.filter = filter;
 
-		//reader.start();
 		writer.start();
 	}
 
@@ -165,8 +164,8 @@ public abstract class Session implements SessionIOHandler, Activatable {
 		if ( host.indexOf( ":" ) == -1 )
 			conn += ":" + defaultPort();
 		socket = (StreamConnection) Connector.open( conn, Connector.READ_WRITE, false );
-		in = socket.openDataInputStream();
-		out = socket.openDataOutputStream();
+		in = socket.openInputStream();
+		out = socket.openOutputStream();
 		emulation.putString( "OK\r\n" );
 
 		return true;
@@ -198,6 +197,9 @@ public abstract class Session implements SessionIOHandler, Activatable {
 //#else
 	    buf = new byte[1];
 	    int c = in.read();
+//#ifdef debug
+		emulation.putString( "Read first byte.\r\n" );
+//#endif
 	    while ( c != -1 ) {
 	        bytesRead++;
 	        buf[0] = (byte) ( c & 0xff );
@@ -233,6 +235,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 				if ( !disconnecting ) {
 					bytesWritten += outputCount;
 					out.write( outputBuffer, 0, outputCount );
+					out.flush();
 					outputCount = 0;
 				}
 			}
@@ -336,6 +339,9 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	private class Reader extends Thread {
 		public void run() {
 			try {
+//#ifdef debug
+				emulation.putString( "Reader started.\r\n" );
+//#endif
 				read();
 				disconnect();
 			}

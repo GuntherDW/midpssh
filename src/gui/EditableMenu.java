@@ -35,8 +35,6 @@ import app.Main;
  */
 public abstract class EditableMenu extends ExtendedList implements CommandListener, Activatable {
 
-	protected static Command defaultSelectCommand = new Command( "Select", Command.ITEM, 1 );
-
 	protected static Command newCommand = new Command( "New", Command.SCREEN, 8 );
 
 	protected static Command editCommand = new Command( "Edit", Command.ITEM, 9 );
@@ -45,14 +43,14 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 
 	protected static Command backCommand = new Command( "Back", Command.BACK, 2 );
 	
-	protected Command selectCommand = defaultSelectCommand;
+	protected Command selectCommand = SELECT_COMMAND;
 	
 	private Activatable back;
 
 	public EditableMenu( String title ) {
 		super( title, List.IMPLICIT );
 		
-		addCommand( selectCommand );
+		//addCommand( selectCommand );
 		addCommand( newCommand );
 		addCommand( editCommand );
 		addCommand( deleteCommand );
@@ -62,7 +60,7 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 	}
 	
 	protected void replaceSelectCommand( Command selectCommand ) {
-		removeCommand( this.selectCommand );
+		//removeCommand( this.selectCommand );
 		this.selectCommand = selectCommand;
 		
 		setSelectCommand( selectCommand );

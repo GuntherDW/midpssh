@@ -23,7 +23,7 @@ import gui.ExtendedList;
  */
 public class SpecialMenu extends ExtendedList implements CommandListener, Activatable {
 
-	private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
+	//private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
 
 	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 
@@ -68,14 +68,14 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
             append( options[i], null );
         }
 
-		setSelectCommand( selectCommand );
+		//setSelectCommand( selectCommand );
 		addCommand( backCommand );
 		
 		setCommandListener( this );
     }
     
     public void commandAction( Command command, Displayable displayed ) {
-		if ( command == selectCommand ) {
+		if ( command == List.SELECT_COMMAND ) {
 	        Session session = Main.currentSession();
 			if ( session != null ) {
 			    String option = getString( getSelectedIndex() );

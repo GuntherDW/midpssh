@@ -37,7 +37,7 @@ import app.Main;
  */
 public class MainMenu extends ExtendedList implements CommandListener, Activatable {
 
-	private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
+	//private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
 
 	private static Command quitCommand = new Command( "Quit", Command.EXIT, 2 );
 
@@ -78,7 +78,7 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 //#endif
 		append( ITEM_QUIT, null );
 
-		setSelectCommand( selectCommand );
+		//setSelectCommand( selectCommand );
 		addCommand( quitCommand );
 
 		setCommandListener( this );
@@ -91,7 +91,7 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	 *      javax.microedition.lcdui.Displayable)
 	 */
 	public void commandAction( Command com, Displayable displayed ) {
-		if ( com == List.SELECT_COMMAND || com == selectCommand ) {
+		if ( com == List.SELECT_COMMAND /*|| com == selectCommand*/ ) {
 			String command = getString( getSelectedIndex() );
 			if ( command.equals( ITEM_SESSIONS ) ) {
 				doSessions();

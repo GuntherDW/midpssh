@@ -51,7 +51,7 @@ public class ExtendedList extends List {
 //#ifdef midp2
 	    super.setSelectCommand( command );
 //#else
-	    addCommand( command );
+	    //addCommand( command );
 //#endif
 	}
 }

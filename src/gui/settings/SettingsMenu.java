@@ -37,7 +37,7 @@ import app.Main;
  */
 public class SettingsMenu extends ExtendedList implements Activatable, CommandListener {
 
-	private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
+	//private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
 	
 	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 	
@@ -52,7 +52,7 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 		append( "Foreground Colour", null );
 		append( "Screen Size", null );
 		
-		setSelectCommand( selectCommand );
+		//setSelectCommand( selectCommand );
 		addCommand( backCommand );
 		
 		setCommandListener( this );
@@ -65,7 +65,7 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable)
 	 */
 	public void commandAction( Command command, Displayable displayable ) {
-		if ( command == selectCommand || command == List.SELECT_COMMAND ) {
+		if ( command == List.SELECT_COMMAND ) {
 			doSelect( getSelectedIndex() );
 		}
 		else if ( command == backCommand ) {

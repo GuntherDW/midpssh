@@ -33,22 +33,43 @@
 	<target name="init-midp1" if="midp1">
 		<property name="wtk.midp.version" value="1.0"/>
 		<property name="preprocess.symbols.midp" value="midp1"/>
+		
+		
+	    <path id="wtk.classpath">
+	        <fileset dir="${wtk.home}">
+	            <include name="lib/midpapi10.jar"/>
+	            <include name="lib/cldcapi10.jar"/>
+	        </fileset>
+	    </path>
 	</target>
 	
 	<target name="init-midp2" if="midp2">
 		<property name="wtk.midp.version" value="2.0"/>
 		<property name="preprocess.symbols.midp" value="midp2"/>
+		
+	    <path id="wtk.classpath">
+	        <fileset dir="${wtk.home}">
+	            <include name="lib/midpapi20.jar"/>
+	            <include name="lib/cldcapi10.jar"/>
+	        </fileset>
+	    </path>
 	</target>
 	
 	<target name="build-run" if="run">
 		<wtkrun jadfile="${dist.dir}/${jad.file}" device="${deviceName}" wait="true"/>
 	</target>
 		
-    <target name="jad" depends="jad-device,jad-run">
+    <target name="jad" depends="jad-deploy,jad-run">
 
 	</target>
+	
+	<target name="jad-deploy" unless="run">
+		<antcall target="jad-deploy-icon" />
+		<antcall target="jad-deploy-noicon" />
+	</target>
 
-	<target name="jad-device" unless="run">
+	<target name="jad-deploy-icon" if="jad.icon">
+		<echo message="JAD-DEVICE-ICON" />
         <wtkjad jadfile="${dist.dir}/${jad.file}"
                 jarfile="${dist.dir}/${jar.file}"
                 name="${name}"
@@ -56,7 +77,20 @@
                 version="${version}"
 				target="${jad.target}">
 
-            <midlet name="${name}" class="app.Main"/>
+            <midlet name="${name}" class="app.Main" icon="${jad.icon}" />
+            <attribute name="MIDlet-Permissions" value="javax.microedition.io.Connector.socket" />
+        </wtkjad>
+    </target>
+
+	<target name="jad-deploy-noicon" unless="jad.icon">
+        <wtkjad jadfile="${dist.dir}/${jad.file}"
+                jarfile="${dist.dir}/${jar.file}"
+                name="${name}"
+                vendor="${jad.vendor}"
+                version="${version}"
+				target="${jad.target}">
+
+            <midlet name="${name}" class="app.Main" />
             <attribute name="MIDlet-Permissions" value="javax.microedition.io.Connector.socket" />
         </wtkjad>
     </target>
@@ -68,7 +102,7 @@
                 vendor="XK72"
                 version="${version}">
 
-            <midlet name="${name}" class="app.Main"/>
+            <midlet name="${name}" class="app.Main" icon="${jad.icon}"/>
         </wtkjad>
     </target>
 	
@@ -103,11 +137,19 @@
 
         <!-- Compile everything, but don't preverify (yet). -->
 
+<!--
         <wtkbuild srcdir="${build.dir}/src-proc/${filename}"
                   destdir="${build.dir}/bin/${filename}"
         		  debug="false"
         	      optimize="true"
-                  preverify="false"/>
+                  preverify="false" target="1.4" />
+                  -->
+        <javac srcdir="${build.dir}/src-proc/${filename}"
+                  destdir="${build.dir}/bin/${filename}"
+        		  debug="false"
+        	      optimize="true"
+        	      target="${javac.target}" source="${javac.source}"
+        	      classpathref="wtk.classpath" />
 
         <!-- Package everything. Most of the necessary information is
              contained in the JAD file. Also preverify the result this
@@ -116,7 +158,7 @@
              version parameter increments the MIDlet-Version by one. -->
 	</target>
    		
-	<target name="package" depends="compile">
+	<target name="package" depends="compile,resources">
         <wtkpackage jarfile="${dist.dir}/${jar.file}"
                     jadfile="${dist.dir}/${jad.file}"
                     obfuscate="false"
@@ -125,8 +167,25 @@
             <!-- Package our newly compiled classes. -->
 
             <fileset dir="${build.dir}/bin/${filename}"/>
-        	<fileset dir="res"/>
         </wtkpackage>
+    </target>
+    
+    <target name="resources">
+    	<copy todir="${build.dir}/bin/${filename}">
+			<fileset dir="res">
+        		<include name="font" />
+        	</fileset>
+		</copy>
+		
+		<antcall target="resources-icon" />
+    </target>
+    
+    <target name="resources-icon" if="jad.icon">
+    	<copy todir="${build.dir}/bin/${filename}">
+			<fileset dir="res">
+        		<include name="${jad.icon}" />
+        	</fileset>
+		</copy>
     </target>
 	
 	<target name="obfuscate" depends="obfuscate-normal,obfuscate-lite,obfuscate-blackberry,obfuscate-blackberry-lite" unless="noobfuscate" />
@@ -150,7 +209,6 @@
     		<argument value="-keep class ssh.v1.DES3" />
     		<argument value="-keep class ssh.v1.IDEA" />
 			<argument value="-keep class ssh.v1.MD5" />
-			<argument value="-keep class ssh.v1.MPN" />
 			<argument value="-keep class ssh.v1.NONE" />
     		<argument value="-defaultpackage" />
 		</wtkobfuscate>
@@ -167,7 +225,6 @@
     		<argument value="-keep class ssh.v1.DES" />
     		<argument value="-keep class ssh.v1.IDEA" />
 			<argument value="-keep class ssh.v1.MD5" />
-			<argument value="-keep class ssh.v1.MPN" />
 			<argument value="-keep class ssh.v1.NONE" />
 		</wtkobfuscate>
 	</target>

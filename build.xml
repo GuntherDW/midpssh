@@ -6,8 +6,16 @@
 	
 	<taskdef resource="antenna.properties" classpath="lib/antenna-bin-0.9.13.jar" />
 	
-	<target name="all">
+	<target name="all" description="Clean and build all versions">
 		<antcall target="clean"/>
+		<antcall target="build-all"/>
+	</target>
+	
+	<target name="all-alpha">
+		<antcall target="clean"/>
+		
+		<property name="jad.target" value="${jad.target.alpha}"/>
+		
 		<antcall target="build-all"/>
 	</target>
 	
@@ -71,16 +79,24 @@
 		<antcall target="blackberry" />
 	</target>
 	
-	<target name="build-lite">
+	<target name="build-midp2-full" description="Build midp2 full">
 		<antcall target="build">
-			<param name="filename" value="midpssh-ssh2-lite"/>
+			<param name="filename" value="midpssh-full"/>
 			<param name="midp2" value="true"/>
-			<param name="mode" value="ssh2-lite"/>
+			<param name="mode" value="ssh2"/>
 		</antcall>
+	</target>
+	
+	<target name="build-lite" description="Build lite">
 		<antcall target="build">
 			<param name="filename" value="midpssh-ssh1-lite"/>
 			<param name="midp2" value="true"/>
 			<param name="mode" value="ssh1-lite"/>
+		</antcall>
+		<antcall target="build">
+			<param name="filename" value="midpssh-ssh2-lite"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="ssh2-lite"/>
 		</antcall>
 	</target>
 	
@@ -99,7 +115,7 @@
 		</antcall>
 	</target>
 	
-	<target name="run-midp2-ssh2">
+	<target name="run-midp2-ssh2" description="Run MIDP2 SSH2 version">
 		<antcall target="build">
 			<param name="filename" value="midpssh-run"/>
 			<param name="midp2" value="true"/>
@@ -108,7 +124,7 @@
 		</antcall>
 	</target>
 	
-	<target name="run-midp1-ssh2">
+	<target name="run-midp1-ssh2" description="Run MIDP1 SSH2 version">
 		<antcall target="build">
 			<param name="filename" value="midpssh-run"/>
 			<param name="midp1" value="true"/>
@@ -117,7 +133,7 @@
 		</antcall>
 	</target>
 	
-	<target name="run-midp2-ssh1">
+	<target name="run-midp2-ssh1" description="Run MIDP2 SSH1 version">
 		<antcall target="build">
 			<param name="filename" value="midpssh-run"/>
 			<param name="midp2" value="true"/>
@@ -126,7 +142,7 @@
 		</antcall>
 	</target>
 	
-	<target name="run-midp2-lite">
+	<target name="run-midp2-lite" description="Run MIDP2 Lite version">
 		<antcall target="build">
 			<param name="filename" value="midpssh-run"/>
 			<param name="midp2" value="true"/>
@@ -135,14 +151,14 @@
 		</antcall>
 	</target>
 
-	<target name="clean">
+	<target name="clean" description="Clean the build">
 		<property file="build.properties"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="output"/>
 		<delete dir="${dist.dir}"/>
 	</target>
 	
-	<target name="run-blackberry" depends="blackberry">
+	<target name="run-blackberry" depends="blackberry" description="Run Blackberry version">
 		<property file="build.properties"/>
 		
 		<copy todir="${bb.simulator}">
@@ -192,7 +208,7 @@
 		</exec>
 	</target>
 	
-	<target name="source">
+	<target name="source" description="Build source zip">
 		<property file="build.properties"/>
 		<zip zipfile="${dist.dir}/${zip.file}">
 			<fileset dir=".">
@@ -203,6 +219,7 @@
 				<include name="*.xml"/>
 				<include name="*.properties"/>
 				<exclude name="TODO.txt" />
+				<exclude name="UNSUBSCRIBES.txt" />
 			</fileset>
 		</zip>
 	</target>

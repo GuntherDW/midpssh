@@ -36,6 +36,8 @@ import app.Main;
 public class MessageForm extends Form implements Activatable, CommandListener {
 	
 	private static Command okCommand = new Command( "OK",Command.OK, 1 );
+    
+    private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 	
 	private Activatable back;
 	
@@ -44,13 +46,14 @@ public class MessageForm extends Form implements Activatable, CommandListener {
 		
 		append( new StringItem( null, msg ) );
 		addCommand( okCommand );
+        addCommand( backCommand );
 		setCommandListener( this );
 	}
 	/* (non-Javadoc)
 	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable)
 	 */
 	public void commandAction( Command command, Displayable arg1 ) {
-		if ( command == okCommand ) {
+		if ( command == okCommand || command == backCommand) {
 			doBack();
 		}
 	}

@@ -17,7 +17,9 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
+//#ifdef midp2
 import javax.microedition.lcdui.game.Sprite;
+//#endif
 
 import app.Main;
 import app.Settings;

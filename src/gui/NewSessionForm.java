@@ -9,8 +9,8 @@ package gui;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
 
-import app.ConnectionManager;
-import app.ConnectionSpec;
+import app.SessionManager;
+import app.SessionSpec;
 
 /**
  * @author Karl
@@ -18,15 +18,15 @@ import app.ConnectionSpec;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class NewConnectionForm extends ConnectionForm {
+public class NewSessionForm extends ConnectionForm {
 
 	private static Command createCommand = new Command( "Create", Command.SCREEN, 1 );
 
 	/**
 	 * @param title
 	 */
-	public NewConnectionForm() {
-		super( "New Connection" );
+	public NewSessionForm() {
+		super( "New Session" );
 		addCommand( createCommand );
 	}
 
@@ -64,13 +64,13 @@ public class NewConnectionForm extends ConnectionForm {
 			String username = tfUsername.getString();
 			String password = tfPassword.getString();
 
-			ConnectionSpec conn = new ConnectionSpec();
+			SessionSpec conn = new SessionSpec();
 			conn.alias = alias;
 			conn.type = type;
 			conn.host = host;
 			conn.username = username;
 			conn.password = password;
-			ConnectionManager.addConnection( conn );
+			SessionManager.addSession( conn );
 
 			doBack();
 		}

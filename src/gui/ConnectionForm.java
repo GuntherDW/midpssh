@@ -10,7 +10,7 @@ import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
-import app.ConnectionSpec;
+import app.SessionSpec;
 
 /**
  * @author Karl
@@ -28,7 +28,7 @@ public abstract class ConnectionForm extends EditableForm {
 	};
 
 	private static String[] typeCodes = new String[] {
-			ConnectionSpec.TYPE_SSH, ConnectionSpec.TYPE_TELNET
+			SessionSpec.TYPE_SSH, SessionSpec.TYPE_TELNET
 	};
 
 	/**
@@ -63,7 +63,7 @@ public abstract class ConnectionForm extends EditableForm {
 		String errorMessage;
 
 		if ( type != null ) {
-			if ( type.equals( ConnectionSpec.TYPE_SSH ) ) {
+			if ( type.equals( SessionSpec.TYPE_SSH ) ) {
 				if ( alias.length() > 0 && host.length() > 0 && username.length() > 0 ) {
 					errorMessage = null;
 				}

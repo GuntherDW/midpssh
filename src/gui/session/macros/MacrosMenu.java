@@ -57,6 +57,7 @@ public class MacrosMenu extends EditableMenu {
 	 */
 	protected void doDelete( int i ) {
 		macroSet.deleteMacro( i );
+		addItems();
 	}
 	/* (non-Javadoc)
 	 * @see gui.EditableMenu#doSelect(int)

@@ -9,8 +9,8 @@ package gui;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
 
-import app.ConnectionManager;
-import app.ConnectionSpec;
+import app.SessionManager;
+import app.SessionSpec;
 
 /**
  * @author Karl
@@ -18,7 +18,7 @@ import app.ConnectionSpec;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class EditConnectionForm extends ConnectionForm {
+public class EditSessionForm extends ConnectionForm {
 
 	private static Command saveCommand = new Command( "Save", Command.SCREEN, 1 );
 
@@ -28,8 +28,8 @@ public class EditConnectionForm extends ConnectionForm {
 	 * @param back
 	 * @param title
 	 */
-	public EditConnectionForm() {
-		super( "Edit Connection" );
+	public EditSessionForm() {
+		super( "Edit Session" );
 
 		addCommand( saveCommand );
 	}
@@ -37,7 +37,7 @@ public class EditConnectionForm extends ConnectionForm {
 	public void setConnectionIndex( int connectionIndex ) {
 		this.connectionIndex = connectionIndex;
 
-		ConnectionSpec conn = ConnectionManager.getConnection( connectionIndex );
+		SessionSpec conn = SessionManager.getSession( connectionIndex );
 		if ( conn != null ) {
 			tfAlias.setString( conn.alias );
 			tfHost.setString( conn.host );
@@ -70,13 +70,13 @@ public class EditConnectionForm extends ConnectionForm {
 				String username = tfUsername.getString();
 				String password = tfPassword.getString();
 
-				ConnectionSpec conn = new ConnectionSpec();
+				SessionSpec conn = new SessionSpec();
 				conn.alias = alias;
 				conn.type = type;
 				conn.host = host;
 				conn.username = username;
 				conn.password = password;
-				ConnectionManager.replaceConnection( connectionIndex, conn );
+				SessionManager.replaceSession( connectionIndex, conn );
 
 				doBack();
 			}

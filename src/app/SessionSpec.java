@@ -16,7 +16,7 @@ import java.io.IOException;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class ConnectionSpec {
+public class SessionSpec {
 	public static final String TYPE_SSH = "ssh";
 
 	public static final String TYPE_TELNET = "telnet";

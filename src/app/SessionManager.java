@@ -25,14 +25,14 @@ import javax.microedition.rms.RecordStoreNotFoundException;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class ConnectionManager {
+public class SessionManager {
 	
 	private static final String RMS_NAME = "connections";
 	
-	private static Vector connections;
+	private static Vector sessions;
 
-	public static Vector getConnections() {
-		if ( connections == null ) {
+	public static Vector getSessions() {
+		if ( sessions == null ) {
 			try {
 				RecordStore rec = RecordStore.openRecordStore( RMS_NAME, false );
 				RecordEnumeration recs = rec.enumerateRecords( null, null, false );
@@ -41,7 +41,7 @@ public class ConnectionManager {
 				while ( recs.hasNextElement() ) {
 					byte[] data = recs.nextRecord();
 					DataInputStream in = new DataInputStream( new ByteArrayInputStream( data ) );
-					ConnectionSpec conn = new ConnectionSpec();
+					SessionSpec conn = new SessionSpec();
 					try {
 						conn.read( in );
 						connections.addElement( conn );
@@ -52,7 +52,7 @@ public class ConnectionManager {
 					in.close();
 				}
 				rec.closeRecordStore();
-				ConnectionManager.connections = connections;
+				SessionManager.sessions = connections;
 
 			}
 			catch ( RecordStoreFullException e ) {
@@ -60,7 +60,7 @@ public class ConnectionManager {
 			}
 			catch ( RecordStoreNotFoundException e ) {
 				// Start with an empty Vector
-				connections = new Vector();
+				sessions = new Vector();
 			}
 			catch ( RecordStoreException e ) {
 				e.printStackTrace();
@@ -69,11 +69,11 @@ public class ConnectionManager {
 				e.printStackTrace();
 			}
 		}
-		return connections;
+		return sessions;
 	}
 
-	private static void saveConnections() {
-		if ( connections != null ) {
+	private static void saveSessions() {
+		if ( sessions != null ) {
 			try {
 				try {
 					RecordStore.deleteRecordStore( RMS_NAME );
@@ -83,8 +83,8 @@ public class ConnectionManager {
 				}
 
 				RecordStore rec = RecordStore.openRecordStore( RMS_NAME, true );
-				for ( int i = 0; i < connections.size(); i++ ) {
-					ConnectionSpec conn = (ConnectionSpec) connections.elementAt( i );
+				for ( int i = 0; i < sessions.size(); i++ ) {
+					SessionSpec conn = (SessionSpec) sessions.elementAt( i );
 					ByteArrayOutputStream out = new ByteArrayOutputStream();
 					DataOutputStream dout = new DataOutputStream( out );
 					try {
@@ -117,49 +117,49 @@ public class ConnectionManager {
 	/**
 	 * @param conn
 	 */
-	public static void addConnection( ConnectionSpec conn ) {
-		Vector connections = getConnections();
+	public static void addSession( SessionSpec conn ) {
+		Vector connections = getSessions();
 		if ( connections == null ) {
 			connections = new Vector();
 		}
 		connections.addElement( conn );
-		saveConnections();
+		saveSessions();
 	}
 
 	/**
 	 * @param i
 	 * @return
 	 */
-	public static ConnectionSpec getConnection( int i ) {
+	public static SessionSpec getSession( int i ) {
 		if ( i < 0 )
 			return null;
-		Vector connections = getConnections();
+		Vector connections = getSessions();
 		if ( connections == null || i >= connections.size() )
 			return null;
-		return (ConnectionSpec) connections.elementAt( i );
+		return (SessionSpec) connections.elementAt( i );
 	}
 
 	/**
 	 * @param i
 	 */
-	public static void deleteConnection( int i ) {
+	public static void deleteSession( int i ) {
 		if ( i < 0 )
 			return;
-		Vector connections = getConnections();
+		Vector connections = getSessions();
 		if ( connections == null || i >= connections.size() )
 			return;
 		connections.removeElementAt( i );
-		saveConnections();
+		saveSessions();
 	}
 
 	/**
 	 * @param connectionIndex
 	 * @param conn
 	 */
-	public static void replaceConnection( int i, ConnectionSpec conn ) {
+	public static void replaceSession( int i, SessionSpec conn ) {
 		if ( i < 0 )
 			return;
-		Vector connections = getConnections();
+		Vector connections = getSessions();
 		if ( connections == null )
 			connections = new Vector();
 		if ( i >= connections.size() ) {
@@ -168,6 +168,6 @@ public class ConnectionManager {
 		else {
 			connections.setElementAt( conn, i );
 		}
-		saveConnections();
+		saveSessions();
 	}
 }

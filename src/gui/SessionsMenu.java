@@ -8,8 +8,8 @@ package gui;
 
 import java.util.Vector;
 
-import app.ConnectionManager;
-import app.ConnectionSpec;
+import app.SessionManager;
+import app.SessionSpec;
 import app.Main;
 import app.session.SshSession;
 import app.session.TelnetSession;
@@ -22,9 +22,9 @@ import app.session.TelnetSession;
  */
 public class SessionsMenu extends EditableMenu {
 
-	private static NewConnectionForm newConnectionForm = new NewConnectionForm();
+	private static NewSessionForm newConnectionForm = new NewSessionForm();
 
-	private static EditConnectionForm editConnectionForm = new EditConnectionForm();
+	private static EditSessionForm editConnectionForm = new EditSessionForm();
 
 	/**
 	 * @param arg0
@@ -37,24 +37,24 @@ public class SessionsMenu extends EditableMenu {
 	protected void addItems() {
 		deleteAll();
 
-		Vector connections = ConnectionManager.getConnections();
+		Vector connections = SessionManager.getSessions();
 		if ( connections != null ) {
 			for ( int i = 0; i < connections.size(); i++ ) {
-				ConnectionSpec conn = (ConnectionSpec) connections.elementAt( i );
+				SessionSpec conn = (SessionSpec) connections.elementAt( i );
 				append( conn.alias, null );
 			}
 		}
 	}
 
 	protected void doSelect( int i ) {
-		ConnectionSpec conn = ConnectionManager.getConnection( i );
+		SessionSpec conn = SessionManager.getSession( i );
 		if ( conn != null ) {
-			if ( conn.type.equals( ConnectionSpec.TYPE_SSH ) ) {
+			if ( conn.type.equals( SessionSpec.TYPE_SSH ) ) {
 				SshSession session = new SshSession();
 				session.connect( conn.host, conn.username, conn.password );
 				Main.openSession( session );
 			}
-			else if ( conn.type.equals( ConnectionSpec.TYPE_TELNET ) ) {
+			else if ( conn.type.equals( SessionSpec.TYPE_TELNET ) ) {
 				TelnetSession session = new TelnetSession();
 				session.connect( conn.host );
 				Main.openSession( session );
@@ -64,14 +64,15 @@ public class SessionsMenu extends EditableMenu {
 
 	protected void doEdit( int i ) {
 		editConnectionForm.setConnectionIndex( i );
-		Main.setDisplay( editConnectionForm );
+		editConnectionForm.activate( this );
 	}
 
 	protected void doDelete( int i ) {
-		ConnectionManager.deleteConnection( i );
+		SessionManager.deleteSession( i );
+		addItems();
 	}
 
 	protected void doNew() {
-		Main.setDisplay( newConnectionForm );
+		newConnectionForm.activate( this );
 	}
 }

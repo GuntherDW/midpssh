@@ -91,33 +91,51 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	//private static final Command settingsCommand = new Command( "Settings", Command.ITEM, commandPriority++ );
 
-	private static final Command disconnectCommand = new Command( "Close", Command.STOP, commandPriority++ );
+	private static final Command disconnectCommand = new Command( "Disconnect", Command.STOP, commandPriority++ );
+	
+	private static final Command closeCommand = new Command( "Close", Command.STOP, commandPriority++ );
 
 	private static final Command[] commandsDisconnected = new Command[] {
-			disconnectCommand
+	        closeCommand
 	};
 	
 	private static final Command[] commandsConnected = new Command[] {
-			textInputCommand,
-			typeCommand,
-			macrosCommand, 
-			tabCommand,
-			spaceCommand,
-			enterCommand,
-			escCommand, 
-			//backspaceCommand,
-			ctrlCommand,
-			altCommand,
-			shiftCommand,
-			//cursorCommand, scrollCommand,
-			specialCommand,
-			showBindingsCommand,
-			//settingsCommand,
-			disconnectCommand
+		textInputCommand,
+		typeCommand,
+		macrosCommand, 
+		tabCommand,
+		spaceCommand,
+		enterCommand,
+		escCommand, 
+		//backspaceCommand,
+		ctrlCommand,
+		altCommand,
+		shiftCommand,
+		//cursorCommand, scrollCommand,
+		specialCommand,
+		showBindingsCommand,
+		//settingsCommand,
+		disconnectCommand
 	};
 
 	private static final Command[] commandsCursor = new Command[] {
 		backCommand
+	};
+
+	private static final Command[] commandsTyping = new Command[] {
+		backCommand,
+        textInputCommand,
+		macrosCommand, 
+		tabCommand,
+		spaceCommand,
+		enterCommand,
+		escCommand, 
+		//backspaceCommand,
+		ctrlCommand,
+		altCommand,
+		shiftCommand,
+		//cursorCommand, scrollCommand,
+		specialCommand
 	};
 	
 	private static final int [] bindingKeys = new int[] {
@@ -202,9 +220,11 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 				break;
 			case MODE_CURSOR:
 			case MODE_SCROLL:
-			case MODE_TYPING:
 				changeCurrentCommands( commandsCursor );
 				break;
+			case MODE_TYPING:
+			    changeCurrentCommands( commandsTyping );
+			    break;
 		}
 	}
 
@@ -236,7 +256,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	}
 
 	public void commandAction( Command command, Displayable displayable ) {
-		if ( command == disconnectCommand ) {
+		if ( command == disconnectCommand || command == closeCommand ) {
 			doDisconnect();
 		}
 		else if ( command == textInputCommand ) {

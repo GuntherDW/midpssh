@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import telnet.Dimension;
 import telnet.TelnetProtocolHandler;
+import app.Settings;
 
 /**
  * @author Karl von Randow
@@ -60,7 +61,12 @@ public class TelnetSession extends Session {
 			telnet = new TelnetProtocolHandler() {
 				/** get the current terminal type */
 				public String getTerminalType() {
-					return emulation.getTerminalID();
+					if ( Settings.terminalType.length() > 0 ) {
+						return Settings.terminalType;
+					}
+					else {
+						return emulation.getTerminalID();
+					}
 				}
 
 				/** get the current window size */

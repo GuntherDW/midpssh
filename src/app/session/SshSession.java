@@ -25,6 +25,7 @@ package app.session;
 import java.io.IOException;
 
 import ssh.SshIO;
+import app.Settings;
 
 /**
  * @author Karl von Randow
@@ -61,7 +62,12 @@ public class SshSession extends Session {
 			}
 
 			public String getTerminalID() {
-				return emulation.getTerminalID();
+				if ( Settings.terminalType.length() > 0 ) {
+					return Settings.terminalType;
+				}
+				else {
+					return emulation.getTerminalID();
+				}
 			}
 
 			public int getTerminalWidth() {

@@ -414,7 +414,20 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	protected void keyPressedConnected( int keycode ) {
 		// If a game action is used, allow it to operate the cursor even when not in cursor mode
-		if ( handleGameAction( keycode ) ) return;
+        
+        boolean handled = false;
+        for ( int i = 0; i < bindingKeys.length; i++ ) {
+            if ( bindingKeys[i] == keycode ) {
+                handled = true;
+            }
+        }
+        if ( keycode == KEY_BACKSPACE ) {
+            handled = true;
+        }
+        
+        if ( !handled ) {
+            if ( handleGameAction( keycode ) ) return;
+        }
 	}
 
 	protected void keyReleasedConnected( int keycode ) {

@@ -75,16 +75,25 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 	 */
 	public void commandAction( Command command, Displayable displayable ) {
 		if ( command == List.SELECT_COMMAND || command == selectCommand ) {
-			doSelect( getSelectedIndex() );
+			int i = getSelectedIndex();
+			if ( i >= 0 && i < size() ) {
+				doSelect( getSelectedIndex() );
+			}
 		}
 		else if ( command == newCommand ) {
 			doNew();
 		}
 		else if ( command == editCommand ) {
-			doEdit( getSelectedIndex() );
+			int i = getSelectedIndex();
+			if ( i >= 0 && i < size() ) {
+				doEdit( i );
+			}
 		}
 		else if ( command == deleteCommand ) {
-			doDelete( getSelectedIndex() );
+			int i = getSelectedIndex();
+			if ( i >= 0 && i < size() ) {
+				doDelete( i );
+			}
 		}
 		else if ( command == backCommand ) {
 			doBack();

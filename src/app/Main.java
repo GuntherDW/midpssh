@@ -72,6 +72,10 @@ public class Main extends MIDlet {
 		instance.getDisplay().setCurrent( display );
 	}
 
+	public static void alert( Alert alert, Displayable back ) {
+		instance.getDisplay().setCurrent( alert, back );
+	}
+
 	public Display getDisplay() {
 		return Display.getDisplay( this );
 	}

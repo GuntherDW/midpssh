@@ -12,8 +12,9 @@
 
 	<property name="wtk.midp.version" value="2.0"/>
 	
-	<property name="jad.file" value="MidpSSH.jad"/>
-	<property name="jar.file" value="MidpSSH.jar"/>
+	<property name="jad.file" value="midpssh.jad"/>
+	<property name="jar.file" value="midpssh.jar"/>
+	<property name="zip.file" value="midpssh.zip"/>
 	<property name="name" value="MidpSSH"/>
 
     <target name="jad">
@@ -32,6 +33,9 @@
 
 	<target name="clean">
 		<delete dir="classes"/>
+		<delete dir="output"/>
+		<delete file="${jar.file}"/>
+		<delete file="${zip.file}"/>
 	</target>
     	
    	<target name="compile" depends="jad">
@@ -114,5 +118,17 @@
 			<arg value="install" />
 			<arg value="${jad.file}" />
 		</exec>
+	</target>
+	
+	<target name="source">
+		<zip zipfile="${zip.file}">
+			<fileset dir=".">
+				<include name="src/**"/>
+				<include name="res/**"/>
+				<include name="lib"/>
+				<include name="*.txt"/>
+				<include name="*.xml"/>
+			</fileset>
+		</zip>
 	</target>
 </project>

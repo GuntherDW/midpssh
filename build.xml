@@ -11,7 +11,7 @@
 	
 	<target name="build-all">
 		<antcall target="build">
-			<param name="filename" value="midpssh-ssh2"/>
+			<param name="filename" value="midpssh-full"/>
 			<param name="midp2" value="true"/>
 			<param name="mode" value="ssh2"/>
 		</antcall>
@@ -27,7 +27,7 @@
 		</antcall>
 		
 		<antcall target="build">
-			<param name="filename" value="midpssh-midp1-ssh2"/>
+			<param name="filename" value="midpssh-midp1-full"/>
 			<param name="midp1" value="true"/>
 			<param name="mode" value="ssh2"/>
 		</antcall>
@@ -55,7 +55,7 @@
 	
 	<target name="run-midp2-ssh2">
 		<antcall target="build">
-			<param name="filename" value="midpssh-ssh2"/>
+			<param name="filename" value="midpssh-run"/>
 			<param name="midp2" value="true"/>
 			<param name="mode" value="ssh2"/>
     		<param name="run" value="true"/>
@@ -64,7 +64,7 @@
 	
 	<target name="run-midp2-ssh1">
 		<antcall target="build">
-			<param name="filename" value="midpssh-ssh1"/>
+			<param name="filename" value="midpssh-run"/>
 			<param name="midp2" value="true"/>
 			<param name="mode" value="ssh1"/>
     		<param name="run" value="true"/>
@@ -73,7 +73,7 @@
 	
 	<target name="run-midp2-lite">
 		<antcall target="build">
-			<param name="filename" value="midpssh-lite"/>
+			<param name="filename" value="midpssh-run"/>
 			<param name="midp2" value="true"/>
 			<param name="mode" value="lite"/>
     		<param name="run" value="true"/>

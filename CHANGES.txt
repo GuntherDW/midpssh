@@ -1,0 +1,9 @@
+1.2.2
+Fixed exceptions when using edit/delete etc on empty lists (session menu, macros menu)
+
+
+1.2.1
+Reinstated special midp2 enhancements; preprocess symbol wasn't being set correctly
+
+1.2
+SSH2 support

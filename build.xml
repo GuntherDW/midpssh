@@ -130,7 +130,7 @@
 		<delete dir="src-proc"/>
 		<wtkpreprocess srcdir="src"
 					   destdir="src-proc"
-					   symbols="${preprocess.symbols},${preprocess.symbols.global}"
+					   symbols="${preprocess.symbols},${preprocess.symbols.global},${preprocess.symbols.midp}"
 					   verbose="false" />
 	</target>
     	
@@ -181,8 +181,8 @@
 			<argument value="-keep class ssh.v1.MPN" />
 			<argument value="-keep class ssh.v1.NONE" />
     		<argument value="-defaultpackage" />
-    		<argument value="-allowaccessmodification" />
-    		<argument value="-overloadaggressively" />
+    		<!--<argument value="-allowaccessmodification" />
+    		<argument value="-overloadaggressively" />-->
     		<!--<argument value="-verbose" />-->
 		</wtkobfuscate>
     </target>

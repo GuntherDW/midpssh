@@ -24,25 +24,105 @@ package gui.session.macros;
 
 import gui.EditableForm;
 
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.TextField;
+
+import app.session.MacroSetManager;
 
 
 /**
  * @author Karl von Randow
  * 
  */
-public abstract class MacroSetForm extends EditableForm {
-	protected TextField tfName;
+public class MacroSetForm extends EditableForm {
+
+	private static Command saveCommand = new Command( "Save", Command.SCREEN, 1 );
+
+	private static Command createCommand = new Command( "Create", Command.SCREEN, 1 );
+
+	private int macroSetIndex = 1;
+
+	private boolean edit;
+	
+	private TextField tfName;
 
 	/**
 	 * @param arg0
 	 */
-	public MacroSetForm( String title ) {
-		super( title );
+	public MacroSetForm( boolean edit ) {
+	    super( edit ? "Edit Macro Set" : "New Macro Set" );
 
 		tfName = new TextField( "Macro Set Name:", null, 255, TextField.ANY );
 
 		append( tfName );
+
+		this.edit = edit;
+		if ( edit ) {
+		    addCommand( saveCommand );
+		}
+		else {
+		    addCommand( createCommand );
+		}
+	}
+
+	public void setMacroSetIndex( int macroSetIndex ) {
+		this.macroSetIndex = macroSetIndex;
+
+		MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
+		if ( macroSet != null ) {
+			tfName.setString( macroSet.getName() );
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see gui.Activatable#activate()
+	 */
+	public void activate() {
+	    if ( !edit ) {
+	        tfName.setString( "" );
+	    }
+		super.activate();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
+	 *      javax.microedition.lcdui.Displayable)
+	 */
+	public void commandAction( Command command, Displayable displayed ) {
+		if ( command == saveCommand ) {
+			doSave();
+		}
+		else if ( command == createCommand ) {
+			doCreate();
+		}
+		else {
+			super.commandAction( command, displayed );
+		}
+	}
+
+	private void doSave() {
+		if ( macroSetIndex != -1 ) {
+			if ( validateForm() ) {
+				MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
+				macroSet.setName( tfName.getString() );
+				MacroSetManager.replaceMacroSet( macroSetIndex, macroSet );
+
+				doBack();
+			}
+		}
+	}
+
+	private void doCreate() {
+		if ( validateForm() ) {
+			MacroSet macroSet = new MacroSet();
+			macroSet.setName( tfName.getString() );
+			MacroSetManager.addMacroSet( macroSet );
+
+			doBack();
+		}
 	}
 
 	protected boolean validateForm() {

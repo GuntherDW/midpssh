@@ -25,7 +25,6 @@ package gui.session;
 import gui.Activatable;
 import gui.MessageForm;
 import gui.session.macros.MacroSetsMenu;
-import gui.settings.SessionSettingsMenu;
 
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Command;
@@ -117,7 +116,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private static MacroSetsMenu macrosMenu;
 	
-	private static SessionSettingsMenu settingsMenu;
+	//private static SessionSettingsMenu settingsMenu;
 
 	private ModifierInputDialog controlKeyDialog, altKeyDialog;
 
@@ -220,7 +219,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			doTextInput();
 		}
 		else if ( command == macrosCommand ) {
+//#ifndef nomacros
 			doMacros();
+//#endif
 		}
 		else if ( command == tabCommand ) {
 			buffer.keyTyped( 0, '\t', 0 );
@@ -485,10 +486,10 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		new MessageForm( "Key Bindings", str.toString() ).activate( this );
 	}
 	
-	private void doSettings() {
+	/*private void doSettings() {
 		if ( settingsMenu == null ) {
 			settingsMenu = new SessionSettingsMenu();
 		}
 		settingsMenu.activate( this );
-	}
+	}*/
 }

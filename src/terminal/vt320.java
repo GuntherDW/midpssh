@@ -65,6 +65,7 @@ public abstract class vt320 extends VDUBuffer {
 			Tabs[i] = 1;
 		}
 
+//#ifndef simplevt320
 		/* top row of numpad */
 		PF1 = "\u001bOP";
 		PF2 = "\u001bOQ";
@@ -78,15 +79,18 @@ public abstract class vt320 extends VDUBuffer {
 		KeyEnd = new String[4];
 		NextScn = new String[4];
 		PrevScn = new String[4];
+//#endif
 		Escape = new String[4];
 		BackSpace = new String[4];
 		TabKey = new String[4];
+//#ifndef simplevt320
 		Insert[0] = Insert[1] = Insert[2] = Insert[3] = "\u001b[2~";
 		Remove[0] = Remove[1] = Remove[2] = Remove[3] = "\u001b[3~";
 		PrevScn[0] = PrevScn[1] = PrevScn[2] = PrevScn[3] = "\u001b[5~";
 		NextScn[0] = NextScn[1] = NextScn[2] = NextScn[3] = "\u001b[6~";
 		KeyHome[0] = KeyHome[1] = KeyHome[2] = KeyHome[3] = "\u001b[H";
 		KeyEnd[0] = KeyEnd[1] = KeyEnd[2] = KeyEnd[3] = "\u001b[F";
+//#endif
 		Escape[0] = Escape[1] = Escape[2] = Escape[3] = "\u001b";
 		if ( vms ) {
 			BackSpace[1] = "" + (char) 10; //  VMS shift deletes word back
@@ -97,6 +101,7 @@ public abstract class vt320 extends VDUBuffer {
 			BackSpace[0] = BackSpace[1] = BackSpace[2] = BackSpace[3] = "\b";
 		}
 
+//#ifndef simplevt320
 		/* some more VT100 keys */
 		Find = "\u001b[1~";
 		Select = "\u001b[4~";
@@ -138,7 +143,7 @@ public abstract class vt320 extends VDUBuffer {
 		}
 		FunctionKeyShift[15] = Find;
 		FunctionKeyShift[16] = Select;
-
+//#endif
 		TabKey[0] = "\u0009";
 		TabKey[1] = "\u001bOP\u0009";
 		TabKey[2] = TabKey[3] = "";
@@ -151,6 +156,7 @@ public abstract class vt320 extends VDUBuffer {
 		KeyRight[0] = "\u001b[C";
 		KeyLeft = new String[4];
 		KeyLeft[0] = "\u001b[D";
+//#ifndef simplevt320
 		Numpad = new String[10];
 		Numpad[0] = "\u001bOp";
 		Numpad[1] = "\u001bOq";
@@ -171,6 +177,7 @@ public abstract class vt320 extends VDUBuffer {
 		NUMPlus[0] = "+";
 		NUMDot = new String[4];
 		NUMDot[0] = ".";
+//#endif
 	}
 
 	/**
@@ -227,6 +234,7 @@ public abstract class vt320 extends VDUBuffer {
 	protected void sendTelnetCommand( byte cmd ) {
 	}
 
+//#ifndef simplevt320
 	/**
 	 * Terminal is mouse-aware and requires (x,y) coordinates of on the terminal
 	 * (character coordinates) and the button clicked.
@@ -301,7 +309,8 @@ public abstract class vt320 extends VDUBuffer {
 		write( b, 0, b.length ); // FIXME: writeSpecial here
 		mousebut = 0;
 	}
-
+//#endif
+	
 	/** we should do localecho (passed from other modules). false is default */
 	public boolean localecho = false;
 
@@ -403,7 +412,7 @@ public abstract class vt320 extends VDUBuffer {
 
 	private String terminalID = "vt320";
 
-	private String answerBack = "Use Terminal.answerback to set ...\n";
+	private String answerBack = "answerBack\n";
 
 	// X - COLUMNS, Y - ROWS
 	public int R, C;
@@ -519,6 +528,7 @@ public abstract class vt320 extends VDUBuffer {
 
 	int onegl = -1; // single shift override for GL.
 
+//#ifndef simplevt320
 	// Map from scoansi linedrawing to DEC _and_ unicode (for the stuff which
 	// is not in linedrawing). Got from experimenting with scoadmin.
 	private final static String scoansi_acs = "Tm7k3x4u?kZl@mYjEnB\u2566DqCtAvM\u2550:\u2551N\u2557I\u2554;\u2557H\u255a0a<\u255d";
@@ -560,7 +570,9 @@ public abstract class vt320 extends VDUBuffer {
 			'\u00b7'
 	//7e Middle Dot
 	};
-
+//#endif
+	
+//#ifndef simplevt320
 	/** Strings to send on function key pressing */
 	private String Numpad[];
 
@@ -571,11 +583,13 @@ public abstract class vt320 extends VDUBuffer {
 	private String FunctionKeyCtrl[];
 
 	private String FunctionKeyAlt[];
-
+//#endif
+	
 	private String TabKey[];
 
 	private String KeyUp[], KeyDown[], KeyLeft[], KeyRight[];
 
+//#ifndef simplevt320
 	private String KPMinus, KPComma, KPPeriod, KPEnter;
 
 	private String PF1, PF2, PF3, PF4;
@@ -583,7 +597,8 @@ public abstract class vt320 extends VDUBuffer {
 	private String Help, Do, Find, Select;
 
 	private String KeyHome[], KeyEnd[], Insert[], Remove[], PrevScn[], NextScn[];
-
+//#endif
+	
 	private String Escape[], BackSpace[], NUMDot[], NUMPlus[];
 
 	private String osc, dcs; /* to memorize OSC & DCS control sequence */
@@ -707,6 +722,7 @@ public abstract class vt320 extends VDUBuffer {
 		int xind;
 		String fmap[];
 		xind = 0;
+//#ifndef simplevt320
 		fmap = FunctionKey;
 		if ( shift ) {
 			fmap = FunctionKeyShift;
@@ -720,8 +736,20 @@ public abstract class vt320 extends VDUBuffer {
 			fmap = FunctionKeyAlt;
 			xind = 3;
 		}
+//#else
+		if ( shift ) {
+			xind = 1;
+		}
+		if ( control ) {
+			xind = 2;
+		}
+		if ( alt ) {
+			xind = 3;
+		}
+//#endif
 
 		switch ( keyCode ) {
+//#ifndef simplevt320
 			case KeyEvent.VK_PAUSE:
 				if ( shift || control )
 					sendTelnetCommand( (byte) 243 ); // BREAK
@@ -762,6 +790,7 @@ public abstract class vt320 extends VDUBuffer {
 			case KeyEvent.VK_F12:
 				writeSpecial( fmap[12] );
 				break;
+//#endif
 			case KeyEvent.VK_UP:
 				writeSpecial( KeyUp[xind] );
 				break;
@@ -774,6 +803,7 @@ public abstract class vt320 extends VDUBuffer {
 			case KeyEvent.VK_RIGHT:
 				writeSpecial( KeyRight[xind] );
 				break;
+//#ifndef simplevt320
 			case KeyEvent.VK_PAGE_DOWN:
 				writeSpecial( NextScn[xind] );
 				break;
@@ -786,6 +816,7 @@ public abstract class vt320 extends VDUBuffer {
 			case KeyEvent.VK_DELETE:
 				writeSpecial( Remove[xind] );
 				break;
+//#endif
 			case KeyEvent.VK_BACK_SPACE:
 				writeSpecial( BackSpace[xind] );
 				if ( localecho ) {
@@ -797,6 +828,7 @@ public abstract class vt320 extends VDUBuffer {
 					}
 				}
 				break;
+//#ifndef simplevt320
 			case KeyEvent.VK_HOME:
 				writeSpecial( KeyHome[xind] );
 				break;
@@ -817,13 +849,8 @@ public abstract class vt320 extends VDUBuffer {
 			case KeyEvent.VK_CONTROL:
 			case KeyEvent.VK_ALT:
 				return;
-			default:
-				break;
+//#endif
 		}
-	}
-
-	public void keyReleased( KeyEvent evt ) {
-		// ignore
 	}
 
 	/**
@@ -872,6 +899,7 @@ public abstract class vt320 extends VDUBuffer {
 			return;
 		}
 
+//#ifndef simplevt320
 		// FIXME: on german PC keyboards you have to use Alt-Ctrl-q to get an @,
 		// so we can't just use it here... will probably break some other VMS
 		// codes. -Marcus
@@ -948,11 +976,14 @@ public abstract class vt320 extends VDUBuffer {
 			 * keyChar < 32) { write(PF1+(char)(keyChar + 64)); return; }
 			 */
 		}
+//#endif
 
 		// FIXME: not used?
 		String fmap[];
 		int xind;
 		xind = 0;
+		
+//#ifndef simplevt320
 		fmap = FunctionKey;
 		if ( shift ) {
 			fmap = FunctionKeyShift;
@@ -966,12 +997,23 @@ public abstract class vt320 extends VDUBuffer {
 			fmap = FunctionKeyAlt;
 			xind = 3;
 		}
-
+//#else
+		if ( shift ) {
+			xind = 1;
+		}
+		if ( control ) {
+			xind = 2;
+		}
+		if ( alt ) {
+			xind = 3;
+		}
+//#endif
+		
 		if ( keyCode == KeyEvent.VK_ESCAPE ) {
 			writeSpecial( Escape[xind] );
 			return;
 		}
-
+//#ifndef simplevt320
 		if ( ( modifiers & KEY_ACTION ) != 0 )
 			switch ( keyCode ) {
 				case KeyEvent.VK_NUMPAD0:
@@ -1011,6 +1053,7 @@ public abstract class vt320 extends VDUBuffer {
 					writeSpecial( NUMPlus[xind] );
 					return;
 			}
+//#endif
 
 		if ( !( ( keyChar == 8 ) || ( keyChar == 127 ) || ( keyChar == '\r' ) || ( keyChar == '\n' ) ) ) {
 			// KARL support for control codes
@@ -1047,24 +1090,25 @@ public abstract class vt320 extends VDUBuffer {
 	private void handle_osc( String osc ) {
 	}
 
+//#ifndef simplevt320
 	private final static char unimap[] = {
-			//#
-			//# Name: cp437_DOSLatinUS to Unicode table
-			//# Unicode version: 1.1
-			//# Table version: 1.1
-			//# Table format: Format A
-			//# Date: 03/31/95
-			//# Authors: Michel Suignard <michelsu@microsoft.com>
-			//# Lori Hoerth <lorih@microsoft.com>
-			//# General notes: none
-			//#
-			//# Format: Three tab-separated columns
-			//# Column #1 is the cp1255_WinHebrew code (in hex)
-			//# Column #2 is the Unicode (in hex as 0xXXXX)
-			//# Column #3 is the Unicode name (follows a comment sign, '#')
-			//#
-			//# The entries are in cp437_DOSLatinUS order
-			//#
+			//
+			// Name: cp437_DOSLatinUS to Unicode table
+			// Unicode version: 1.1
+			// Table version: 1.1
+			// Table format: Format A
+			// Date: 03/31/95
+			// Authors: Michel Suignard <michelsu@microsoft.com>
+			// Lori Hoerth <lorih@microsoft.com>
+			// General notes: none
+			//
+			// Format: Three tab-separated columns
+			// Column #1 is the cp1255_WinHebrew code (in hex)
+			// Column #2 is the Unicode (in hex as 0xXXXX)
+			// Column #3 is the Unicode name (follows a comment sign, '#')
+			//
+			// The entries are in cp437_DOSLatinUS order
+			//
 
 			0x0000, // #NULL
 			0x0001, // #START OF HEADING
@@ -1329,6 +1373,7 @@ public abstract class vt320 extends VDUBuffer {
 			return x;
 		return unimap[x];
 	}
+//#endif
 
 	private void _SetCursor( int row, int col ) {
 		int maxr = height;
@@ -1511,6 +1556,7 @@ public abstract class vt320 extends VDUBuffer {
 						}
 
 						// Mapping if DEC Special is chosen charset
+//#ifndef simplevt320
 						if ( usedcharsets ) {
 							if ( c >= '\u0020' && c <= '\u007f' ) {
 								switch ( gx[thisgl] ) {
@@ -1566,7 +1612,7 @@ public abstract class vt320 extends VDUBuffer {
 						}
 						if ( !mapped && useibmcharset )
 							c = map_cp850_unicode( c );
-
+//#endif
 						/* if(true || (statusmode == 0)) { */
 						if ( insertmode == 1 ) {
 							insertChar( C, R, c, attributes );

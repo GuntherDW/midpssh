@@ -22,109 +22,32 @@
  */
 package app;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
-import javax.microedition.rms.RecordEnumeration;
-import javax.microedition.rms.RecordStore;
-import javax.microedition.rms.RecordStoreException;
-import javax.microedition.rms.RecordStoreFullException;
-import javax.microedition.rms.RecordStoreNotFoundException;
-
 /**
  * @author Karl von Randow
  * 
  */
-public class SessionManager {
+public class SessionManager extends MyRecordStore {
 	
 	private static final String RMS_NAME = "sessions";
 	
 	private static Vector sessions;
+	
+	private static SessionManager me = new SessionManager();
 
 	public static Vector getSessions() {
 		if ( sessions == null ) {
-			try {
-				RecordStore rec = RecordStore.openRecordStore( RMS_NAME, false );
-				RecordEnumeration recs = rec.enumerateRecords( null, new BytewiseRecordComparator(), false );
-				Vector connections = new Vector();
-
-				while ( recs.hasNextElement() ) {
-					byte[] data = recs.nextRecord();
-					DataInputStream in = new DataInputStream( new ByteArrayInputStream( data ) );
-					SessionSpec conn = new SessionSpec();
-					try {
-						conn.read( in );
-						connections.addElement( conn );
-					}
-					catch ( IOException e ) {
-						e.printStackTrace();
-					}
-					in.close();
-				}
-				rec.closeRecordStore();
-				SessionManager.sessions = connections;
-
-			}
-			catch ( RecordStoreFullException e ) {
-				e.printStackTrace();
-			}
-			catch ( RecordStoreNotFoundException e ) {
-				// Start with an empty Vector
-				sessions = new Vector();
-			}
-			catch ( RecordStoreException e ) {
-				e.printStackTrace();
-			}
-			catch ( IOException e ) {
-				e.printStackTrace();
-			}
+			SessionManager.sessions = me.load( RMS_NAME, true );
 		}
 		return sessions;
 	}
 
 	private static void saveSessions() {
-		if ( sessions != null ) {
-			try {
-				try {
-					RecordStore.deleteRecordStore( RMS_NAME );
-				}
-				catch ( RecordStoreNotFoundException e1 ) {
-
-				}
-
-				RecordStore rec = RecordStore.openRecordStore( RMS_NAME, true );
-				for ( int i = 0; i < sessions.size(); i++ ) {
-					SessionSpec conn = (SessionSpec) sessions.elementAt( i );
-					ByteArrayOutputStream out = new ByteArrayOutputStream();
-					DataOutputStream dout = new DataOutputStream( out );
-					try {
-						conn.write( dout );
-						dout.close();
-
-						byte[] data = out.toByteArray();
-						rec.addRecord( data, 0, data.length );
-					}
-					catch ( IOException e ) {
-						e.printStackTrace();
-					}
-				}
-
-				rec.closeRecordStore();
-			}
-			catch ( RecordStoreFullException e ) {
-				e.printStackTrace();
-			}
-			catch ( RecordStoreNotFoundException e ) {
-				e.printStackTrace();
-			}
-			catch ( RecordStoreException e ) {
-				e.printStackTrace();
-			}
-		}
+		me.save( RMS_NAME, sessions );
 	}
 
 	/**
@@ -183,4 +106,19 @@ public class SessionManager {
 		}
 		saveSessions();
 	}
+    /* (non-Javadoc)
+     * @see app.MyRecordStore#read(java.io.DataInputStream)
+     */
+    protected Object read(DataInputStream in) throws IOException {
+        SessionSpec spec = new SessionSpec();
+        spec.read( in );
+        return spec;
+    }
+    /* (non-Javadoc)
+     * @see app.MyRecordStore#write(java.io.DataOutputStream, java.lang.Object)
+     */
+    protected void write(DataOutputStream out, Object ob) throws IOException {
+        SessionSpec spec = (SessionSpec) ob;
+        spec.write( out );
+    }
 }

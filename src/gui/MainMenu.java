@@ -53,10 +53,16 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 		super( "MidpSSH", List.IMPLICIT );
 
 		append( "Sessions", null );
+//#ifndef nomacros
 		append( "Macros", null );
+//#endif
+//#ifndef nosettings
 		append( "Settings", null );
+//#endif
+//#ifndef nodocs
 		append( "About MidpSSH", null );
 		append( "Help", null );
+//#endif
 		append( "Quit", null );
 
 		setSelectCommand( selectCommand );
@@ -86,16 +92,24 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 				doSessions();
 				break;
 			case 1:
+//#ifndef nomacros
 				doMacros();
+//#endif
 				break;
 			case 2:
+//#ifndef nosettings			    
 				doSettings();
+//#endif
 				break;
 			case 3:
+//#ifndef nodocs
 				doAbout();
+//#endif
 				break;
 			case 4:
+//#ifndef nodocs
 				doHelp();
+//#endif
 				break;
 			case 5:
 				doQuit();

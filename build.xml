@@ -21,17 +21,25 @@
 
 	<target name="clean">
 		<delete dir="classes"/>
+		<delete dir="src-proc"/>
 		<delete dir="output"/>
 		<delete file="${jar.file}"/>
 		<delete file="${zip.file}"/>
 	</target>
+	
+	<target name="preprocess">
+		<wtkpreprocess srcdir="src"
+					   destdir="src-proc"
+					   symbols="${preprocess.symbols}"
+					   verbose="true" />
+	</target>
     	
-   	<target name="compile" depends="jad">
+   	<target name="compile" depends="jad,preprocess">
         <mkdir dir="classes"/>
 
         <!-- Compile everything, but don't preverify (yet). -->
 
-        <wtkbuild srcdir="src"
+        <wtkbuild srcdir="src-proc"
                   destdir="classes"
         		  debug="false"
         	      optimize="true"
@@ -84,14 +92,7 @@
 		        			  jadfile="${jad.file}"
 		    				  obfuscator="proguard"
 		    				  classpath="lib/proguard.jar">
-		    		<!--<argument value="-dontshrink" />-->
 		    		<argument value="-keep class ssh.Blowfish" />
-		    		<argument value="-keep class ssh.DES" />
-		    		<argument value="-keep class ssh.DES3" />
-		    		<argument value="-keep class ssh.IDEA" />
-					<argument value="-keep class ssh.MD5" />
-					<argument value="-keep class ssh.MPN" />
-					<argument value="-keep class ssh.NONE" />
 		    		<argument value="-defaultpackage" />
 		    		<argument value="-allowaccessmodification" />
 		    		<argument value="-overloadaggressively" />
@@ -119,11 +120,21 @@
 	
 	</target>
 	
-	<target name="small" depends="clean,package,obfuscatesmall,preverify">
-	
+	<target name="small">
+		<property name="preprocess.symbols" value="${preprocess.symbols.tiny}"/>
+		<antcall target="clean"/>
+		<!--<antcall target="package"/>-->
+		<antcall target="obfuscatesmall"/>
+		<antcall target="preverify"/>
 	</target>
 	
-	<target name="runobfuscated" depends="package,obfuscatesmall,preverify">
+	<target name="runobfuscated" depends="all">
+		<!-- Start the MIDlet suite -->
+
+    	<wtkrun jadfile="${jad.file}" device="${deviceName}" wait="true"/>
+	</target>
+	
+	<target name="runsmall" depends="small">
 		<!-- Start the MIDlet suite -->
 
     	<wtkrun jadfile="${jad.file}" device="${deviceName}" wait="true"/>

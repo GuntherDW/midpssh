@@ -40,9 +40,9 @@ public class SessionsMenu extends EditableMenu {
 
 	private static Command connectCommand = new Command( "Connect", Command.ITEM, 1 );
 	
-	private static NewSessionForm newConnectionForm = new NewSessionForm();
+	private static SessionForm newConnectionForm = new SessionForm( false );
 
-	private static EditSessionForm editConnectionForm = new EditSessionForm();
+	private static SessionForm editConnectionForm = new SessionForm( true );
 
 	public SessionsMenu() {
 		super( "Sessions" );
@@ -69,11 +69,13 @@ public class SessionsMenu extends EditableMenu {
 				session.connect( conn.host, conn.username, conn.password );
 				Main.openSession( session );
 			}
+//#ifndef notelnet
 			else if ( conn.type.equals( SessionSpec.TYPE_TELNET ) ) {
 				TelnetSession session = new TelnetSession();
 				session.connect( conn.host );
 				Main.openSession( session );
 			}
+//#endif
 		}
 	}
 

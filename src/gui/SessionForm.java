@@ -23,33 +23,53 @@
 package gui;
 
 import javax.microedition.lcdui.ChoiceGroup;
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
+import app.SessionManager;
 import app.SessionSpec;
 
 /**
  * @author Karl von Randow
  * 
  */
-public abstract class SessionForm extends EditableForm {
-	protected TextField tfAlias, tfHost, tfUsername, tfPassword;
+public class SessionForm extends EditableForm {
 
-	protected ChoiceGroup cgType;
+	private static Command saveCommand = new Command( "Save", Command.SCREEN, 1 );
 
-	protected static String[] typeNames = new String[] {
-			"SSH", "Telnet"
+	private static Command createCommand = new Command( "Create", Command.SCREEN, 1 );
+
+	private int connectionIndex = 1;
+
+	private boolean edit;
+	
+	private TextField tfAlias, tfHost, tfUsername, tfPassword;
+
+	private ChoiceGroup cgType;
+
+	private static String[] typeNames = new String[] {
+			"SSH"
+//#ifndef notelnet
+	        , "Telnet"
+//#endif
 	};
 
-	protected static String[] typeCodes = new String[] {
-			SessionSpec.TYPE_SSH, SessionSpec.TYPE_TELNET
+	private static String[] typeCodes = new String[] {
+			SessionSpec.TYPE_SSH
+//#ifndef notelnet			
+			, SessionSpec.TYPE_TELNET
+//#endif
 	};
 
 	/**
 	 * @param arg0
 	 */
-	public SessionForm( String title ) {
-		super( title );
+	public SessionForm( boolean edit ) {
+	    super( edit ? "Edit Session" : "New Session" );
+
+		this.edit = edit;
 
 		tfAlias = new TextField( "Alias:", null, 255, TextField.ANY );
 		tfHost = new TextField( "Host:", null, 255, TextField.ANY );
@@ -63,9 +83,110 @@ public abstract class SessionForm extends EditableForm {
 		append( tfAlias );
 		append( tfHost );
 		append( cgType );
+//#ifndef notelnet
 		append( new StringItem( "Authentication:\n", "For SSH connections only." ) );
+//#endif
 		append( tfUsername );
 		append( tfPassword );
+		
+		if ( edit ) {
+		    addCommand( saveCommand );
+		}
+		else {
+			addCommand( createCommand );
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see gui.Activatable#activate()
+	 */
+	public void activate() {
+	    if ( !edit ) {
+			tfAlias.setString( "" );
+			tfHost.setString( "" );
+			tfUsername.setString( "" );
+			tfPassword.setString( "" );
+	    }
+		super.activate();
+	}
+
+	public void setConnectionIndex( int connectionIndex ) {
+		this.connectionIndex = connectionIndex;
+
+		SessionSpec conn = SessionManager.getSession( connectionIndex );
+		if ( conn != null ) {
+			tfAlias.setString( conn.alias );
+			tfHost.setString( conn.host );
+			if ( conn.type != null ) {
+				for ( int i = 0; i < typeCodes.length; i++ ) {
+					if ( typeCodes[i].equals( conn.type ) ) {
+						cgType.setSelectedIndex( i, true );
+					}
+				}
+			}
+			tfUsername.setString( conn.username );
+			tfPassword.setString( conn.password );
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
+	 *      javax.microedition.lcdui.Displayable)
+	 */
+	public void commandAction( Command command, Displayable displayed ) {
+		if ( command == saveCommand ) {
+			doSave();
+		}
+		else if ( command == createCommand ) {
+			doCreate();
+		}
+		else {
+			super.commandAction( command, displayed );
+		}
+	}
+
+	private void doSave() {
+		if ( connectionIndex != -1 ) {
+			if ( validateForm() ) {
+				String alias = tfAlias.getString();
+				String type = selectedConnectionType();
+				String host = tfHost.getString();
+				String username = tfUsername.getString();
+				String password = tfPassword.getString();
+
+				SessionSpec conn = new SessionSpec();
+				conn.alias = alias;
+				conn.type = type;
+				conn.host = host;
+				conn.username = username;
+				conn.password = password;
+				SessionManager.replaceSession( connectionIndex, conn );
+
+				doBack();
+			}
+		}
+	}
+
+	private void doCreate() {
+		if ( validateForm() ) {
+			String alias = tfAlias.getString();
+			String type = selectedConnectionType();
+			String host = tfHost.getString();
+			String username = tfUsername.getString();
+			String password = tfPassword.getString();
+
+			SessionSpec conn = new SessionSpec();
+			conn.alias = alias;
+			conn.type = type;
+			conn.host = host;
+			conn.username = username;
+			conn.password = password;
+			SessionManager.addSession( conn );
+
+			doBack();
+		}
 	}
 
 	protected boolean validateForm() {

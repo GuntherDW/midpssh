@@ -24,111 +24,34 @@ package app.session;
 
 import gui.session.macros.MacroSet;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
-import javax.microedition.rms.RecordEnumeration;
-import javax.microedition.rms.RecordStore;
-import javax.microedition.rms.RecordStoreException;
-import javax.microedition.rms.RecordStoreFullException;
-import javax.microedition.rms.RecordStoreNotFoundException;
-
-import app.BytewiseRecordComparator;
+import app.MyRecordStore;
 
 /**
  * @author Karl von Randow
  *
  */
-public class MacroSetManager {
+public class MacroSetManager extends MyRecordStore {
 	
 	private static final String RMS_NAME = "macros";
 	
 	private static Vector macroSets;
 	
+	private static MacroSetManager me = new MacroSetManager();
+	
 	public static Vector getMacroSets() {
 		if ( macroSets == null ) {
-			try {
-				RecordStore rec = RecordStore.openRecordStore( RMS_NAME, false );
-				RecordEnumeration recs = rec.enumerateRecords( null, new BytewiseRecordComparator(), false );
-				Vector macroSets = new Vector();
-
-				while ( recs.hasNextElement() ) {
-					byte[] data = recs.nextRecord();
-					DataInputStream in = new DataInputStream( new ByteArrayInputStream( data ) );
-					MacroSet macroSet = new MacroSet();
-					try {
-						macroSet.read( in );
-						macroSets.addElement( macroSet );
-					}
-					catch ( IOException e ) {
-						e.printStackTrace();
-					}
-					in.close();
-				}
-				rec.closeRecordStore();
-				MacroSetManager.macroSets = macroSets;
-			}
-			catch ( RecordStoreFullException e ) {
-				e.printStackTrace();
-			}
-			catch ( RecordStoreNotFoundException e ) {
-				// Start with an empty Vector
-				macroSets = new Vector();
-			}
-			catch ( RecordStoreException e ) {
-				e.printStackTrace();
-			}
-			catch ( IOException e ) {
-				e.printStackTrace();
-			}
+			MacroSetManager.macroSets = me.load( RMS_NAME, true );
 		}
 		return macroSets;
 	}
 
 	public static void saveMacroSets() {
-		if ( macroSets != null ) {
-			try {
-				try {
-					RecordStore.deleteRecordStore( RMS_NAME );
-				}
-				catch ( RecordStoreNotFoundException e1 ) {
-
-				}
-
-				RecordStore rec = RecordStore.openRecordStore( RMS_NAME, true );
-				for ( int i = 0; i < macroSets.size(); i++ ) {
-					MacroSet macroSet = (MacroSet) macroSets.elementAt( i );
-					ByteArrayOutputStream out = new ByteArrayOutputStream();
-					DataOutputStream dout = new DataOutputStream( out );
-					try {
-						macroSet.write( dout );
-						dout.close();
-
-						byte[] data = out.toByteArray();
-						rec.addRecord( data, 0, data.length );
-					}
-					catch ( IOException e ) {
-						e.printStackTrace();
-					}
-				}
-
-				rec.closeRecordStore();
-
-			}
-			catch ( RecordStoreFullException e ) {
-				e.printStackTrace();
-			}
-			catch ( RecordStoreNotFoundException e ) {
-				e.printStackTrace();
-			}
-			catch ( RecordStoreException e ) {
-				e.printStackTrace();
-			}
-		}
+		me.save( RMS_NAME, macroSets );
 	}
 
 	/**
@@ -187,4 +110,19 @@ public class MacroSetManager {
 		}
 		saveMacroSets();
 	}
+    /* (non-Javadoc)
+     * @see app.MyRecordStore#read(java.io.DataInputStream)
+     */
+    protected Object read(DataInputStream in) throws IOException {
+        MacroSet macroSet = new MacroSet();
+        macroSet.read( in );
+        return macroSet;
+    }
+    /* (non-Javadoc)
+     * @see app.MyRecordStore#write(java.io.DataOutputStream, java.lang.Object)
+     */
+    protected void write(DataOutputStream out, Object ob) throws IOException {
+        MacroSet macroSet = (MacroSet) ob;
+        macroSet.write( out );
+    }
 }

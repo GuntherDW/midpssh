@@ -34,9 +34,9 @@ import app.session.Session;
  *
  */
 public class MacrosMenu extends EditableMenu {
-	private static NewMacroForm newMacroForm = new NewMacroForm();
+	private static MacroForm newMacroForm = new MacroForm( false );
 	
-	private static EditMacroForm editMacroForm = new EditMacroForm();
+	private static MacroForm editMacroForm = new MacroForm( true );
 	
 	private MacroSet macroSet;
 	

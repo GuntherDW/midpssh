@@ -475,6 +475,7 @@ public class VDUBuffer {
 				// here in case something happens anyway. That code above is
 				// so complex I always have a hard time understanding what
 				// I did, even though there are comments
+//#ifndef simplevt320
 				System.err.println( "*** Error while scrolling up:" );
 				System.err.println( "--- BEGIN STACK TRACE ---" );
 				e.printStackTrace();
@@ -487,6 +488,7 @@ public class VDUBuffer {
 				System.err.println( "size.width=" + width + ", size.height=" + height );
 				System.err.println( "abuf.length=" + abuf.length + ", cbuf.length=" + cbuf.length );
 				System.err.println( "*** done dumping debug information" );
+//#endif
 			}
 		}
 

@@ -34,9 +34,9 @@ import app.session.MacroSetManager;
  */
 public class MacroSetsMenu extends EditableMenu {
 	
-	private static NewMacroSetForm newMacroSetForm = new NewMacroSetForm();
+	private static MacroSetForm newMacroSetForm = new MacroSetForm( false );
 	
-	private static EditMacroSetForm editMacroSetForm = new EditMacroSetForm();
+	private static MacroSetForm editMacroSetForm = new MacroSetForm( true );
 	
 	public MacroSetsMenu() {
 		super( "Macro Sets" );

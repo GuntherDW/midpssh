@@ -22,60 +22,28 @@
  */
 package app;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
-import javax.microedition.rms.RecordEnumeration;
-import javax.microedition.rms.RecordStore;
-import javax.microedition.rms.RecordStoreException;
-import javax.microedition.rms.RecordStoreFullException;
-import javax.microedition.rms.RecordStoreNotFoundException;
+import java.util.Vector;
 
 /**
  * @author Karl von Randow
  */
-public class SettingsManager {
+public class SettingsManager extends MyRecordStore {
 	
 	private static final String RMS_NAME = "settings";
 	
 	private static Settings settings;
 	
+	private static SettingsManager me = new SettingsManager();
+	
 	public static Settings getSettings() {
 		if ( settings == null ) {
-			Settings settings = new Settings();
-			try {
-				RecordStore rec = RecordStore.openRecordStore( RMS_NAME, false );
-				RecordEnumeration recs = rec.enumerateRecords( null, null, false );
-
-				if ( recs.hasNextElement() ) {
-					byte[] data = recs.nextRecord();
-					DataInputStream in = new DataInputStream( new ByteArrayInputStream( data ) );
-					try {
-						settings.read( in );
-					}
-					catch ( IOException e ) {
-						// If an IOException occurs we've read off the end of the settings or an invalid format,
-						// just ignore it.
-					}
-					in.close();
-				}
-				rec.closeRecordStore();
+			Vector v = me.load( RMS_NAME, false );
+			if ( !v.isEmpty() ) {
+			    settings = (Settings) v.elementAt( 0 );
 			}
-			catch ( RecordStoreFullException e ) {
-				e.printStackTrace();
-			}
-			catch ( RecordStoreNotFoundException e ) {
-			}
-			catch ( RecordStoreException e ) {
-				e.printStackTrace();
-			}
-			catch ( IOException e ) {
-				e.printStackTrace();
-			}
-			SettingsManager.settings = settings;
 		}
 		return settings;
 	}
@@ -84,40 +52,26 @@ public class SettingsManager {
 	 * @param settings2
 	 */
 	public static void saveSettings( Settings settings ) {
-		try {
-			try {
-				RecordStore.deleteRecordStore( RMS_NAME );
-			}
-			catch ( RecordStoreNotFoundException e1 ) {
-
-			}
-
-			RecordStore rec = RecordStore.openRecordStore( RMS_NAME, true );
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			DataOutputStream dout = new DataOutputStream( out );
-			try {
-				settings.write( dout );
-				dout.close();
-
-				byte[] data = out.toByteArray();
-				rec.addRecord( data, 0, data.length );
-			}
-			catch ( IOException e ) {
-				e.printStackTrace();
-			}
-
-			rec.closeRecordStore();
-		}
-		catch ( RecordStoreFullException e ) {
-			e.printStackTrace();
-		}
-		catch ( RecordStoreNotFoundException e ) {
-			e.printStackTrace();
-		}
-		catch ( RecordStoreException e ) {
-			e.printStackTrace();
-		}
+		Vector v = new Vector();
+		v.addElement( settings );
+		me.save( RMS_NAME, v );
 		
 		SettingsManager.settings = settings;
 	}
+	
+    /* (non-Javadoc)
+     * @see app.MyRecordStore#read(java.io.DataInputStream)
+     */
+    protected Object read(DataInputStream in) throws IOException {
+        Settings settings = new Settings();
+        settings.read( in );
+        return settings;
+    }
+    /* (non-Javadoc)
+     * @see app.MyRecordStore#write(java.io.DataOutputStream, java.lang.Object)
+     */
+    protected void write(DataOutputStream out, Object ob) throws IOException {
+        Settings settings = (Settings) ob;
+        settings.write( out );
+    }
 }

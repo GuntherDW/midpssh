@@ -44,6 +44,19 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	private SessionsMenu sessionsMenu;
 	
 	private MacroSetsMenu macrosMenu;
+	
+	private static final String ITEM_SESSIONS = "Sessions";
+//#ifndef nomacros
+	private static final String ITEM_MACROS = "Macros";
+//#endif
+//#ifndef nosettings
+	private static final String ITEM_SETTINGS = "Settings";
+//#endif
+//#ifndef nodocs
+	private static final String ITEM_ABOUT = "About MidpSSH";
+	private static final String ITEM_HELP = "Help";
+//#endif
+	private static final String ITEM_QUIT = "Quit";
 
 	/**
 	 * @param arg0
@@ -52,18 +65,18 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	public MainMenu() {
 		super( "MidpSSH", List.IMPLICIT );
 
-		append( "Sessions", null );
+		append( ITEM_SESSIONS, null );
 //#ifndef nomacros
-		append( "Macros", null );
+		append( ITEM_MACROS, null );
 //#endif
 //#ifndef nosettings
-		append( "Settings", null );
+		append( ITEM_SETTINGS, null );
 //#endif
 //#ifndef nodocs
-		append( "About MidpSSH", null );
-		append( "Help", null );
+		append( ITEM_ABOUT, null );
+		append( ITEM_HELP, null );
 //#endif
-		append( "Quit", null );
+		append( ITEM_QUIT, null );
 
 		setSelectCommand( selectCommand );
 		addCommand( quitCommand );
@@ -79,41 +92,37 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	 */
 	public void commandAction( Command command, Displayable displayed ) {
 		if ( command == List.SELECT_COMMAND || command == selectCommand ) {
-			doSelect( getSelectedIndex() );
+			doSelect( getString( getSelectedIndex() ) );
 		}
 		else if ( command == quitCommand ) {
 			doQuit();
 		}
 	}
 
-	private void doSelect( int i ) {
-		switch ( i ) {
-			case 0:
-				doSessions();
-				break;
-			case 1:
+	private void doSelect( String command ) {
+		if ( command.equals( ITEM_SESSIONS ) ) {
+			doSessions();
+		}
 //#ifndef nomacros
-				doMacros();
+		else if ( command.equals( ITEM_MACROS ) ) {
+			doMacros();
+		}
 //#endif
-				break;
-			case 2:
-//#ifndef nosettings			    
-				doSettings();
+//#ifndef nosettings			
+		else if ( command.equals( ITEM_SETTINGS ) ) {    
+			doSettings();
+		}
 //#endif
-				break;
-			case 3:
 //#ifndef nodocs
+		else if ( command.equals( ITEM_ABOUT ) ) {
 				doAbout();
+		}
+		else if ( command.equals( ITEM_HELP ) ) {
+		    doHelp();
+		}
 //#endif
-				break;
-			case 4:
-//#ifndef nodocs
-				doHelp();
-//#endif
-				break;
-			case 5:
-				doQuit();
-				break;
+		else if ( command.equals( ITEM_QUIT ) ) {
+			doQuit();
 		}
 	}
 

@@ -13,6 +13,7 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 
+import terminal.KeyEvent;
 import terminal.Terminal;
 import terminal.vt320;
 
@@ -144,10 +145,61 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
     }
 
     protected void keyPressed( int keycode ) {
+        switch ( mode ) {
+            case MODE_NORMAL:
+                keyPressedNormal( keycode );
+                break;
+            case MODE_CURSOR:
+                keyPressedCursor( keycode );
+                break;
+        }
+    }
+    
+    protected void keyPressedNormal( int keycode ) {
         switch ( keycode ) {
             case Canvas.KEY_NUM5:
                 doTextInput();
                 break;
+        }
+    }
+    
+    protected void keyPressedCursor( int keycode ) {
+        switch ( keycode ) {
+            case Canvas.UP:
+            case Canvas.KEY_NUM2:
+                buffer.keyPressed( KeyEvent.VK_UP, (char) 65535, vt320.KEY_ACTION );
+                break;
+            case Canvas.DOWN:
+            case Canvas.KEY_NUM8:
+            case Canvas.KEY_NUM0:
+                buffer.keyPressed( KeyEvent.VK_DOWN, (char) 65535, vt320.KEY_ACTION );
+                break;
+            case Canvas.LEFT:
+            case Canvas.KEY_NUM4:
+                buffer.keyPressed( KeyEvent.VK_LEFT, (char) 65535, vt320.KEY_ACTION );
+                break;
+            case Canvas.RIGHT:
+            case Canvas.KEY_NUM6:
+                buffer.keyPressed( KeyEvent.VK_RIGHT, (char) 65535, vt320.KEY_ACTION );
+                break;
+            case Canvas.KEY_NUM1:
+                keyPressedCursor( Canvas.UP );
+            	keyPressedCursor( Canvas.LEFT );
+            	break;
+            case Canvas.KEY_NUM3:
+                keyPressedCursor( Canvas.UP );
+            	keyPressedCursor( Canvas.RIGHT );
+            	break;
+            case Canvas.KEY_NUM7:
+            case Canvas.KEY_STAR:
+                keyPressedCursor( Canvas.DOWN );
+            	keyPressedCursor( Canvas.LEFT );
+            	break;
+            case Canvas.KEY_NUM9:
+            case Canvas.KEY_POUND:
+                keyPressedCursor( Canvas.DOWN );
+            	keyPressedCursor( Canvas.RIGHT );
+            	break;
         }
     }
 
@@ -166,10 +218,15 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
         modifierInputDialog.activate();
     }
 
-    private static final Alert doCursorAlert = new Alert( "Cursor", "Move the cursor using stick or 2,5,6,8 keys", null, AlertType.INFO );
+    private static final Alert doCursorAlert = new Alert( "Cursor Mode", "Move the cursor using the stick or numeric keys.", null, AlertType.INFO );
 
+    private static boolean doneCursorAlert = false;
+    
     private void doCursor() {
-        Main.setDisplay( doCursorAlert );
+    	if ( !doneCursorAlert ) {
+    		Main.setDisplay( doCursorAlert );
+    		doneCursorAlert = true;
+    	}
         changeMode( MODE_CURSOR );
     }
 }

@@ -157,6 +157,8 @@ public abstract class Session implements SessionIOListener, Runnable, Activatabl
             }
             catch ( Exception e ) {
                 emulation.putString( "FAILED" );
+                terminal.redraw();
+                return;
             }
             emulation.putString( "\n\r" );
 

@@ -46,6 +46,12 @@ public class MacroSetManager extends MyRecordStore {
 	public static Vector getMacroSets() {
 		if ( macroSets == null ) {
 			MacroSetManager.macroSets = me.load( RMS_NAME, true );
+            if ( macroSets.isEmpty() ) {
+                MacroSet macroSet = new MacroSet();
+                macroSet.setName( "Untitled Set" );
+                macroSets.addElement( macroSet );
+                saveMacroSets();
+            }
 		}
 		return macroSets;
 	}

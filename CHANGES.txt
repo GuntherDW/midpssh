@@ -1,3 +1,8 @@
+1.3.1
+
+Changed select command code so that it shouldn't appear twice on the Blackberry,
+and may work better on midp 1.0 phones.
+
 1.2.2
 Fixed exceptions when using edit/delete etc on empty lists (session menu, macros menu)
 

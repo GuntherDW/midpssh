@@ -42,13 +42,28 @@
 		<wtkrun jadfile="${dist.dir}/${jad.file}" device="${deviceName}" wait="true"/>
 	</target>
 		
-    <target name="jad">
+    <target name="jad" depends="jad-device,jad-run">
+
+	</target>
+
+	<target name="jad-device" unless="run">
         <wtkjad jadfile="${dist.dir}/${jad.file}"
                 jarfile="${dist.dir}/${jar.file}"
                 name="${name}"
                 vendor="XK72"
                 version="${version}"
 				target="http://www.xk72.com/midpssh">
+
+            <midlet name="${name}" class="app.Main"/>
+        </wtkjad>
+    </target>
+
+	<target name="jad-run" if="run">
+        <wtkjad jadfile="${dist.dir}/${jad.file}"
+                jarfile="${dist.dir}/${jar.file}"
+                name="${name}"
+                vendor="XK72"
+                version="${version}">
 
             <midlet name="${name}" class="app.Main"/>
         </wtkjad>

@@ -3,19 +3,7 @@
 <project name="MidpSSH" basedir="." default="all">
 
 	<taskdef resource="antenna.properties"/>
-	<!--
-	<property name="wtk.home" value="c:\WTK21"/>
-	<property name="deviceName" value="DefaultColorPhone" />
-	-->
-	<property name="wtk.home" value="c:\SonyEricsson\J2ME_SDK\PC_Emulation\WTK2" />
-	<property name="deviceName" value="SonyEricsson_K700" />
-
-	<property name="wtk.midp.version" value="2.0"/>
-	
-	<property name="jad.file" value="midpssh.jad"/>
-	<property name="jar.file" value="midpssh.jar"/>
-	<property name="zip.file" value="midpssh.zip"/>
-	<property name="name" value="MidpSSH"/>
+	<property file="build.properties"/>
 
     <target name="jad">
     	<!-- Create a JAD file. -->
@@ -45,6 +33,8 @@
 
         <wtkbuild srcdir="src"
                   destdir="classes"
+        		  debug="false"
+        	      optimize="true"
                   preverify="false"/>
 
         <!-- Package everything. Most of the necessary information is
@@ -96,7 +86,15 @@
 		    				  classpath="lib/proguard.jar">
 		    		<!--<argument value="-dontshrink" />-->
 		    		<argument value="-keep class ssh.Blowfish" />
+		    		<argument value="-keep class ssh.DES" />
+		    		<argument value="-keep class ssh.DES3" />
+		    		<argument value="-keep class ssh.IDEA" />
+					<argument value="-keep class ssh.MD5" />
+					<argument value="-keep class ssh.MPN" />
+					<argument value="-keep class ssh.NONE" />
 		    		<argument value="-defaultpackage" />
+		    		<argument value="-allowaccessmodification" />
+		    		<argument value="-overloadaggressively" />
 		    		<argument value="-verbose" />
 				</wtkobfuscate>
 	</target>
@@ -125,7 +123,7 @@
 	
 	</target>
 	
-	<target name="runobfuscated" depends="package,obfuscate,preverify">
+	<target name="runobfuscated" depends="package,obfuscatesmall,preverify">
 		<!-- Start the MIDlet suite -->
 
     	<wtkrun jadfile="${jad.file}" device="${deviceName}" wait="true"/>

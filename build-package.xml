@@ -2,6 +2,8 @@
 
 <project name="MidpSSH-package" basedir="." default="all">
 
+	<property file="build.properties"/>
+
 	<target name="all" depends="init,build-uptodate">
 		<antcall target="build"/>
 		<antcall target="build-run"/>
@@ -16,10 +18,12 @@
 	</target>
 
 	<target name="init" depends="init-midp1,init-midp2,init-mode">
-		<property file="build.properties"/>
 		<mkdir dir="${dist.dir}"/>
 		<property name="jar.file" value="${filename}.jar"/>
 		<property name="jad.file" value="${filename}.jad"/>
+		
+		<!-- Set jad target to the default, if it's not already set -->
+		<property name="jad.target" value="${jad.target.default}"/>
 	</target>
 	
 	<target name="init-mode" if="mode">
@@ -48,12 +52,12 @@
         <wtkjad jadfile="${dist.dir}/${jad.file}"
                 jarfile="${dist.dir}/${jar.file}"
                 name="${name}"
-                vendor="XK72"
+                vendor="${jad.vendor}"
                 version="${version}"
-				target="http://www.xk72.com/midpssh">
+				target="${jad.target}">
 
             <midlet name="${name}" class="app.Main"/>
-            <attribute name="MIDlet-Permissions" value="javax.microedition.io.SocketConnection" />
+            <attribute name="MIDlet-Permissions" value="javax.microedition.io.Connector.socket" />
         </wtkjad>
     </target>
 

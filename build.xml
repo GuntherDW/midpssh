@@ -2,10 +2,20 @@
 
 <project name="MidpSSH" basedir="." default="all">
 
+	<property file="build.properties"/>
+	
 	<taskdef resource="antenna.properties" classpath="lib/antenna-bin-0.9.13.jar" />
 	
 	<target name="all">
 		<antcall target="clean"/>
+		<antcall target="build-all"/>
+	</target>
+	
+	<target name="all-beta">
+		<antcall target="clean"/>
+		
+		<property name="jad.target" value="${jad.target.beta}"/>
+		
 		<antcall target="build-all"/>
 	</target>
 	

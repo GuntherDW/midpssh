@@ -23,8 +23,12 @@
 package gui.session.macros;
 
 import gui.EditableMenu;
+import gui.session.InputDialog;
 
 import java.util.Vector;
+
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.Displayable;
 
 import app.Main;
 import app.session.Session;
@@ -37,6 +41,8 @@ public class MacrosMenu extends EditableMenu {
 	private static MacroForm newMacroForm = new MacroForm( false );
 	
 	private static MacroForm editMacroForm = new MacroForm( true );
+    
+    protected static Command useCommand = new Command( "Use", Command.ITEM, 1 );
 	
 	private MacroSet macroSet;
 	
@@ -46,8 +52,37 @@ public class MacrosMenu extends EditableMenu {
 		super( "Macros: " + macroSet.getName() );
 		this.macroSet = macroSet;
 		this.macroSetIndex = macroSetIndex;
+        
+        if ( Main.currentSession() != null ) {
+            addCommand( useCommand );
+        }
 	}
 	
+    /* (non-Javadoc)
+     * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable)
+     */
+    public void commandAction(Command command, Displayable displayable) {
+        if ( command == useCommand ) {
+            int i = getSelectedIndex();
+            if ( i >= 0 && i < size() ) {
+                Session session = Main.currentSession();
+                if ( session != null ) {
+                    Macro macro = macroSet.getMacro( i );
+                    if ( macro != null ) {
+                        InputDialog input = new InputDialog();
+                        input.activate( session );
+                        input.setString( macro.getValue().trim() );
+                    }
+                }
+                else {
+                    doEdit( i );
+                }
+            }
+        }
+        else {
+            super.commandAction(command, displayable);
+        }
+    }
 	/* (non-Javadoc)
 	 * @see gui.EditableMenu#addItems()
 	 */

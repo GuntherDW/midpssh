@@ -102,7 +102,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	//private static final Command settingsCommand = new Command( "Settings", Command.ITEM, commandPriority++ );
 
-	private static final Command disconnectCommand = new Command( "Disconnect", Command.STOP, commandPriority++ );
+	private static final Command disconnectCommand = new Command( "Disconnect", Command.ITEM, commandPriority++ );
 	
 	private static final Command closeCommand = new Command( "Close", Command.STOP, commandPriority++ );
 

@@ -53,9 +53,9 @@ public class Main extends MIDlet {
 
 	/** Main method */
 	protected void startApp() {
-        //if ( !paused ) {
+        if ( !paused ) {
             setDisplay( mainMenu );
-        //}
+        }
 	}
 
 	/** Handle pausing the MIDlet */

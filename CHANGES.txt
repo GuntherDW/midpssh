@@ -2,6 +2,8 @@
 
 Changed select command code so that it shouldn't appear twice on the Blackberry,
 and may work better on midp 1.0 phones.
+Fixed SSH1 lite size so that it will work better on 64KB limited phones.
+Fixed SSH2 idle disconnect problem
 
 1.2.2
 Fixed exceptions when using edit/delete etc on empty lists (session menu, macros menu)

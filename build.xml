@@ -146,7 +146,7 @@
 		<antcall target="build">
 			<param name="filename" value="midpssh-run"/>
 			<param name="midp2" value="true"/>
-			<param name="mode" value="lite"/>
+			<param name="mode" value="ssh2-lite"/>
     		<param name="run" value="true"/>
 		</antcall>
 	</target>

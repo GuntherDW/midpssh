@@ -1,3 +1,7 @@
+1.3.10
+
+Fixed problems introduced in 1.3.9 for Motorola phones due to rolling of SshMisc into SshIO.
+
 1.3.9
 
 Back button added to Key Bindings popup

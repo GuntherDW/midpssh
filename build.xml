@@ -3,27 +3,93 @@
 <project name="MidpSSH" basedir="." default="all">
 
 	<taskdef resource="antenna.properties"/>
-	<property file="build.properties"/>
-
-	<target name="init">
-		<mkdir dir="dist"/>
+	
+	<target name="all">
+		<antcall target="clean"/>
+		<antcall target="make-midp2"/>
+		<antcall target="make-midp2-lite"/>
+		<antcall target="make-midp1"/>
+		<antcall target="make-midp1-lite"/>
 	</target>
 		
-	<target name="init-normal" depends="init">
-		<property name="jad.file" value="${jad.file.normal}"/>
-		<property name="jar.file" value="${jar.file.normal}"/>
+	<target name="make-midp2">
+		<antcall target="build">
+			<param name="mode" value="midp2"/>
+			<param name="obfuscate-normal" value="true"/>
+		</antcall>
+	</target>
+	
+	<target name="make-midp2-lite">
+		<antcall target="build">
+			<param name="mode" value="midp2-lite"/>
+			<param name="submode" value="midp2"/>
+			<param name="obfuscate-lite" value="true"/>
+		</antcall>
+	</target>
+	
+	<target name="make-midp1">
+		<antcall target="build">
+			<param name="mode" value="midp1"/>
+			<param name="obfuscate-normal" value="true"/>
+		</antcall>
+	</target>
+	
+	<target name="make-midp1-lite">
+		<antcall target="build">
+			<param name="mode" value="midp1-lite"/>
+			<param name="submode" value="midp1"/>
+			<param name="obfuscate-lite" value="true"/>
+		</antcall>
+	</target>
+	
+	<target name="make-debug">
+		<antcall target="build">
+			<param name="mode" value="midp2-debug"/>
+			<param name="submode" value="midp2"/>
+		</antcall>
+	</target>
+	
+	<target name="run-debug">
+    	<antcall target="make-debug">
+    		<param name="run" value="true"/>
+    	</antcall>
+	</target>
+	
+	<target name="run-midp2">
+		<antcall target="make-midp2">
+    		<param name="run" value="true"/>
+    	</antcall>
+	</target>
+	
+	<target name="run-midp2-lite">
+		<antcall target="make-midp2-lite">
+    		<param name="run" value="true"/>
+    	</antcall>
 	</target>
 
-	<target name="init-small" depends="init">
-		<property name="jad.file" value="${jad.file.small}"/>
-		<property name="jar.file" value="${jar.file.small}"/>
+	<target name="init" depends="init-mode,init-submode">
+		<property file="build.properties"/>
+		<mkdir dir="${dist.dir}"/>
+	</target>
+	
+	<target name="init-mode" if="mode">
+		<property file="build-${mode}.properties"/>
+	</target>
+	
+	<target name="init-submode" if="mode">
+		<property file="build-${submode}.properties"/>
+	</target>
+	
+	<target name="build" depends="init,package,obfuscate,preverify,build-run">
+	</target>
+	
+	<target name="build-run" if="run">
+		<wtkrun jadfile="${dist.dir}/${jad.file}" device="${deviceName}" wait="true"/>
 	</target>
 		
     <target name="jad">
-    	<!-- Create a JAD file. -->
-    	        
-        <wtkjad jadfile="${jad.file}"
-                jarfile="${jar.file}"
+        <wtkjad jadfile="${dist.dir}/${jad.file}"
+                jarfile="${dist.dir}/${jar.file}"
                 name="${name}"
                 vendor="XK72"
                 version="1.1.0">
@@ -33,10 +99,11 @@
     </target>
 
 	<target name="clean">
-		<delete dir="classes"/>
+		<property file="build.properties"/>
+		<delete dir="${build.dir}"/>
 		<delete dir="output"/>
 		<delete dir="src-proc"/>
-		<delete dir="dist"/>
+		<delete dir="${dist.dir}"/>
 	</target>
 	
 	<target name="preprocess">
@@ -44,16 +111,16 @@
 		<wtkpreprocess srcdir="src"
 					   destdir="src-proc"
 					   symbols="${preprocess.symbols}"
-					   verbose="true" />
+					   verbose="false" />
 	</target>
     	
    	<target name="compile" depends="jad,preprocess">
-        <mkdir dir="classes"/>
+        <mkdir dir="${build.dir}"/>
 
         <!-- Compile everything, but don't preverify (yet). -->
 
         <wtkbuild srcdir="src-proc"
-                  destdir="classes"
+                  destdir="${build.dir}"
         		  debug="false"
         	      optimize="true"
                   preverify="false"/>
@@ -66,25 +133,26 @@
 	</target>
    		
 	<target name="package" depends="compile">
-        <wtkpackage jarfile="${jar.file}"
-                    jadfile="${jad.file}"
+        <wtkpackage jarfile="${dist.dir}/${jar.file}"
+                    jadfile="${dist.dir}/${jad.file}"
                     obfuscate="false"
                     preverify="false">
 
             <!-- Package our newly compiled classes. -->
 
-            <fileset dir="classes"/>
+            <fileset dir="${build.dir}"/>
         	<fileset dir="res"/>
         </wtkpackage>
     </target>
+	
+	<target name="obfuscate" depends="obfuscate-normal,obfuscate-lite"/>
 		
-	<target name="obfuscate">
+	<target name="obfuscate-normal" if="obfuscate-normal">
     	<!-- Obfuscate -->
-    	<wtkobfuscate jarfile="${jar.file}"
-        			  jadfile="${jad.file}"
+    	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
+        			  jadfile="${dist.dir}/${jad.file}"
     				  obfuscator="proguard"
     				  classpath="lib/proguard.jar">
-    		<!--<argument value="-dontshrink" />-->
     		<argument value="-keep class ssh.Blowfish" />
     		<argument value="-keep class ssh.DES" />
     		<argument value="-keep class ssh.DES3" />
@@ -93,76 +161,39 @@
 			<argument value="-keep class ssh.MPN" />
 			<argument value="-keep class ssh.NONE" />
     		<argument value="-defaultpackage" />
-    		<argument value="-verbose" />
+    		<!--<argument value="-verbose" />-->
 		</wtkobfuscate>
     </target>
 	
-	<target name="obfuscatesmall">
+	<target name="obfuscate-lite" if="obfuscate-lite">
 		<!-- Obfuscate -->
-    	<wtkobfuscate jarfile="${jar.file}"
-        			  jadfile="${jad.file}"
+    	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
+        			  jadfile="${dist.dir}/${jad.file}"
     				  obfuscator="proguard"
     				  classpath="lib/proguard.jar">
     		<argument value="-keep class ssh.Blowfish" />
     		<argument value="-defaultpackage" />
     		<argument value="-allowaccessmodification" />
     		<argument value="-overloadaggressively" />
-    		<argument value="-verbose" />
+    		<!--<argument value="-verbose" />-->
 		</wtkobfuscate>
 	</target>
 		
 	<target name="preverify">
         <!-- Preverify. -->
-        <wtkpreverify jarfile="${jar.file}"
-                      jadfile="${jad.file}"/>
+        <wtkpreverify jarfile="${dist.dir}/${jar.file}"
+                      jadfile="${dist.dir}/${jad.file}"/>
     </target>
 	
-	<target name="run" depends="init-normal">
-		<antcall target="package"/>
-		<antcall target="preverify"/>
-    	<wtkrun jadfile="${jad.file}" device="${deviceName}" wait="true"/>
-	</target>
-	
-	<target name="all">
-		<antcall target="clean"/>
-		<antcall target="normal"/>
-		<antcall target="small"/>
-	</target>
-		
-	<target name="normal" depends="init-normal">
-		<antcall target="package"/>
-		<antcall target="obfuscate"/>
-		<antcall target="preverify"/>
-	</target>
-	
-	<target name="small" depends="init-small">
-		<property name="preprocess.symbols" value="${preprocess.symbols.tiny}"/>
-		<antcall target="package"/>
-		<antcall target="obfuscatesmall"/>
-		<antcall target="preverify"/>
-	</target>
-	
-	<target name="runobfuscated" depends="all">
-		<!-- Start the MIDlet suite -->
-
-    	<wtkrun jadfile="${jad.file}" device="${deviceName}" wait="true"/>
-	</target>
-	
-	<target name="runsmall" depends="small">
-		<!-- Start the MIDlet suite -->
-
-    	<wtkrun jadfile="${jad.file}" device="${deviceName}" wait="true"/>
-	</target>
-
 	<target name="deploy">
 		<exec executable="C:\SonyEricsson\J2ME_SDK\OnDeviceDebug\bin\ejava">
 			<arg value="install" />
-			<arg value="${jad.file}" />
+			<arg value="${dist.dir}/${jad.file}" />
 		</exec>
 	</target>
 	
 	<target name="source">
-		<zip zipfile="${zip.file}">
+		<zip zipfile="${dist.dir}/${zip.file}">
 			<fileset dir=".">
 				<include name="src/**"/>
 				<include name="res/**"/>

@@ -82,7 +82,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 * 
 	 * @see #run
 	 */
-	private static byte[] outputBuffer = new byte[16]; // this will grow if needed
+	private byte[] outputBuffer = new byte[16]; // this will grow if needed
 
 	/**
 	 * Number of bytes to be written, from output array, because it has fixed
@@ -135,7 +135,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 */
 	public void sendData( byte[] b, int offset, int length ) throws IOException {
 		synchronized ( writer ) {
-			if ( outputCount + length > outputBuffer.length ) {
+		    if ( outputCount + length > outputBuffer.length ) {
 				byte[] newOutput = new byte[outputCount + length];
 				System.arraycopy( outputBuffer, 0, newOutput, 0, outputCount );
 				outputBuffer = newOutput;
@@ -164,8 +164,8 @@ public abstract class Session implements SessionIOHandler, Activatable {
 		if ( host.indexOf( ":" ) == -1 )
 			conn += ":" + defaultPort();
 		socket = (StreamConnection) Connector.open( conn, Connector.READ_WRITE, false );
-		in = socket.openInputStream();
-		out = socket.openOutputStream();
+		in = socket.openDataInputStream();
+		out = socket.openDataOutputStream();
 		emulation.putString( "OK\r\n" );
 
 		return true;
@@ -176,7 +176,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 */
 	private void read() throws IOException {
 	    byte [] buf;
-//#ifndef blackberry
+
 		buf = new byte[512]; // try a smaller buffer, maybe works better on some phones
 		
 		// Read at least 1 byte, and at most the number of bytes available
@@ -194,7 +194,8 @@ public abstract class Session implements SessionIOHandler, Activatable {
 			a = in.available();
 			n = in.read( buf, 0, Math.max( 1, Math.min( a, buf.length ) ) );
 		}
-//#else
+
+/*
 	    buf = new byte[1];
 	    int c = in.read();
 //#ifdef debug
@@ -211,7 +212,8 @@ public abstract class Session implements SessionIOHandler, Activatable {
 			}
 			c = in.read();
 	    }
-//#endif
+*/
+
 	}
 	
 	private void write() throws IOException {
@@ -219,7 +221,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 		
 		while ( !disconnecting ) {
 			synchronized ( writer ) {
-				while ( outputCount == 0 && !disconnecting ) {
+			    while ( outputCount == 0 && !disconnecting ) {
 					try {
 						writer.wait( keepAliveTime );
 					}
@@ -228,11 +230,23 @@ public abstract class Session implements SessionIOHandler, Activatable {
 					if ( outputCount == 0 ) {
 						// No data to send after timeout so send an empty array through the filter which will trigger the
 						// sending of a NOOP (see TelnetSession and SshSession) - this has the effect of a keepalive
-						filter.sendData( empty, 0, 0 );
+						//emulation.putString( "NOOP\r\n" );
+					    filter.sendData( empty, 0, 0 );
 					}
 				}
 				
 				if ( !disconnecting ) {
+//#ifdef blackberry
+				    /* Some older BlackBerrys (or all using MDS?) fail if we don't have
+				     * this slight delay here. I haven't established whether it's a failing
+				     * in the synchronisation in my code, or a problem in the RIM I/O.
+				     */
+				    try {
+	                    Thread.sleep( 100 );
+	                } catch (InterruptedException e) {
+	                }
+//#endif
+				    //debug.append( "OUTPUT " + outputCount + " " );
 					bytesWritten += outputCount;
 					out.write( outputBuffer, 0, outputCount );
 					out.flush();

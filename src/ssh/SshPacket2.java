@@ -161,8 +161,7 @@ public class SshPacket2 extends SshPacket {
 
 	private byte block[];
 
-	public byte[] addPayload( byte buff[] ) {
-		int boffset = 0;
+	public int addPayload( byte buff[], int boffset, int length ) {
 		byte b;
 		byte[] newbuf = null;
 		int hmaclen = 0;
@@ -170,7 +169,7 @@ public class SshPacket2 extends SshPacket {
 		if ( crypto != null )
 			hmaclen = 16;
 
-		System.out.println( "addPayload2 " + buff.length );
+		System.out.println( "addPayload2 " + length );
 
 		/*
 		 * Note: The whole packet is encrypted, except for the MAC.
@@ -178,7 +177,7 @@ public class SshPacket2 extends SshPacket {
 		 * (So I have to rewrite it again).
 		 */
 
-		while ( boffset < buff.length ) {
+		while ( boffset < length ) {
 			switch ( phase_packet ) {
 				// 4 bytes
 				// Packet length: 32 bit unsigned integer
@@ -209,7 +208,7 @@ public class SshPacket2 extends SshPacket {
 
 				case PHASE_block:
 					if ( position < block.length ) {
-						int amount = buff.length - boffset;
+						int amount = length - boffset;
 						if ( amount > 0 ) {
 							if ( amount > block.length - position )
 								amount = block.length - position;
@@ -219,9 +218,9 @@ public class SshPacket2 extends SshPacket {
 						}
 					}
 					if ( position == block.length ) { //the block is complete
-						if ( buff.length > boffset ) {
-							newbuf = new byte[buff.length - boffset];
-							System.arraycopy( buff, boffset, newbuf, 0, buff.length - boffset );
+						if ( length > boffset ) {
+							newbuf = new byte[length - boffset];
+							System.arraycopy( buff, boffset, newbuf, 0, length - boffset );
 						}
 						byte[] decryptedBlock = new byte[block.length - hmaclen];
 						byte[] data;
@@ -250,12 +249,12 @@ public class SshPacket2 extends SshPacket {
 							putData( null );
 						}
 						/* MAC! */
-						return newbuf;
+						return boffset;
 					}
 					break;
 			}
 		}
-		return null;
+		return boffset;
 	};
 	/*
 	 * 

@@ -226,7 +226,6 @@ public abstract class SshIO {
 	 *  
 	 */
 	public byte[] handleSSH( byte buff[], int boffset, int length ) throws IOException {
-		byte[] rest;
 		String result;
 
 		//  if (debug > 1)
@@ -292,39 +291,16 @@ public abstract class SshIO {
 		}
 
 		result = "";
-		rest = currentpacket.addPayload( buff );
-		if ( currentpacket.isFinished() ) {
-			if ( useprotocol == 1 ) {
-				result = result + handlePacket1( (SshPacket1) currentpacket );
-				currentpacket = new SshPacket1( crypto );
-			}
-			else {
-				result = result + handlePacket2( (SshPacket2) currentpacket );
-				currentpacket = new SshPacket2( crypto );
-			}
-		}
-		while ( rest != null ) {
-			rest = currentpacket.addPayload( rest );
+		while ( boffset < length ) {
+			boffset = currentpacket.addPayload( buff, boffset, length );
 			if ( currentpacket.isFinished() ) {
-				// the packet is finished, otherwise we would not have got a
-				// rest
 				if ( useprotocol == 1 ) {
-					try {
-						result = result + handlePacket1( (SshPacket1) currentpacket );
-						currentpacket = new SshPacket1( crypto );
-					}
-					catch ( Exception e ) {
-						throw new RuntimeException( "HS B" );
-					}
+					result = result + handlePacket1( (SshPacket1) currentpacket );
+					currentpacket = new SshPacket1( crypto );
 				}
 				else {
-					try {
-						result = result + handlePacket2( (SshPacket2) currentpacket );
-						currentpacket = new SshPacket2( crypto );
-					}
-					catch ( Exception e ) {
-						throw new RuntimeException( "HS C" );
-					}
+					result = result + handlePacket2( (SshPacket2) currentpacket );
+					currentpacket = new SshPacket2( crypto );
 				}
 			}
 		}

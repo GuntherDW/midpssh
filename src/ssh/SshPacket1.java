@@ -142,15 +142,14 @@ public class SshPacket1 extends SshPacket {
 
 	private int phase_packet = 0;
 
-	private final int PHASE_packet_length = 0;
+	private static final int PHASE_packet_length = 0;
 
-	private final int PHASE_block = 1;
+	private static final int PHASE_block = 1;
 
-	public byte[] addPayload( byte[] buff ) {
-		int boffset = 0;
+	public int addPayload( byte[] buff, int boffset, int length ) {
 		byte newbuf[] = null;
 
-		while ( boffset < buff.length ) {
+		while ( boffset < length ) {
 			switch ( phase_packet ) {
 
 				// 4 bytes
@@ -160,78 +159,63 @@ public class SshPacket1 extends SshPacket {
 				// and padding. maximum is 262144 bytes.
 
 				case PHASE_packet_length:
-					try {
-						packet_length_array[position++] = buff[boffset++];
-						if ( position >= 4 ) {
-							packet_length = ( packet_length_array[3] & 0xff ) + ( ( packet_length_array[2] & 0xff ) << 8 )
-									+ ( ( packet_length_array[1] & 0xff ) << 16 )
-									+ ( ( packet_length_array[0] & 0xff ) << 24 );
-							position = 0;
-							phase_packet++;
-							block = new byte[8 * ( packet_length / 8 + 1 )];
-							System.out.println( "PACKET LENGTH " + packet_length );
+					packet_length_array[position++] = buff[boffset++];
+					if ( position >= 4 ) {
+						packet_length = ( packet_length_array[3] & 0xff ) + ( ( packet_length_array[2] & 0xff ) << 8 )
+								+ ( ( packet_length_array[1] & 0xff ) << 16 )
+								+ ( ( packet_length_array[0] & 0xff ) << 24 );
+						position = 0;
+						phase_packet++;
+						
+						if ( packet_length > 262144 ) {
+							throw new RuntimeException( "SshPacket1: Invalid packet_length " + packet_length );
 						}
-					}
-					catch ( Exception e ) {
-						throw new RuntimeException( "SSH1 PHASE 1" );
+						
+						int block_length = 8 * ( packet_length / 8 + 1 );
+						block = new byte[ block_length ];
+						System.out.println( "PACKET LENGTH " + packet_length + " BLOCK LENGTH " + block_length );
 					}
 					break; //switch (phase_packet)
 
 				//8*(packet_length/8 +1) bytes
 
 				case PHASE_block:
-					try {
-						if ( block.length > position ) {
-							if ( boffset < buff.length ) {
-								int amount = buff.length - boffset;
-								if ( amount > block.length - position )
-									amount = block.length - position;
-								System.arraycopy( buff, boffset, block, position, amount );
-								boffset += amount;
-								position += amount;
-							}
+					if ( block.length > position ) {
+						if ( boffset < length ) {
+							int amount = length - boffset;
+							if ( amount > block.length - position )
+								amount = block.length - position;
+							System.arraycopy( buff, boffset, block, position, amount );
+							boffset += amount;
+							position += amount;
 						}
-					}
-					catch ( Exception e ) {
-						throw new RuntimeException( "SSH1 PHASE 1 A" );
 					}
 
 					if ( position == block.length ) { //the block is complete
-						String step = "a"; // TODO this was just for debugging
-						if ( buff.length > boffset ) { //there is more than 1 packet in buff
-							newbuf = new byte[buff.length - boffset];
-							System.arraycopy( buff, boffset, newbuf, 0, buff.length - boffset );
+						if ( length > boffset ) { //there is more than 1 packet in buff
+							newbuf = new byte[length - boffset];
+							System.arraycopy( buff, boffset, newbuf, 0, length - boffset );
 						}
 						int blockOffset = 0;
 						//padding
 						int padding_length = (int) ( 8 - ( packet_length % 8 ) );
 						padding = new byte[padding_length];
 
-						step = "b";
-						
 						if ( crypto != null )
 							decryptedBlock = crypto.decrypt( block );
 						else
 							decryptedBlock = block;
 
-						step = "c";
-						
 						if ( decryptedBlock.length != padding_length + packet_length ) {
-							System.out.println( "???" );
-							step = "z";
-							throw new RuntimeException( "SSHPacket1 unknown problem" );
+							throw new RuntimeException( "SshPacket1: invalid decrypted packet length" );
 						}
 
 						for ( int i = 0; i < padding.length; i++ )
 							padding[i] = decryptedBlock[blockOffset++];
 
-						step = "" + padding.length + " " + decryptedBlock.length + " " + blockOffset;
-						
 						//packet type
 						setType( decryptedBlock[blockOffset++] );
 
-						step = "e";
-						
 						byte[] data;
 						//data
 						if ( packet_length > 5 ) {
@@ -249,12 +233,12 @@ public class SshPacket1 extends SshPacket {
 							throw new RuntimeException( "SshPacket1: CRC wrong in received packet!" );
 						}
 
-						return newbuf;
+						return boffset;
 					}
 					break;
 			}
 		}
-		return null;
+		return boffset;
 	}
 
 	private boolean checkCrc() {

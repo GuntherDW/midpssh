@@ -50,7 +50,7 @@ abstract class SshPacket {
 		return finished;
 	}
 
-	abstract public byte[] addPayload( byte[] buff );
+	abstract public int addPayload( byte[] buff, int boffset, int length );
 
 	// Type
 	private byte packet_type;

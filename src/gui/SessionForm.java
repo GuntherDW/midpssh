@@ -32,7 +32,7 @@ import app.SessionSpec;
  * @author Karl von Randow
  * 
  */
-public abstract class ConnectionForm extends EditableForm {
+public abstract class SessionForm extends EditableForm {
 	protected TextField tfAlias, tfHost, tfUsername, tfPassword;
 
 	protected ChoiceGroup cgType;
@@ -48,7 +48,7 @@ public abstract class ConnectionForm extends EditableForm {
 	/**
 	 * @param arg0
 	 */
-	public ConnectionForm( String title ) {
+	public SessionForm( String title ) {
 		super( title );
 
 		tfAlias = new TextField( "Alias:", null, 255, TextField.ANY );
@@ -62,6 +62,7 @@ public abstract class ConnectionForm extends EditableForm {
 
 		append( tfAlias );
 		append( tfHost );
+		append( new StringItem( "Ports:", "To specify non-standard ports append a ':' followed by the port number to the host name" ) );
 		append( cgType );
 		append( new StringItem( "Authentication:\n", "For SSH connections only." ) );
 		append( tfUsername );

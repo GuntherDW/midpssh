@@ -12,7 +12,7 @@ import app.Main;
  *
  * Please visit project homepage at http://phoenix.inf.upol.cz/~polakr
  * 
- * Modified by Karl von Randow.
+ * This file has been modified by Karl von Randow for MidpSSH.
  *
  * --LICENSE NOTICE--
  * This program is free software; you can redistribute it and/or

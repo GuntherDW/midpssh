@@ -34,9 +34,9 @@ public class SessionSpec {
 	public static final String TYPE_SSH = "ssh";
 
 	public static final String TYPE_TELNET = "telnet";
-
+	
 	public String alias, type, host, username, password;
-
+	
 	public void read( DataInputStream in ) throws IOException {
 		alias = in.readUTF();
 		type = in.readUTF();

@@ -32,7 +32,7 @@ import app.SessionSpec;
  * @author Karl von Randow
  * 
  */
-public class NewSessionForm extends ConnectionForm {
+public class NewSessionForm extends SessionForm {
 
 	private static Command createCommand = new Command( "Create", Command.SCREEN, 1 );
 

@@ -25,7 +25,6 @@ package gui.session.macros;
 
 /**
  * @author Karl von Randow
- *
  */
 public class Macro {
 	private String name;

@@ -23,11 +23,10 @@
 package gui.session;
 
 import gui.Activatable;
+import gui.MessageForm;
 import gui.session.macros.MacroSetsMenu;
 import gui.settings.SessionSettingsMenu;
 
-import javax.microedition.lcdui.Alert;
-import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -234,7 +233,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			buffer.keyTyped( 0, (char) 27, 0 );
 		}
 		else if ( command == backspaceCommand ) {
-			buffer.keyTyped( 0, '\b', 0 );
+			buffer.keyPressed( 8, '\b', 0 );
 		}
 		else if ( command == ctrlCommand ) {
 			doControlKeyInput();
@@ -481,9 +480,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 			}
 		}
 		
-		Alert showBindingsAlert = new Alert( "Key Bindings", str.toString(), null, AlertType.INFO );
-		showBindingsAlert.setTimeout( Alert.FOREVER );
-		Main.setDisplay( showBindingsAlert );
+		new MessageForm( "Key Bindings", str.toString() ).activate( this );
 	}
 	
 	private void doSettings() {

@@ -60,7 +60,7 @@ public class MacrosMenu extends EditableMenu {
 				Macro macro = (Macro) macros.elementAt( i );
 				String name = macro.getName();
 				if ( name == null || name.length() == 0 ) {
-					name = macro.getValue();
+					name = macro.getValue().trim(); // trim off whitespace as it may end with a newline
 				}
 				append( name, null );
 			}

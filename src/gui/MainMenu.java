@@ -45,8 +45,6 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	private SessionsMenu sessionsMenu;
 	
 	private MacroSetsMenu macrosMenu;
-	
-	private SettingsMenu settingsForm;
 
 	/**
 	 * @param arg0
@@ -59,7 +57,6 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 		append( "Macros", null );
 		append( "Settings", null );
 		append( "About MidpSSH", null );
-		append( "Help", null );
 		append( "Quit", null );
 
 		setSelectCommand( selectCommand );
@@ -98,9 +95,6 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 				doAbout();
 				break;
 			case 4:
-				doHelp();
-				break;
-			case 5:
 				doQuit();
 				break;
 		}
@@ -121,18 +115,11 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	}
 	
 	private void doSettings() {
-		if ( settingsForm == null ) {
-			settingsForm = new SettingsMenu();
-		}
-		settingsForm.activate( this );
+		new SettingsMenu().activate( this );
 	}
 
 	private void doAbout() {
-		
-	}
-	
-	private void doHelp() {
-		
+		new AboutForm().activate( this );
 	}
 	
 	private void doQuit() {

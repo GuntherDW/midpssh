@@ -9,6 +9,8 @@ import javax.microedition.lcdui.Graphics;
  * (c) Radek Polak 2003-2004. All Rights Reserved.
  *
  * Please visit project homepage at http://phoenix.inf.upol.cz/~polakr
+ * 
+ * This file has been modified by Karl von Randow for MidpSSH.
  *
  * --LICENSE NOTICE--
  * This program is free software; you can redistribute it and/or

@@ -5,6 +5,9 @@ karl@xk72.com
 MidpSSH is an SSH and Telnet client for MIDP 1.0 / 2.0
 devices such as Java(tm)-capable cellphones.
 
+For more information please visit the project website:
+www.xk72.com/midpssh
+
 MidpSSH is based upon Floyd SSH and Telnet Floyd by
 Radek Polak (http://phoenix.inf.upol.cz/~polakr/).
 
@@ -14,11 +17,6 @@ Telnet/SSH Applet (javassh.org) to the MIDP platform.
 Floyd SSH and Telnet Floyd (and hence MidpSSH) includes
 sources from Matthias L. Jugel, Marcus Meiﬂner (javassh.org)
 and also the GNU Classpath project.
-
-MidpSSH has been enhanced from Floyd SSH including:
-* integration of Telnet and SSH into the one midlet;
-* user interface development;
-* refactoring and bug fixes;
 
 
 

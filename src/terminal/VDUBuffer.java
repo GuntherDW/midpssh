@@ -5,6 +5,8 @@
  *
  * Please visit http://javatelnet.org/ for updates and contact.
  * The file was changed by Radek Polak to work as midlet in MIDP 1.0
+ * 
+ * This file has been modified by Karl von Randow for MidpSSH.
  *
  * --LICENSE NOTICE--
  * This program is free software; you can redistribute it and/or

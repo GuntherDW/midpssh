@@ -32,7 +32,7 @@ import app.SessionSpec;
  * @author Karl von Randow
  * 
  */
-public class EditSessionForm extends ConnectionForm {
+public class EditSessionForm extends SessionForm {
 
 	private static Command saveCommand = new Command( "Save", Command.SCREEN, 1 );
 

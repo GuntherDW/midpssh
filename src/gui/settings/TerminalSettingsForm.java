@@ -42,25 +42,34 @@ public class TerminalSettingsForm extends SettingsForm {
 	protected TextField tfFg = new TextField( "Foreground", "", 6, TextField.ANY );
 	
 	protected TextField tfBg = new TextField( "Background", "", 6, TextField.ANY );
+    
+    protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size", ChoiceGroup.EXCLUSIVE );
 	
 	protected ChoiceGroup cgRotated = new ChoiceGroup( "Orientation", ChoiceGroup.EXCLUSIVE );
 	
 	public TerminalSettingsForm() {
 		super( "Terminal Settings" );
 
-		append( new StringItem( "Terminal Type", "The terminal type reported to the remote server. The default type is VT320." ) );
+		append( new StringItem( "Type", "The terminal type reported to the remote server. The default type is VT320." ) );
 		append( tfType );
 		
-		append( new StringItem( "Terminal Size", "The size of the terminal. The default is to use the maximum available screen area." ) );
+		append( new StringItem( "Size", "The size of the terminal. The default is to use the maximum available screen area." ) );
 		append( tfCols );
 		append( tfRows );
 		
-		append( new StringItem( "Terminal Colour", "Enter colours in hexadecimal, eg. 6699cc" ) );
+        cgFont.append( "Tiny", null );
+        cgFont.append( "Small", null );
+        cgFont.append( "Medium", null );
+        cgFont.append( "Large", null );
+        append( cgFont );
+        
+		append( new StringItem( "Colour", "Enter colours in hexadecimal, eg. 6699cc" ) );
 		append( tfFg );
 		append( tfBg );
 		
 		cgRotated.append( "Normal", null );
 		cgRotated.append( "Landscape", null );
+        cgRotated.append( "Landscape 2", null );
 //#ifdef midp2
 		append( cgRotated );
 //#else
@@ -92,7 +101,33 @@ public class TerminalSettingsForm extends SettingsForm {
 		tfFg.setString( toHex( Settings.fgcolor ) );
 		tfBg.setString( toHex( Settings.bgcolor ) );
 		
-		cgRotated.setSelectedIndex( Settings.terminalRotated ? 1 : 0, true );
+        switch ( Settings.fontMode ) {
+        case Settings.FONT_NORMAL:
+            cgFont.setSelectedIndex( 0, true );
+            break;
+        case Settings.FONT_SMALL:
+            cgFont.setSelectedIndex( 1, true );
+            break;
+        case Settings.FONT_MEDIUM:
+            cgFont.setSelectedIndex( 2, true );
+            break;
+        case Settings.FONT_LARGE:
+            cgFont.setSelectedIndex( 3, true );
+            break;
+        }
+        
+        switch ( Settings.terminalRotated ) {
+        case Settings.ROT_NORMAL:
+            cgRotated.setSelectedIndex( 0, true );
+            break;
+        case Settings.ROT_270:
+            cgRotated.setSelectedIndex( 1, true );
+            break;
+        case Settings.ROT_90:
+            cgRotated.setSelectedIndex( 2, true );
+            break;
+        }
+		
 		
 		super.activate();
 	}
@@ -130,7 +165,31 @@ public class TerminalSettingsForm extends SettingsForm {
 				
 			}
 			
-			Settings.terminalRotated = cgRotated.getSelectedIndex() == 1;
+            switch (cgFont.getSelectedIndex()) {
+            case 0:
+                Settings.fontMode = Settings.FONT_NORMAL;
+                break;
+            case 1:
+                Settings.fontMode = Settings.FONT_SMALL;
+                break;
+            case 2:
+                Settings.fontMode = Settings.FONT_MEDIUM;
+                break;
+            case 3:
+                Settings.fontMode = Settings.FONT_LARGE;
+                break;
+            }
+            switch ( cgRotated.getSelectedIndex() ) {
+            case 0:
+                Settings.terminalRotated = Settings.ROT_NORMAL;
+                break;
+            case 1:
+                Settings.terminalRotated = Settings.ROT_270;
+                break;
+            case 2:
+                Settings.terminalRotated = Settings.ROT_90;
+                break;
+            }
 		}
 		else {
 			Settings.terminalType = "";
@@ -138,7 +197,7 @@ public class TerminalSettingsForm extends SettingsForm {
 			Settings.terminalRows = 0;
 			Settings.fgcolor = Settings.DEFAULT_FGCOLOR;
 			Settings.bgcolor = Settings.DEFAULT_BGCOLOR;
-			Settings.terminalRotated = false;
+			Settings.terminalRotated = Settings.ROT_NORMAL;
 		}
 		return true;
 	}

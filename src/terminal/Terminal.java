@@ -11,6 +11,7 @@ import javax.microedition.lcdui.game.Sprite;
 //#endif
 
 import app.Main;
+import app.Settings;
 
 /* This file is part of "Telnet Floyd".
  *
@@ -55,7 +56,7 @@ public class Terminal extends Canvas {
 	
 	private int fontWidth, fontHeight;
 	
-	protected boolean rotated;
+	protected int rotated;
 
 	/** display size in characters */
 	public int rows, cols;
@@ -80,10 +81,10 @@ public class Terminal extends Canvas {
 	public final static int COLOR_INVERT = 9;
 
 	public Terminal( vt320 buffer ) {
-		this( buffer, false );
+		this( buffer, Settings.ROT_NORMAL );
 	}
 	
-	public Terminal( vt320 buffer, boolean rotated ) {
+	public Terminal( vt320 buffer, int rotated ) {
 		setVDUBuffer( buffer );
 
 		if ( Main.useColors ) {
@@ -96,12 +97,12 @@ public class Terminal extends Canvas {
 //#ifdef midp2
 		this.rotated = rotated;
 //#else
-		this.rotated = rotated = false;
+		this.rotated = rotated = Settings.ROT_NORMAL;
 //#endif
 		
 		width = getWidth();
 		height = getHeight();
-		if ( rotated ) {
+		if ( rotated != Settings.ROT_NORMAL ) {
 			width = getHeight();
 			height = getWidth();
 		}
@@ -183,16 +184,21 @@ public class Terminal extends Canvas {
 			// Redraw backing store if necessary
 			redrawBackingStore();
 			
-			if ( !rotated ) {
-				g.drawImage( backingStore, 0, 1, Graphics.TOP | Graphics.LEFT );
-			}
-			else {
+			switch ( rotated ) {
 //#ifdef midp2
-				g.drawRegion( backingStore, 0, 0, width - 1, height, Sprite.TRANS_ROT270, 0, 1, Graphics.TOP | Graphics.LEFT );
+            case Settings.ROT_270:
+                g.drawRegion( backingStore, 0, 0, width - 1, height, Sprite.TRANS_ROT270, 0, 1, Graphics.TOP | Graphics.LEFT );
+                break;
+            case Settings.ROT_90:
+                g.drawRegion( backingStore, 0, 0, width - 1, height, Sprite.TRANS_ROT90, 0, 1, Graphics.TOP | Graphics.LEFT );
+                break;
 //#endif
-			}
-			// KARL the y coord 1 is because with 0 it sometimes fails to draw
-			// on my SonyEricsson K700i
+            default:
+                // KARL the y coord 1 is because with 0 it sometimes fails to draw
+                // on my SonyEricsson K700i
+				g.drawImage( backingStore, 0, 1, Graphics.TOP | Graphics.LEFT );
+                break;
+            }
 		}
 	}
 
@@ -316,12 +322,20 @@ public class Terminal extends Canvas {
 	}
 	
 	private void initFont() {
-	    if ( useInternalFont ) {
+	    switch ( fontMode ) {
+        case Settings.FONT_NORMAL:
 	        initInternalFont();
-	    }
-	    else {
-	        initSystemFont();
-	    }
+            break;
+        case Settings.FONT_SMALL:
+	        initSystemFont( Font.SIZE_SMALL );
+            break;
+        case Settings.FONT_MEDIUM:
+            initSystemFont( Font.SIZE_MEDIUM );
+            break;
+        case Settings.FONT_LARGE:
+            initSystemFont( Font.SIZE_LARGE );
+            break;
+        }
 	}
 
 	private void initInternalFont() {
@@ -353,14 +367,14 @@ public class Terminal extends Canvas {
 		}
 	}
 	
-	private void initSystemFont() {
-	    font = Font.getFont( Font.FACE_MONOSPACE, Font.STYLE_PLAIN, Font.SIZE_SMALL );
+	private void initSystemFont( int size ) {
+	    font = Font.getFont( Font.FACE_MONOSPACE, Font.STYLE_PLAIN, size );
 		fontHeight = font.getHeight();
 		fontWidth = font.charWidth( 'W' );
 	}
 	
 	protected void drawChars( Graphics g, char[] chars, int offset, int length, int x, int y ) {
-	    if ( useInternalFont ) {
+	    if ( fontMode == Settings.FONT_NORMAL ) {
 	        for ( int i = offset; i < offset + length; i++ ) {
 				drawChar( g, chars[i], x, y );
 				x += fontWidth;
@@ -403,7 +417,7 @@ public class Terminal extends Canvas {
 			drawChar( g, (char) ( c + fontData[c][0] ), x, y ); // draw template
 	}
 	
-	private boolean useInternalFont = true;
+	private int fontMode = Settings.fontMode;
 	
 	private Font font;
 	

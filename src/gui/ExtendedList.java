@@ -51,7 +51,11 @@ public class ExtendedList extends List {
 //#ifdef midp2
 	    super.setSelectCommand( command );
 //#else
-	    //addCommand( command );
+//#ifndef blackberry
+	    // On the blackberry we don't require the command to be added as the implicit command is also listed in
+	    // the menu.
+	    addCommand( command );
+//#endif
 //#endif
 	}
 }

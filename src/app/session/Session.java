@@ -46,7 +46,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 * After this count of millisends without communication on connection we will
 	 * send something just to keep connection alive
 	 */
-	public static int keepAliveTime = 1000 * 60 * 5; // 5 minutes
+	public static int keepAliveTime = 1000 * 60 * 1; // 1 minute
 
 	protected vt320 emulation;
 
@@ -83,6 +83,8 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 * @see #run
 	 */
 	private byte[] outputBuffer = new byte[16]; // this will grow if needed
+	
+	private Object writerMutex = new Object();
 
 	/**
 	 * Number of bytes to be written, from output array, because it has fixed
@@ -134,7 +136,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 * @see telnet.TelnetIOListener#sendData(byte[])
 	 */
 	public void sendData( byte[] b, int offset, int length ) throws IOException {
-		synchronized ( writer ) {
+		synchronized ( writerMutex ) {
 		    if ( outputCount + length > outputBuffer.length ) {
 				byte[] newOutput = new byte[outputCount + length];
 				System.arraycopy( outputBuffer, 0, newOutput, 0, outputCount );
@@ -143,14 +145,15 @@ public abstract class Session implements SessionIOHandler, Activatable {
 			System.arraycopy( b, offset, outputBuffer, outputCount, length );
 			outputCount += length;
 			
-			writer.notify();
+			writerMutex.notify();
 		}
 	}
 	
 	public void typeString( String str ) {
-		for ( int i = 0; i < str.length(); i++ ) {
+	    emulation.stringTyped( str );
+		/*for ( int i = 0; i < str.length(); i++ ) {
 			emulation.keyTyped( 0, str.charAt( i ), 0 );
-		}
+		}*/
 	}
 	
 	public void typeChar( char c, int modifier ) {
@@ -177,6 +180,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	private void read() throws IOException {
 	    byte [] buf;
 
+//#ifndef slowreadio
 		buf = new byte[512]; // try a smaller buffer, maybe works better on some phones
 		
 		// Read at least 1 byte, and at most the number of bytes available
@@ -194,8 +198,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 			a = in.available();
 			n = in.read( buf, 0, Math.max( 1, Math.min( a, buf.length ) ) );
 		}
-
-/*
+//#else
 	    buf = new byte[1];
 	    int c = in.read();
 //#ifdef debug
@@ -212,22 +215,21 @@ public abstract class Session implements SessionIOHandler, Activatable {
 			}
 			c = in.read();
 	    }
-*/
-
+//#endif
 	}
 	
 	private void write() throws IOException {
 		final byte [] empty = new byte[0];
 		
 		while ( !disconnecting ) {
-			synchronized ( writer ) {
+			synchronized ( writerMutex ) {
 			    while ( outputCount == 0 && !disconnecting ) {
 					try {
-						writer.wait( keepAliveTime );
+					    writerMutex.wait( keepAliveTime );
 					}
 					catch ( InterruptedException e ) {
 					}
-					if ( outputCount == 0 ) {
+					if ( outputCount == 0 && !disconnecting ) {
 						// No data to send after timeout so send an empty array through the filter which will trigger the
 						// sending of a NOOP (see TelnetSession and SshSession) - this has the effect of a keepalive
 						//emulation.putString( "NOOP\r\n" );
@@ -238,15 +240,18 @@ public abstract class Session implements SessionIOHandler, Activatable {
 				if ( !disconnecting ) {
 //#ifdef blackberry
 				    /* Some older BlackBerrys (or all using MDS?) fail if we don't have
-				     * this slight delay here. I haven't established whether it's a failing
-				     * in the synchronisation in my code, or a problem in the RIM I/O.
+				     * this slight delay here. This appears to be a problem in the RIM I/O
+				     * as I've tested to see if the contents of outputBuffer and outputCount
+				     * are different before and after the sleep.
 				     */
 				    try {
 	                    Thread.sleep( 100 );
 	                } catch (InterruptedException e) {
 	                }
+				    byte [] outputBuffer = new byte[ outputCount ];
+				    System.arraycopy( this.outputBuffer, 0, outputBuffer, 0, outputCount );
 //#endif
-				    //debug.append( "OUTPUT " + outputCount + " " );
+				    
 					bytesWritten += outputCount;
 					out.write( outputBuffer, 0, outputCount );
 					out.flush();
@@ -255,7 +260,6 @@ public abstract class Session implements SessionIOHandler, Activatable {
 			}
 		}
 	}
-
 
 	private void handleException( String where, Throwable t ) {
 		if ( !disconnecting ) {
@@ -287,7 +291,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 */
 	public void disconnect() {
 		if ( !disconnecting ) {
-			synchronized ( writer ) {
+			synchronized ( writerMutex ) {
 				disconnecting = true;
 				try {
 					if ( in != null ) in.close();
@@ -298,7 +302,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 					handleException( "Disconnect", e );
 				}
 				
-				writer.notify();
+				writerMutex.notify();
 			}
 		}
 	}

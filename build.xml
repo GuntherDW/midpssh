@@ -109,7 +109,7 @@
 		<delete dir="src-proc"/>
 		<wtkpreprocess srcdir="src"
 					   destdir="src-proc"
-					   symbols="${preprocess.symbols}"
+					   symbols="${preprocess.symbols},${preprocess.symbols.global}"
 					   verbose="false" />
 	</target>
     	

@@ -176,15 +176,37 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 * Continuously read from remote host and display the data on screen.
 	 */
 	private void read() throws IOException {
-		byte [] buf = new byte[1024];
+	    byte [] buf;
+//#ifndef debug
+		buf = new byte[512]; // try a smaller buffer, maybe works better on some phones
 		
 		int n = in.read( buf, 0, buf.length );
 		while ( n != -1 ) {
 			bytesRead += n;
-			filter.receiveData( buf, 0, n );
+			try {
+			    filter.receiveData( buf, 0, n );
+			}
+			catch ( RuntimeException e ) {
+			    throw new RuntimeException( "read.filter: " + e );
+			}
 			
 			n = in.read( buf, 0, buf.length );
 		}
+//#else
+	    buf = new byte[1];
+	    int c = in.read();
+	    while ( c != -1 ) {
+	        bytesRead++;
+	        buf[0] = (byte) ( c & 0xff );
+	        try {
+			    filter.receiveData( buf, 0, 1 );
+			}
+			catch ( RuntimeException e ) {
+			    throw new RuntimeException( "read.filter: " + e );
+			}
+			c = in.read();
+	    }
+//#endif
 	}
 	
 	private void write() throws IOException {
@@ -215,7 +237,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	}
 
 
-	private void handleException( Throwable t ) {
+	private void handleException( String where, Throwable t ) {
 		if ( !disconnecting ) {
 			t.printStackTrace();
 			
@@ -226,7 +248,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 			if ( msg == null )
 				msg = t.toString();
 
-			alert.setString( msg );
+			alert.setString( where + ": " + msg );
 			Main.setDisplay( alert );
 		}
 	}
@@ -253,7 +275,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 					if ( socket != null ) socket.close();
 				}
 				catch ( IOException e ) {
-					handleException( e );
+					handleException( "Disconnect", e );
 				}
 				
 				writer.notify();
@@ -315,7 +337,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 				disconnect();
 			}
 			catch ( Exception e ) {
-				handleException( e );
+				handleException( "Reader", e );
 				disconnect();
 			}
 		}
@@ -334,7 +356,7 @@ public abstract class Session implements SessionIOHandler, Activatable {
 				sessionReport();
 			}
 			catch ( Exception e ) {
-				handleException( e );
+				handleException( "Writer", e );
 				disconnect();
 				terminal.disconnected();
 			}

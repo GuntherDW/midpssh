@@ -189,12 +189,8 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	 * @param buffer
 	 */
 	public SessionTerminal( vt320 buffer, Session session ) {
-		super( buffer, Settings.terminalRotated );
+		super( buffer );
 		this.session = session;
-        
-//#ifdef midp2
-        //setFullScreenMode( true );
-//#endif
 
 		changeMode( MODE_DISCONNECTED );
 

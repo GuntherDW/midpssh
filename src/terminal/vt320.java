@@ -77,20 +77,20 @@ public abstract class vt320 extends VDUBuffer {
 		Remove = new String[4];
 		KeyHome = new String[4];
 		KeyEnd = new String[4];
-		NextScn = new String[4];
-		PrevScn = new String[4];
 //#endif
+        NextScn = new String[4];
+        PrevScn = new String[4];
 		Escape = new String[4];
 		BackSpace = new String[4];
 		TabKey = new String[4];
 //#ifndef simplevt320
 		Insert[0] = Insert[1] = Insert[2] = Insert[3] = "\u001b[2~";
 		Remove[0] = Remove[1] = Remove[2] = Remove[3] = "\u001b[3~";
-		PrevScn[0] = PrevScn[1] = PrevScn[2] = PrevScn[3] = "\u001b[5~";
-		NextScn[0] = NextScn[1] = NextScn[2] = NextScn[3] = "\u001b[6~";
 		KeyHome[0] = KeyHome[1] = KeyHome[2] = KeyHome[3] = "\u001b[H";
 		KeyEnd[0] = KeyEnd[1] = KeyEnd[2] = KeyEnd[3] = "\u001b[F";
 //#endif
+        PrevScn[0] = PrevScn[1] = PrevScn[2] = PrevScn[3] = "\u001b[5~";
+        NextScn[0] = NextScn[1] = NextScn[2] = NextScn[3] = "\u001b[6~";
 		Escape[0] = Escape[1] = Escape[2] = Escape[3] = "\u001b";
 		if ( vms ) {
 			BackSpace[1] = "" + (char) 10; //  VMS shift deletes word back
@@ -627,10 +627,10 @@ public abstract class vt320 extends VDUBuffer {
 
 	private String Help, Do, Find, Select;
 
-	private String KeyHome[], KeyEnd[], Insert[], Remove[], PrevScn[], NextScn[];
+	private String KeyHome[], KeyEnd[], Insert[], Remove[];
 //#endif
 	
-	private String Escape[], BackSpace[], NUMDot[], NUMPlus[];
+	private String PrevScn[], NextScn[], Escape[], BackSpace[], NUMDot[], NUMPlus[];
 
 	private String osc, dcs; /* to memorize OSC & DCS control sequence */
 
@@ -832,13 +832,13 @@ public abstract class vt320 extends VDUBuffer {
 			case KeyEvent.VK_RIGHT:
 				writeSpecial( KeyRight[xind] );
 				break;
-//#ifndef simplevt320
 			case KeyEvent.VK_PAGE_DOWN:
 				writeSpecial( NextScn[xind] );
 				break;
 			case KeyEvent.VK_PAGE_UP:
 				writeSpecial( PrevScn[xind] );
 				break;
+//#ifndef simplevt320
 			case KeyEvent.VK_INSERT:
 				writeSpecial( Insert[xind] );
 				break;
@@ -901,7 +901,7 @@ public abstract class vt320 extends VDUBuffer {
 	}
 	
 	private void _keyTyped( int keyCode, char keyChar, int modifiers ) {
-		    System.out.println("KEY TYPED keycode:"+keyCode+" keychar"+(int)keyChar+" modifiers:"+modifiers );
+		//System.out.println("KEY TYPED keycode:"+keyCode+" keychar:"+(int)keyChar+" modifiers:"+modifiers );
 
 		boolean control = ( modifiers & KEY_CONTROL ) != 0;
 		boolean shift = ( modifiers & KEY_SHIFT ) != 0;

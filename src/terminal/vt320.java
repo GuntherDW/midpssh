@@ -901,8 +901,7 @@ public abstract class vt320 extends VDUBuffer {
 	}
 	
 	private void _keyTyped( int keyCode, char keyChar, int modifiers ) {
-		//    System.out.println("KEY TYPED keycode:"+keyCode+"
-		// keychar"+(int)keyChar+" modifiers:"+modifiers );
+		    System.out.println("KEY TYPED keycode:"+keyCode+" keychar"+(int)keyChar+" modifiers:"+modifiers );
 
 		boolean control = ( modifiers & KEY_CONTROL ) != 0;
 		boolean shift = ( modifiers & KEY_SHIFT ) != 0;
@@ -937,7 +936,7 @@ public abstract class vt320 extends VDUBuffer {
 			// This seems to work now with everything
             // KARL 27/5/2005 changed from \n to \r\n, I think this is what we're supposed to send
             // and it appears to work with SSH and SMTP sessions
-			write( "\r\n", false );
+			write( "\r", false );
 			if ( localecho )
 				putString( "\r\n" ); // bad hack
 			return;

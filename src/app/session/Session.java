@@ -55,6 +55,8 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	private SessionTerminal terminal;
 
 	private boolean disconnecting;
+	
+	private boolean forcedDisconnect;
 
 	/**
 	 * Holds the socket connetion object (from the Generic Connection Framework)
@@ -291,6 +293,11 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	 * @see telnet.Session#disconnect()
 	 */
 	public void disconnect() {
+	    forcedDisconnect = true;
+	    doDisconnect();
+	}
+	
+	private void doDisconnect() {
 		if ( !disconnecting ) {
 			synchronized ( writerMutex ) {
 				disconnecting = true;
@@ -335,7 +342,13 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	
 		alert.setString( report );
 		alert.setTimeout( Alert.FOREVER );
-		Main.setDisplay( alert );
+		
+		if ( forcedDisconnect ) {
+		    Main.alertBackToMain( alert );
+		}
+		else {
+		    Main.alert( alert, terminal );
+		}
 	}
 	
 	public void goMainMenu() {
@@ -362,11 +375,11 @@ public abstract class Session implements SessionIOHandler, Activatable {
 				emulation.putString( "Reader started.\r\n" );
 //#endif
 				read();
-				disconnect();
+				doDisconnect();
 			}
 			catch ( Exception e ) {
 				handleException( "Reader", e );
-				disconnect();
+				doDisconnect();
 			}
 		}
 	}
@@ -379,13 +392,13 @@ public abstract class Session implements SessionIOHandler, Activatable {
 				reader.start();
 				write();
 				
-				disconnect();
+				doDisconnect();
 				terminal.disconnected();
 				sessionReport();
 			}
 			catch ( Exception e ) {
 				handleException( "Writer", e );
-				disconnect();
+				doDisconnect();
 				terminal.disconnected();
 			}
 		}

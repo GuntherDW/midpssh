@@ -211,6 +211,7 @@
 			<argument value="-keep class ssh.v1.MD5" />
 			<argument value="-keep class ssh.v1.NONE" />
     		<argument value="-defaultpackage" />
+			<argument value="-dontobfuscate" />
 		</wtkobfuscate>
     </target>
 	

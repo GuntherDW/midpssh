@@ -102,24 +102,38 @@ public class Terminal extends Canvas {
 		rotated = Settings.ROT_NORMAL;
 //#endif
 		
-		width = getWidth();
-		height = getHeight();
-		if ( rotated != Settings.ROT_NORMAL ) {
-			width = getHeight();
-			height = getWidth();
-		}
-		cols = width / fontWidth;
-		rows = height / fontHeight;
-		backingStore = Image.createImage( width, height );
-		
-		//System.out.println( "ROWS " + rows + " COLS " + cols );
-		
-		buffer.setScreenSize( cols, rows );
+        sizeChanged();
 
 		top = 0;
 		left = 0;
 	}
 
+//#ifdef midp2
+    /* (non-Javadoc)
+     * @see javax.microedition.lcdui.Displayable#sizeChanged(int, int)
+     */
+    protected void sizeChanged(int w, int h) {
+        super.sizeChanged(w, h);
+        sizeChanged();
+    }
+//#endif
+    
+    protected void sizeChanged() {
+        width = getWidth();
+        height = getHeight();
+        if ( rotated != Settings.ROT_NORMAL ) {
+            width = getHeight();
+            height = getWidth();
+        }
+        cols = width / fontWidth;
+        rows = height / fontHeight;
+        backingStore = Image.createImage( width, height );
+        
+        //System.out.println( "ROWS " + rows + " COLS " + cols );
+        
+        buffer.setScreenSize( cols, rows );
+    }
+    
 	/**
 	 * Create a color representation that is brighter than the standard color
 	 * but not what we would like to use for bold characters.

@@ -24,7 +24,7 @@
  */
 package ssh.v1;
 
-import ssh.SshIO;
+import ssh.SshMisc;
 
 
 
@@ -86,7 +86,7 @@ public class SshCrypto {
 		EncryptionBlock[1] = 2;
 		offset = 2;
 		for ( int i = 2; i < ( EncryptionBlock.length - clearData.length - 1 ); i++ )
-			EncryptionBlock[offset++] = SshIO.getNotZeroRandomByte();
+			EncryptionBlock[offset++] = SshMisc.getNotZeroRandomByte();
 		EncryptionBlock[offset++] = 0;
 		for ( int i = 0; i < clearData.length; i++ )
 			EncryptionBlock[offset++] = clearData[i];
@@ -128,7 +128,7 @@ public class SshCrypto {
 
 		offset = 2;
 		for ( int i = 2; i < ( EncryptionBlock.length - clearData.length - 1 ); i++ )
-			EncryptionBlock[offset++] = SshIO.getNotZeroRandomByte(); //random
+			EncryptionBlock[offset++] = SshMisc.getNotZeroRandomByte(); //random
 		// !=0
 		EncryptionBlock[offset++] = 0;
 		for ( int i = 0; i < clearData.length; i++ )

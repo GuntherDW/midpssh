@@ -24,8 +24,6 @@
  */
 package ssh;
 
-import java.io.IOException;
-
 import ssh.v1.MD5;
 
 /**

@@ -26,7 +26,7 @@ package ssh.v2;
 
 import java.io.IOException;
 
-import ssh.SshIO;
+import ssh.SshMisc;
 import ssh.SshPacket;
 
 public class SshPacket2 extends SshPacket {
@@ -114,7 +114,7 @@ public class SshPacket2 extends SshPacket {
 				padding[i] = 0;
 		else
 			for (int i = 0; i < padlen; i++)
-				padding[i] = SshIO.getNotZeroRandomByte();
+				padding[i] = SshMisc.getNotZeroRandomByte();
 
 		// [ packetlength, padlength, padding, packet type, data ]
 		byte[] block = new byte[packet_length + padlen];

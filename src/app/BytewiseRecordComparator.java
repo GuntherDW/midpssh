@@ -20,16 +20,37 @@
  * --LICENSE NOTICE--
  *
  */
-package app.session;
+package app;
 
-import java.io.IOException;
+import javax.microedition.rms.RecordComparator;
 
 /**
+ * Bytewise comparator for stored record sets. Ensure that the sort key is the first element in the
+ * byte array for the record and this should handle the sorting for us quickly.
  * @author Karl von Randow
- * 
  */
-public interface SessionIOListener {
-	public void sendData( byte[] data, int offset, int length ) throws IOException;
+public class BytewiseRecordComparator implements RecordComparator {
 
-	public void receiveData( byte[] data, int offset, int length ) throws IOException;
+	/* (non-Javadoc)
+	 * @see javax.microedition.rms.RecordComparator#compare(byte[], byte[])
+	 */
+	public int compare( byte[] a, byte[] b ) {
+		for ( int i = 0; i < a.length && i < b.length; i++ ) {
+			if ( a[i] < b[i] ) {
+				return PRECEDES;
+			}
+			else if ( a[i] > b[i] ) {
+				return FOLLOWS;
+			}
+		}
+		if ( a.length < b.length ) {
+			return PRECEDES;
+		}
+		else if ( a.length > b.length ) {
+			return FOLLOWS;
+		}
+		else {
+			return EQUIVALENT;
+		}
+	}
 }

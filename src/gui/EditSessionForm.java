@@ -55,6 +55,13 @@ public class EditSessionForm extends SessionForm {
 		if ( conn != null ) {
 			tfAlias.setString( conn.alias );
 			tfHost.setString( conn.host );
+			if ( conn.type != null ) {
+				for ( int i = 0; i < typeCodes.length; i++ ) {
+					if ( typeCodes[i].equals( conn.type ) ) {
+						cgType.setSelectedIndex( i, true );
+					}
+				}
+			}
 			tfUsername.setString( conn.username );
 			tfPassword.setString( conn.password );
 		}

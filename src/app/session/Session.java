@@ -41,19 +41,16 @@ import app.Main;
  * @author Karl von Randow
  * 
  */
-public abstract class Session implements SessionIOListener, Activatable {
-	/** Time to sleep between checks for new input from connection */
-	public static int sleepTime = 1000;
-
+public abstract class Session implements SessionIOHandler, Activatable {
 	/**
-	 * After this count of cycles without communication on connection we will
+	 * After this count of millisends without communication on connection we will
 	 * send something just to keep connection alive
 	 */
-	public static int keepAliveCycles = 300; // 5 minutes for sleepTime=1000
+	public static int keepAliveTime = 1000 * 60 * 5; // 5 minutes
 
 	protected vt320 emulation;
 
-	protected SessionIOListener filter;
+	protected SessionIOHandler filter;
 
 	private SessionTerminal terminal;
 
@@ -93,7 +90,7 @@ public abstract class Session implements SessionIOListener, Activatable {
 	 */
 	private int outputCount = 0;
 
-	private int traffic = 0;
+	private int bytesWritten = 0, bytesRead = 0;
 
 	public Session() {
 		emulation = new vt320() {
@@ -106,7 +103,7 @@ public abstract class Session implements SessionIOListener, Activatable {
 		writer = new Writer();
 	}
 
-	protected void connect( String host, SessionIOListener filter ) {
+	protected void connect( String host, SessionIOHandler filter ) {
 		this.host = host;
 		this.filter = filter;
 
@@ -183,6 +180,7 @@ public abstract class Session implements SessionIOListener, Activatable {
 		
 		int n = in.read( buf, 0, buf.length );
 		while ( n != -1 ) {
+			bytesRead += n;
 			filter.receiveData( buf, 0, n );
 			
 			n = in.read( buf, 0, buf.length );
@@ -190,39 +188,28 @@ public abstract class Session implements SessionIOListener, Activatable {
 	}
 	
 	private void write() throws IOException {
+		final byte [] empty = new byte[0];
+		
 		while ( !disconnecting ) {
 			synchronized ( writer ) {
 				while ( outputCount == 0 && !disconnecting ) {
 					try {
-						writer.wait( sleepTime * keepAliveCycles );
+						writer.wait( keepAliveTime );
 					}
 					catch ( InterruptedException e ) {
 					}
-					// TODO send keepalive
+					if ( outputCount == 0 ) {
+						// No data to send after timeout so send an empty array through the filter which will trigger the
+						// sending of a NOOP (see TelnetSession and SshSession) - this has the effect of a keepalive
+						filter.sendData( empty, 0, 0 );
+					}
 				}
 				
 				if ( !disconnecting ) {
+					bytesWritten += outputCount;
 					out.write( outputBuffer, 0, outputCount );
 					outputCount = 0;
 				}
-				
-				/*
-				 * if ( outputCount > 0 ) // Writing
-				{
-					traffic += outputCount;
-					out.write( outputBuffer, 0, outputCount );
-					outputCount = 0;
-				}
-				else // Sleeping
-				{
-					Thread.sleep( sleepTime );
-					if ( noInputCycles++ > keepAliveCycles ) {
-						emulation.keyTyped( 0, 'a', 0 ); // BAD HACK - SHOULD SEND AYA...
-						emulation.keyPressed( 8, '\b', 0 );
-						noInputCycles = 0;
-					}
-				}
-				 */
 			}
 		}
 	}

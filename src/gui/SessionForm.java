@@ -37,11 +37,11 @@ public abstract class SessionForm extends EditableForm {
 
 	protected ChoiceGroup cgType;
 
-	private static String[] typeNames = new String[] {
+	protected static String[] typeNames = new String[] {
 			"SSH", "Telnet"
 	};
 
-	private static String[] typeCodes = new String[] {
+	protected static String[] typeCodes = new String[] {
 			SessionSpec.TYPE_SSH, SessionSpec.TYPE_TELNET
 	};
 
@@ -62,7 +62,6 @@ public abstract class SessionForm extends EditableForm {
 
 		append( tfAlias );
 		append( tfHost );
-		append( new StringItem( "Ports:", "To specify non-standard ports append a ':' followed by the port number to the host name" ) );
 		append( cgType );
 		append( new StringItem( "Authentication:\n", "For SSH connections only." ) );
 		append( tfUsername );

@@ -3,6 +3,8 @@
  *
  * (c) Matthias L. Jugel, Marcus Meiﬂner 1996-2002. All Rights Reserved.
  * The file was changed by Radek Polak to work as midlet in MIDP 1.0
+ * 
+ * This file has been modified by Karl von Randow for MidpSSH.
  *
  * Please visit http://javatelnet.org/ for updates and contact.
  *
@@ -91,6 +93,8 @@ public abstract class SshIO {
 	//	be sent by either side. Messages with _CMSG_ are only sent by the
 	//  client, and messages with _SMSG_ only by the server.
 	//
+	private final byte SSH_MSG_NONE = 0;
+	
 	private final byte SSH_MSG_DISCONNECT = 1;
 
 	private final byte SSH_SMSG_PUBLIC_KEY = 2;
@@ -264,7 +268,7 @@ public abstract class SshIO {
 						useprotocol = 2;
 					}
 					else {
-						if ( false && ( remoteminor == 99 ) ) {
+						if ( false && ( remoteminor == 99 ) ) { // TODO SSH2 is disabled, see if it can be made to work
 							mymajor = 2;
 							myminor = 0;
 							useprotocol = 2;
@@ -881,6 +885,18 @@ public abstract class SshIO {
 
 	private String Send_SSH_CMSG_EXIT_CONFIRMATION() throws IOException {
 		SshPacket1 packet = new SshPacket1( SSH_CMSG_EXIT_CONFIRMATION );
+		sendPacket1( packet );
+		return "";
+	}
+
+	/**
+	 * Send_SSH_NOOP (no arguments) Sends a NOOP packet to keep the connection alive.
+	 */
+	protected String Send_SSH_NOOP() throws IOException {
+		// KARL The specification states that this packet is never sent, however the OpenSSL source
+		// for keep alives indicates that SSH_MSG_IGNORE (the alternative) crashes some servers and
+		// advocates SSH_MSG_NONE instead.
+		SshPacket1 packet = new SshPacket1( SSH_MSG_NONE );
 		sendPacket1( packet );
 		return "";
 	}

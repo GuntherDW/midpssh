@@ -188,11 +188,7 @@ public abstract class vt320 extends VDUBuffer {
 	 *            the array of bytes to be sent
 	 */
 	protected void write( byte[] b, int offset, int length ) {
-		/** before sending data transform it using telnet (which is sending it) */
 		try {
-			if ( localecho ) {
-				putString( new String( b, offset, length ) );
-			}
 			sendData( b, offset, length );
 		}
 		catch ( java.io.IOException e ) {
@@ -381,9 +377,12 @@ public abstract class vt320 extends VDUBuffer {
 		 * hand copy.
 		 */
 
+		// Maybe extend writeBuffer
 		if ( writeBuffer.length < s.length() ) {
 			writeBuffer = new byte[ s.length() ];
 		}
+		
+		// Fill writeBuffer
 		for ( int i = 0; i < s.length(); i++ ) {
 			writeBuffer[i] = (byte) s.charAt( i );
 		}
@@ -865,14 +864,11 @@ public abstract class vt320 extends VDUBuffer {
 		}
 
 		if ( ( ( keyCode == KeyEvent.VK_ENTER ) || ( keyChar == 10 ) ) && !control ) {
-			write( "\r", false );
+			// KARL changed from \r to \n. \r doesn't work with telnet sessions such as to SMTP
+			// This seems to work now with everything
+			write( "\n", false );
 			if ( localecho )
 				putString( "\r\n" ); // bad hack
-			return;
-		}
-
-		if ( ( keyCode == 10 ) && !control ) {
-			write( "\r", false );
 			return;
 		}
 

@@ -45,32 +45,37 @@ public class SshSession extends Session {
 		return 22;
 	}
 
-	public class SshIOFilter implements SessionIOListener {
+	public class SshIOFilter implements SessionIOHandler {
 
-		private SshIO sshIO;
+		private MySshIO sshIO;
 
 		public SshIOFilter( String username, String password ) {
-			sshIO = new SshIO() {
-				public void write( byte[] data ) throws IOException {
-					SshSession.this.sendData( data, 0, data.length );
-				}
-
-				public String getTerminalID() {
-					return emulation.getTerminalID();
-				}
-
-				public int getTerminalWidth() {
-					return emulation.width;
-				}
-
-				public int getTerminalHeight() {
-					return emulation.height;
-				}
-			};
+			sshIO = new MySshIO();
 			sshIO.login = username;
 			sshIO.password = password;
 		}
 
+		private class MySshIO extends SshIO {
+			public void write( byte[] data ) throws IOException {
+				SshSession.this.sendData( data, 0, data.length );
+			}
+
+			public String getTerminalID() {
+				return emulation.getTerminalID();
+			}
+
+			public int getTerminalWidth() {
+				return emulation.width;
+			}
+
+			public int getTerminalHeight() {
+				return emulation.height;
+			}
+			
+			public void sendNOOP() throws IOException {
+				Send_SSH_NOOP();
+			}
+		}
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -88,8 +93,13 @@ public class SshSession extends Session {
 		 * 
 		 * @see app.session.SessionIOListener#sendData(byte[], int, int)
 		 */
-		public void sendData( byte[] data, int offset, int length ) throws IOException {
-			sshIO.sendData( data, offset, length );
+		public synchronized void sendData( byte[] data, int offset, int length ) throws IOException {
+			if ( length > 0 ) {
+				sshIO.sendData( data, offset, length );
+			}
+			else {
+				sshIO.sendNOOP();
+			}
 		}
 	}
 }

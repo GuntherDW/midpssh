@@ -37,6 +37,8 @@ import javax.microedition.rms.RecordStoreException;
 import javax.microedition.rms.RecordStoreFullException;
 import javax.microedition.rms.RecordStoreNotFoundException;
 
+import app.BytewiseRecordComparator;
+
 /**
  * @author Karl von Randow
  *
@@ -51,7 +53,7 @@ public class MacroSetManager {
 		if ( macroSets == null ) {
 			try {
 				RecordStore rec = RecordStore.openRecordStore( RMS_NAME, false );
-				RecordEnumeration recs = rec.enumerateRecords( null, null, false );
+				RecordEnumeration recs = rec.enumerateRecords( null, new BytewiseRecordComparator(), false );
 				Vector macroSets = new Vector();
 
 				while ( recs.hasNextElement() ) {

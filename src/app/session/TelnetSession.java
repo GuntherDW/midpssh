@@ -32,6 +32,13 @@ import telnet.TelnetProtocolHandler;
  * 
  */
 public class TelnetSession extends Session {
+	public TelnetSession() {
+		super();
+		
+		// Default to true in telnet and then turn off when told to
+		emulation.setLocalEcho( true );
+	}
+	
 	public void connect( String host ) {
 		super.connect( host, new TelnetIOFilter() );
 	}
@@ -45,7 +52,7 @@ public class TelnetSession extends Session {
 		return 23;
 	}
 
-	private class TelnetIOFilter implements SessionIOListener {
+	private class TelnetIOFilter implements SessionIOHandler {
 
 		private TelnetProtocolHandler telnet;
 
@@ -73,7 +80,10 @@ public class TelnetSession extends Session {
 
 				/** write data to our back end */
 				public void write( byte[] b ) throws IOException {
-					sendData( b, 0, b.length );
+					/*for ( int i = 0; i < b.length; i++ ) {
+						System.out.println( "SEND " + b[i] + "=" + (char) b[i] );
+					}*/
+					TelnetSession.this.sendData( b, 0, b.length );
 				}
 			};
 		}
@@ -89,6 +99,9 @@ public class TelnetSession extends Session {
 			do {
 				n = telnet.negotiate( data, offset, length );
 				if ( n > 0 ) {
+					/*for ( int i = offset; i < offset + n; i++ ) {
+						System.out.println( "RECV " + data[i] + "=" + (char) data[i] );
+					}*/
 					TelnetSession.this.receiveData( data, offset, n );
 				}
 			}
@@ -100,8 +113,13 @@ public class TelnetSession extends Session {
 		 * 
 		 * @see terminal.TerminalIOListener#sendData(byte[])
 		 */
-		public void sendData( byte[] data, int offset, int length ) throws IOException {
-			TelnetSession.this.sendData( data, offset, length );
+		public synchronized void sendData( byte[] data, int offset, int length ) throws IOException {
+			if ( length > 0 ) {
+				telnet.transpose( data, offset, length );
+			}
+			else {
+				telnet.sendTelnetNOP();
+			}
 		}
 	}
 }

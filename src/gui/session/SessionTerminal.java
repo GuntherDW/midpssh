@@ -60,10 +60,6 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	private static final Command macrosCommand = new Command( "Macros", Command.ITEM, commandPriority++ );
 
-	private static final Command cursorCommand = new Command( "Cursor", Command.ITEM, commandPriority++ );
-
-	private static final Command scrollCommand = new Command( "Scroll", Command.ITEM, commandPriority++ );
-
 	private static final Command tabCommand = new Command( "TAB", Command.ITEM, commandPriority++ );
 
 	private static final Command spaceCommand = new Command( "SPACE", Command.ITEM, commandPriority++ );
@@ -78,11 +74,15 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	private static final Command altCommand = new Command( "ALT", Command.ITEM, commandPriority++ );
 
+	private static final Command cursorCommand = new Command( "Cursor", Command.ITEM, commandPriority++ );
+
+	private static final Command scrollCommand = new Command( "Scroll", Command.ITEM, commandPriority++ );
+
 	private static final Command backCommand = new Command( "Back", Command.BACK, commandPriority++ );
 	
 	private static final Command showBindingsCommand = new Command( "Show Key Bindings", Command.ITEM, commandPriority++ );
 
-	private static final Command settingsCommand = new Command( "Settings", Command.ITEM, commandPriority++ );
+	//private static final Command settingsCommand = new Command( "Settings", Command.ITEM, commandPriority++ );
 
 	private static final Command disconnectCommand = new Command( "Close", Command.STOP, commandPriority++ );
 
@@ -91,9 +91,11 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	};
 	
 	private static final Command[] commandsConnected = new Command[] {
-			textInputCommand, macrosCommand, cursorCommand, scrollCommand,
+			textInputCommand, macrosCommand, 
 			tabCommand, spaceCommand, enterCommand, escCommand, backspaceCommand,
-			ctrlCommand, altCommand, showBindingsCommand,
+			ctrlCommand, altCommand,
+			cursorCommand, scrollCommand,
+			showBindingsCommand,
 			//settingsCommand,
 			disconnectCommand
 	};
@@ -253,9 +255,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		else if ( command == showBindingsCommand ) {
 			doShowBindings();
 		}
-		else if ( command == settingsCommand ) {
+		/*else if ( command == settingsCommand ) {
 			doSettings();
-		}
+		}*/
 	}
 
 	protected void keyPressed( int keycode ) {

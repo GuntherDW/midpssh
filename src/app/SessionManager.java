@@ -49,7 +49,7 @@ public class SessionManager {
 		if ( sessions == null ) {
 			try {
 				RecordStore rec = RecordStore.openRecordStore( RMS_NAME, false );
-				RecordEnumeration recs = rec.enumerateRecords( null, null, false );
+				RecordEnumeration recs = rec.enumerateRecords( null, new BytewiseRecordComparator(), false );
 				Vector connections = new Vector();
 
 				while ( recs.hasNextElement() ) {

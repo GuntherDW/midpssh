@@ -5,6 +5,8 @@
  *
  * Please visit http://javatelnet.org/ for updates and contact.
  * The file was changed by Radek Polak to work as midlet in MIDP 1.0
+ * 
+ * This file has been modified by Karl von Randow for MidpSSH.
  *
  * --LICENSE NOTICE--
  * This program is free software; you can redistribute it and/or
@@ -159,6 +161,8 @@ public abstract class TelnetProtocolHandler {
 
 	/** [IAC] Sub Begin */
 	private final static byte SB = (byte) 250;
+	
+	private final static byte NOP = (byte) 241;
 
 	/** [IAC] Sub End */
 	private final static byte SE = (byte) 240;
@@ -233,6 +237,14 @@ public abstract class TelnetProtocolHandler {
 		b[1] = code;
 		write( b );
 	}
+	
+	/**
+	 * Sends a Telnet NOP.
+	 * @throws IOException
+	 */
+	public void sendTelnetNOP() throws IOException {
+		sendTelnetControl( NOP );
+	}
 
 	/**
 	 * Handle an incoming IAC SB &lt;type&gt; &lt;bytes&gt; IAC SE
@@ -280,14 +292,15 @@ public abstract class TelnetProtocolHandler {
 	 * @param buf
 	 *            the data buffer to be sent
 	 */
-	public void transpose( byte[] buf ) throws IOException {
+	public void transpose( byte[] buf, int boffset, int length ) throws IOException {
 		int i;
-
+		
 		byte[] nbuf, xbuf;
 		int nbufptr = 0;
-		nbuf = new byte[buf.length * 2]; // FIXME: buffer overflows possible
+		int boffsetend = boffset + length;
+		nbuf = new byte[length * 2]; // FIXME: buffer overflows possible
 
-		for ( i = 0; i < buf.length; i++ ) {
+		for ( i = boffset; i < boffsetend; i++ ) {
 			switch ( buf[i] ) {
 				// Escape IAC twice in stream ... to be telnet protocol
 				// compliant

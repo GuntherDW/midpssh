@@ -1,3 +1,12 @@
+1.3.2
+
+terminal type preference, eg. vt320 etc
+joystick operates the cursor all the time rather than just in cursor mode
+FAILED Ssh2 lite < 64KB?
+rotated version - so it could be wider than tall
+Find and fix disconnection on blackberry using ssh2 when pressing backspace in typing mode
+Fixed 1.3.1 bug where you could no longer connect on MIDP 1.0 phones!
+
 1.3.1
 
 Changed select command code so that it shouldn't appear twice on the Blackberry,

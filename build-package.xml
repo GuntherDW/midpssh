@@ -60,9 +60,19 @@
 	</target>
 	
 	<target name="preprocess">
+		<mkdir dir="${build.dir}/src" />
 		<mkdir dir="${build.dir}/src-proc/${filename}"/>
+
+		<copy todir="${build.dir}/src">
+			<fileset dir="src">
+				<include name="**/*.java" />
+			</fileset>
+			<filterset>
+                <filter token="VERSION" value="${version}" />
+            </filterset>
+		</copy>
 		
-		<wtkpreprocess srcdir="src"
+		<wtkpreprocess srcdir="${build.dir}/src"
 					   destdir="${build.dir}/src-proc/${filename}"
 					   symbols="${preprocess.symbols},${preprocess.symbols.global},${preprocess.symbols.midp},${preprocess.symbols.extra}"
 					   verbose="false" />

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+
+<project name="MidpSSH" basedir="." default="all">
+
+	<taskdef resource="antenna.properties"/>
+	<property name="wtk.home" value="c:\WTK21"/>
+	<property name="wtk.midp.version" value="1.0"/>
+
+    <target name="jad">
+    	<!-- Create a JAD file. -->
+    	        
+        <wtkjad jadfile="FloydSSHx.jad"
+                jarfile="FloydSSHx.jar"
+                name="FloydSSHx"
+                vendor="XK72"
+                version="1.0.0">
+
+            <midlet name="FloydSSHx" class="app.Main"/>
+
+        </wtkjad>
+    </target>
+
+	<target name="clean">
+		<delete dir="classes"/>
+	</target>
+    	
+   	<target name="compile" depends="jad">
+        <mkdir dir="classes"/>
+
+        <!-- Compile everything, but don't preverify (yet). -->
+
+        <wtkbuild srcdir="src"
+                  destdir="classes"
+                  preverify="false"/>
+
+        <!-- Package everything. Most of the necessary information is
+             contained in the JAD file. Also preverify the result this
+             time. To obfuscate everything, set the corresponding
+             parameter to "true" (requires RetroGuard or ProGuard). The
+             version parameter increments the MIDlet-Version by one. -->
+	</target>
+   		
+	<target name="package" depends="compile">
+        <wtkpackage jarfile="FloydSSHx.jar"
+                    jadfile="FloydSSHx.jad"
+                    obfuscate="false"
+                    preverify="false">
+
+            <!-- Package our newly compiled classes. -->
+
+            <fileset dir="classes"/>
+        	<fileset dir="res"/>
+        </wtkpackage>
+    </target>
+		
+	<target name="obfuscate" depends="package">
+    	<!-- Obfuscate -->
+    	
+    	<wtkobfuscate jarfile="FloydSSHx.jar"
+        			  jadfile="FloydSSHx.jad"
+    				  obfuscator="proguard">
+    		<argument value="-dontshrink" />
+    		<argument value="-keepnames class ssh.Blowfish" />
+    		<argument value="-keepnames class ssh.DES" />
+    		<argument value="-keepnames class ssh.DES3" />
+    		<argument value="-keepnames class ssh.IDEA" />
+			<argument value="-keepnames class ssh.MD5" />
+			<argument value="-keepnames class ssh.MPN" />
+			<argument value="-keepnames class ssh.NONE" />
+		</wtkobfuscate>
+    </target>
+		
+	<target name="preverify">
+        <!-- Preverify. -->
+        <wtkpreverify jarfile="FloydSSHx.jar"
+                      jadfile="FloydSSHx.jad"/>
+    </target>
+	
+	<target name="run" depends="package,preverify">
+		<!-- Start the MIDlet suite -->
+
+    	<wtkrun jadfile="FloydSSHx.jad" device="DefaultColorPhone" wait="true"/>
+	</target>
+	<!--
+	<target name="runother">
+		<wtkrun jadfile="TelnetFloyd-1.1.jad" device="DefaultColorPhone" wait="true"/>
+	</target>
+	-->
+	<target name="all" depends="package,obfuscate,preverify">
+	
+	</target>
+
+</project>

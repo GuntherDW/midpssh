@@ -34,6 +34,8 @@ import javax.microedition.lcdui.Graphics;
  */
 
 public class DrawFont {
+	
+	private static final String FONT_RESOURCE = "/font";
 
 	public final int width = 4;
 
@@ -43,7 +45,7 @@ public class DrawFont {
 
 	public DrawFont() {
 		try {
-			InputStream in = getClass().getResourceAsStream( "font" );
+			InputStream in = getClass().getResourceAsStream( FONT_RESOURCE );
 			for ( int i = 33; i < 128; i++ ) {
 				int b = in.read();
 				int l = ( b & 3 ) + 2; // length could be 1,2,3 or 4; this is

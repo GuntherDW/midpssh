@@ -3,12 +3,13 @@
 <project name="MidpSSH" basedir="." default="all">
 
 	<taskdef resource="antenna.properties"/>
-	<!--
+	
 	<property name="wtk.home" value="c:\WTK21"/>
 	<property name="deviceName" value="DefaultColorPhone" />
-	-->
+	<!--
 	<property name="wtk.home" value="c:\SonyEricsson\J2ME_SDK\PC_Emulation\WTK2" />
 	<property name="deviceName" value="SonyEricsson_K700" />
+	-->
 	<property name="wtk.midp.version" value="1.0"/>
 	
 	<property name="jad.file" value="MidpSSH.jad"/>
@@ -67,7 +68,8 @@
     	
     	<wtkobfuscate jarfile="${jar.file}"
         			  jadfile="${jad.file}"
-    				  obfuscator="proguard">
+    				  obfuscator="proguard"
+    				  classpath="lib/proguard.jar">
     		<!--<argument value="-dontshrink" />-->
     		<argument value="-keep class ssh.Blowfish" />
     		<argument value="-keep class ssh.DES" />

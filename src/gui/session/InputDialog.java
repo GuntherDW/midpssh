@@ -39,7 +39,7 @@ import app.session.Session;
  */
 public class InputDialog extends TextBox implements Activatable, CommandListener {
 
-	private static Command enterCommand = new Command( "Enter", Command.ITEM, 1 );
+	private static Command enterCommand = new Command( "Enter", Command.OK, 1 );
 
 	private static Command typeCommand = new Command( "Type", Command.ITEM, 2 );
 

@@ -10,7 +10,7 @@
 	<property name="wtk.home" value="c:\SonyEricsson\J2ME_SDK\PC_Emulation\WTK2" />
 	<property name="deviceName" value="SonyEricsson_K700" />
 
-	<property name="wtk.midp.version" value="1.0"/>
+	<property name="wtk.midp.version" value="2.0"/>
 	
 	<property name="jad.file" value="MidpSSH.jad"/>
 	<property name="jar.file" value="MidpSSH.jar"/>

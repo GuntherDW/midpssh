@@ -24,6 +24,8 @@ package gui;
 
 import java.util.Vector;
 
+import javax.microedition.lcdui.Command;
+
 import app.SessionManager;
 import app.SessionSpec;
 import app.Main;
@@ -36,16 +38,15 @@ import app.session.TelnetSession;
  */
 public class SessionsMenu extends EditableMenu {
 
+	private static Command connectCommand = new Command( "Connect", Command.ITEM, 1 );
+	
 	private static NewSessionForm newConnectionForm = new NewSessionForm();
 
 	private static EditSessionForm editConnectionForm = new EditSessionForm();
 
-	/**
-	 * @param arg0
-	 * @param arg1
-	 */
 	public SessionsMenu() {
 		super( "Sessions" );
+		replaceSelectCommand( connectCommand );
 	}
 
 	protected void addItems() {

@@ -35,15 +35,17 @@ import app.Main;
  */
 public abstract class EditableMenu extends ExtendedList implements CommandListener, Activatable {
 
-	private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
+	protected static Command defaultSelectCommand = new Command( "Select", Command.ITEM, 1 );
 
-	private static Command newCommand = new Command( "New", Command.SCREEN, 8 );
+	protected static Command newCommand = new Command( "New", Command.SCREEN, 8 );
 
-	private static Command editCommand = new Command( "Edit", Command.ITEM, 9 );
+	protected static Command editCommand = new Command( "Edit", Command.ITEM, 9 );
 
-	private static Command deleteCommand = new Command( "Delete", Command.ITEM, 10 );
+	protected static Command deleteCommand = new Command( "Delete", Command.ITEM, 10 );
 
-	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
+	protected static Command backCommand = new Command( "Back", Command.BACK, 2 );
+	
+	protected Command selectCommand = defaultSelectCommand;
 	
 	private Activatable back;
 
@@ -59,6 +61,20 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 		setCommandListener( this );
 	}
 	
+	protected void replaceSelectCommand( Command selectCommand ) {
+		removeCommand( this.selectCommand );
+		this.selectCommand = selectCommand;
+		
+		try {
+			setSelectCommand( selectCommand );
+		}
+		catch ( Error e ) {
+			// MIDP 1.0
+			e.printStackTrace();
+			addCommand( selectCommand );
+		}
+	}
+	
 	protected abstract void addItems();
 	
 	/* (non-Javadoc)
@@ -66,6 +82,7 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 	 */
 	public void commandAction( Command command, Displayable displayable ) {
 		if ( command == List.SELECT_COMMAND || command == selectCommand ) {
+			System.out.println( "COMMAND " + command );
 			doSelect( getSelectedIndex() );
 		}
 		else if ( command == newCommand ) {

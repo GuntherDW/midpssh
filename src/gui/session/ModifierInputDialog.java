@@ -41,7 +41,7 @@ public class ModifierInputDialog extends TextBox implements Activatable, Command
 
 	private static Command enterCommand = new Command( "Type", Command.OK, 1 );
 
-	private static Command backCommand = new Command( "Back", Command.CANCEL, 2 );
+	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 
 	private Activatable back;
 

@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import telnet.Dimension;
 import telnet.TelnetProtocolHandler;
+import app.SessionSpec;
 import app.Settings;
 
 /**
@@ -40,7 +41,7 @@ public class TelnetSession extends Session implements SessionIOHandler {
 		emulation.setLocalEcho( true );
 	}
 	
-	public void connect( String host ) {
+	public void connect( SessionSpec spec ) {
         telnet = new TelnetProtocolHandler() {
             /** get the current terminal type */
             public String getTerminalType() {
@@ -76,7 +77,7 @@ public class TelnetSession extends Session implements SessionIOHandler {
             }
         };
         
-		super.connect( host, this );
+		super.connect( spec, this );
 	}
 
 	/*

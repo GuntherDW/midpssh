@@ -25,6 +25,7 @@ package app.session;
 import java.io.IOException;
 
 import ssh.SshIO;
+import app.SessionSpec;
 import app.Settings;
 
 /**
@@ -35,12 +36,12 @@ public class SshSession extends Session implements SessionIOHandler {
 
     private SshIO sshIO;
     
-	public void connect( String host, String username, String password ) {
+	public void connect( SessionSpec spec ) {
         sshIO = new SshIO( this );
-        sshIO.login = username;
-        sshIO.password = password;
+        sshIO.login = spec.username;
+        sshIO.password = spec.password;
         
-		super.connect( host, this );
+		super.connect( spec, this );
 	}
 
 	/*

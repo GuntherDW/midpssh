@@ -24,6 +24,7 @@ package app;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 
 /**
@@ -36,6 +37,14 @@ public class SessionSpec {
 	public static final String TYPE_TELNET = "telnet";
 	
 	public String alias, type, host, username, password;
+    
+//#ifdef blackberry
+    public static final int BLACKBERRY_CONN_TYPE_DEFAULT = 0;
+    public static final int BLACKBERRY_CONN_TYPE_DEVICESIDE = 1;
+    public static final int BLACKBERRY_CONN_TYPE_PROXY = 2;
+    
+    public int blackberryConnType;
+//#endif
 	
 	public void read( DataInputStream in ) throws IOException {
 		alias = in.readUTF();
@@ -43,6 +52,14 @@ public class SessionSpec {
 		host = in.readUTF();
 		username = in.readUTF();
 		password = in.readUTF();
+//#ifdef blackberry
+        try {
+            blackberryConnType = in.readInt();
+        }
+        catch ( EOFException e ) {
+            // Ignore as this is newly added and people's saved state won't have it, maybe remove this at a later stage
+        }
+//#endif
 	}
 
 	public void write( DataOutputStream out ) throws IOException {
@@ -51,5 +68,8 @@ public class SessionSpec {
 		out.writeUTF( host );
 		out.writeUTF( username );
 		out.writeUTF( password );
+//#ifdef blackberry
+        out.writeInt(blackberryConnType);
+//#endif
 	}
 }

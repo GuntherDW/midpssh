@@ -68,14 +68,14 @@ public class SessionsMenu extends EditableMenu {
 //#ifndef nossh
 				if ( conn.type.equals( SessionSpec.TYPE_SSH ) ) {
 					SshSession session = new SshSession();
-					session.connect( conn.host, conn.username, conn.password );
+					session.connect( conn );
 					Main.openSession( session );
 				}
 //#endif
 //#ifndef notelnet
 				if ( conn.type.equals( SessionSpec.TYPE_TELNET ) ) {
 					TelnetSession session = new TelnetSession();
-					session.connect( conn.host );
+					session.connect( conn );
 					Main.openSession( session );
 				}
 //#endif

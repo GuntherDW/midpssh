@@ -48,6 +48,10 @@ public class SessionForm extends EditableForm {
 	private TextField tfAlias, tfHost, tfUsername, tfPassword;
 
 	private ChoiceGroup cgType;
+    
+//#ifdef blackberry
+    private ChoiceGroup cgBlackberryConnType;
+//#endif
 
 	private static String[] typeNames = new String[] {
 			"SSH"
@@ -90,6 +94,14 @@ public class SessionForm extends EditableForm {
 		append( tfUsername );
 		append( tfPassword );
 		
+
+//#ifdef blackberry
+        cgBlackberryConnType = new ChoiceGroup( "Connection Type", ChoiceGroup.EXCLUSIVE);
+        cgBlackberryConnType.append( "Default", null );
+        cgBlackberryConnType.append( "BES", null );
+        append(cgBlackberryConnType);
+//#endif
+                
 		if ( edit ) {
 		    addCommand( saveCommand );
 		}
@@ -127,6 +139,20 @@ public class SessionForm extends EditableForm {
 			}
 			tfUsername.setString( conn.username );
 			tfPassword.setString( conn.password );
+            
+//#ifdef blackberry
+            switch ( conn.blackberryConnType ) {
+            case SessionSpec.BLACKBERRY_CONN_TYPE_DEFAULT:
+                cgBlackberryConnType.setSelectedIndex( 0, true );
+                break;
+            case SessionSpec.BLACKBERRY_CONN_TYPE_DEVICESIDE:
+                cgBlackberryConnType.setSelectedIndex( 0, true );
+                break;
+            case SessionSpec.BLACKBERRY_CONN_TYPE_PROXY:
+                cgBlackberryConnType.setSelectedIndex( 1, true );
+                break;
+            }
+//#endif
 		}
 	}
 
@@ -163,6 +189,11 @@ public class SessionForm extends EditableForm {
 				conn.host = host;
 				conn.username = username;
 				conn.password = password;
+
+//#ifdef blackberry
+                conn.blackberryConnType = selectedBlackberryConnType();
+//#endif
+                
 				SessionManager.replaceSession( connectionIndex, conn );
 
 				doBack();
@@ -184,12 +215,17 @@ public class SessionForm extends EditableForm {
 			conn.host = host;
 			conn.username = username;
 			conn.password = password;
+            
+//#ifdef blackberry
+            conn.blackberryConnType = selectedBlackberryConnType();
+//#endif
+            
 			SessionManager.addSession( conn );
 
 			doBack();
 		}
 	}
-
+    
 	protected boolean validateForm() {
 		String alias = tfAlias.getString();
 		String host = tfHost.getString();
@@ -238,4 +274,14 @@ public class SessionForm extends EditableForm {
 			return typeCodes[i];
 		}
 	}
+
+    protected int selectedBlackberryConnType() {
+        switch ( cgBlackberryConnType.getSelectedIndex() ) {
+        case 0:
+            return SessionSpec.BLACKBERRY_CONN_TYPE_DEFAULT;
+        case 1:
+            return SessionSpec.BLACKBERRY_CONN_TYPE_PROXY;
+        }
+        return SessionSpec.BLACKBERRY_CONN_TYPE_DEFAULT;
+    }
 }

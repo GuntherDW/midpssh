@@ -36,6 +36,7 @@ import javax.microedition.lcdui.AlertType;
 import terminal.Terminal;
 import terminal.VT320;
 import app.Main;
+import app.SessionSpec;
 
 /**
  * @author Karl von Randow
@@ -74,7 +75,7 @@ public abstract class Session implements Activatable {
 	 */
 	private OutputStream out;
 
-	private String host;
+	private SessionSpec spec;
 
 	private Thread reader, writer;
 
@@ -107,8 +108,8 @@ public abstract class Session implements Activatable {
 		writer = new Writer();
 	}
 
-	protected void connect( String host, SessionIOHandler filter ) {
-		this.host = host;
+	protected void connect( SessionSpec spec, SessionIOHandler filter ) {
+		this.spec = spec;
 		this.filter = filter;
 
 		writer.start();
@@ -164,11 +165,19 @@ public abstract class Session implements Activatable {
 	}
 	
 	private boolean connect() throws IOException {
+        String host = spec.host;
+        
 		emulation.putString( "Connecting to " + host + "..." );
 
 		String conn = "socket://" + host;
 		if ( host.indexOf( ":" ) == -1 )
 			conn += ":" + defaultPort();
+//#ifdef blackberry
+        if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_PROXY ) {
+            conn += ";deviceside=false";
+        }
+//#endif
+        
 		socket = (StreamConnection) Connector.open( conn, Connector.READ_WRITE, false );
 		in = socket.openDataInputStream();
 		out = socket.openDataOutputStream();

@@ -260,7 +260,7 @@ public abstract class SshIO {
 	
 	protected void sendDisconnect( int reason, String reasonStr ) throws IOException {
 //#ifdef ssh2
-		if ( crypto instanceof SshCrypto2 ) {
+		if ( useprotocol == 2 ) {
 			SshPacket2 pn = new SshPacket2( SSH_MSG_DISCONNECT );
 			pn.putInt32( reason );
 			pn.putString( reasonStr );
@@ -289,7 +289,7 @@ public abstract class SshIO {
 			dataToSend += str;
 		if ( cansenddata ) {
 //#ifdef ssh2
-			if ( crypto instanceof SshCrypto2 ) {
+			if ( useprotocol == 2 ) {
 				SshPacket2 pn = new SshPacket2( SSH2_MSG_CHANNEL_DATA );
 				pn.putInt32( 0 );
 				pn.putString( dataToSend );

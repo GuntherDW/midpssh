@@ -178,8 +178,6 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	private SpecialMenu menuSpecialKeys;
 //#endif
 	
-	//private static SessionSettingsMenu settingsMenu;
-
 	private ModifierInputDialog controlKeyDialog, altKeyDialog, shiftKeyDialog;
 
 	private Command[] currentCommands;

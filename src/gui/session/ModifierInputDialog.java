@@ -25,7 +25,7 @@ import app.Main;
  */
 public class ModifierInputDialog extends Form implements Activatable, CommandListener {
 
-	private static Command enterCommand = new Command( "Enter", Command.OK, 1 );
+	private static Command enterCommand = new Command( "Type", Command.OK, 1 );
 
 	private static Command backCommand = new Command( "Back", Command.CANCEL, 2 );
 

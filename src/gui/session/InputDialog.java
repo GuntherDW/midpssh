@@ -71,12 +71,12 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 			Session session = Main.currentSession();
 			if ( session != null ) {
 				session.typeString( getString() );
+				if ( command == enterCommand ) {
+					session.typeString( "\n" );
+				}
 				session.activate();
 			}
 			
-			if ( command == enterCommand ) {
-				session.typeString( "\n" );
-			}
 		}
 		
 		back.activate();

@@ -29,6 +29,13 @@ public class NewMacroSetForm extends MacroSetForm {
 		addCommand( createCommand );
 	}
 
+	/* (non-Javadoc)
+	 * @see gui.Activatable#activate()
+	 */
+	public void activate() {
+		tfName.setString( "" );
+		super.activate();
+	}
 	/*
 	 * (non-Javadoc)
 	 * 

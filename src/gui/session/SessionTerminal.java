@@ -46,7 +46,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	private static final Command tabCommand = new Command( "TAB", Command.ITEM, 20 );
 
-	private static final Command enterCommand = new Command( "ENTER", Command.ITEM, 21 );
+	private static final Command spaceCommand = new Command( "SPACE", Command.ITEM, 21 );
+
+	private static final Command enterCommand = new Command( "ENTER", Command.ITEM, 22 );
 
 	private static final Command escCommand = new Command( "ESC", Command.ITEM, 30 );
 
@@ -66,7 +68,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private static final Command[] commandsConnected = new Command[] {
 			textInputCommand, macrosCommand, cursorCommand, scrollCommand,
-			tabCommand, enterCommand, escCommand, backspaceCommand,
+			tabCommand, spaceCommand, enterCommand, escCommand, backspaceCommand,
 			ctrlCommand, altCommand, 
 			disconnectCommand
 	};
@@ -162,6 +164,9 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		}
 		else if ( command == tabCommand ) {
 			buffer.keyTyped( 0, '\t', 0 );
+		}
+		else if ( command == spaceCommand ) {
+			buffer.keyTyped( 0, ' ', 0 );
 		}
 		else if ( command == enterCommand ) {
 			buffer.keyTyped( 0, '\n', 0 );

@@ -70,11 +70,11 @@ public class TelnetSession extends Session {
 		 * @see terminal.TerminalIOListener#receiveData(byte[])
 		 */
 		public void receiveData( byte[] data, int offset, int length ) throws IOException {
-			telnet.inputfeed( data, length );
+			telnet.inputfeed( data, offset, length );
 			do {
-				length = telnet.negotiate( data );
+				length = telnet.negotiate( data, offset, length );
 				if ( length > 0 ) {
-					TelnetSession.this.receiveData( data, 0, length );
+					TelnetSession.this.receiveData( data, offset, length );
 				}
 			}
 			while ( length != -1 );

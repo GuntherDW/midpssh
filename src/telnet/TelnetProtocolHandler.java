@@ -362,20 +362,21 @@ public abstract class TelnetProtocolHandler {
 	 *            the amount of bytes in the buffer
 	 * @return a new buffer after negotiation
 	 */
-	public int negotiate( byte nbuf[] ) throws IOException {
+	public int negotiate( byte nbuf[], int noffset, int length ) throws IOException {
 		byte sbbuf[] = new byte[tempbuf.length];
 		int count = tempbuf.length;
 		byte[] buf = tempbuf;
 		byte sendbuf[] = new byte[3];
 		byte b, reply;
 		int sbcount = 0;
-		int boffset = 0, noffset = 0;
+		int boffset = 0;
+		int orignoffset = noffset;
 		boolean dobreak = false;
 
 		if ( count == 0 ) // buffer is empty.
 			return -1;
 
-		while ( !dobreak && ( boffset < count ) && ( noffset < nbuf.length ) ) {
+		while ( !dobreak && ( boffset < count ) && ( noffset < length ) ) {
 			b = buf[boffset++];
 			// of course, byte is a signed entity (-128 -> 127)
 			// but apparently the SGI Netscape 3.0 doesn't seem
@@ -623,14 +624,19 @@ public abstract class TelnetProtocolHandler {
 		byte[] xb = new byte[count - boffset];
 		System.arraycopy( tempbuf, boffset, xb, 0, count - boffset );
 		tempbuf = xb;
-		return noffset;
+		return ( noffset - orignoffset );
 	}
 
-	public void inputfeed( byte[] b, int len ) {
-		byte[] xb = new byte[tempbuf.length + len];
+	public void inputfeed( byte[] b, int offset, int len ) {
+		/*byte[] xb = new byte[tempbuf.length + len];
 
 		System.arraycopy( tempbuf, 0, xb, 0, tempbuf.length );
 		System.arraycopy( b, 0, xb, tempbuf.length, len );
+		tempbuf = xb;*/
+		byte[] xb = new byte[tempbuf.length + ( len - offset )];
+
+		System.arraycopy( tempbuf, 0, xb, 0, tempbuf.length );
+		System.arraycopy( b, offset, xb, tempbuf.length, len - offset );
 		tempbuf = xb;
 	}
 }

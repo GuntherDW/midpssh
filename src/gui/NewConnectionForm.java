@@ -30,6 +30,17 @@ public class NewConnectionForm extends ConnectionForm {
 		addCommand( createCommand );
 	}
 
+	/* (non-Javadoc)
+	 * @see gui.Activatable#activate()
+	 */
+	public void activate() {
+		tfAlias.setString( "" );
+		tfHost.setString( "" );
+		tfUsername.setString( "" );
+		tfPassword.setString( "" );
+		super.activate();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -31,6 +31,15 @@ public class NewMacroForm extends MacroForm {
 		addCommand( createCommand );
 	}
 
+	/* (non-Javadoc)
+	 * @see gui.Activatable#activate()
+	 */
+	public void activate() {
+		tfName.setString( "" );
+		tfValue.setString( "" );
+		super.activate();
+	}
+	
 	/**
 	 * @param macroSetIndex The macroSetIndex to set.
 	 */

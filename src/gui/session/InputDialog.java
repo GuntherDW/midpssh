@@ -29,6 +29,8 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 
 	private static Command typeCommand = new Command( "Type", Command.ITEM, 2 );
 
+	private static Command backCommand = new Command( "Back", Command.BACK, 3 );
+
 	private Activatable back;
 
 	public InputDialog() {
@@ -36,6 +38,7 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 
 		addCommand( enterCommand );
 		addCommand( typeCommand );
+		addCommand( backCommand );
 
 		setCommandListener( this );
 	}
@@ -64,15 +67,18 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 	 *      javax.microedition.lcdui.Displayable)
 	 */
 	public void commandAction( Command command, Displayable arg1 ) {
-		Session session = Main.currentSession();
-		if ( session != null ) {
-			session.typeString( getString() );
-			session.activate();
+		if ( command != backCommand ) {
+			Session session = Main.currentSession();
+			if ( session != null ) {
+				session.typeString( getString() );
+				session.activate();
+			}
+			
+			if ( command == enterCommand ) {
+				session.typeString( "\n" );
+			}
 		}
 		
-		if ( command == enterCommand ) {
-			session.typeString( "\n" );
-		}
 		back.activate();
 	}
 }

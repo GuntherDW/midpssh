@@ -56,6 +56,7 @@ public class Main extends MIDlet {
         if ( !paused ) {
             setDisplay( mainMenu );
         }
+        paused = false;
 	}
 
 	/** Handle pausing the MIDlet */

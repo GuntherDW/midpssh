@@ -312,7 +312,9 @@ public abstract class TelnetProtocolHandler {
 				// We need to heed RFC 854. LF (\n) is 10, CR (\r) is 13
 				// we assume that the Terminal sends \n for lf+cr and \r for
 				// just cr
+                // KARL 27/1/2005 this is not the case for MidpSSH - we send just cr for crlf
 				// linefeed+carriage return is CR LF */
+                case 13: // \r added by karl 27/1/2005
 				case 10: // \n
 					if ( receivedDX[TELOPT_BINARY + 128] != DO ) {
 						while ( nbuf.length - nbufptr < crlf.length ) {
@@ -330,6 +332,7 @@ public abstract class TelnetProtocolHandler {
 					}
 					break;
 				// carriage return is CR NUL */
+                /*
 				case 13: // \r
 					if ( receivedDX[TELOPT_BINARY + 128] != DO ) {
 						while ( nbuf.length - nbufptr < cr.length ) {
@@ -345,6 +348,7 @@ public abstract class TelnetProtocolHandler {
 						nbuf[nbufptr++] = buf[i];
 					}
 					break;
+                */
 				// all other characters are just copied
 				default:
 					nbuf[nbufptr++] = buf[i];

@@ -275,6 +275,7 @@ public class SessionForm extends EditableForm {
 		}
 	}
 
+//#ifdef blackberry
     protected int selectedBlackberryConnType() {
         switch ( cgBlackberryConnType.getSelectedIndex() ) {
         case 0:
@@ -284,4 +285,5 @@ public class SessionForm extends EditableForm {
         }
         return SessionSpec.BLACKBERRY_CONN_TYPE_DEFAULT;
     }
+//#endif
 }

@@ -19,7 +19,6 @@ import javax.microedition.lcdui.Displayable;
 import terminal.KeyEvent;
 import terminal.Terminal;
 import terminal.vt320;
-
 import app.Main;
 import app.session.Session;
 

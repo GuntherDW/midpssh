@@ -6,8 +6,6 @@
  */
 package gui.session.macros;
 
-import gui.Activatable;
-
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
 

@@ -6,7 +6,6 @@
  */
 package gui.session.macros;
 
-import gui.Activatable;
 import gui.EditableForm;
 
 import javax.microedition.lcdui.TextField;

@@ -10,7 +10,6 @@ import gui.EditableMenu;
 
 import java.util.Vector;
 
-import app.Main;
 import app.session.MacroSetManager;
 
 /**

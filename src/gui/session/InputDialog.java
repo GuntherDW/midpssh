@@ -14,9 +14,8 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.TextBox;
 import javax.microedition.lcdui.TextField;
 
-import app.Main;
-
 import terminal.vt320;
+import app.Main;
 
 /**
  * @author Karl

@@ -113,7 +113,7 @@ public class TelnetSession extends Session {
 		 * 
 		 * @see terminal.TerminalIOListener#sendData(byte[])
 		 */
-		public synchronized void sendData( byte[] data, int offset, int length ) throws IOException {
+		public void sendData( byte[] data, int offset, int length ) throws IOException {
 			if ( length > 0 ) {
 				telnet.transpose( data, offset, length );
 			}

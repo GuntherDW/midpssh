@@ -352,7 +352,7 @@ public class VDUBuffer {
 	 * @see #SCROLL_DOWN
 	 * @see #redraw
 	 */
-	public synchronized void insertLine( int l, int n, boolean scrollDown ) {
+	public void insertLine( int l, int n, boolean scrollDown ) {
 
 		l = checkBounds( l, 0, height - 1 );
 

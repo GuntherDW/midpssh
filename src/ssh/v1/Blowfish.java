@@ -129,7 +129,7 @@ public final class Blowfish extends Cipher {
 
 	}
 
-	public synchronized void encrypt( byte[] src, int srcOff, byte[] dest, int destOff, int len ) {
+	public void encrypt( byte[] src, int srcOff, byte[] dest, int destOff, int len ) {
 		int[] out = new int[2];
 		int iv0 = IV0;
 		int iv1 = IV1;
@@ -190,7 +190,7 @@ public final class Blowfish extends Cipher {
 		out[1] = L;
 	}
 
-	public synchronized void decrypt( byte[] src, int srcOff, byte[] dest, int destOff, int len ) {
+	public void decrypt( byte[] src, int srcOff, byte[] dest, int destOff, int len ) {
 		int[] out = new int[2];
 		int iv0 = IV0;
 		int iv1 = IV1;

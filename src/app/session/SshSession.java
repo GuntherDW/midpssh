@@ -93,7 +93,7 @@ public class SshSession extends Session {
 		 * 
 		 * @see app.session.SessionIOListener#sendData(byte[], int, int)
 		 */
-		public synchronized void sendData( byte[] data, int offset, int length ) throws IOException {
+		public void sendData( byte[] data, int offset, int length ) throws IOException {
 			if ( length > 0 ) {
 				sshIO.sendData( data, offset, length );
 			}

@@ -146,7 +146,8 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 
 	private void doAbout() {
 		new MessageForm( "About MidpSSH",
-				"MidpSSH is a Telnet and SSH application for Java compatible phones and other mobile devices.\n\n" +
+				"Version @VERSION@\n\n" +
+		        "MidpSSH is a Telnet and SSH application for Java compatible phones and other mobile devices.\n\n" +
 				"Please visit the project website for more information:\n" +
 				"http://www.xk72.com/midpssh/\n\n" +
 				"MidpSSH is developed by Karl von Randow. MidpSSH is based upon " +

@@ -91,7 +91,7 @@
 		<wtkrun jadfile="TelnetFloyd-1.1.jad" device="DefaultColorPhone" wait="true"/>
 	</target>
 	-->
-	<target name="all" depends="package,obfuscate,preverify">
+	<target name="all" depends="clean,package,obfuscate,preverify">
 	
 	</target>
 

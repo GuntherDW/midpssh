@@ -47,7 +47,7 @@ public class SessionSettingsMenu extends SettingsMenu {
 	}
 	
 	private void doScreenSize() {
-		ScreenSizeForm screenSizeForm = new ScreenSizeForm();
+		TerminalSettingsForm screenSizeForm = new TerminalSettingsForm();
 		screenSizeForm.activate( this );
 	}
 }

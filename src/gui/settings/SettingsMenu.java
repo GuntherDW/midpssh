@@ -39,7 +39,7 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 
 	//private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
 	
-	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
+	private static final Command backCommand = new Command( "Back", Command.BACK, 2 );
 	
 	protected static final int SETTINGS_OPTIONS = 2;
 	
@@ -48,9 +48,7 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 	protected SettingsMenu( String title ) {
 		super( title, List.IMPLICIT );
 		
-		append( "Background Colour", null );
-		append( "Foreground Colour", null );
-		append( "Screen Size", null );
+		append( "Terminal Settings", null );
 		
 		//setSelectCommand( selectCommand );
 		addCommand( backCommand );
@@ -76,15 +74,7 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 	protected void doSelect( int i ) {
 		switch ( i ) {
 			case 0:
-				ColourForm backForm = new BackColourForm();
-				backForm.activate( this );
-				break;
-			case 1:
-				ColourForm foreForm = new ForeColourForm();
-				foreForm.activate( this );
-				break;
-			case 2:
-				ScreenSizeForm screenSizeForm = new ScreenSizeForm();
+				TerminalSettingsForm screenSizeForm = new TerminalSettingsForm();
 				screenSizeForm.activate( this );
 				break;
 		}

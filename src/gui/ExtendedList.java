@@ -35,8 +35,8 @@ public class ExtendedList extends List {
 	 * @param arg0
 	 * @param arg1
 	 */
-	public ExtendedList( String arg0, int arg1 ) {
-		super( arg0, arg1 );
+	public ExtendedList( String title, int mode ) {
+		super( title, mode );
 	}
 
 //#ifndef midp2

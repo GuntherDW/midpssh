@@ -741,12 +741,10 @@ public abstract class vt320 extends VDUBuffer {
 	/**
 	 * main keytyping event handler...
 	 */
-	public void keyPressed( int keyCode, char keyChar, int modifiers ) {
+	public void keyPressed( int keyCode, int modifiers ) {
 		boolean control = ( modifiers & KEY_CONTROL ) != 0;
 		boolean shift = ( modifiers & KEY_SHIFT ) != 0;
 		boolean alt = ( modifiers & KEY_ALT ) != 0;
-
-		int keychr = keyChar;
 
 		int xind;
 		String fmap[];
@@ -1098,7 +1096,7 @@ public abstract class vt320 extends VDUBuffer {
 //#endif
 
 		if ( !( ( keyChar == 8 ) || ( keyChar == 127 ) || ( keyChar == '\r' ) || ( keyChar == '\n' ) ) ) {
-			// KARL support for control codes
+			// KARL support for control codes and shift keys
 			if ( control ) {
 				if ( keyChar >= 'a' && keyChar <= 'z' ) {
 					keyChar = (char) ( keyChar - 'a' + 'A' );
@@ -1118,6 +1116,12 @@ public abstract class vt320 extends VDUBuffer {
 					}
 					write( "" + keyChar );
 				}
+			}
+			else if ( shift ) {
+			    if ( keyChar >= 'a' && keyChar <= 'z' ) {
+					keyChar = (char) ( keyChar - 'a' + 'A' );
+				}
+			    write( "" + keyChar );
 			}
 			else {
 				write( "" + keyChar );

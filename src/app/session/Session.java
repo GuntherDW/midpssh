@@ -151,13 +151,14 @@ public abstract class Session implements SessionIOHandler, Activatable {
 	
 	public void typeString( String str ) {
 	    emulation.stringTyped( str );
-		/*for ( int i = 0; i < str.length(); i++ ) {
-			emulation.keyTyped( 0, str.charAt( i ), 0 );
-		}*/
 	}
 	
-	public void typeChar( char c, int modifier ) {
-		emulation.keyTyped( 0, c, modifier );
+	public void typeChar( char c, int modifiers ) {
+		emulation.keyTyped( 0, c, modifiers );
+	}
+	
+	public void typeKey( int keyCode, int modifiers ) {
+	    emulation.keyPressed( keyCode, modifiers );
 	}
 	
 	private boolean connect() throws IOException {

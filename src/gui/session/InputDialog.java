@@ -43,7 +43,9 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 
 	private static Command typeCommand = new Command( "Type", Command.ITEM, 2 );
 
-	private static Command backCommand = new Command( "Back", Command.BACK, 3 );
+	private static Command tabCommand = new Command( "TAB", Command.ITEM, 3 );
+
+	private static Command backCommand = new Command( "Back", Command.BACK, 4 );
 
 	private Activatable back;
 
@@ -52,6 +54,7 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 
 		addCommand( enterCommand );
 		addCommand( typeCommand );
+		addCommand( tabCommand );
 		addCommand( backCommand );
 
 		setCommandListener( this );
@@ -91,6 +94,9 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 			    commandBuffer.append( getString() );
 				if ( command == enterCommand ) {
 				    commandBuffer.append( '\n' );
+				}
+				if ( command == tabCommand ) {
+				    commandBuffer.append( '\t' );
 				}
 				session.typeString( commandBuffer.toString() );
 				session.activate();

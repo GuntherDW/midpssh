@@ -52,11 +52,15 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	private static final int MODE_CURSOR = 2;
 
 	private static final int MODE_SCROLL = 3;
+
+	private static final int MODE_TYPING = 4;
 	
 	private static int commandPriority = 1;
 
 	private static final Command textInputCommand = new Command( "Input", Command.ITEM, commandPriority++ );
 
+	private static final Command typeCommand = new Command( "Type", Command.ITEM, commandPriority++ );
+	
 	private static final Command macrosCommand = new Command( "Macros", Command.ITEM, commandPriority++ );
 
 	private static final Command tabCommand = new Command( "TAB", Command.ITEM, commandPriority++ );
@@ -67,15 +71,19 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	private static final Command escCommand = new Command( "ESC", Command.ITEM, commandPriority++ );
 
-	private static final Command backspaceCommand = new Command( "BACKSPACE", Command.ITEM, commandPriority++ );
+	//private static final Command backspaceCommand = new Command( "BACKSPACE", Command.ITEM, commandPriority++ );
 
 	private static final Command ctrlCommand = new Command( "CTRL", Command.ITEM, commandPriority++ );
 
 	private static final Command altCommand = new Command( "ALT", Command.ITEM, commandPriority++ );
+	
+	private static final Command shiftCommand = new Command( "SHIFT", Command.ITEM, commandPriority++ );
 
-	private static final Command cursorCommand = new Command( "Cursor", Command.ITEM, commandPriority++ );
+	private static final Command specialCommand = new Command( "Special", Command.ITEM, commandPriority++ );
+	
+	//private static final Command cursorCommand = new Command( "Cursor", Command.ITEM, commandPriority++ );
 
-	private static final Command scrollCommand = new Command( "Scroll", Command.ITEM, commandPriority++ );
+	//private static final Command scrollCommand = new Command( "Scroll", Command.ITEM, commandPriority++ );
 
 	private static final Command backCommand = new Command( "Back", Command.BACK, commandPriority++ );
 	
@@ -90,10 +98,19 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	};
 	
 	private static final Command[] commandsConnected = new Command[] {
-			textInputCommand, macrosCommand, 
-			tabCommand, spaceCommand, enterCommand, escCommand, backspaceCommand,
-			ctrlCommand, altCommand,
-			cursorCommand, scrollCommand,
+			textInputCommand,
+			typeCommand,
+			macrosCommand, 
+			tabCommand,
+			spaceCommand,
+			enterCommand,
+			escCommand, 
+			//backspaceCommand,
+			ctrlCommand,
+			altCommand,
+			shiftCommand,
+			//cursorCommand, scrollCommand,
+			specialCommand,
 			showBindingsCommand,
 			//settingsCommand,
 			disconnectCommand
@@ -116,9 +133,11 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 	
 	private static MacroSetsMenu macrosMenu;
 	
+	private SpecialMenu menuSpecialKeys;
+	
 	//private static SessionSettingsMenu settingsMenu;
 
-	private ModifierInputDialog controlKeyDialog, altKeyDialog;
+	private ModifierInputDialog controlKeyDialog, altKeyDialog, shiftKeyDialog;
 
 	private Command[] currentCommands;
 
@@ -183,6 +202,7 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 				break;
 			case MODE_CURSOR:
 			case MODE_SCROLL:
+			case MODE_TYPING:
 				changeCurrentCommands( commandsCursor );
 				break;
 		}
@@ -239,20 +259,32 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		else if ( command == escCommand ) {
 			buffer.keyTyped( 0, (char) 27, 0 );
 		}
-		else if ( command == backspaceCommand ) {
-			buffer.keyPressed( 8, '\b', 0 );
-		}
+		/*else if ( command == backspaceCommand ) {
+			buffer.keyPressed( KeyEvent.VK_BACK_SPACE, 0 );
+		}*/
 		else if ( command == ctrlCommand ) {
 			doControlKeyInput();
 		}
 		else if ( command == altCommand ) {
 			doAltKeyInput();
 		}
-		else if ( command == cursorCommand ) {
+		else if ( command == shiftCommand ) {
+			doShiftKeyInput();
+		}
+		/*else if ( command == cursorCommand ) {
 			doCursor();
 		}
 		else if ( command == scrollCommand ) {
 			doScroll();
+		}*/
+		else if ( command == typeCommand ) {
+		    doTyping();
+		}
+		else if ( command == specialCommand ) {
+		    if ( menuSpecialKeys == null ) {
+		        menuSpecialKeys = new SpecialMenu();
+		    }
+		    menuSpecialKeys.activate( this );
 		}
 		else if ( command == backCommand ) {
 			changeMode( MODE_CONNECTED );
@@ -267,15 +299,26 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 
 	protected void keyPressed( int keycode ) {
 		switch ( mode ) {
-			case MODE_CONNECTED:
-				keyPressedConnected( keycode );
-				break;
 			case MODE_CURSOR:
 				keyPressedCursor( keycode );
 				break;
 			case MODE_SCROLL:
 				keyPressedScroll( keycode );
 				break;
+			case MODE_TYPING:
+			    keyPressedTyping( keycode );
+			    break;
+		}
+	}
+
+	protected void keyReleased( int keycode ) {
+		switch ( mode ) {
+			case MODE_CONNECTED:
+				keyReleasedConnected( keycode );
+				break;
+			case MODE_TYPING:
+			    keyReleasedTyping( keycode );
+			    break;
 		}
 	}
 
@@ -290,26 +333,8 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		}
 	}
 
-	protected void keyPressedConnected( int keycode ) {
+	protected void keyReleasedConnected( int keycode ) {
 		int index = -1;
-		/*
-		// Map keys to actions
-		if ( keycode >= Canvas.KEY_NUM1 && keycode <= Canvas.KEY_NUM9 ) {
-			index = keycode - Canvas.KEY_NUM1;
-		}
-		else {
-			switch ( keycode ) {
-				case Canvas.KEY_STAR:
-					index = 10;
-					break;
-				case Canvas.KEY_NUM0:
-					index = 11;
-					break;
-				case Canvas.KEY_POUND:
-					index = 12;
-					break;
-			}
-		}*/
 		
 		for ( int i = 0; i < bindingKeys.length; i++ ) {
 			if ( bindingKeys[i] == keycode ) {
@@ -321,6 +346,63 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		if ( index >= 0 && index < commandsConnected.length ) {
 			commandAction( commandsConnected[index], this );
 		}
+		else {
+		    if ( keycode == KEY_BACKSPACE ) {
+		        // Backspace
+		        buffer.keyPressed( KeyEvent.VK_BACK_SPACE, 0 );
+		    }
+		}
+	}
+	
+	private static final int KEY_SHIFT = 137; // Keycode for shift on blackberry
+	
+	private static final int KEY_BACKSPACE = -8; // Keycode for clear on sony
+	
+	private boolean typingShift;
+	
+	protected void keyPressedTyping( int keycode ) {
+	    if ( keycode == KEY_SHIFT ) {
+	        typingShift = true;
+	    }
+	}
+	
+	protected void keyReleasedTyping( int keycode ) {
+	    if ( keycode > 0 && keycode < 128 ) {
+	        char c = (char) keycode;
+	        if ( typingShift ) {
+	            c = shiftChar( c );
+	        }
+	        
+            buffer.keyTyped( keycode, c, 0 );
+	    }
+	    else if ( keycode == KEY_BACKSPACE ) {
+	        // Backspace
+	        buffer.keyPressed( KeyEvent.VK_BACK_SPACE, 0 );
+	    }
+	    else if ( keycode == KEY_SHIFT ) {
+	        typingShift = false;
+	    }
+	}
+	
+	private char shiftChar( char c ) {
+	    if ( c >= 'a' && c <= 'z' ) {
+	        return (char) ( c - 'a' + 'A' );
+	    }
+	    else {
+	        switch ( c ) {
+	        	case '0': return ')';
+	        	case '1': return '!';
+	        	case '2': return '@';
+	        	case '3': return '#';
+	        	case '4': return '$';
+	        	case '5': return '%';
+	        	case '6': return '^';
+	        	case '7': return '&';
+	        	case '8': return '*';
+	        	case '9': return '(';
+	        	default: return c;
+	        }
+	    }
 	}
 	
 	private int gameKeysToNumeric( int keycode ) {
@@ -348,17 +430,17 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		
 		switch ( keycode ) {
 			case Canvas.KEY_NUM2:
-				buffer.keyPressed( KeyEvent.VK_UP, (char) 65535, vt320.KEY_ACTION );
+				buffer.keyPressed( KeyEvent.VK_UP, vt320.KEY_ACTION );
 				break;
 			case Canvas.KEY_NUM8:
 			case Canvas.KEY_NUM0:
-				buffer.keyPressed( KeyEvent.VK_DOWN, (char) 65535, vt320.KEY_ACTION );
+				buffer.keyPressed( KeyEvent.VK_DOWN, vt320.KEY_ACTION );
 				break;
 			case Canvas.KEY_NUM4:
-				buffer.keyPressed( KeyEvent.VK_LEFT, (char) 65535, vt320.KEY_ACTION );
+				buffer.keyPressed( KeyEvent.VK_LEFT, vt320.KEY_ACTION );
 				break;
 			case Canvas.KEY_NUM6:
-				buffer.keyPressed( KeyEvent.VK_RIGHT, (char) 65535, vt320.KEY_ACTION );
+				buffer.keyPressed( KeyEvent.VK_RIGHT, vt320.KEY_ACTION );
 				break;
 			case Canvas.KEY_NUM1:
 				keyPressedCursor( Canvas.UP );
@@ -464,12 +546,23 @@ public class SessionTerminal extends Terminal implements Activatable, CommandLis
 		altKeyDialog.activate( this );
 	}
 
-	private void doCursor() {
+	private void doShiftKeyInput() {
+		if ( shiftKeyDialog == null ) {
+		    shiftKeyDialog = new ModifierInputDialog( "Shift Keys", vt320.KEY_SHIFT );
+		}
+		shiftKeyDialog.activate( this );
+	}
+
+	public void doCursor() {
 		changeMode( MODE_CURSOR );
 	}
 
-	private void doScroll() {
+	public void doScroll() {
 		changeMode( MODE_SCROLL );
+	}
+
+	public void doTyping() {
+		changeMode( MODE_TYPING );
 	}
 	
 	private void doShowBindings() {

@@ -75,9 +75,9 @@ public abstract class vt320 extends VDUBuffer {
 		/* the 3x2 keyblock on PC keyboards */
 		Insert = new String[4];
 		Remove = new String[4];
-		KeyHome = new String[4];
-		KeyEnd = new String[4];
 //#endif
+        KeyHome = new String[4];
+        KeyEnd = new String[4];
         NextScn = new String[4];
         PrevScn = new String[4];
 		Escape = new String[4];
@@ -86,9 +86,9 @@ public abstract class vt320 extends VDUBuffer {
 //#ifndef simplevt320
 		Insert[0] = Insert[1] = Insert[2] = Insert[3] = "\u001b[2~";
 		Remove[0] = Remove[1] = Remove[2] = Remove[3] = "\u001b[3~";
-		KeyHome[0] = KeyHome[1] = KeyHome[2] = KeyHome[3] = "\u001b[H";
-		KeyEnd[0] = KeyEnd[1] = KeyEnd[2] = KeyEnd[3] = "\u001b[F";
 //#endif
+        KeyHome[0] = KeyHome[1] = KeyHome[2] = KeyHome[3] = "\u001b[H";
+        KeyEnd[0] = KeyEnd[1] = KeyEnd[2] = KeyEnd[3] = "\u001b[F";
         PrevScn[0] = PrevScn[1] = PrevScn[2] = PrevScn[3] = "\u001b[5~";
         NextScn[0] = NextScn[1] = NextScn[2] = NextScn[3] = "\u001b[6~";
 		Escape[0] = Escape[1] = Escape[2] = Escape[3] = "\u001b";
@@ -627,10 +627,10 @@ public abstract class vt320 extends VDUBuffer {
 
 	private String Help, Do, Find, Select;
 
-	private String KeyHome[], KeyEnd[], Insert[], Remove[];
+	private String Insert[], Remove[];
 //#endif
 	
-	private String PrevScn[], NextScn[], Escape[], BackSpace[], NUMDot[], NUMPlus[];
+	private String KeyHome[], KeyEnd[], PrevScn[], NextScn[], Escape[], BackSpace[], NUMDot[], NUMPlus[];
 
 	private String osc, dcs; /* to memorize OSC & DCS control sequence */
 
@@ -857,13 +857,13 @@ public abstract class vt320 extends VDUBuffer {
 					}
 				}
 				break;
-//#ifndef simplevt320
 			case KeyEvent.VK_HOME:
 				writeSpecial( KeyHome[xind] );
 				break;
 			case KeyEvent.VK_END:
 				writeSpecial( KeyEnd[xind] );
 				break;
+//#ifndef simplevt320
 			case KeyEvent.VK_NUM_LOCK:
 				if ( vms && control ) {
 					writeSpecial( PF1 );

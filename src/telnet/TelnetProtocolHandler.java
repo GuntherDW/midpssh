@@ -244,8 +244,7 @@ public abstract class TelnetProtocolHandler {
      * @param sbcount
      *            nr of bytes. may be 0 too.
      */
-    private void handle_sb( byte type, byte[] sbdata, int sbcount )
-            throws IOException {
+    private void handle_sb( byte type, byte[] sbdata, int sbcount ) throws IOException {
         switch ( type ) {
             case TELOPT_TTYPE:
                 if ( sbcount > 0 && sbdata[0] == TELQUAL_SEND ) {
@@ -443,8 +442,7 @@ public abstract class TelnetProtocolHandler {
                             reply = DONT;
                             break;
                     }
-                    if ( reply != sentDX[b + 128]
-                            || WILL != receivedWX[b + 128] ) {
+                    if ( reply != sentDX[b + 128] || WILL != receivedWX[b + 128] ) {
                         sendbuf[0] = IAC;
                         sendbuf[1] = reply;
                         sendbuf[2] = b;
@@ -473,8 +471,7 @@ public abstract class TelnetProtocolHandler {
                             reply = DONT;
                             break;
                     }
-                    if ( reply != sentDX[b + 128]
-                            || WONT != receivedWX[b + 128] ) {
+                    if ( reply != sentDX[b + 128] || WONT != receivedWX[b + 128] ) {
                         sendbuf[0] = IAC;
                         sendbuf[1] = reply;
                         sendbuf[2] = b;
@@ -518,11 +515,8 @@ public abstract class TelnetProtocolHandler {
                             sendbuf[2] = TELOPT_NAWS;
                             write( sendbuf );
                             write( new byte[] {
-                                    IAC, SB, TELOPT_NAWS,
-                                    (byte) ( size.width >> 8 ),
-                                    (byte) ( size.width & 0xff ),
-                                    (byte) ( size.height >> 8 ),
-                                    (byte) ( size.height & 0xff ), IAC, SE
+                                    IAC, SB, TELOPT_NAWS, (byte) ( size.width >> 8 ), (byte) ( size.width & 0xff ),
+                                    (byte) ( size.height >> 8 ), (byte) ( size.height & 0xff ), IAC, SE
                             } );
                             break;
                         default:
@@ -558,8 +552,7 @@ public abstract class TelnetProtocolHandler {
                             reply = WONT;
                             break;
                     }
-                    if ( reply != sentWX[b + 128]
-                            || DONT != receivedDX[b + 128] ) {
+                    if ( reply != sentWX[b + 128] || DONT != receivedDX[b + 128] ) {
                         write( new byte[] {
                                 IAC, reply, b
                         } );

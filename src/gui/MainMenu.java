@@ -21,8 +21,7 @@ import app.Main;
  */
 public class MainMenu extends List implements CommandListener {
 
-    private static Command selectCommand = new Command( "Select", Command.ITEM,
-            1 );
+    private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
 
     private static Command quitCommand = new Command( "Quit", Command.EXIT, 2 );
 

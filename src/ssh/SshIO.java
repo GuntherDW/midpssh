@@ -141,8 +141,7 @@ public abstract class SshIO {
 
     private final byte SSH2_MSG_KEXDH_REPLY = 31;
 
-    private String kexalgs, hostkeyalgs, encalgs2c, encalgc2s, macalgs2c,
-            macalgc2s, compalgc2s, compalgs2c, langc2s, langs2;
+    private String kexalgs, hostkeyalgs, encalgs2c, encalgc2s, macalgs2c, macalgc2s, compalgc2s, compalgs2c, langc2s, langs2;
 
     private int outgoingseq = 0, incomingseq = 0;
 
@@ -206,8 +205,7 @@ public abstract class SshIO {
         crypto = null;
     }
 
-    synchronized public void sendData( byte[] data, int offset, int length )
-            throws IOException {
+    synchronized public void sendData( byte[] data, int offset, int length ) throws IOException {
         String str = new String( data );
         //    if (debug > 1) System.out.println("SshIO.send(" + str + ")");
         if ( dataToSend == null )
@@ -226,8 +224,7 @@ public abstract class SshIO {
      * Returns an array of bytes that will be displayed.
      *  
      */
-    public byte[] handleSSH( byte buff[], int boffset, int length )
-            throws IOException {
+    public byte[] handleSSH( byte buff[], int boffset, int length ) throws IOException {
         byte[] rest;
         String result;
 
@@ -279,8 +276,7 @@ public abstract class SshIO {
                     }
                     // this is how we tell the remote server what protocol we
                     // use.
-                    idstr_sent = "SSH-" + mymajor + "." + myminor + "-"
-                            + idstr_sent;
+                    idstr_sent = "SSH-" + mymajor + "." + myminor + "-" + idstr_sent;
                     write( idstr_sent.getBytes() );
 
                     if ( useprotocol == 2 )
@@ -291,8 +287,7 @@ public abstract class SshIO {
             }
             if ( boffset == length )
                 return "".getBytes();
-            return "Must not have left over data after PHASE_INIT!\n"
-                    .getBytes();
+            return "Must not have left over data after PHASE_INIT!\n".getBytes();
         }
 
         result = "";
@@ -313,13 +308,11 @@ public abstract class SshIO {
                 // the packet is finished, otherwise we would not have got a
                 // rest
                 if ( useprotocol == 1 ) {
-                    result = result
-                            + handlePacket1( (SshPacket1) currentpacket );
+                    result = result + handlePacket1( (SshPacket1) currentpacket );
                     currentpacket = new SshPacket1( crypto );
                 }
                 else {
-                    result = result
-                            + handlePacket2( (SshPacket2) currentpacket );
+                    result = result + handlePacket2( (SshPacket2) currentpacket );
                     currentpacket = new SshPacket2( crypto );
                 }
             }
@@ -442,8 +435,7 @@ public abstract class SshIO {
                     result = "\n\rSSH-RSA (" + rsa_n + "," + rsa_e + ")\n\r";
                 }
                 else {
-                    return "\n\rUnsupported kexdh algorithm " + keytype
-                            + "!\n\r";
+                    return "\n\rUnsupported kexdh algorithm " + keytype + "!\n\r";
                 }
                 BigInteger dhserverpub = p.getMpInt();
                 result += "DH Server Pub: " + dhserverpub + "\n\r";
@@ -514,10 +506,8 @@ public abstract class SshIO {
                 // We have completely received the PUBLIC_KEY
                 // We prepare the answer ...
 
-                String ret = Send_SSH_CMSG_SESSION_KEY( anti_spoofing_cookie,
-                        server_key_public_modulus, host_key_public_modulus,
-                        supported_ciphers_mask, server_key_public_exponent,
-                        host_key_public_exponent );
+                String ret = Send_SSH_CMSG_SESSION_KEY( anti_spoofing_cookie, server_key_public_modulus, host_key_public_modulus,
+                        supported_ciphers_mask, server_key_public_exponent, host_key_public_exponent );
                 if ( ret != null )
                     return ret;
 
@@ -601,7 +591,7 @@ public abstract class SshIO {
                 }
 
                 if ( lastPacketSentType == SSH_CMSG_REQUEST_PTY ) {// pty
-                                                                   // accepted
+                    // accepted
                     // !!
                     /*
                      * we can send data with a pty accepted ... no need for a
@@ -648,7 +638,7 @@ public abstract class SshIO {
                 return p.getString();
 
             case SSH_SMSG_STDERR_DATA: //receive some error data from the
-                                       // server
+                // server
                 //	if(debug > 1)
                 str = "Error : " + p.getString();
                 //        System.out.println("SshIO.handlePacket : " + "STDERR_DATA " +
@@ -715,9 +705,8 @@ public abstract class SshIO {
     // Turn the encryption on (initialise the block cipher)
     //
 
-    private String Send_SSH_CMSG_SESSION_KEY( byte[] anti_spoofing_cookie,
-            byte[] server_key_public_modulus, byte[] host_key_public_modulus,
-            byte[] supported_ciphers_mask, byte[] server_key_public_exponent,
+    private String Send_SSH_CMSG_SESSION_KEY( byte[] anti_spoofing_cookie, byte[] server_key_public_modulus,
+            byte[] host_key_public_modulus, byte[] supported_ciphers_mask, byte[] server_key_public_exponent,
             byte[] host_key_public_exponent ) throws IOException {
 
         String str;
@@ -733,18 +722,11 @@ public abstract class SshIO {
         // 1.1.(Why is it different ??)
         //
 
-        byte[] session_id_byte = new byte[host_key_public_modulus.length
-                + server_key_public_modulus.length
-                + anti_spoofing_cookie.length];
+        byte[] session_id_byte = new byte[host_key_public_modulus.length + server_key_public_modulus.length + anti_spoofing_cookie.length];
 
-        System.arraycopy( host_key_public_modulus, 0, session_id_byte, 0,
-                host_key_public_modulus.length );
-        System.arraycopy( server_key_public_modulus, 0, session_id_byte,
-                host_key_public_modulus.length,
-                server_key_public_modulus.length );
-        System.arraycopy( anti_spoofing_cookie, 0, session_id_byte,
-                host_key_public_modulus.length
-                        + server_key_public_modulus.length,
+        System.arraycopy( host_key_public_modulus, 0, session_id_byte, 0, host_key_public_modulus.length );
+        System.arraycopy( server_key_public_modulus, 0, session_id_byte, host_key_public_modulus.length, server_key_public_modulus.length );
+        System.arraycopy( anti_spoofing_cookie, 0, session_id_byte, host_key_public_modulus.length + server_key_public_modulus.length,
                 anti_spoofing_cookie.length );
 
         byte[] hash_md5 = md5.digest( session_id_byte );
@@ -804,13 +786,13 @@ public abstract class SshIO {
         //Math.random() a pseudorandom double between 0.0 and 1.0.
         random_bits2 = random_bits1 =
         // md5.hash("" + Math.random() * (new java.util.Date()).getDate());
-        md5.digest( ( "" + rnd.nextLong() * ( new java.util.Date() ).getTime() )
-                .getBytes() ); // RADEK - zase RANDOM
+        md5.digest( ( "" + rnd.nextLong() * ( new java.util.Date() ).getTime() ).getBytes() ); // RADEK
+                                                                                               // -
+                                                                                               // zase
+                                                                                               // RANDOM
 
-        random_bits1 = md5.digest( SshMisc.addArrayOfBytes( md5
-                .digest( ( password + login ).getBytes() ), random_bits1 ) );
-        random_bits2 = md5.digest( SshMisc.addArrayOfBytes( md5
-                .digest( ( password + login ).getBytes() ), random_bits2 ) );
+        random_bits1 = md5.digest( SshMisc.addArrayOfBytes( md5.digest( ( password + login ).getBytes() ), random_bits1 ) );
+        random_bits2 = md5.digest( SshMisc.addArrayOfBytes( md5.digest( ( password + login ).getBytes() ), random_bits2 ) );
 
         // SecureRandom random = new java.security.SecureRandom(random_bits1);
         // //no supported by netscape :-(
@@ -820,16 +802,12 @@ public abstract class SshIO {
         session_key = SshMisc.addArrayOfBytes( random_bits1, random_bits2 );
 
         //Xor the 16 first bytes with the session-id
-        byte[] session_keyXored = SshMisc.XORArrayOfBytes( random_bits1,
-                hash_md5 );
-        session_keyXored = SshMisc.addArrayOfBytes( session_keyXored,
-                random_bits2 );
+        byte[] session_keyXored = SshMisc.XORArrayOfBytes( random_bits1, hash_md5 );
+        session_keyXored = SshMisc.addArrayOfBytes( session_keyXored, random_bits2 );
 
         //We encrypt now!!
-        byte[] encrypted_session_key = SshCrypto.encrypteRSAPkcs1Twice(
-                session_keyXored, server_key_public_exponent,
-                server_key_public_modulus, host_key_public_exponent,
-                host_key_public_modulus );
+        byte[] encrypted_session_key = SshCrypto.encrypteRSAPkcs1Twice( session_keyXored, server_key_public_exponent,
+                server_key_public_modulus, host_key_public_exponent, host_key_public_modulus );
 
         //	protocol_flags :protocol extension cf. page 18
         int protocol_flags = 0; /* currently 0 */

@@ -46,8 +46,7 @@ public final class IDEA extends Cipher {
 
     protected int IV1 = 0;
 
-    public synchronized void encrypt( byte[] src, int srcOff, byte[] dest,
-            int destOff, int len ) {
+    public synchronized void encrypt( byte[] src, int srcOff, byte[] dest, int destOff, int len ) {
         int[] out = new int[2];
         int iv0 = IV0;
         int iv1 = IV1;
@@ -57,10 +56,8 @@ public final class IDEA extends Cipher {
             encrypt( iv0, iv1, out );
             iv0 = out[0];
             iv1 = out[1];
-            iv0 ^= ( ( src[si + 3] & 0xff ) | ( ( src[si + 2] & 0xff ) << 8 )
-                    | ( ( src[si + 1] & 0xff ) << 16 ) | ( ( src[si] & 0xff ) << 24 ) );
-            iv1 ^= ( ( src[si + 7] & 0xff ) | ( ( src[si + 6] & 0xff ) << 8 )
-                    | ( ( src[si + 5] & 0xff ) << 16 ) | ( ( src[si + 4] & 0xff ) << 24 ) );
+            iv0 ^= ( ( src[si + 3] & 0xff ) | ( ( src[si + 2] & 0xff ) << 8 ) | ( ( src[si + 1] & 0xff ) << 16 ) | ( ( src[si] & 0xff ) << 24 ) );
+            iv1 ^= ( ( src[si + 7] & 0xff ) | ( ( src[si + 6] & 0xff ) << 8 ) | ( ( src[si + 5] & 0xff ) << 16 ) | ( ( src[si + 4] & 0xff ) << 24 ) );
 
             if ( di + 8 <= end ) {
                 dest[di + 3] = (byte) ( iv0 & 0xff );
@@ -95,8 +92,7 @@ public final class IDEA extends Cipher {
         IV1 = iv1;
     }
 
-    public synchronized void decrypt( byte[] src, int srcOff, byte[] dest,
-            int destOff, int len ) {
+    public synchronized void decrypt( byte[] src, int srcOff, byte[] dest, int destOff, int len ) {
         int[] out = new int[2];
         int iv0 = IV0;
         int iv1 = IV1;
@@ -105,10 +101,8 @@ public final class IDEA extends Cipher {
 
         for ( int si = srcOff, di = destOff; si < end; si += 8, di += 8 ) {
             decrypt( iv0, iv1, out );
-            iv0 = ( ( src[si + 3] & 0xff ) | ( ( src[si + 2] & 0xff ) << 8 )
-                    | ( ( src[si + 1] & 0xff ) << 16 ) | ( ( src[si] & 0xff ) << 24 ) );
-            iv1 = ( ( src[si + 7] & 0xff ) | ( ( src[si + 6] & 0xff ) << 8 )
-                    | ( ( src[si + 5] & 0xff ) << 16 ) | ( ( src[si + 4] & 0xff ) << 24 ) );
+            iv0 = ( ( src[si + 3] & 0xff ) | ( ( src[si + 2] & 0xff ) << 8 ) | ( ( src[si + 1] & 0xff ) << 16 ) | ( ( src[si] & 0xff ) << 24 ) );
+            iv1 = ( ( src[si + 7] & 0xff ) | ( ( src[si + 6] & 0xff ) << 8 ) | ( ( src[si + 5] & 0xff ) << 16 ) | ( ( src[si + 4] & 0xff ) << 24 ) );
             plain0 = out[0] ^ iv0;
             plain1 = out[1] ^ iv1;
 
@@ -148,13 +142,11 @@ public final class IDEA extends Cipher {
     public void setKey( byte[] key ) {
         int i, ki = 0, j = 0;
         for ( i = 0; i < 8; i++ )
-            key_schedule[i] = ( ( key[2 * i] & 0xff ) << 8 )
-                    | ( key[( 2 * i ) + 1] & 0xff );
+            key_schedule[i] = ( ( key[2 * i] & 0xff ) << 8 ) | ( key[( 2 * i ) + 1] & 0xff );
 
         for ( i = 8, j = 0; i < 52; i++ ) {
             j++;
-            key_schedule[ki + j + 7] = ( ( key_schedule[ki + ( j & 7 )] << 9 ) | ( key_schedule[ki
-                    + ( ( j + 1 ) & 7 )] >>> 7 ) ) & 0xffff;
+            key_schedule[ki + j + 7] = ( ( key_schedule[ki + ( j & 7 )] << 9 ) | ( key_schedule[ki + ( ( j + 1 ) & 7 )] >>> 7 ) ) & 0xffff;
             ki += j & 8;
             j &= 7;
         }

@@ -22,8 +22,7 @@ import app.Main;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class ModifierInputDialog extends Form implements Activatable,
-        CommandListener {
+public class ModifierInputDialog extends Form implements Activatable, CommandListener {
 
     private static Command enterCommand = new Command( "Enter", Command.OK, 1 );
 
@@ -44,8 +43,7 @@ public class ModifierInputDialog extends Form implements Activatable,
         this.back = back;
         this.vt = vt;
 
-        tf = new TextField( "Enter one or more letters", null, 10,
-                TextField.ANY );
+        tf = new TextField( "Enter one or more letters", null, 10, TextField.ANY );
         append( tf );
 
         addCommand( enterCommand );

@@ -198,8 +198,7 @@ public abstract class vt320 extends VDUBuffer {
         }
     }
 
-    public abstract void sendData( byte[] b, int offset, int length )
-            throws IOException;
+    public abstract void sendData( byte[] b, int offset, int length ) throws IOException;
 
     /**
      * Play the beep sound ...
@@ -578,8 +577,7 @@ public abstract class vt320 extends VDUBuffer {
 
     private String Help, Do, Find, Select;
 
-    private String KeyHome[], KeyEnd[], Insert[], Remove[], PrevScn[],
-            NextScn[];
+    private String KeyHome[], KeyEnd[], Insert[], Remove[], PrevScn[], NextScn[];
 
     private String Escape[], BackSpace[], NUMDot[], NUMPlus[];
 
@@ -612,8 +610,7 @@ public abstract class vt320 extends VDUBuffer {
         String cmd;
         // System.err.println("unescape("+tmp+")");
         cmd = "";
-        while ( ( idx = tmp.indexOf( '\\', oldidx ) ) >= 0
-                && ++idx <= tmp.length() ) {
+        while ( ( idx = tmp.indexOf( '\\', oldidx ) ) >= 0 && ++idx <= tmp.length() ) {
             cmd += tmp.substring( oldidx, idx - 1 );
             if ( idx == tmp.length() )
                 return cmd;
@@ -640,15 +637,12 @@ public abstract class vt320 extends VDUBuffer {
                     cmd += "\u0012";
                     break;
                 default:
-                    if ( ( tmp.charAt( idx ) >= '0' )
-                            && ( tmp.charAt( idx ) <= '9' ) ) {
+                    if ( ( tmp.charAt( idx ) >= '0' ) && ( tmp.charAt( idx ) <= '9' ) ) {
                         int i;
                         for ( i = idx; i < tmp.length(); i++ )
-                            if ( ( tmp.charAt( i ) < '0' )
-                                    || ( tmp.charAt( i ) > '9' ) )
+                            if ( ( tmp.charAt( i ) < '0' ) || ( tmp.charAt( i ) > '9' ) )
                                 break;
-                        cmd += (char) Integer
-                                .parseInt( tmp.substring( idx, i ) );
+                        cmd += (char) Integer.parseInt( tmp.substring( idx, i ) );
                         idx = i - 1;
                     }
                     else
@@ -864,8 +858,7 @@ public abstract class vt320 extends VDUBuffer {
             return;
         }
 
-        if ( ( ( keyCode == KeyEvent.VK_ENTER ) || ( keyChar == 10 ) )
-                && !control ) {
+        if ( ( ( keyCode == KeyEvent.VK_ENTER ) || ( keyChar == 10 ) ) && !control ) {
             write( "\r", false );
             if ( localecho )
                 putString( "\r\n" ); // bad hack
@@ -1409,7 +1402,7 @@ public abstract class vt320 extends VDUBuffer {
                         onegl = 2;
                         break;
                     case CSI: // should be in the 8bit section, but some BBS use
-                              // this
+                        // this
                         DCEvar = 0;
                         DCEvars[0] = 0;
                         DCEvars[1] = 0;
@@ -1451,7 +1444,7 @@ public abstract class vt320 extends VDUBuffer {
                     case '\n':
                         if ( !vms ) {
                             if ( lastwaslf != 0 && lastwaslf != c ) //  Ray: I do
-                                                                    // not
+                                // not
                                 // understand this
                                 // logic.
                                 break;
@@ -1516,14 +1509,10 @@ public abstract class vt320 extends VDUBuffer {
                                         // line drawing
                                         // chars
                                         // for our SCO using customers.
-                                        if ( terminalID.equals( "scoansi" )
-                                                || terminalID.equals( "ansi" ) ) {
-                                            for ( int i = 0; i < scoansi_acs
-                                                    .length(); i += 2 ) {
-                                                if ( c == scoansi_acs
-                                                        .charAt( i ) ) {
-                                                    c = scoansi_acs
-                                                            .charAt( i + 1 );
+                                        if ( terminalID.equals( "scoansi" ) || terminalID.equals( "ansi" ) ) {
+                                            for ( int i = 0; i < scoansi_acs.length(); i += 2 ) {
+                                                if ( c == scoansi_acs.charAt( i ) ) {
+                                                    c = scoansi_acs.charAt( i + 1 );
                                                     break;
                                                 }
                                             }
@@ -1534,7 +1523,7 @@ public abstract class vt320 extends VDUBuffer {
                                         }
                                         break;
                                     case '<': // 'user preferred' is currently
-                                              // 'ISO Latin-1
+                                        // 'ISO Latin-1
                                         // suppl
                                         c = (char) ( ( (int) c & 0x7f ) | 0x80 );
                                         mapped = true;
@@ -1587,7 +1576,7 @@ public abstract class vt320 extends VDUBuffer {
                 break;
             case TSTATE_OSC:
                 if ( ( c < 0x20 ) && ( c != ESC ) ) {// NP - No printing
-                                                     // character
+                    // character
                     handle_osc( osc );
                     term_state = TSTATE_DATA;
                     break;
@@ -1692,8 +1681,7 @@ public abstract class vt320 extends VDUBuffer {
                         break;
                     case 'J': /* erase to end of screen */
                         if ( R < rows - 1 )
-                            deleteArea( 0, R + 1, columns, rows - R - 1,
-                                    attributes );
+                            deleteArea( 0, R + 1, columns, rows - R - 1, attributes );
                         if ( C < columns - 1 )
                             deleteArea( C, R, columns - C, 1, attributes );
                         break;
@@ -1863,8 +1851,7 @@ public abstract class vt320 extends VDUBuffer {
                     case '7':
                     case '8':
                     case '9':
-                        DCEvars[DCEvar] = DCEvars[DCEvar] * 10 + ( (int) c )
-                                - 48;
+                        DCEvars[DCEvar] = DCEvars[DCEvar] * 10 + ( (int) c ) - 48;
                         term_state = TSTATE_DCEQ;
                         break;
                     case ';':
@@ -1953,7 +1940,7 @@ public abstract class vt320 extends VDUBuffer {
                         }
                         break;
                     case 'i': // DEC Printer Control, autoprint, echo
-                              // screenchars to
+                        // screenchars to
                         // printer
                         // This is different to CSI i!
                         // Also: "Autoprint prints a final display line only
@@ -2100,8 +2087,7 @@ public abstract class vt320 extends VDUBuffer {
                     case '7':
                     case '8':
                     case '9':
-                        DCEvars[DCEvar] = DCEvars[DCEvar] * 10 + ( (int) c )
-                                - 48;
+                        DCEvars[DCEvar] = DCEvars[DCEvar] * 10 + ( (int) c ) - 48;
                         term_state = TSTATE_CSI;
                         break;
                     case ';':
@@ -2308,8 +2294,7 @@ public abstract class vt320 extends VDUBuffer {
                                      */
                             case 0:/* clear to right */
                                 if ( C < columns - 1 )
-                                    deleteArea( C, R, columns - C, 1,
-                                            attributes );
+                                    deleteArea( C, R, columns - C, 1, attributes );
                                 break;
                             case 1:/* clear to the left, including this */
                                 if ( C > 0 )
@@ -2325,18 +2310,16 @@ public abstract class vt320 extends VDUBuffer {
                         switch ( DCEvars[0] ) {
                             case 0:
                                 if ( R < rows - 1 )
-                                    deleteArea( 0, R + 1, columns,
-                                            rows - R - 1, attributes );
+                                    deleteArea( 0, R + 1, columns, rows - R - 1, attributes );
                                 if ( C < columns - 1 )
-                                    deleteArea( C, R, columns - C, 1,
-                                            attributes );
+                                    deleteArea( C, R, columns - C, 1, attributes );
                                 break;
                             case 1:
                                 if ( R > 0 )
                                     deleteArea( 0, 0, columns, R, attributes );
                                 if ( C > 0 )
                                     deleteArea( 0, R, C + 1, 1, attributes );// include
-                                                                             // up
+                                // up
                                 // to
                                 // and including
                                 // current
@@ -2376,8 +2359,7 @@ public abstract class vt320 extends VDUBuffer {
                                 // /usr/X11R6/bin/resize
                                 // FIXME check again.
                                 // FIXME: but vttest thinks different???
-                                writeSpecial( ( (char) ESC ) + "[" + R + ";"
-                                        + C + "R" );
+                                writeSpecial( ( (char) ESC ) + "[" + R + ";" + C + "R" );
                                 break;
                             default:
                                 break;
@@ -2418,22 +2400,17 @@ public abstract class vt320 extends VDUBuffer {
                                     break;
                                 case 2:
                                     /* SCO color hack mode */
-                                    if ( terminalID.equals( "scoansi" )
-                                            && ( ( DCEvar - i ) >= 2 ) ) {
+                                    if ( terminalID.equals( "scoansi" ) && ( ( DCEvar - i ) >= 2 ) ) {
                                         int ncolor;
                                         attributes &= ~( COLOR | BOLD );
 
                                         ncolor = DCEvars[i + 1];
                                         if ( ( ncolor & 8 ) == 8 )
                                             attributes |= BOLD;
-                                        ncolor = ( ( ncolor & 1 ) << 2 )
-                                                | ( ncolor & 2 )
-                                                | ( ( ncolor & 4 ) >> 2 );
+                                        ncolor = ( ( ncolor & 1 ) << 2 ) | ( ncolor & 2 ) | ( ( ncolor & 4 ) >> 2 );
                                         attributes |= ( ( ncolor ) + 1 ) << 4;
                                         ncolor = DCEvars[i + 2];
-                                        ncolor = ( ( ncolor & 1 ) << 2 )
-                                                | ( ncolor & 2 )
-                                                | ( ( ncolor & 4 ) >> 2 );
+                                        ncolor = ( ( ncolor & 1 ) << 2 ) | ( ncolor & 2 ) | ( ( ncolor & 4 ) >> 2 );
                                         attributes |= ( ( ncolor ) + 1 ) << 8;
                                         i += 2;
                                     }

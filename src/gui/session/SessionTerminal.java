@@ -26,43 +26,32 @@ import app.session.Session;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class SessionTerminal extends Terminal implements Activatable,
-        CommandListener {
+public class SessionTerminal extends Terminal implements Activatable, CommandListener {
 
     private static final int MODE_NORMAL = 0;
 
     private static final int MODE_CURSOR = 1;
 
-    private static final Command textInputCommand = new Command( "Input",
-            Command.ITEM, 10 );
+    private static final Command textInputCommand = new Command( "Input", Command.ITEM, 10 );
 
-    private static final Command cursorCommand = new Command( "Cursor",
-            Command.ITEM, 15 );
+    private static final Command cursorCommand = new Command( "Cursor", Command.ITEM, 15 );
 
-    private static final Command scrollCommand = new Command( "Scroll",
-            Command.ITEM, 16 );
+    private static final Command scrollCommand = new Command( "Scroll", Command.ITEM, 16 );
 
-    private static final Command tabCommand = new Command( "TAB", Command.ITEM,
-            20 );
+    private static final Command tabCommand = new Command( "TAB", Command.ITEM, 20 );
 
-    private static final Command ctrlCommand = new Command( "CTRL",
-            Command.ITEM, 21 );
+    private static final Command ctrlCommand = new Command( "CTRL", Command.ITEM, 21 );
 
-    private static final Command altCommand = new Command( "ALT", Command.ITEM,
-            22 );
+    private static final Command altCommand = new Command( "ALT", Command.ITEM, 22 );
 
-    private static final Command enterCommand = new Command( "ENTER",
-            Command.ITEM, 23 );
+    private static final Command enterCommand = new Command( "ENTER", Command.ITEM, 23 );
 
-    private static final Command disconnectCommand = new Command( "Close",
-            Command.STOP, 100 );
+    private static final Command disconnectCommand = new Command( "Close", Command.STOP, 100 );
 
-    private static final Command backCommand = new Command( "Back",
-            Command.BACK, 90 );
+    private static final Command backCommand = new Command( "Back", Command.BACK, 90 );
 
     private static final Command[] commandsNormal = new Command[] {
-            textInputCommand, cursorCommand, scrollCommand, tabCommand,
-            ctrlCommand, altCommand, enterCommand, disconnectCommand
+            textInputCommand, cursorCommand, scrollCommand, tabCommand, ctrlCommand, altCommand, enterCommand, disconnectCommand
     };
 
     private static final Command[] commandsCursor = new Command[] {
@@ -177,8 +166,7 @@ public class SessionTerminal extends Terminal implements Activatable,
         modifierInputDialog.activate();
     }
 
-    private static final Alert doCursorAlert = new Alert( "Cursor",
-            "Move the cursor using stick or 2,5,6,8 keys", null, AlertType.INFO );
+    private static final Alert doCursorAlert = new Alert( "Cursor", "Move the cursor using stick or 2,5,6,8 keys", null, AlertType.INFO );
 
     private void doCursor() {
         Main.setDisplay( doCursorAlert );

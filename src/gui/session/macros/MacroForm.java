@@ -102,7 +102,7 @@ public class MacroForm extends EditableForm {
 		tfName.setString( macro.getName() );
 		
 		String value = macro.getValue();
-		if ( value.endsWith( "\r\n" ) ) {
+		if ( value.endsWith( "\n" ) ) {
 			cgType.setSelectedIndex( 0, true );
 			value = value.substring( 0, value.length() - 1 );
 		}
@@ -136,7 +136,7 @@ public class MacroForm extends EditableForm {
 				MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
 				String value = tfValue.getString();
 				if ( cgType.getSelectedIndex() == 0 ) {
-					value += "\r\n";
+					value += "\n";
 				}
 				Macro macro = new Macro( tfName.getString(), value );
 				macroSet.replaceMacro( macroIndex, macro );
@@ -151,7 +151,7 @@ public class MacroForm extends EditableForm {
 			MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
 			String value = tfValue.getString();
 			if ( cgType.getSelectedIndex() == 0 ) {
-				value += "\r\n";
+				value += "\n";
 			}
 			Macro macro = new Macro( tfName.getString(), value );
 			macroSet.addMacro( macro );

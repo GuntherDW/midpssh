@@ -93,7 +93,7 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 			    commandBuffer.setLength( 0 );
 			    commandBuffer.append( getString() );
 				if ( command == enterCommand ) {
-				    commandBuffer.append( "\r\n" );
+				    commandBuffer.append( '\n' );
 				}
 				if ( command == tabCommand ) {
 				    commandBuffer.append( '\t' );

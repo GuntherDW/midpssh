@@ -57,6 +57,7 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 		append( "Macros", null );
 		append( "Settings", null );
 		append( "About MidpSSH", null );
+		append( "Help", null );
 		append( "Quit", null );
 
 		setSelectCommand( selectCommand );
@@ -95,6 +96,9 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 				doAbout();
 				break;
 			case 4:
+				doHelp();
+				break;
+			case 5:
 				doQuit();
 				break;
 		}
@@ -119,7 +123,32 @@ public class MainMenu extends ExtendedList implements CommandListener, Activatab
 	}
 
 	private void doAbout() {
-		new AboutForm().activate( this );
+		new MessageForm( "About MidpSSH",
+				"MidpSSH is a Telnet and SSH application for J2ME compatible devices.\n\n" +
+				"Please visit the project website for more information:\n" +
+				"http://www.xk72.com/midpssh/\n\n" +
+				"MidpSSH is developed by Karl von Randow. MidpSSH is based upon " +
+				"FloydSSH and Telnet Floyd by Radek Polak.\n\n" +
+				"MidpSSH is distributed under the GPL licence. For more information please " +
+				"visit the website." 
+				).activate( this );
+	}
+	
+	private void doHelp() {
+		new MessageForm( "MidpSSH Help",
+				"Connecting\n\n" +
+				"To connect to a remote server choose the Sessions option " +
+				"from the main menu - create a new session, entering in the host and other details. " +
+				"You can then connect to that server by choosing the new session.\n\n" +
+				
+				"Problems Connecting\n\n" +
+				"Check that your Internet settings for Java are configured for " +
+				"Internet access rather than WAP access, and that your provider allows Internet access " +
+				"from your device.\n\n" +
+				
+				"More Information\n\n" +
+				"For more information please visit the project website http://www.xk72.com/midpssh/"
+				).activate( this );
 	}
 	
 	private void doQuit() {

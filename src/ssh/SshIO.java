@@ -227,7 +227,8 @@ public abstract class SshIO {
 	 */
 	public byte[] handleSSH( byte buff[], int boffset, int length ) throws IOException {
 		String result;
-
+		int boffsetend = boffset + length;
+		
 		//  if (debug > 1)
 		//     Telnet.console.append("SshIO.getPacket(" + buff + "," + length +
 		// ")");
@@ -235,7 +236,7 @@ public abstract class SshIO {
 		if ( phase == PHASE_INIT ) {
 			byte b; // of course, byte is a signed entity (-128 -> 127)
 
-			while ( boffset < length ) {
+			while ( boffset < boffsetend ) {
 				b = buff[boffset++];
 				// both sides MUST send an identification string of the form
 				// "SSH-protoversion-softwareversion comments",
@@ -285,14 +286,14 @@ public abstract class SshIO {
 						currentpacket = new SshPacket1( null );
 				}
 			}
-			if ( boffset == length )
+			if ( boffset == boffsetend )
 				return "".getBytes();
 			return "Must not have left over data after PHASE_INIT!\n".getBytes();
 		}
 
 		result = "";
-		while ( boffset < length ) {
-			boffset = currentpacket.addPayload( buff, boffset, length );
+		while ( boffset < boffsetend ) {
+			boffset = currentpacket.addPayload( buff, boffset, ( boffsetend - boffset ) );
 			if ( currentpacket.isFinished() ) {
 				if ( useprotocol == 1 ) {
 					result = result + handlePacket1( (SshPacket1) currentpacket );

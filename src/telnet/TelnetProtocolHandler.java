@@ -372,11 +372,12 @@ public abstract class TelnetProtocolHandler {
 		int boffset = 0;
 		int orignoffset = noffset;
 		boolean dobreak = false;
-
+		int noffsetend = noffset + length;
+		
 		if ( count == 0 ) // buffer is empty.
 			return -1;
 
-		while ( !dobreak && ( boffset < count ) && ( noffset < length ) ) {
+		while ( !dobreak && ( boffset < count ) && ( noffset < noffsetend ) ) {
 			b = buf[boffset++];
 			// of course, byte is a signed entity (-128 -> 127)
 			// but apparently the SGI Netscape 3.0 doesn't seem
@@ -620,10 +621,12 @@ public abstract class TelnetProtocolHandler {
 					break;
 			}
 		}
+		
 		// shrink tempbuf to new processed size.
 		byte[] xb = new byte[count - boffset];
 		System.arraycopy( tempbuf, boffset, xb, 0, count - boffset );
 		tempbuf = xb;
+		
 		return ( noffset - orignoffset );
 	}
 
@@ -633,10 +636,10 @@ public abstract class TelnetProtocolHandler {
 		System.arraycopy( tempbuf, 0, xb, 0, tempbuf.length );
 		System.arraycopy( b, 0, xb, tempbuf.length, len );
 		tempbuf = xb;*/
-		byte[] xb = new byte[tempbuf.length + ( len - offset )];
+		byte[] xb = new byte[tempbuf.length + len];
 
 		System.arraycopy( tempbuf, 0, xb, 0, tempbuf.length );
-		System.arraycopy( b, offset, xb, tempbuf.length, len - offset );
+		System.arraycopy( b, offset, xb, tempbuf.length, len );
 		tempbuf = xb;
 	}
 }

@@ -71,13 +71,14 @@ public class TelnetSession extends Session {
 		 */
 		public void receiveData( byte[] data, int offset, int length ) throws IOException {
 			telnet.inputfeed( data, offset, length );
+			int n;
 			do {
-				length = telnet.negotiate( data, offset, length );
-				if ( length > 0 ) {
-					TelnetSession.this.receiveData( data, offset, length );
+				n = telnet.negotiate( data, offset, length );
+				if ( n > 0 ) {
+					TelnetSession.this.receiveData( data, offset, n );
 				}
 			}
-			while ( length != -1 );
+			while ( n != -1 );
 		}
 
 		/*

@@ -147,9 +147,10 @@ public class SshPacket1 extends SshPacket {
 	private static final int PHASE_block = 1;
 
 	public int addPayload( byte[] buff, int boffset, int length ) {
-		byte newbuf[] = null;
-
-		while ( boffset < length ) {
+		//byte newbuf[] = null;
+		int boffsetend = boffset + length;
+		
+		while ( boffset < boffsetend ) {
 			switch ( phase_packet ) {
 
 				// 4 bytes
@@ -181,8 +182,8 @@ public class SshPacket1 extends SshPacket {
 
 				case PHASE_block:
 					if ( block.length > position ) {
-						if ( boffset < length ) {
-							int amount = length - boffset;
+						if ( boffset < boffsetend ) {
+							int amount = boffsetend - boffset;
 							if ( amount > block.length - position )
 								amount = block.length - position;
 							System.arraycopy( buff, boffset, block, position, amount );
@@ -192,10 +193,10 @@ public class SshPacket1 extends SshPacket {
 					}
 
 					if ( position == block.length ) { //the block is complete
-						if ( length > boffset ) { //there is more than 1 packet in buff
-							newbuf = new byte[length - boffset];
-							System.arraycopy( buff, boffset, newbuf, 0, length - boffset );
-						}
+						/*if ( boffsetend > boffset ) { //there is more than 1 packet in buff
+							newbuf = new byte[boffsetend - boffset];
+							System.arraycopy( buff, boffset, newbuf, 0, boffsetend - boffset );
+						}*/
 						int blockOffset = 0;
 						//padding
 						int padding_length = (int) ( 8 - ( packet_length % 8 ) );

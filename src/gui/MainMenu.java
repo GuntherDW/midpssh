@@ -34,7 +34,6 @@ import app.Main;
 
 /**
  * @author Karl von Randow
- * @version $Revision$
  */
 public class MainMenu extends ExtendedList implements CommandListener, Activatable {
 

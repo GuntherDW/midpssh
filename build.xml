@@ -92,14 +92,13 @@
                 jarfile="${dist.dir}/${jar.file}"
                 name="${name}"
                 vendor="XK72"
-                version="1.1.0">
+                version="${version}">
 
             <midlet name="${name}" class="app.Main"/>
         </wtkjad>
     </target>
 
-	<target name="clean">
-		<property file="build.properties"/>
+	<target name="clean" depends="init">
 		<delete dir="${build.dir}"/>
 		<delete dir="output"/>
 		<delete dir="src-proc"/>
@@ -192,7 +191,7 @@
 		</exec>
 	</target>
 	
-	<target name="source">
+	<target name="source" depends="init">
 		<zip zipfile="${dist.dir}/${zip.file}">
 			<fileset dir=".">
 				<include name="src/**"/>

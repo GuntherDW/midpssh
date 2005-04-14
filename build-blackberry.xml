@@ -4,16 +4,20 @@
 
 	<target name="all" depends="init,blackberry-uptodate,alx">
 		<antcall target="build-blackberry"/>
+		<antcall target="ota"/>
 	</target>
 
 	<target name="init">
 		<property file="build.properties"/>
 		<property name="jar.file" value="${filename}.jar"/>
 		<property name="jad.file" value="${filename}.jad"/>
+		<property name="ota.jad.file" value="${filename}-ota.jad"/>
 		<property name="cod.file" value="${bb.codename}.cod"/>
 	</target>
 
 	<target name="build-blackberry" unless="build.uptodate" depends="build">
+		<mkdir dir="${build.dir}/blackberry" />
+		
 		<exec executable="${bb.home}/bin/rapc.exe">
 			<arg value="import=${bb.lib.home}/net_rim_api.jar" />
 			<arg value="codename=${bb.codename}" />
@@ -54,6 +58,40 @@
 				<filter token="VERSION" value="${version}" />
 			</filterset>
 		</copy>
+	</target>
+	
+	<target name="ota">
+		<mkdir dir="${build.dir}/blackberry/ota" />
+		
+		<!-- Unzip main COD file and rename constituents -->
+		<unzip src="${dist.dir}/${cod.file}" dest="${build.dir}/blackberry/ota" />
+		<copy file="${build.dir}/blackberry/ota/midpssh.cod" tofile="${dist.dir}/midpssh-1.cod" />
+		<copy file="${build.dir}/blackberry/ota/midpssh-1.cod" tofile="${dist.dir}/midpssh-2.cod" />
+		
+		<mkdir dir="${build.dir}/tasks" />
+		<javac srcdir="tasks" destdir="${build.dir}/tasks" />
+		
+		<java classname="FileLength" classpath="${build.dir}/tasks" outputproperty="cod.size.1">
+			<arg value="${dist.dir}/midpssh-1.cod" />
+		</java>
+		
+		<java classname="FileLength" classpath="${build.dir}/tasks" outputproperty="cod.size.2">
+			<arg value="${dist.dir}/midpssh-2.cod" />
+		</java>
+		
+		<!--
+		<length property="cod.size.1" file="${build.dir}/blackberry/ota/midpssh.cod" />
+		<length property="cod.size.2" file="${build.dir}/blackberry/ota/midpssh-1.cod" />
+		-->
+		
+		<java classname="RewriteBlackberryJAD" classpath="${build.dir}/tasks" outputproperty="cod.size.2">
+			<arg value="${dist.dir}/${jad.file}" />
+			<arg value="${dist.dir}/${ota.jad.file}" />
+			<arg value="midpssh-1.cod" />
+			<arg value="midpssh-2.cod" />
+			<arg value="${cod.size.1}" />
+			<arg value="${cod.size.2}" />
+		</java>
 	</target>
 
 </project>

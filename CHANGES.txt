@@ -1,3 +1,8 @@
+1.4.1
+
+Fixed AraryIndexOutOfBoundsException when connecting to a host with a large key.
+Added Blackberry OTA
+
 1.3.12
 
 Application error on Motorola (and others) fixed - problem in javac target

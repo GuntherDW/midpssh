@@ -145,7 +145,9 @@ public abstract class Session implements Activatable {
 	 * @see telnet.TelnetIOListener#sendData(byte[])
 	 */
 	protected void sendData( byte[] b, int offset, int length ) throws IOException {
+//#ifndef noiosync
 		synchronized ( writerMutex ) {
+//#endif
 		    if ( outputCount + length > outputBuffer.length ) {
 				byte[] newOutput = new byte[outputCount + length];
 				System.arraycopy( outputBuffer, 0, newOutput, 0, outputCount );
@@ -154,8 +156,10 @@ public abstract class Session implements Activatable {
 			System.arraycopy( b, offset, outputBuffer, outputCount, length );
 			outputCount += length;
 			
-			writerMutex.notify();
+//#ifndef noiosync
+            writerMutex.notify();
 		}
+//#endif
 	}
 	
 	public void typeString( String str ) {
@@ -247,10 +251,17 @@ public abstract class Session implements Activatable {
 		final byte [] empty = new byte[0];
 		
 		while ( !disconnecting ) {
+//#ifndef noiosync
 			synchronized ( writerMutex ) {
+//#endif
 			    while ( outputCount == 0 && !disconnecting ) {
 					try {
+//#ifndef noiosync
 					    writerMutex.wait( keepAliveTime );
+//#else
+					    Thread.sleep(100);
+                        continue; // to avoid the keep-alive send below
+//#endif
 					}
 					catch ( InterruptedException e ) {
 					}
@@ -269,6 +280,7 @@ public abstract class Session implements Activatable {
 				     * as I've tested to see if the contents of outputBuffer and outputCount
 				     * are different before and after the sleep.
 				     */
+                    // TODO is this still necessary if blackberry uses noiosync and has the sleep above?
 				    try {
 	                    Thread.sleep( 100 );
 	                } catch (InterruptedException e) {
@@ -282,7 +294,9 @@ public abstract class Session implements Activatable {
 					out.flush();
 					outputCount = 0;
 				}
+//#ifndef noiosync
 			}
+//#endif
 		}
 	}
 
@@ -319,7 +333,9 @@ public abstract class Session implements Activatable {
 	
 	private void doDisconnect() {
 		if ( !disconnecting ) {
+//#ifndef noiosync
 			synchronized ( writerMutex ) {
+//#endif
 				disconnecting = true;
 				try {
 					if ( in != null ) in.close();
@@ -329,9 +345,11 @@ public abstract class Session implements Activatable {
 				catch ( IOException e ) {
 					handleException( "Disconnect", e );
 				}
-				
+
+//#ifndef noiosync
 				writerMutex.notify();
 			}
+//#endif
 		}
 	}
 	

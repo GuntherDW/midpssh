@@ -25,7 +25,7 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
 	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 
     private static final String[] MAIN_OPTIONS = new String[] {      
-        "BACKSPACE", "Home", "End", "Page Up", "Page Down",
+        "BACKSPACE", "Home", "End", "Page Up", "Page Down", "Delete", "Insert",
         "Function Keys", 
         "|", "\\", "~", ":", ";", "'", "\"",
         ",", "<", ".", ">", "/", "?",
@@ -90,7 +90,13 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
                         case 4:
                             keyCode = VT320.VK_PAGE_DOWN;
                             break;
-			            case 5:
+                        case 5:
+                            keyCode = VT320.VK_DELETE;
+                            break;
+                        case 6:
+                            keyCode = VT320.VK_INSERT;
+                            break;
+			            case 7:
 			                if ( menuFunctionKeys == null ) {
 					            menuFunctionKeys = new SpecialMenu( "Function Keys", FUNCTION_KEY_OPTIONS );
 					        }

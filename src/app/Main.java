@@ -77,15 +77,15 @@ public class Main extends MIDlet {
 	}
 
 	public static void setDisplay( Displayable display ) {
-		instance.getDisplay().setCurrent( display );
+		getDisplay().setCurrent( display );
 	}
 
 	public static void alert( Alert alert, Displayable back ) {
-		instance.getDisplay().setCurrent( alert, back );
+		getDisplay().setCurrent( alert, back );
 	}
 
-	public Display getDisplay() {
-		return Display.getDisplay( this );
+	public static Display getDisplay() {
+		return Display.getDisplay( instance );
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class Main extends MIDlet {
 	 * @param alert
 	 */
 	public static void alertBackToMain( Alert alert ) {
-		instance.getDisplay().setCurrent( alert, mainMenu );
+		getDisplay().setCurrent( alert, mainMenu );
 	}
 	
 	public static void openSession( Session session ) {

@@ -53,11 +53,15 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 		super( "Input", "", 255, TextField.ANY );
         setString( "" );
 
-		addCommand( enterCommand );
+        addCommand( enterCommand );
 		addCommand( typeCommand );
 		addCommand( tabCommand );
 		addCommand( backCommand );
 
+//#ifdef midp2
+        setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+//#endif
+        
 		setCommandListener( this );
 	}
 

@@ -25,7 +25,7 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
 	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 
     private static final String[] MAIN_OPTIONS = new String[] {      
-        "BACKSPACE", "Home", "End", "Page Up", "Page Down", "Delete", "Insert",
+        "Backspace", "Home", "End", "Page Up", "Page Down", "Delete", "Insert",
         "Function Keys", 
         "|", "\\", "~", ":", ";", "'", "\"",
         ",", "<", ".", ">", "/", "?",

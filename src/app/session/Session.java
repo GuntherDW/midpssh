@@ -102,6 +102,12 @@ public abstract class Session implements Activatable {
 			public void sendData( byte[] b, int offset, int length ) throws IOException {
 				filter.handleSendData( b, offset, length );
 			}
+            
+//#ifdef midp2
+            public void beep() {
+                Main.getDisplay().vibrate(1);
+            }
+//#endif
 		};
 		terminal = new Terminal( emulation, this );
 		reader = new Reader();

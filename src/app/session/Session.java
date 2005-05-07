@@ -105,7 +105,7 @@ public abstract class Session implements Activatable {
             
 //#ifdef midp2
             public void beep() {
-                Main.getDisplay().vibrate(1);
+                Main.getDisplay().vibrate(100);
             }
 //#endif
 		};

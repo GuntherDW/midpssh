@@ -267,7 +267,7 @@ public class SshIO {
 
     protected void sendDisconnect(int reason, String reasonStr)
             throws IOException {
-        // #ifdef ssh2
+//#ifdef ssh2
         if (useprotocol == 2) {
             SshPacket2 pn = new SshPacket2(SSH_MSG_DISCONNECT);
             pn.putInt32(reason);
@@ -275,7 +275,7 @@ public class SshIO {
             pn.putString("en");
             sendPacket2(pn);
         } else
-        // #endif
+//#endif
         {
             SshPacket1 pn = new SshPacket1(SSH_MSG_DISCONNECT);
             pn.putInt32(reason);
@@ -296,14 +296,14 @@ public class SshIO {
         else
             dataToSend += str;
         if (cansenddata) {
-            // #ifdef ssh2
+//#ifdef ssh2
             if (useprotocol == 2) {
                 SshPacket2 pn = new SshPacket2(SSH2_MSG_CHANNEL_DATA);
                 pn.putInt32(0);
                 pn.putString(dataToSend);
                 sendPacket2(pn);
             } else
-            // #endif
+//#endif
             {
                 Send_SSH_CMSG_STDIN_DATA(dataToSend);
             }
@@ -354,7 +354,7 @@ public class SshIO {
                         // System.out.println("remotemajor " + remotemajor);
                         // System.out.println("remoteminor " + remoteminor);
 
-                        // #ifdef ssh2
+//#ifdef ssh2
                         if (remotemajor == 2) {
                             mymajor = 2;
                             myminor = 0;
@@ -370,7 +370,7 @@ public class SshIO {
                                 useprotocol = 1;
                             }
                         }
-                        // #else
+//#else
                         if (remotemajor == 2) {
                             // TODO disconnect
                             return "Remote server does not support ssh1\r\n"
@@ -380,7 +380,7 @@ public class SshIO {
                             myminor = 5;
                             useprotocol = 1;
                         }
-                        // #endif
+//#endif
                         // this is how we tell the remote server what protocol
                         // we
                         // use.
@@ -388,14 +388,14 @@ public class SshIO {
                                 + idstr_sent;
                         write(idstr_sent.getBytes());
 
-                        // #ifdef ssh2
+//#ifdef ssh2
                         if (useprotocol == 2)
                             currentpacket = new SshPacket2(null);
                         else
                             currentpacket = new SshPacket1(null);
-                        // #else
+//#else
                         currentpacket = new SshPacket1(null);
-                        // #endif
+//#endif
                     }
                 }
                 if (boffset == boffsetend)
@@ -412,7 +412,7 @@ public class SshIO {
             boffset = currentpacket.addPayload(buff, boffset,
                     (boffsetend - boffset));
             if (currentpacket.isFinished()) {
-                // #ifdef ssh2
+//#ifdef ssh2
                 if (useprotocol == 1) {
                     result = result + handlePacket1((SshPacket1) currentpacket);
                     currentpacket = new SshPacket1(crypto);
@@ -420,10 +420,10 @@ public class SshIO {
                     result = result + handlePacket2((SshPacket2) currentpacket);
                     currentpacket = new SshPacket2((SshCrypto2) crypto);
                 }
-                // #else
+//#else
                 result = result + handlePacket1((SshPacket1) currentpacket);
                 currentpacket = new SshPacket1(crypto);
-                // #endif
+//#endif
             }
         }
         return result.getBytes();
@@ -667,7 +667,7 @@ public class SshIO {
         lastPacketSentType = packet.getType();
     }
 
-    // #ifdef ssh2
+//#ifdef ssh2
     /**
      * Handle SSH protocol Version 2
      * 
@@ -1009,7 +1009,7 @@ public class SshIO {
         return out;
     }
 
-    // #endif
+//#endif
 
     //
     // Send_SSH_CMSG_SESSION_KEY
@@ -1255,13 +1255,13 @@ public class SshIO {
             SshPacket1 packet = new SshPacket1(SSH_MSG_NONE);
             sendPacket1(packet);
         }
-        // #ifdef ssh2
+//#ifdef ssh2
         else {
             SshPacket2 packet = new SshPacket2(SSH2_MSG_IGNORE);
             packet.putString("");
             sendPacket2(packet);
         }
-        // #endif
+//#endif
         return "";
     }
 

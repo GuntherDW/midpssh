@@ -55,6 +55,10 @@ public class ModifierInputDialog extends TextBox implements Activatable, Command
 		addCommand( enterCommand );
 		addCommand( backCommand );
 
+//#ifdef midp2
+                setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+//#endif
+
 		setCommandListener( this );
 	}
 

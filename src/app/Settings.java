@@ -74,7 +74,7 @@ public class Settings extends MyRecordStore {
 	 */
 	public static void saveSettings() {
 		Vector v = new Vector();
-		v.addElement( null );
+		v.addElement( null ); // doesn't matter what we pass through, it just calls write()
 		me.save( RMS_NAME, v );
 	}
     

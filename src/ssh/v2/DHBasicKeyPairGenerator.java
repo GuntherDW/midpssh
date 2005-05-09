@@ -28,7 +28,6 @@ public class DHBasicKeyPairGenerator {
 		// calculate the private key
 		//
 		this.x = new BigInteger(qLength, random);
-		//this.x = new BigInteger( "101010101" );
 
 		//System.out.println( "PRIVATE KEY=" + this.x );
 		//System.out.println( "Generating public key" );

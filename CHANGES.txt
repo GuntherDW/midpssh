@@ -1,3 +1,12 @@
+1.4.2
+
+Vibrate on beep
+INSERT & DELETE special keys added
+Trial removing sync on I/O for Blackberry
+Fixed SSH2 broken in 1.4.1
+Turn off predictive text in input boxes
+Fixed < in tiny font - thanks Goetz Schwandtner
+
 1.4.1
 
 Fixed AraryIndexOutOfBoundsException when connecting to a host with a large key.

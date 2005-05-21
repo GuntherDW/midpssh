@@ -22,12 +22,9 @@
  */
 package gui.session;
 
-import gui.Activatable;
+import gui.ExtendedTextBox;
 
 import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Displayable;
-import javax.microedition.lcdui.TextBox;
 import javax.microedition.lcdui.TextField;
 
 import app.Main;
@@ -37,62 +34,30 @@ import app.session.Session;
  * @author Karl von Randow
  * 
  */
-public class ModifierInputDialog extends TextBox implements Activatable, CommandListener {
+public class ModifierInputDialog extends ExtendedTextBox {
 
-	private static Command enterCommand = new Command( "Type", Command.OK, 1 );
-
-	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
-
-	private Activatable back;
-
+    private static final Command enterCommand = new Command( "Type", Command.OK, 1 );
 	private int modifier;
 
 	public ModifierInputDialog( String title, int modifier ) {
 		super( title, "", 10, TextField.ANY );
 
 		this.modifier = modifier;
-		
-		addCommand( enterCommand );
-		addCommand( backCommand );
-
+        addCommand(enterCommand);
+        addCommand(backCommand);
+        
 //#ifdef midp2
-                setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+        setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
 //#endif
-
-		setCommandListener( this );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gui.Activatable#activate()
-	 */
-	public void activate() {
-		Main.setDisplay( this );
-	}
-	
-	public void activate( Activatable back ) {
-		this.back = back;
-		activate();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
-	 *      javax.microedition.lcdui.Displayable)
-	 */
-	public void commandAction( Command command, Displayable arg1 ) {
-		if ( command == enterCommand ) {
-			String str = getString();
-			Session session = Main.currentSession();
-			if ( session != null ) {
-				for ( int i = 0; i < str.length(); i++ ) {
-					session.typeChar( str.charAt( i ), modifier );
-				}
+    protected boolean handleText(Command command, String str) {
+		Session session = Main.currentSession();
+		if ( session != null ) {
+			for ( int i = 0; i < str.length(); i++ ) {
+				session.typeChar( str.charAt( i ), modifier );
 			}
 		}
-
-		back.activate();
+        return true;
 	}
 }

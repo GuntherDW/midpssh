@@ -22,11 +22,13 @@
  */
 package gui;
 
+
 /**
  * @author Karl von Randow
  * 
  */
 public interface Activatable {
+    
 	public void activate();
 	
 	public void activate( Activatable back );

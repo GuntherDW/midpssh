@@ -23,11 +23,9 @@
 package gui.session;
 
 import gui.Activatable;
+import gui.ExtendedTextBox;
 
 import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Displayable;
-import javax.microedition.lcdui.TextBox;
 import javax.microedition.lcdui.TextField;
 
 import app.Main;
@@ -37,7 +35,7 @@ import app.session.Session;
  * @author Karl von Randow
  * 
  */
-public class InputDialog extends TextBox implements Activatable, CommandListener {
+public class InputDialog extends ExtendedTextBox {
 
 	private static Command enterCommand = new Command( "Enter", Command.OK, 1 );
 
@@ -45,14 +43,11 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
 
 	private static Command tabCommand = new Command( "TAB", Command.ITEM, 3 );
 
-	private static Command backCommand = new Command( "Back", Command.BACK, 4 );
-
 	private Activatable back;
 
 	public InputDialog() {
 		super( "Input", "", 255, TextField.ANY );
-        setString( "" );
-
+        
         addCommand( enterCommand );
 		addCommand( typeCommand );
 		addCommand( tabCommand );
@@ -64,50 +59,24 @@ public class InputDialog extends TextBox implements Activatable, CommandListener
         
 		setCommandListener( this );
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gui.Activatable#activate()
-	 */
-	public void activate() {
-		Main.setDisplay( this );
-	}
-
-	/* (non-Javadoc)
-	 * @see gui.Activatable#activate(gui.Activatable)
-	 */
-	public void activate( Activatable back ) {
-		this.back = back;
-		activate();
-	}
 	
 	private StringBuffer commandBuffer = new StringBuffer();
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
-	 *      javax.microedition.lcdui.Displayable)
-	 */
-	public void commandAction( Command command, Displayable arg1 ) {
-		if ( command != backCommand ) {
-			Session session = Main.currentSession();
-			if ( session != null ) {
-			    commandBuffer.setLength( 0 );
-			    commandBuffer.append( getString() );
-				if ( command == enterCommand ) {
-				    commandBuffer.append( '\n' );
-				}
-				if ( command == tabCommand ) {
-				    commandBuffer.append( '\t' );
-				}
-				session.typeString( commandBuffer.toString() );
-				session.activate();
-			}
-            setString( "" );
-		}
-		
-		back.activate();
-	}
+    protected boolean handleText(Command command, String text) {
+        Session session = Main.currentSession();
+        if ( session != null ) {
+            commandBuffer.setLength( 0 );
+            commandBuffer.append( getString() );
+            if ( command == enterCommand ) {
+                commandBuffer.append( '\n' );
+            }
+            if ( command == tabCommand ) {
+                commandBuffer.append( '\t' );
+            }
+            session.typeString( commandBuffer.toString() );
+            session.activate();
+        }
+        setString( "" );
+        return true;
+    }
 }

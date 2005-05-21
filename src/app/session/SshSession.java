@@ -36,10 +36,10 @@ public class SshSession extends Session implements SessionIOHandler {
 
     private SshIO sshIO;
     
-	public void connect( SessionSpec spec ) {
+	public void connect( SessionSpec spec, String password ) {
         sshIO = new SshIO( this );
         sshIO.login = spec.username;
-        sshIO.password = spec.password;
+        sshIO.password = password != null ? password : spec.password;
         
 		super.connect( spec, this );
 	}

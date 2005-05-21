@@ -22,6 +22,8 @@
  */
 package gui;
 
+import gui.session.PasswordDialog;
+
 import java.util.Vector;
 
 import javax.microedition.lcdui.Command;
@@ -68,8 +70,16 @@ public class SessionsMenu extends EditableMenu {
 //#ifndef nossh
 				if ( conn.type.equals( SessionSpec.TYPE_SSH ) ) {
 					SshSession session = new SshSession();
-					session.connect( conn );
-					Main.openSession( session );
+                    String password = conn.password;
+                    
+                    if (password == null || password.length() == 0) {
+                        /* Prompt for password */
+                        new PasswordDialog(session, conn).activate();
+                    }
+                    else {
+    					session.connect( conn, null );
+    					Main.openSession( session );
+                    }
 				}
 //#endif
 //#ifndef notelnet

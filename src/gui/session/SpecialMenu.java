@@ -6,6 +6,7 @@ package gui.session;
 
 import gui.Activatable;
 import gui.ExtendedList;
+import gui.MessageForm;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -21,8 +22,6 @@ import app.session.Session;
  *
  */
 public class SpecialMenu extends ExtendedList implements CommandListener, Activatable {
-
-	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
 
     private static final String[] MAIN_OPTIONS = new String[] {      
         "Backspace", "Home", "End", "Page Up", "Page Down", "Delete", "Insert",
@@ -58,7 +57,7 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
         }
 
 		//setSelectCommand( selectCommand );
-		addCommand( backCommand );
+		addCommand( MessageForm.backCommand );
 		
 		setCommandListener( this );
     }
@@ -123,7 +122,7 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
 			    }
 		    }
 		}
-		else if ( command == backCommand ) {
+		else if ( command == MessageForm.backCommand ) {
 		    if ( back != null ) {
 		        back.activate();
 		    }

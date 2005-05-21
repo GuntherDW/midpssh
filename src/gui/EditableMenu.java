@@ -41,8 +41,6 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 
 	protected static Command deleteCommand = new Command( "Delete", Command.ITEM, 10 );
 
-	protected static Command backCommand = new Command( "Back", Command.BACK, 2 );
-	
 	protected Command selectCommand = List.SELECT_COMMAND;
 	
 	private Activatable back;
@@ -54,7 +52,7 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 		addCommand( newCommand );
 		addCommand( editCommand );
 		addCommand( deleteCommand );
-		addCommand( backCommand );
+		addCommand( MessageForm.backCommand );
 
 		setCommandListener( this );
 	}
@@ -93,7 +91,7 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 				doDelete( i );
 			}
 		}
-		else if ( command == backCommand ) {
+		else if ( command == MessageForm.backCommand ) {
 			doBack();
 		}
 	}

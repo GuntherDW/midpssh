@@ -23,6 +23,7 @@
 package gui.session.macros;
 
 import gui.EditableForm;
+import gui.SessionForm;
 
 import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.Command;
@@ -41,10 +42,6 @@ public class MacroForm extends EditableForm {
     public static final int MODE_MACRO_SET = 1;
     public static final int MODE_MACRO = 2;
     
-	private static Command saveCommand = new Command( "Save", Command.SCREEN, 1 );
-
-	private static Command createCommand = new Command( "Create", Command.SCREEN, 1 );
-
 	private int macroSetIndex, macroIndex;
 
 	private boolean edit;
@@ -82,10 +79,10 @@ public class MacroForm extends EditableForm {
 
 		this.edit = edit;
 		if ( edit ) {
-		    addCommand( saveCommand );
+		    addCommand( SessionForm.saveCommand );
 		}
 		else {
-		    addCommand( createCommand );
+		    addCommand( SessionForm.createCommand );
 		}
 	}
 
@@ -142,10 +139,10 @@ public class MacroForm extends EditableForm {
 	 *      javax.microedition.lcdui.Displayable)
 	 */
 	public void commandAction( Command command, Displayable displayed ) {
-		if ( command == saveCommand ) {
+		if ( command == SessionForm.saveCommand ) {
 			doSave();
 		}
-		else if ( command == createCommand ) {
+		else if ( command == SessionForm.createCommand ) {
 		    doCreate();
 		}
 		else {

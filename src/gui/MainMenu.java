@@ -37,8 +37,6 @@ import app.Main;
  */
 public class MainMenu extends ExtendedList implements CommandListener, Activatable {
 
-	//private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
-
 	private static Command quitCommand = new Command( "Quit", Command.EXIT, 2 );
 
 	private SessionsMenu sessionsMenu;

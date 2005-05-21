@@ -22,8 +22,8 @@
  */
 package gui.session;
 
-import gui.Activatable;
 import gui.ExtendedTextBox;
+import gui.MessageForm;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.TextField;
@@ -37,13 +37,11 @@ import app.session.Session;
  */
 public class InputDialog extends ExtendedTextBox {
 
-	private static Command enterCommand = new Command( "Enter", Command.OK, 1 );
+	public static final Command enterCommand = new Command( "Enter", Command.OK, 1 );
 
-	private static Command typeCommand = new Command( "Type", Command.ITEM, 2 );
+	public static final Command typeCommand = new Command( "Type", Command.ITEM, 2 );
 
-	private static Command tabCommand = new Command( "TAB", Command.ITEM, 3 );
-
-	private Activatable back;
+	public static final Command tabCommand = new Command( "TAB", Command.ITEM, 3 );
 
 	public InputDialog() {
 		super( "Input", "", 255, TextField.ANY );
@@ -51,13 +49,11 @@ public class InputDialog extends ExtendedTextBox {
         addCommand( enterCommand );
 		addCommand( typeCommand );
 		addCommand( tabCommand );
-		addCommand( backCommand );
+		addCommand( MessageForm.backCommand );
 
 //#ifdef midp2
         setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
 //#endif
-        
-		setCommandListener( this );
 	}
 	
 	private StringBuffer commandBuffer = new StringBuffer();

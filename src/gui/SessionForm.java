@@ -37,9 +37,9 @@ import app.SessionSpec;
  */
 public class SessionForm extends EditableForm {
 
-	private static Command saveCommand = new Command( "Save", Command.SCREEN, 1 );
+	public static final Command saveCommand = new Command( "Save", Command.SCREEN, 1 );
 
-	private static Command createCommand = new Command( "Create", Command.SCREEN, 1 );
+	public static final Command createCommand = new Command( "Create", Command.SCREEN, 1 );
 
 	private int connectionIndex = 1;
 

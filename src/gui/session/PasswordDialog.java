@@ -5,6 +5,7 @@
 package gui.session;
 
 import gui.ExtendedTextBox;
+import gui.MessageForm;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.TextField;
@@ -20,8 +21,6 @@ import app.session.SshSession;
  */
 public class PasswordDialog extends ExtendedTextBox {
 
-    private static final Command enterCommand = new Command( "OK", Command.OK, 1 );
-    
     private SshSession session;
     
     private SessionSpec conn;
@@ -35,8 +34,8 @@ public class PasswordDialog extends ExtendedTextBox {
     public PasswordDialog(SshSession session, SessionSpec conn) {
         super("Password", "", 255, TextField.PASSWORD);
         
-        addCommand(enterCommand);
-        addCommand(backCommand);
+        addCommand(MessageForm.okCommand);
+        addCommand(MessageForm.backCommand);
         
         this.session = session;
         this.conn = conn;

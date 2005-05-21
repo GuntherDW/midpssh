@@ -23,6 +23,7 @@
 package gui.session;
 
 import gui.ExtendedTextBox;
+import gui.MessageForm;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.TextField;
@@ -36,15 +37,14 @@ import app.session.Session;
  */
 public class ModifierInputDialog extends ExtendedTextBox {
 
-    private static final Command enterCommand = new Command( "Type", Command.OK, 1 );
 	private int modifier;
 
 	public ModifierInputDialog( String title, int modifier ) {
 		super( title, "", 10, TextField.ANY );
 
 		this.modifier = modifier;
-        addCommand(enterCommand);
-        addCommand(backCommand);
+        addCommand(InputDialog.enterCommand);
+        addCommand(MessageForm.backCommand);
         
 //#ifdef midp2
         setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);

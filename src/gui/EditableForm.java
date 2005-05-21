@@ -38,12 +38,10 @@ public abstract class EditableForm extends Form implements CommandListener, Acti
 
 	private Activatable back;
 
-	private static Command backCommand = new Command( "Back", Command.BACK, 2 );
-	
 	public EditableForm( String title ) {
 		super( title );
 
-		addCommand( backCommand );
+		addCommand( MessageForm.backCommand );
 		setCommandListener( this );
 	}
 
@@ -54,7 +52,7 @@ public abstract class EditableForm extends Form implements CommandListener, Acti
 	 *      javax.microedition.lcdui.Displayable)
 	 */
 	public void commandAction( Command command, Displayable displayed ) {
-		if ( command == backCommand ) {
+		if ( command == MessageForm.backCommand ) {
 			doBack();
 		}
 	}

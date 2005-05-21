@@ -24,6 +24,7 @@ package gui.settings;
 
 import gui.Activatable;
 import gui.ExtendedList;
+import gui.MessageForm;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
@@ -40,10 +41,6 @@ import app.Settings;
  */
 public class SettingsMenu extends ExtendedList implements Activatable, CommandListener {
 
-	//private static Command selectCommand = new Command( "Select", Command.ITEM, 1 );
-	
-	private static final Command backCommand = new Command( "Back", Command.BACK, 2 );
-	
 	protected static final int SETTINGS_OPTIONS = 2;
 	
 	private Activatable back;
@@ -57,7 +54,7 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
         append( "Restore Defaults", null );
 		
 		//setSelectCommand( selectCommand );
-		addCommand( backCommand );
+		addCommand( MessageForm.backCommand );
 		
 		setCommandListener( this );
 	}
@@ -72,7 +69,7 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 		if ( command == List.SELECT_COMMAND ) {
 			doSelect( getSelectedIndex() );
 		}
-		else if ( command == backCommand ) {
+		else if ( command == MessageForm.backCommand ) {
 			doBack();
 		}
 	}

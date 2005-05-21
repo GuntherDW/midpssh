@@ -16,8 +16,6 @@ import app.Main;
  *
  */
 public abstract class ExtendedTextBox extends TextBox implements Activatable, CommandListener {
-    protected static Command backCommand = new Command( "Back", Command.BACK, 2 );
-
     private Activatable back;
 
     private int modifier;
@@ -49,7 +47,7 @@ public abstract class ExtendedTextBox extends TextBox implements Activatable, Co
      *      javax.microedition.lcdui.Displayable)
      */
     public void commandAction( Command command, Displayable arg1 ) {
-        if ( command != backCommand ) {
+        if ( command != MessageForm.backCommand ) {
             if (handleText(command, getString())) {
                 back.activate();
             }

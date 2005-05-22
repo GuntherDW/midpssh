@@ -110,4 +110,13 @@ public class Main extends MIDlet {
 	public static Session currentSession() {
 		return currentSession;
 	}
+    
+    /*
+    public static void debug(String msg) {
+        Alert alert = new Alert("DEBUG");
+        alert.setString(msg);
+        alert.setTimeout(Alert.FOREVER);
+        alert(alert, getDisplay().getCurrent());
+    }
+    */
 }

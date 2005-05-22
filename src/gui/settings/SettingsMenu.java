@@ -51,7 +51,9 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 		append( "Terminal", null );
         append( "Display", null );
         append( "Fonts", null );
+//#ifdef ssh2
         append( "SSH", null );
+//#endif
         append( "Restore Defaults", null );
 		
 		//setSelectCommand( selectCommand );
@@ -93,11 +95,13 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
             }
             break;
             case 3:
+//#ifdef ssh2
             {
                 showSettingsForm(i, SettingsForm.MODE_SSH);
             }
             break;
             case 4:
+//#endif
             {
                 Settings.defaults();
                 Settings.saveSettings();

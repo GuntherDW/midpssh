@@ -44,7 +44,9 @@ public class SettingsForm extends EditableForm {
     
     public static final int MODE_FONTS = 3;
     
+//#ifdef ssh2   
     public static final int MODE_SSH = 4;
+//#endif
     
     private int mode;
     
@@ -64,7 +66,9 @@ public class SettingsForm extends EditableForm {
 //#endif
     protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size", ChoiceGroup.EXCLUSIVE );
 	
+//#ifdef ssh2   
     protected ChoiceGroup cgSsh = new ChoiceGroup("Preferred Protocol", ChoiceGroup.EXCLUSIVE);
+//#endif
     
 	public SettingsForm( String title, int mode ) {
 		super( title );
@@ -112,6 +116,7 @@ public class SettingsForm extends EditableForm {
             append( tfBg );
         }
         break;
+//#ifdef ssh2
         case MODE_SSH:
         {
             cgSsh.append( "SSH1", null);
@@ -119,6 +124,7 @@ public class SettingsForm extends EditableForm {
             append(cgSsh);
         }
         break;
+//#endif
         }
         
         addCommand(MessageForm.okCommand);
@@ -204,6 +210,7 @@ public class SettingsForm extends EditableForm {
             tfBg.setString( toHex( Settings.bgcolor ) );
         }
         break;
+//#ifdef ssh2
         case MODE_SSH:
         {
             switch (Settings.sshVersionPreferred) {
@@ -216,6 +223,7 @@ public class SettingsForm extends EditableForm {
             }
         }
         break;
+//#endif
         }
 		
 		super.activate();
@@ -303,11 +311,13 @@ public class SettingsForm extends EditableForm {
             }
         }
         break;
+//#ifdef ssh2
         case MODE_SSH:
         {
             Settings.sshVersionPreferred = cgSsh.getSelectedIndex() == 1 ? 2 : 1;
         }
         break;
+//#endif
         }
 		return true;
 	}

@@ -274,7 +274,7 @@ public abstract class Session implements Activatable {
 				}
 				
 				if ( !disconnecting ) {
-//#ifdef blackberry
+//#ifdef blackberryxxx
 				    /* Some older BlackBerrys (or all using MDS?) fail if we don't have
 				     * this slight delay here. This appears to be a problem in the RIM I/O
 				     * as I've tested to see if the contents of outputBuffer and outputCount

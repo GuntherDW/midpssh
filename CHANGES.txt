@@ -1,3 +1,11 @@
+1.4.3
+
+Added password prompt if no password provided in session spec
+Added session list download
+Blackberry IOOB fix when using menus
+Choose preferred SSH version for connecting to 1.99 hosts
+Properly implemented ANSI colours, including bold
+
 1.4.2
 
 Vibrate on beep

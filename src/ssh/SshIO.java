@@ -677,9 +677,6 @@ public class SshIO {
      */
     private String handlePacket2(SshPacket2 p) throws IOException {
         switch (p.getType()) {
-        case SSH2_MSG_IGNORE:
-            // System.out.println("SSH2: SSH2_MSG_IGNORE");
-            break;
         case SSH2_MSG_DISCONNECT:
             int discreason = p.getInt32();
             String discreason1 = p.getString();
@@ -687,7 +684,7 @@ public class SshIO {
             // System.out.println("SSH2: SSH2_MSG_DISCONNECT(" + discreason
             // +
             // "," + discreason1 + "," + /*discreason2+*/")");
-            return "\r\nSSH2 disconnect: " + discreason1 + "\r\n";
+            return "\r\nDisconnected: " + discreason1 + "\r\n";
 
         case SSH2_MSG_NEWKEYS: {
             // Send response
@@ -758,10 +755,6 @@ public class SshIO {
             break;
         }
 
-        case SSH2_MSG_CHANNEL_WINDOW_ADJUST: {
-            break;
-        }
-
         case SSH2_MSG_CHANNEL_DATA: {
             int localId = p.getInt32();
             String data = p.getString();
@@ -772,27 +765,18 @@ public class SshIO {
             String methods = p.getString();
             int partial_success = p.getByte();
 
-            return "SSH2: Authorisation failed, available methods are:\r\n"
+            return "Login and password not accepted.\r\nAvailable methods are: "
                     + methods + "\r\n";
 
-        case SSH2_MSG_USERAUTH_BANNER: {
-            String message = p.getString();
-            String language = p.getString();
-
-            // System.out.println( "USERAUTH_BANNER " + message );
+        case SSH2_MSG_IGNORE:
+        case SSH2_MSG_CHANNEL_WINDOW_ADJUST:
+        case SSH2_MSG_USERAUTH_BANNER:
+        case SSH2_MSG_CHANNEL_EOF:
+        case SSH2_MSG_CHANNEL_REQUEST:
             break;
-        }
-
-        case SSH2_MSG_CHANNEL_EOF: {
-            break;
-        }
 
         case SSH2_MSG_CHANNEL_CLOSE: {
             sendDisconnect();
-            break;
-        }
-
-        case SSH2_MSG_CHANNEL_REQUEST: {
             break;
         }
 

@@ -27,6 +27,7 @@ import gui.session.PasswordDialog;
 import java.util.Vector;
 
 import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.Displayable;
 
 import app.SessionManager;
 import app.SessionSpec;
@@ -45,12 +46,37 @@ public class SessionsMenu extends EditableMenu {
 	private static SessionForm newConnectionForm = new SessionForm( false );
 
 	private static SessionForm editConnectionForm = new SessionForm( true );
-
+    
+//#ifndef small
+    private static Command importCommand = new Command("Import", Command.ITEM, 20);
+    
+    private ImportSessionsForm importSessionsForm;
+//#endif
+    
 	public SessionsMenu() {
 		super( "Sessions" );
 		replaceSelectCommand( connectCommand );
+        
+//#ifndef small
+        addCommand(importCommand);
+//#endif
 	}
-
+    
+//#ifndef small
+    public void commandAction(Command command, Displayable displayable) {
+        if (command == importCommand) {
+            /* Import */
+            if (importSessionsForm == null) {
+                importSessionsForm = new ImportSessionsForm();
+            }
+            importSessionsForm.activate(this);
+        }
+        else {
+            super.commandAction(command, displayable);
+        }
+    }
+//#endif
+    
 	protected void addItems() {
 		deleteAll();
 

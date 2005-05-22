@@ -16,7 +16,7 @@ import app.Main;
  *
  */
 public abstract class ExtendedTextBox extends TextBox implements Activatable, CommandListener {
-    private Activatable back;
+    protected Activatable back;
 
     private int modifier;
 

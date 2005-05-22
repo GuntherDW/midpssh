@@ -327,84 +327,79 @@ public class SshIO {
         // ")");
 
         if (phase == PHASE_INIT) {
-            // TODO REMOVE THIS EXCEPTION CATCHING
-            try {
-                byte b; // of course, byte is a signed entity (-128 -> 127)
+            byte b; // of course, byte is a signed entity (-128 -> 127)
 
-                while (boffset < boffsetend) {
-                    b = buff[boffset++];
-                    // both sides MUST send an identification string of the form
-                    // "SSH-protoversion-softwareversion comments",
-                    // followed by newline character(ascii 10 = '\n' or '\r')
-                    idstr += (char) b;
-                    if (b == '\n') {
-                        phase++;
-                        // if (!idstr.substring(0, 4).equals("SSH-")) {
-                        // System.out.println("Received invalid ID string: " +
-                        // idstr
-                        // + ", (substr " + idstr.substring(0, 4) + ")");
-                        // throw (new IOException());
-                        // }
-                        remotemajor = Integer.parseInt(idstr.substring(4, 5));
-                        String minorverstr = idstr.substring(6, 8);
-                        if (!Character.isDigit(minorverstr.charAt(1)))
-                            minorverstr = minorverstr.substring(0, 1);
-                        remoteminor = Integer.parseInt(minorverstr);
+            while (boffset < boffsetend) {
+                b = buff[boffset++];
+                // both sides MUST send an identification string of the form
+                // "SSH-protoversion-softwareversion comments",
+                // followed by newline character(ascii 10 = '\n' or '\r')
+                idstr += (char) b;
+                if (b == '\n') {
+                    phase++;
+                    // if (!idstr.substring(0, 4).equals("SSH-")) {
+                    // System.out.println("Received invalid ID string: " +
+                    // idstr
+                    // + ", (substr " + idstr.substring(0, 4) + ")");
+                    // throw (new IOException());
+                    // }
+                    remotemajor = Integer.parseInt(idstr.substring(4, 5));
+                    String minorverstr = idstr.substring(6, 8);
+                    if (!Character.isDigit(minorverstr.charAt(1)))
+                        minorverstr = minorverstr.substring(0, 1);
+                    remoteminor = Integer.parseInt(minorverstr);
 
-                        // System.out.println("remotemajor " + remotemajor);
-                        // System.out.println("remoteminor " + remoteminor);
+                    // System.out.println("remotemajor " + remotemajor);
+                    // System.out.println("remoteminor " + remoteminor);
 
 //#ifdef ssh2
-                        if (remotemajor == 2) {
+                    if (remotemajor == 2) {
+                        mymajor = 2;
+                        myminor = 0;
+                        useprotocol = 2;
+                    } else {
+                        if (false && (remoteminor == 99)) {
                             mymajor = 2;
                             myminor = 0;
                             useprotocol = 2;
-                        } else {
-                            if (false && (remoteminor == 99)) {
-                                mymajor = 2;
-                                myminor = 0;
-                                useprotocol = 2;
-                            } else {
-                                mymajor = 1;
-                                myminor = 5;
-                                useprotocol = 1;
-                            }
-                        }
-//#else
-                        if (remotemajor == 2) {
-                            // TODO disconnect
-                            return "Remote server does not support ssh1\r\n"
-                                    .getBytes();
                         } else {
                             mymajor = 1;
                             myminor = 5;
                             useprotocol = 1;
                         }
+                    }
+//#else
+                    if (remotemajor == 2) {
+                        // TODO disconnect
+                        return "Remote server does not support ssh1\r\n"
+                                .getBytes();
+                    } else {
+                        mymajor = 1;
+                        myminor = 5;
+                        useprotocol = 1;
+                    }
 //#endif
-                        // this is how we tell the remote server what protocol
-                        // we
-                        // use.
-                        idstr_sent = "SSH-" + mymajor + "." + myminor + "-"
-                                + idstr_sent;
-                        write(idstr_sent.getBytes());
+                    // this is how we tell the remote server what protocol
+                    // we
+                    // use.
+                    idstr_sent = "SSH-" + mymajor + "." + myminor + "-"
+                            + idstr_sent;
+                    write(idstr_sent.getBytes());
 
 //#ifdef ssh2
-                        if (useprotocol == 2)
-                            currentpacket = new SshPacket2(null);
-                        else
-                            currentpacket = new SshPacket1(null);
-//#else
+                    if (useprotocol == 2)
+                        currentpacket = new SshPacket2(null);
+                    else
                         currentpacket = new SshPacket1(null);
+//#else
+                    currentpacket = new SshPacket1(null);
 //#endif
-                    }
                 }
-                if (boffset == boffsetend)
-                    return "".getBytes();
-                return "Must not have left over data after PHASE_INIT!\n"
-                        .getBytes();
-            } catch (RuntimeException e) {
-                throw new RuntimeException("HSINIT: " + e);
             }
+            if (boffset == boffsetend)
+                return "".getBytes();
+            return "Must not have left over data after PHASE_INIT!\n"
+                    .getBytes();
         }
 
         result = "";
@@ -443,221 +438,216 @@ public class SshIO {
         // if (debug > 0)
         // System.out.println("1 packet to handle, type " + p.getType());
 
-        try {
-            switch (p.getType()) {
-            case SSH_MSG_IGNORE:
-                return "";
+        switch (p.getType()) {
+        case SSH_MSG_IGNORE:
+            return "";
 
-            case SSH_MSG_DISCONNECT:
-                String str = p.getString();
-                disconnect();
-                return str;
+        case SSH_MSG_DISCONNECT:
+            String str = p.getString();
+            disconnect();
+            return str;
 
-            case SSH_SMSG_PUBLIC_KEY:
-                byte[] anti_spoofing_cookie; // 8 bytes
-                byte[] server_key_bits; // 32-bit int
-                byte[] server_key_public_exponent; // mp-int
-                byte[] server_key_public_modulus; // mp-int
-                byte[] host_key_bits; // 32-bit int
-                byte[] host_key_public_exponent; // mp-int
-                byte[] host_key_public_modulus; // mp-int
-                byte[] protocol_flags; // 32-bit int
-                byte[] supported_ciphers_mask; // 32-bit int
-                byte[] supported_authentications_mask; // 32-bit int
+        case SSH_SMSG_PUBLIC_KEY:
+            byte[] anti_spoofing_cookie; // 8 bytes
+            byte[] server_key_bits; // 32-bit int
+            byte[] server_key_public_exponent; // mp-int
+            byte[] server_key_public_modulus; // mp-int
+            byte[] host_key_bits; // 32-bit int
+            byte[] host_key_public_exponent; // mp-int
+            byte[] host_key_public_modulus; // mp-int
+            byte[] protocol_flags; // 32-bit int
+            byte[] supported_ciphers_mask; // 32-bit int
+            byte[] supported_authentications_mask; // 32-bit int
 
-                anti_spoofing_cookie = p.getBytes(8);
-                server_key_bits = p.getBytes(4);
-                server_key_public_exponent = p.getMpInt();
-                server_key_public_modulus = p.getMpInt();
-                host_key_bits = p.getBytes(4);
-                host_key_public_exponent = p.getMpInt();
-                host_key_public_modulus = p.getMpInt();
-                protocol_flags = p.getBytes(4);
-                supported_ciphers_mask = p.getBytes(4);
-                supported_authentications_mask = p.getBytes(4);
+            anti_spoofing_cookie = p.getBytes(8);
+            server_key_bits = p.getBytes(4);
+            server_key_public_exponent = p.getMpInt();
+            server_key_public_modulus = p.getMpInt();
+            host_key_bits = p.getBytes(4);
+            host_key_public_exponent = p.getMpInt();
+            host_key_public_modulus = p.getMpInt();
+            protocol_flags = p.getBytes(4);
+            supported_ciphers_mask = p.getBytes(4);
+            supported_authentications_mask = p.getBytes(4);
 
-                // We have completely received the PUBLIC_KEY
-                // We prepare the answer ...
+            // We have completely received the PUBLIC_KEY
+            // We prepare the answer ...
 
-                String ret = Send_SSH_CMSG_SESSION_KEY(anti_spoofing_cookie,
-                        server_key_public_modulus, host_key_public_modulus,
-                        supported_ciphers_mask, server_key_public_exponent,
-                        host_key_public_exponent);
-                if (ret != null)
-                    return ret;
+            String ret = Send_SSH_CMSG_SESSION_KEY(anti_spoofing_cookie,
+                    server_key_public_modulus, host_key_public_modulus,
+                    supported_ciphers_mask, server_key_public_exponent,
+                    host_key_public_exponent);
+            if (ret != null)
+                return ret;
 
-                // we check if MD5(server_key_public_exponent) is equals to the
-                // applet parameter if any .
-                if (hashHostKey != null && hashHostKey.compareTo("") != 0) {
-                    // we compute hashHostKeyBis the hash value in hexa of
-                    // host_key_public_modulus
-                    byte[] Md5_hostKey = md5.digest(host_key_public_modulus);
-                    String hashHostKeyBis = "";
-                    for (int i = 0; i < Md5_hostKey.length; i++) {
-                        String hex = "";
-                        int[] v = new int[2];
-                        v[0] = (Md5_hostKey[i] & 240) >> 4;
-                        v[1] = (Md5_hostKey[i] & 15);
-                        for (int j = 0; j < 1; j++)
-                            switch (v[j]) {
-                            case 10:
-                                hex += "a";
-                                break;
-                            case 11:
-                                hex += "b";
-                                break;
-                            case 12:
-                                hex += "c";
-                                break;
-                            case 13:
-                                hex += "d";
-                                break;
-                            case 14:
-                                hex += "e";
-                                break;
-                            case 15:
-                                hex += "f";
-                                break;
-                            default:
-                                hex += String.valueOf(v[j]);
-                                break;
-                            }
-                        hashHostKeyBis = hashHostKeyBis + hex;
-                    }
-                    // we compare the 2 values
-                    if (hashHostKeyBis.compareTo(hashHostKey) != 0) {
-                        login = password = "";
-                        return "\nHash value of the host key not correct \r\n";
-                        // + "login & password have been reset \r\n"
-                        // + "- erase the 'hashHostKey' parameter in the
-                        // Html\r\n"
-                        // + "(it is used for auhentificating the server and "
-                        // + "prevent you from connecting \r\n"
-                        // + "to any other)\r\n";
-                    }
+            // we check if MD5(server_key_public_exponent) is equals to the
+            // applet parameter if any .
+            if (hashHostKey != null && hashHostKey.compareTo("") != 0) {
+                // we compute hashHostKeyBis the hash value in hexa of
+                // host_key_public_modulus
+                byte[] Md5_hostKey = md5.digest(host_key_public_modulus);
+                String hashHostKeyBis = "";
+                for (int i = 0; i < Md5_hostKey.length; i++) {
+                    String hex = "";
+                    int[] v = new int[2];
+                    v[0] = (Md5_hostKey[i] & 240) >> 4;
+                    v[1] = (Md5_hostKey[i] & 15);
+                    for (int j = 0; j < 1; j++)
+                        switch (v[j]) {
+                        case 10:
+                            hex += "a";
+                            break;
+                        case 11:
+                            hex += "b";
+                            break;
+                        case 12:
+                            hex += "c";
+                            break;
+                        case 13:
+                            hex += "d";
+                            break;
+                        case 14:
+                            hex += "e";
+                            break;
+                        case 15:
+                            hex += "f";
+                            break;
+                        default:
+                            hex += String.valueOf(v[j]);
+                            break;
+                        }
+                    hashHostKeyBis = hashHostKeyBis + hex;
                 }
-                break;
-
-            case SSH_SMSG_SUCCESS:
-                // if (debug > 0)
-                // System.out.println("SSH_SMSG_SUCCESS (last packet was " +
-                // lastPacketSentType + ")");
-                if (lastPacketSentType == SSH_CMSG_SESSION_KEY) {
-                    // we have succefully sent the session key !! (at last :-) )
-                    Send_SSH_CMSG_USER();
-                    break;
+                // we compare the 2 values
+                if (hashHostKeyBis.compareTo(hashHostKey) != 0) {
+                    login = password = "";
+                    return "\nHash value of the host key not correct \r\n";
+                    // + "login & password have been reset \r\n"
+                    // + "- erase the 'hashHostKey' parameter in the
+                    // Html\r\n"
+                    // + "(it is used for auhentificating the server and "
+                    // + "prevent you from connecting \r\n"
+                    // + "to any other)\r\n";
                 }
-
-                if (lastPacketSentType == SSH_CMSG_USER) {
-                    // authentication is NOT needed for this user
-                    Send_SSH_CMSG_REQUEST_PTY(); // request a pseudo-terminal
-                    return "Empty password login.\r\n";
-                }
-
-                if (lastPacketSentType == SSH_CMSG_AUTH_PASSWORD) {// password
-                    // correct !!!
-                    // yahoo
-                    // if (debug > 0)
-                    // System.out.println("login succesful");
-
-                    // now we have to start the interactive session ...
-                    Send_SSH_CMSG_REQUEST_PTY(); // request a pseudo-terminal
-                    return "Login & password accepted\r\n";
-                }
-
-                if (lastPacketSentType == SSH_CMSG_REQUEST_PTY) {// pty
-                    // accepted
-                    // !!
-                    /*
-                     * we can send data with a pty accepted ... no need for a
-                     * shell.
-                     */
-                    cansenddata = true;
-                    if (dataToSend != null) {
-                        Send_SSH_CMSG_STDIN_DATA(dataToSend);
-                        dataToSend = null;
-                    }
-                    Send_SSH_CMSG_EXEC_SHELL(); // we start a shell
-                    break;
-                }
-                if (lastPacketSentType == SSH_CMSG_EXEC_SHELL) {// shell is
-                    // running
-                    // ...
-                    /* empty */
-                }
-
-                break;
-
-            case SSH_SMSG_FAILURE:
-                if (lastPacketSentType == SSH_CMSG_AUTH_PASSWORD) {// password
-                    // incorrect ???
-                    // System.out.println("failed to log in");
-                    disconnect();
-                    return "Login & password not accepted\r\n";
-                }
-                if (lastPacketSentType == SSH_CMSG_USER) {
-                    // authentication is needed for the given user
-                    // (in most cases that's true)
-                    Send_SSH_CMSG_AUTH_PASSWORD();
-                    break;
-                }
-
-                if (lastPacketSentType == SSH_CMSG_REQUEST_PTY) {// pty not
-                    // accepted
-                    // !!
-                    break;
-                }
-                break;
-
-            case SSH_SMSG_STDOUT_DATA: // receive some data from the server
-                return p.getString();
-
-            case SSH_SMSG_STDERR_DATA: // receive some error data from the
-                // server
-                // if(debug > 1)
-                str = "Error : " + p.getString();
-                // System.out.println("SshIO.handlePacket : " + "STDERR_DATA " +
-                // str);
-                return str;
-
-            case SSH_SMSG_EXITSTATUS: // sent by the server to indicate that
-                // the client program has terminated.
-                // 32-bit int exit status of the command
-                int value = p.getInt32();
-                Send_SSH_CMSG_EXIT_CONFIRMATION();
-                // System.out.println("SshIO : Exit status " + value);
-                disconnect();
-                break;
-
-            case SSH_MSG_DEBUG:
-                str = p.getString();
-                // if (debug > 0) {
-                // System.out.println("SshIO.handlePacket : " + " DEBUG " +
-                // str);
-
-                // bad bad bad bad bad. We should not do actions in DEBUG
-                // messages,
-                // but apparently some SSH demons does not send SSH_SMSG_FAILURE
-                // for
-                // just USER CMS.
-                /*
-                 * if(lastPacketSentType==SSH_CMSG_USER) {
-                 * Send_SSH_CMSG_AUTH_PASSWORD(); break; }
-                 */
-                // return str;
-                // }
-                return "";
-
-            default:
-                // System.err.print("SshIO.handlePacket1: Packet Type unknown: "
-                // +
-                // p.getType());
-                break;
-
             }
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            throw new RuntimeException("HP1b " + p.getType() + ": " + e);
+            break;
+
+        case SSH_SMSG_SUCCESS:
+            // if (debug > 0)
+            // System.out.println("SSH_SMSG_SUCCESS (last packet was " +
+            // lastPacketSentType + ")");
+            if (lastPacketSentType == SSH_CMSG_SESSION_KEY) {
+                // we have succefully sent the session key !! (at last :-) )
+                Send_SSH_CMSG_USER();
+                break;
+            }
+
+            if (lastPacketSentType == SSH_CMSG_USER) {
+                // authentication is NOT needed for this user
+                Send_SSH_CMSG_REQUEST_PTY(); // request a pseudo-terminal
+                return "Empty password login.\r\n";
+            }
+
+            if (lastPacketSentType == SSH_CMSG_AUTH_PASSWORD) {// password
+                // correct !!!
+                // yahoo
+                // if (debug > 0)
+                // System.out.println("login succesful");
+
+                // now we have to start the interactive session ...
+                Send_SSH_CMSG_REQUEST_PTY(); // request a pseudo-terminal
+                return "Login & password accepted\r\n";
+            }
+
+            if (lastPacketSentType == SSH_CMSG_REQUEST_PTY) {// pty
+                // accepted
+                // !!
+                /*
+                 * we can send data with a pty accepted ... no need for a
+                 * shell.
+                 */
+                cansenddata = true;
+                if (dataToSend != null) {
+                    Send_SSH_CMSG_STDIN_DATA(dataToSend);
+                    dataToSend = null;
+                }
+                Send_SSH_CMSG_EXEC_SHELL(); // we start a shell
+                break;
+            }
+            if (lastPacketSentType == SSH_CMSG_EXEC_SHELL) {// shell is
+                // running
+                // ...
+                /* empty */
+            }
+
+            break;
+
+        case SSH_SMSG_FAILURE:
+            if (lastPacketSentType == SSH_CMSG_AUTH_PASSWORD) {// password
+                // incorrect ???
+                // System.out.println("failed to log in");
+                disconnect();
+                return "Login & password not accepted\r\n";
+            }
+            if (lastPacketSentType == SSH_CMSG_USER) {
+                // authentication is needed for the given user
+                // (in most cases that's true)
+                Send_SSH_CMSG_AUTH_PASSWORD();
+                break;
+            }
+
+            if (lastPacketSentType == SSH_CMSG_REQUEST_PTY) {// pty not
+                // accepted
+                // !!
+                break;
+            }
+            break;
+
+        case SSH_SMSG_STDOUT_DATA: // receive some data from the server
+            return p.getString();
+
+        case SSH_SMSG_STDERR_DATA: // receive some error data from the
+            // server
+            // if(debug > 1)
+            str = "Error : " + p.getString();
+            // System.out.println("SshIO.handlePacket : " + "STDERR_DATA " +
+            // str);
+            return str;
+
+        case SSH_SMSG_EXITSTATUS: // sent by the server to indicate that
+            // the client program has terminated.
+            // 32-bit int exit status of the command
+            int value = p.getInt32();
+            Send_SSH_CMSG_EXIT_CONFIRMATION();
+            // System.out.println("SshIO : Exit status " + value);
+            disconnect();
+            break;
+
+        case SSH_MSG_DEBUG:
+            str = p.getString();
+            // if (debug > 0) {
+            // System.out.println("SshIO.handlePacket : " + " DEBUG " +
+            // str);
+
+            // bad bad bad bad bad. We should not do actions in DEBUG
+            // messages,
+            // but apparently some SSH demons does not send SSH_SMSG_FAILURE
+            // for
+            // just USER CMS.
+            /*
+             * if(lastPacketSentType==SSH_CMSG_USER) {
+             * Send_SSH_CMSG_AUTH_PASSWORD(); break; }
+             */
+            // return str;
+            // }
+            return "";
+
+        default:
+            // System.err.print("SshIO.handlePacket1: Packet Type unknown: "
+            // +
+            // p.getType());
+            break;
+
         }
         return "";
     } // handlePacket

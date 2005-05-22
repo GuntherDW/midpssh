@@ -41,9 +41,14 @@ public class ExtendedList extends List {
 
 //#ifndef midp2
 	public void deleteAll() {
-		while ( size() > 0 ) {
-			delete( size() - 1 );
-		}
+        try {
+    		while ( size() > 0 ) {
+    			delete( size() - 1 );
+    		}
+        }
+        catch (IndexOutOfBoundsException e) {
+            /* Ignore this exception - fix for Blackberry which incorrectly throws it here */
+        }
 	}
 //#endif
 	

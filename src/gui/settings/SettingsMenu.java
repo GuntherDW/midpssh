@@ -51,6 +51,7 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 		append( "Terminal", null );
         append( "Display", null );
         append( "Fonts", null );
+        append( "SSH", null );
         append( "Restore Defaults", null );
 		
 		//setSelectCommand( selectCommand );
@@ -78,23 +79,25 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
 		switch ( i ) {
 			case 0:
             {
-				TerminalSettingsForm f = new TerminalSettingsForm( getString( i ), TerminalSettingsForm.MODE_TERMINAL );
-				f.activate( this );
+                showSettingsForm(i, SettingsForm.MODE_TERMINAL );
             }
 			break;
             case 1:
             {
-                TerminalSettingsForm f = new TerminalSettingsForm( getString( i ), TerminalSettingsForm.MODE_DISPLAY );
-                f.activate( this );
+                showSettingsForm(i, SettingsForm.MODE_DISPLAY );
             }
             break;
             case 2:
             {
-                TerminalSettingsForm f = new TerminalSettingsForm( getString( i ), TerminalSettingsForm.MODE_FONTS );
-                f.activate( this );
+                showSettingsForm(i, SettingsForm.MODE_FONTS);
             }
             break;
             case 3:
+            {
+                showSettingsForm(i, SettingsForm.MODE_SSH);
+            }
+            break;
+            case 4:
             {
                 Settings.defaults();
                 Settings.saveSettings();
@@ -103,6 +106,11 @@ public class SettingsMenu extends ExtendedList implements Activatable, CommandLi
             break;
 		}
 	}
+    
+    private void showSettingsForm(int i, int mode) {
+        SettingsForm f = new SettingsForm( getString( i ), mode );
+        f.activate( this );
+    }
 	
 	private void doBack() {
 		back.activate();

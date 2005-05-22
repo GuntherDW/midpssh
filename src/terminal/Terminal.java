@@ -226,8 +226,8 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 //#endif
 
         if ( Main.useColors ) {
-            fgcolor = 0xffffff;
-            bgcolor = 0x000000;
+            fgcolor = color[7];
+            bgcolor = color[0];
         }
 
         initFont();
@@ -250,7 +250,10 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         // Settings
         if ( Main.useColors ) {
             bgcolor = Settings.bgcolor;
-            fgcolor = Settings.fgcolor;
+            /* If specified fgcolor is white then use default fgcolor, which is our off white */
+            if (Settings.fgcolor != 0xffffff) {
+                fgcolor = Settings.fgcolor;
+            }
         }
         
         sizeChanged();
@@ -802,71 +805,28 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 	public int bgcolor = 0xffffff;
 
 	/** A list of colors used for representation of the display */
-	private int color[] = {
-			0x000000, 0xff0000, 0x00ff00, 0xffff00, // yellow
-			0x0000ff, // blue
-			0xff00ff, // magenta
-			0x00ffff, // cyan
-			0xffffff, // white
-			0xffffff, // bold color
-			0xffffff, // inverted color
-	};
-
-	public final static int COLOR_INVERT = 9;
     
-	/**
-	 * Create a color representation that is brighter than the standard color
-	 * but not what we would like to use for bold characters.
-	 * 
-	 * @param clr
-	 *            the standard color
-	 * @return the new brighter color
-	 */
-	private int brighten( int color ) {
-		int r = ( color & 0xff0000 ) >> 16;
-		int g = ( color & 0x00ff00 ) >> 8;
-		int b = ( color & 0x0000ff );
+    private int color[] = {
+            // black, red, green, yellow
+            0x000000, 0xcc0000, 0x00cc00, 0xcccc00,
+            // blue, magenta, cyan, white
+            0x0000cc, 0xcc00cc, 0x00cccc, 0xcccccc 
+    };
+    
+    private int boldcolor[] = {
+            // black, red, green, yellow
+            0x333333, 0xff0000, 0x00ff00, 0xffff00,
+            // blue, magenta, cyan, white
+            0x0000ff, 0xff00ff, 0x00ffff, 0xffffff
+    };
+    
+    private int lowcolor[] = {
+            // black, red, green, yellow
+            0x000000, 0x990000, 0x009900, 0x999900,
+            // blue, magenta, cyan, white
+            0x000099, 0x990099, 0x009999, 0x999999 
+    };
 
-		r *= 12;
-		r /= 10;
-		if ( r > 255 ) {
-			r = 255;
-		}
-		g *= 12;
-		g /= 10;
-		if ( g > 255 ) {
-			g = 255;
-		}
-		b *= 12;
-		b /= 10;
-		if ( b > 255 ) {
-			b = 255;
-		}
-		return b | ( g << 8 ) | ( r << 16 );
-	}
-
-	/**
-	 * Create a color representation that is darker than the standard color but
-	 * not what we would like to use for bold characters.
-	 * 
-	 * @param clr
-	 *            the standard color
-	 * @return the new darker color
-	 */
-	private int darken( int color ) {
-		int r = ( color & 0xff0000 ) >> 16;
-		int g = ( color & 0x00ff00 ) >> 8;
-		int b = ( color & 0x0000ff );
-
-		r *= 8;
-		r /= 10;
-		g *= 8;
-		g /= 10;
-		b *= 8;
-		b /= 10;
-		return b | ( g << 8 ) | ( r << 16 );
-	}
-	
 	private Object paintMutex = new Object();
 
 	protected void paint( Graphics g ) {
@@ -932,20 +892,26 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 					int addr = 0;
 					int currAttr = buffer.charAttributes[buffer.windowBase + l][c];
 
-					int fg = darken( fgcolor );
-					int bg = darken( bgcolor );
-
-					if ( ( currAttr & VT320.COLOR_FG ) != 0 ) {
-						fg = darken( color[( ( currAttr & VT320.COLOR_FG ) >> 4 ) - 1] );
+					int fg = fgcolor;
+					int bg = bgcolor;
+                    
+                    int fgcolorindex = ( ( currAttr & VT320.COLOR_FG ) >> 4 ) - 1;
+					if ( fgcolorindex >= 0 && fgcolorindex < 8 ) {
+                        /* Colour index 8 is invalid, 9 means use default */
+                        if ( (currAttr & VT320.BOLD) != 0) {
+                            fg = boldcolor[fgcolorindex];
+                        }
+                        else if (( currAttr & VT320.LOW ) != 0) {
+                            fg = lowcolor[fgcolorindex];
+                        }
+                        else {
+                            fg = color[fgcolorindex];
+                        }
 					}
-					if ( ( currAttr & VT320.COLOR_BG ) != 0 ) {
-						bg = darken( darken( color[( ( currAttr & VT320.COLOR_BG ) >> 8 ) - 1] ) );
-
-						// bold font handling was DELETED
-
-					}
-					if ( ( currAttr & VT320.LOW ) != 0 ) {
-						fg = darken( fg );
+                    int bgcolorindex = ( ( currAttr & VT320.COLOR_BG ) >> 8 ) - 1;
+					if ( bgcolorindex >= 0 && bgcolorindex < 8) {
+                        /* Colour index 8 is invalid, 9 means use default */
+                        bg = color[bgcolorindex];
 					}
 					if ( ( currAttr & VT320.INVERT ) != 0 ) {
 						int swapc = bg;

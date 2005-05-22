@@ -100,7 +100,7 @@ public class SessionsMenu extends EditableMenu {
                     
                     if (password == null || password.length() == 0) {
                         /* Prompt for password */
-                        new PasswordDialog(session, conn).activate();
+                        new PasswordDialog(session, conn).activate(this);
                     }
                     else {
     					session.connect( conn, null );

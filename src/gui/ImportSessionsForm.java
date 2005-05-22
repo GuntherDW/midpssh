@@ -21,6 +21,9 @@ import app.SessionManager;
 import app.SessionSpec;
 
 /**
+ * Import sessions using an HTTP connection. Parses the returned page looking for lines of the form:
+ * ssh username@hostname[:port] alias
+ * telnet hostname[:port] alias
  * @author Karl
  *
  */
@@ -69,8 +72,8 @@ public class ImportSessionsForm extends ExtendedTextBox implements Runnable {
                 String username = "", host = null, alias = "";
                 SessionSpec spec = null;
                 
-                if (line.startsWith("ssh://")) {
-                    int soh = 6;
+                if (line.startsWith("ssh ")) {
+                    int soh = 4;
                     int eoh = line.indexOf(' ', soh);
                     if (eoh != -1) {
                         int at = line.indexOf('@', soh);
@@ -87,8 +90,8 @@ public class ImportSessionsForm extends ExtendedTextBox implements Runnable {
                         spec.type = SessionSpec.TYPE_SSH;
                     }
                 }
-                else if (line.startsWith("telnet://")) {
-                    int soh = 9;
+                else if (line.startsWith("telnet ")) {
+                    int soh = 7;
                     int eoh = line.indexOf(' ', soh);
                     if (eoh != -1) {
                         host = line.substring(soh, eoh);
@@ -113,6 +116,8 @@ public class ImportSessionsForm extends ExtendedTextBox implements Runnable {
                 
                 line = in.readLine();
             }
+            
+            back.activate();
             
             Alert alert = new Alert( "Import Complete" );
             alert.setType( AlertType.INFO );

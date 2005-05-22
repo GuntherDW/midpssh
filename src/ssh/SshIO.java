@@ -30,6 +30,7 @@ package ssh;
 import java.io.IOException;
 import java.util.Random;
 
+import app.Settings;
 import app.session.SshSession;
 
 import ssh.v1.BigInteger;
@@ -358,7 +359,8 @@ public class SshIO {
                         myminor = 0;
                         useprotocol = 2;
                     } else {
-                        if (false && (remoteminor == 99)) {
+                        /* Check if we have discretion over whether to use ssh1 or ssh2 */
+                        if (remoteminor == 99 && Settings.sshVersionPreferred == 2) {
                             mymajor = 2;
                             myminor = 0;
                             useprotocol = 2;
@@ -371,7 +373,7 @@ public class SshIO {
 //#else
                     if (remotemajor == 2) {
                         // TODO disconnect
-                        return "Remote server does not support ssh1\r\n"
+                        return "Server requires SSH2.\r\n"
                                 .getBytes();
                     } else {
                         mymajor = 1;
@@ -398,7 +400,7 @@ public class SshIO {
             }
             if (boffset == boffsetend)
                 return "".getBytes();
-            return "Must not have left over data after PHASE_INIT!\n"
+            return "SSH PHASE_INIT error\n"
                     .getBytes();
         }
 

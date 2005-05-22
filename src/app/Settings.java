@@ -63,6 +63,8 @@ public class Settings extends MyRecordStore {
 	private static Settings me = new Settings();
 
     public static boolean terminalFullscreen ;
+    
+    public static int sshVersionPreferred;
 	
 	public static void init() {
         defaults();
@@ -87,6 +89,7 @@ public class Settings extends MyRecordStore {
         terminalRotated = ROT_NORMAL;
         fontMode = FONT_NORMAL;
         terminalFullscreen = false;
+        sshVersionPreferred = 1;
     }
 	
     /* (non-Javadoc)
@@ -101,6 +104,7 @@ public class Settings extends MyRecordStore {
 		terminalRotated = in.readInt();
         fontMode = in.readInt();
         terminalFullscreen = in.readBoolean();
+        sshVersionPreferred = in.readInt();
         return null;
     }
     
@@ -116,5 +120,6 @@ public class Settings extends MyRecordStore {
 		out.writeInt( terminalRotated );
         out.writeInt( fontMode );
         out.writeBoolean( terminalFullscreen );
+        out.writeInt(sshVersionPreferred);
     }
 }

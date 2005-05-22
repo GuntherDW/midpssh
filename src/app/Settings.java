@@ -65,6 +65,8 @@ public class Settings extends MyRecordStore {
     public static boolean terminalFullscreen ;
     
     public static int sshVersionPreferred;
+    
+    public static String sessionsImportUrl;
 	
 	public static void init() {
         defaults();
@@ -90,6 +92,7 @@ public class Settings extends MyRecordStore {
         fontMode = FONT_NORMAL;
         terminalFullscreen = false;
         sshVersionPreferred = 1;
+        sessionsImportUrl = "http://";
     }
 	
     /* (non-Javadoc)
@@ -105,6 +108,7 @@ public class Settings extends MyRecordStore {
         fontMode = in.readInt();
         terminalFullscreen = in.readBoolean();
         sshVersionPreferred = in.readInt();
+        sessionsImportUrl = in.readUTF();
         return null;
     }
     
@@ -121,5 +125,6 @@ public class Settings extends MyRecordStore {
         out.writeInt( fontMode );
         out.writeBoolean( terminalFullscreen );
         out.writeInt(sshVersionPreferred);
+        out.writeUTF(sessionsImportUrl);
     }
 }

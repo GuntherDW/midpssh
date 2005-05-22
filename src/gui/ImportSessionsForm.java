@@ -19,6 +19,7 @@ import app.LineInputStream;
 import app.Main;
 import app.SessionManager;
 import app.SessionSpec;
+import app.Settings;
 
 /**
  * Import sessions using an HTTP connection. Parses the returned page looking for lines of the form:
@@ -38,7 +39,7 @@ public class ImportSessionsForm extends ExtendedTextBox implements Runnable {
      * @param constraints
      */
     public ImportSessionsForm() {
-        super("Import Sessions URL", "http://xk72.com/sessions.txt", 255, TextField.ANY);
+        super("Import Sessions URL", Settings.sessionsImportUrl, 255, TextField.ANY);
         
         addCommand(MessageForm.okCommand);
         addCommand(MessageForm.backCommand);
@@ -118,6 +119,8 @@ public class ImportSessionsForm extends ExtendedTextBox implements Runnable {
             }
             
             back.activate();
+            Settings.sessionsImportUrl = url;
+            Settings.saveSettings();
             
             Alert alert = new Alert( "Import Complete" );
             alert.setType( AlertType.INFO );

@@ -48,7 +48,7 @@ public class SessionsMenu extends EditableMenu {
 	private static SessionForm editConnectionForm = new SessionForm( true );
     
 //#ifndef small
-    private static Command importCommand = new Command("Import", Command.ITEM, 20);
+    private static Command importCommand = new Command("Import", Command.SCREEN, 20);
     
     private ImportSessionsForm importSessionsForm;
 //#endif

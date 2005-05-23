@@ -84,12 +84,9 @@ public class DHKeyExchange {
 
 	private byte[] e, f, K;
 
-	private DHBasicKeyPairGenerator myKpairGen;
-
 	private DHBasicAgreement myKeyAgree;
 
 	public DHKeyExchange() {
-		myKpairGen = new DHBasicKeyPairGenerator();
 		myKeyAgree = new DHBasicAgreement();
 		getE();
 	}
@@ -97,12 +94,36 @@ public class DHKeyExchange {
 	public byte[] getE() {
 		if (e == null) {
 			BigInteger p = new BigInteger( DHKeyExchange.p );
-			myKpairGen.generateKeyPair( new Random(), p, new BigInteger( g ) );
-			myKeyAgree.init(myKpairGen.getPrivate(), p );
-			e = myKpairGen.getPublic().toByteArray();
+			BigInteger[] keys = generateKeyPair( new Random(), p, new BigInteger( g ) );
+			myKeyAgree.init(keys[0], p );
+			e = keys[1].toByteArray();
 		}
 		return e;
 	}
+    
+    private BigInteger[] generateKeyPair(Random random, BigInteger p, BigInteger g) {
+        int qLength = p.bitLength() - 1 - 1;
+
+        // Use a smaller qLength so that's it's quicker to generate
+        qLength = 32;
+
+        //System.out.println( "Generating private key" );
+        //
+        // calculate the private key
+        //
+        BigInteger x = new BigInteger(qLength, random);
+
+        //System.out.println( "PRIVATE KEY=" + this.x );
+        //System.out.println( "Generating public key" );
+        //
+        // calculate the public key.
+        //
+        BigInteger y = g.modPow(x, p);
+        //System.out.println( "PUBLIC KEY=" + this.y );
+        //System.out.println( "Generated both keys" );
+        
+        return new BigInteger[] { x, y };
+    }
 
 	/**
 	 * @return Returns the k.

@@ -365,6 +365,7 @@ public class SettingsForm extends EditableForm {
                             Settings.ssh2x = keys[0];
                             Settings.ssh2y = keys[1];
                             Settings.saveSettings();
+                            Main.getDisplay().vibrate(300);
                             doBack();
                         }
                     });

@@ -25,12 +25,16 @@ package gui.settings;
 import gui.EditableForm;
 import gui.MessageForm;
 
+import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
+import ssh.v2.DHKeyExchange;
+import app.Main;
 import app.Settings;
 
 /**
@@ -70,6 +74,10 @@ public class SettingsForm extends EditableForm {
     protected ChoiceGroup cgSsh = new ChoiceGroup("Preferred Protocol", ChoiceGroup.EXCLUSIVE);
     
     protected ChoiceGroup cgSshKeys = new ChoiceGroup("Store Keys", ChoiceGroup.EXCLUSIVE);
+    
+    protected ChoiceGroup cgSshKeySize = new ChoiceGroup("Key Size", ChoiceGroup.EXCLUSIVE);
+    
+    private static final int[] sshKeySizes = new int[] { 32, 64, 128, 256, 512, 1024 };
 //#endif
     
 	public SettingsForm( String title, int mode ) {
@@ -128,6 +136,11 @@ public class SettingsForm extends EditableForm {
             cgSshKeys.append("On", null);
             cgSshKeys.append("Off", null);
             append(cgSshKeys);
+            
+            for (int i = 0; i < sshKeySizes.length; i++) {
+                cgSshKeySize.append("" + sshKeySizes[i], null);
+            }
+            append(cgSshKeySize);
         }
         break;
 //#endif
@@ -228,6 +241,12 @@ public class SettingsForm extends EditableForm {
                 break;
             }
             cgSshKeys.setSelectedIndex(Settings.ssh2StoreKey ? 0 : 1, true);
+            for (int i = 0; i < sshKeySizes.length; i++) {
+                if (Settings.ssh2KeySize == sshKeySizes[i]) {
+                    cgSshKeySize.setSelectedIndex(i, true);
+                    break;
+                }
+            }
         }
         break;
 //#endif
@@ -324,7 +343,36 @@ public class SettingsForm extends EditableForm {
             Settings.sshVersionPreferred = cgSsh.getSelectedIndex() == 1 ? 2 : 1;
             boolean ssh2StoreKey = cgSshKeys.getSelectedIndex() == 0;
             Settings.ssh2StoreKey = ssh2StoreKey;
-            if (!ssh2StoreKey) {
+            int newKeySize = sshKeySizes[cgSshKeySize.getSelectedIndex()];
+            if (newKeySize != Settings.ssh2KeySize) {
+                Settings.ssh2KeySize = newKeySize;
+                Settings.ssh2x = null;
+                Settings.ssh2y = null;
+            }
+            
+            if (ssh2StoreKey) {
+                if (Settings.ssh2x == null || Settings.ssh2y == null) {
+                    /* Pregenerate ssh2 key */
+                    Alert alert = new Alert("MidpSSH");
+                    alert.setString("Please wait while the SSH2 key is generated");
+                    alert.setTimeout(1);
+                    alert.setCommandListener(new CommandListener() {
+                        /* (non-Javadoc)
+                         * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable)
+                         */
+                        public void commandAction(Command arg0, Displayable arg1) {
+                            byte[][] keys = DHKeyExchange.generateKeyPairBytes(Settings.ssh2KeySize);
+                            Settings.ssh2x = keys[0];
+                            Settings.ssh2y = keys[1];
+                            Settings.saveSettings();
+                            doBack();
+                        }
+                    });
+                    Main.setDisplay(alert);
+                    return false;
+                }
+            }
+            else {
                 Settings.ssh2x = null;
                 Settings.ssh2y = null;
             }

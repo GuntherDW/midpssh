@@ -65,7 +65,7 @@ public class DHKeyExchange {
 			(byte) 0xE6, (byte) 0x53, (byte) 0x81, (byte) 0xFF, (byte) 0xFF,
 			(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
 			(byte) 0xFF });
-
+    
 	static final int RSA = 0;
 
 	static final int DSS = 1;
@@ -86,8 +86,8 @@ public class DHKeyExchange {
 
     private BigInteger x, y;
 
-	public DHKeyExchange() {
-        BigInteger[] keys = generateKeyPair();
+	public DHKeyExchange(int qLength) {
+        BigInteger[] keys = generateKeyPair(qLength);
         x = keys[0];
         y = keys[1];
 	}
@@ -104,11 +104,8 @@ public class DHKeyExchange {
 		return e;
 	}
     
-    public static BigInteger[] generateKeyPair() {
-        int qLength = p.bitLength() - 1 - 1;
-
-        // Use a smaller qLength so that's it's quicker to generate
-        qLength = 32;
+    public static BigInteger[] generateKeyPair(int qLength) {
+        qLength = Math.min(qLength, p.bitLength() - 1 - 1);
 
         //System.out.println( "Generating private key" );
         //
@@ -127,8 +124,8 @@ public class DHKeyExchange {
         return new BigInteger[] { x, y };
     }
     
-    public static byte[][] generateKeyPairBytes() {
-        BigInteger[] keys = generateKeyPair();
+    public static byte[][] generateKeyPairBytes(int qLength) {
+        BigInteger[] keys = generateKeyPair(qLength);
         return new byte[][] { keys[0].toByteArray(), keys[1].toByteArray() };
     }
     

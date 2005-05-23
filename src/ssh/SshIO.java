@@ -829,7 +829,7 @@ public class SshIO {
             
             if (Settings.ssh2StoreKey) {
                 if (Settings.ssh2x == null || Settings.ssh2y == null) {
-                    byte[][] keys = DHKeyExchange.generateKeyPairBytes();
+                    byte[][] keys = DHKeyExchange.generateKeyPairBytes(Settings.ssh2KeySize);
                     Settings.ssh2x = keys[0];
                     Settings.ssh2y = keys[1];
                     Settings.saveSettings();
@@ -838,7 +838,7 @@ public class SshIO {
                 dhkex = new DHKeyExchange(Settings.ssh2x, Settings.ssh2y);
             }
             else {
-                dhkex = new DHKeyExchange();
+                dhkex = new DHKeyExchange(Settings.ssh2KeySize);
             }
             
             dhkex.setV_S(idstr.trim().getBytes());

@@ -72,6 +72,8 @@ public class Settings extends MyRecordStore {
     public static boolean ssh2StoreKey;
     
     public static byte [] ssh2x, ssh2y;
+    
+    public static int ssh2KeySize;
 //#endif
 	
 	public static void init() {
@@ -105,6 +107,7 @@ public class Settings extends MyRecordStore {
         ssh2StoreKey = true;
         ssh2x = null;
         ssh2y = null;
+        ssh2KeySize = 32;
 //#endif
     }
 	
@@ -128,6 +131,7 @@ public class Settings extends MyRecordStore {
         ssh2StoreKey = in.readBoolean();
         ssh2x = readByteArray(in);
         ssh2y = readByteArray(in);
+        ssh2KeySize = in.readInt();
 //#endif
         return null;
     }
@@ -154,8 +158,10 @@ public class Settings extends MyRecordStore {
         out.writeBoolean(ssh2StoreKey);
         writeByteArray(out, ssh2x);
         writeByteArray(out, ssh2y);
+        out.writeInt(ssh2KeySize);
 //#else
         out.writeBoolean(true);
+        out.writeInt(0);
         out.writeInt(0);
         out.writeInt(0);
 //#endif

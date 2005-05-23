@@ -468,13 +468,6 @@ public class SshIO {
             protocol_flags = p.getBytes(4);
             supported_ciphers_mask = p.getBytes(4);
             supported_authentications_mask = p.getBytes(4);
-            
-            byte[] host_key_combined = new byte[host_key_public_exponent.length + host_key_public_modulus.length];
-            System.arraycopy(host_key_public_modulus, 0, host_key_combined, 0, host_key_public_modulus.length);
-            System.arraycopy(server_key_public_exponent, 0, host_key_combined, host_key_public_modulus.length,
-                    server_key_public_exponent.length);
-            String fingerprint = fingerprint(host_key_combined);
-            System.out.println(fingerprint);
 
             // We have completely received the PUBLIC_KEY
             // We prepare the answer ...
@@ -485,8 +478,16 @@ public class SshIO {
                     host_key_public_exponent);
             if (ret != null)
                 return ret;
+            
+            // TODO prompt user to confirm fingerprint
+            byte[] host_key_combined = new byte[host_key_public_exponent.length + host_key_public_modulus.length];
+            System.arraycopy(host_key_public_modulus, 0, host_key_combined, 0, host_key_public_modulus.length);
+            System.arraycopy(server_key_public_exponent, 0, host_key_combined, host_key_public_modulus.length,
+                    server_key_public_exponent.length);
+            String fingerprint = fingerprint(host_key_combined);
+            return fingerprint + "\r\n\r\n";
 
-            break;
+            //break;
 
         case SSH_SMSG_SUCCESS:
             // if (debug > 0)
@@ -839,20 +840,9 @@ public class SshIO {
             byte[] sig_of_h = p.getByteString();
 
             boolean ok = dhkex.next(K_S, dhserverpub, sig_of_h);
-            
-            System.out.println(dhkex.getKeyAlg());
-            System.out.println(fingerprint(K_S));
-            
-            /* signature is a new blob, length is Int32. */
-            /*
-             * RSA: String type (ssh-rsa) Int32/byte[] signed signature
-             */
-            // int siglen = p.getInt32();
-            // String sigstr = p.getString();
-            // result += "Signature: ktype is " + sigstr + "\r\n";
-            // byte sigdata[] = p.getBytes( p.getInt32() );
             if (ok) {
-                return "OK\r\n";
+                // TODO handle fingerprint better
+                return "OK\r\n" + dhkex.getKeyAlg() + " " + fingerprint(K_S) + "\r\n\r\n";
             } else {
                 sendDisconnect(3, "Key exchange failed");
                 return "FAILED\r\n";

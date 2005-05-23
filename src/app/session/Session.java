@@ -373,9 +373,9 @@ public abstract class Session implements Activatable {
 	private void sessionReport() {
         if ( !erroredDisconnect ) {
     		String report = 
-    			bytesToString( bytesRead ) + " in\n" +
-    			bytesToString( bytesWritten ) + " out\n" +
-    			bytesToString( bytesRead + bytesWritten ) + " total\n";
+    			"IN: " + bytesToString( bytesRead ) + "\nOUT: " +
+    			bytesToString( bytesWritten ) + "\nTOTAL: " +
+    			bytesToString( bytesRead + bytesWritten );
     		Alert alert = new Alert( "Session Report" );
     		alert.setType( AlertType.INFO );
     	

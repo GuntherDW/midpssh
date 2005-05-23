@@ -1,3 +1,10 @@
+1.4.4
+Setting for ssh2 private key strength
+Setting to pregenerate ssh2 private and public key on phone and store
+Patch for BigInteger.modPow improved performance (http://www.bouncycastle.org/devmailarchive/msg03877.html)
+Changed default ssh2 key size from 32 to 512 (recommended minimum, http://www.bouncycastle.org/devmailarchive/msg03877.html)
+Display host key fingerprint
+
 1.4.3
 
 Added password prompt if no password provided in session spec

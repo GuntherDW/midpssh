@@ -895,10 +895,16 @@ public class BigInteger {
 			BigInteger tmp = this.shiftLeft(32 * m.magnitude.length).mod(m);
 			zVal = tmp.magnitude;
 
-			useMonty = (zVal.length == m.magnitude.length);
+			useMonty = (zVal.length <= m.magnitude.length);
 
 			if (useMonty) {
 				yAccum = new int[m.magnitude.length + 1];
+                if(zVal.length < m.magnitude.length){
+                    int[] foo=new int[m.magnitude.length];
+                    System.arraycopy(zVal, 0, foo, foo.length-zVal.length, zVal.length);
+                    zVal=foo;
+                }
+
 			}
 		}
 

@@ -85,6 +85,8 @@ public class DHKeyExchange {
 	private byte[] e, f, K;
 
     private BigInteger x, y;
+    
+    private String keyalg;
 
 	public DHKeyExchange(int qLength) {
         BigInteger[] keys = generateKeyPair(qLength);
@@ -203,10 +205,10 @@ public class DHKeyExchange {
 
 		SshPacket2 pp = new SshPacket2( null );
 		pp.putBytes( K_S );
-		String alg = pp.getString();
+		keyalg = pp.getString();
 		boolean result;
 		
-		if ( alg.equals( "ssh-dss" ) ) {
+		if ( keyalg.equals( "ssh-dss" ) ) {
 			byte [] p = pp.getByteString();
 			byte [] q = pp.getByteString();
 			byte [] g = pp.getByteString();
@@ -266,4 +268,8 @@ public class DHKeyExchange {
 	public byte[] getH() {
 		return H;
 	}
+    
+    public String getKeyAlg() {
+        return keyalg;
+    }
 }

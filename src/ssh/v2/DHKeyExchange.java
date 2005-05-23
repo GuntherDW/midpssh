@@ -36,9 +36,9 @@ import java.util.Random;
 
 public class DHKeyExchange {
 
-	public static final byte[] g = { 2 };
+	public static final byte[] g_array = { 2 };
 
-	public static final byte[] p = { (byte) 0x00, (byte) 0xFF, (byte) 0xFF,
+	public static final byte[] p_array = { (byte) 0x00, (byte) 0xFF, (byte) 0xFF,
 			(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
 			(byte) 0xFF, (byte) 0xC9, (byte) 0x0F, (byte) 0xDA, (byte) 0xA2,
 			(byte) 0x21, (byte) 0x68, (byte) 0xC2, (byte) 0x34, (byte) 0xC4,
@@ -84,24 +84,22 @@ public class DHKeyExchange {
 
 	private byte[] e, f, K;
 
-	private DHBasicAgreement myKeyAgree;
+    private BigInteger p, x, y;
 
 	public DHKeyExchange() {
-		myKeyAgree = new DHBasicAgreement();
+        p = new BigInteger( p_array );
 		getE();
 	}
 
 	public byte[] getE() {
 		if (e == null) {
-			BigInteger p = new BigInteger( DHKeyExchange.p );
-			BigInteger[] keys = generateKeyPair( new Random(), p, new BigInteger( g ) );
-			myKeyAgree.init(keys[0], p );
-			e = keys[1].toByteArray();
+			generateKeyPair( new Random(), p, new BigInteger( g_array ) );
+			e = y.toByteArray();
 		}
 		return e;
 	}
     
-    private BigInteger[] generateKeyPair(Random random, BigInteger p, BigInteger g) {
+    private void generateKeyPair(Random random, BigInteger p, BigInteger g) {
         int qLength = p.bitLength() - 1 - 1;
 
         // Use a smaller qLength so that's it's quicker to generate
@@ -111,18 +109,24 @@ public class DHKeyExchange {
         //
         // calculate the private key
         //
-        BigInteger x = new BigInteger(qLength, random);
+        this.x = new BigInteger(qLength, random);
 
         //System.out.println( "PRIVATE KEY=" + this.x );
         //System.out.println( "Generating public key" );
         //
         // calculate the public key.
         //
-        BigInteger y = g.modPow(x, p);
+        this.y = g.modPow(x, p);
         //System.out.println( "PUBLIC KEY=" + this.y );
         //System.out.println( "Generated both keys" );
-        
-        return new BigInteger[] { x, y };
+    }
+    
+    /**
+     * given a short term public key from a given party calculate the next
+     * message in the agreement sequence.
+     */
+    private BigInteger calculateAgreement(BigInteger y) {
+        return y.modPow(x, p);
     }
 
 	/**
@@ -130,7 +134,7 @@ public class DHKeyExchange {
 	 */
 	public byte[] getK() {
 		if (K == null) {
-			K = myKeyAgree.calculateAgreement( new BigInteger( f ) ).toByteArray();
+			K = calculateAgreement( new BigInteger( f ) ).toByteArray();
 		}
 		return K;
 	}

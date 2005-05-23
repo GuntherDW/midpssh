@@ -87,8 +87,6 @@ public class SshIO {
 
     private String dataToSend = null;
 
-    private String hashHostKey = null; // equals to the applet parameter if any
-
     private byte lastPacketSentType;
 
     // phase : handleBytes
@@ -470,6 +468,13 @@ public class SshIO {
             protocol_flags = p.getBytes(4);
             supported_ciphers_mask = p.getBytes(4);
             supported_authentications_mask = p.getBytes(4);
+            
+            byte[] host_key_combined = new byte[host_key_public_exponent.length + host_key_public_modulus.length];
+            System.arraycopy(host_key_public_modulus, 0, host_key_combined, 0, host_key_public_modulus.length);
+            System.arraycopy(server_key_public_exponent, 0, host_key_combined, host_key_public_modulus.length,
+                    server_key_public_exponent.length);
+            String fingerprint = fingerprint(host_key_combined);
+            System.out.println(fingerprint);
 
             // We have completely received the PUBLIC_KEY
             // We prepare the answer ...
@@ -481,56 +486,6 @@ public class SshIO {
             if (ret != null)
                 return ret;
 
-            // we check if MD5(server_key_public_exponent) is equals to the
-            // applet parameter if any .
-            if (hashHostKey != null && hashHostKey.compareTo("") != 0) {
-                // we compute hashHostKeyBis the hash value in hexa of
-                // host_key_public_modulus
-                byte[] Md5_hostKey = md5.digest(host_key_public_modulus);
-                String hashHostKeyBis = "";
-                for (int i = 0; i < Md5_hostKey.length; i++) {
-                    String hex = "";
-                    int[] v = new int[2];
-                    v[0] = (Md5_hostKey[i] & 240) >> 4;
-                    v[1] = (Md5_hostKey[i] & 15);
-                    for (int j = 0; j < 1; j++)
-                        switch (v[j]) {
-                        case 10:
-                            hex += "a";
-                            break;
-                        case 11:
-                            hex += "b";
-                            break;
-                        case 12:
-                            hex += "c";
-                            break;
-                        case 13:
-                            hex += "d";
-                            break;
-                        case 14:
-                            hex += "e";
-                            break;
-                        case 15:
-                            hex += "f";
-                            break;
-                        default:
-                            hex += String.valueOf(v[j]);
-                            break;
-                        }
-                    hashHostKeyBis = hashHostKeyBis + hex;
-                }
-                // we compare the 2 values
-                if (hashHostKeyBis.compareTo(hashHostKey) != 0) {
-                    login = password = "";
-                    return "\nHash value of the host key not correct \r\n";
-                    // + "login & password have been reset \r\n"
-                    // + "- erase the 'hashHostKey' parameter in the
-                    // Html\r\n"
-                    // + "(it is used for auhentificating the server and "
-                    // + "prevent you from connecting \r\n"
-                    // + "to any other)\r\n";
-                }
-            }
             break;
 
         case SSH_SMSG_SUCCESS:
@@ -656,6 +611,28 @@ public class SshIO {
     private void sendPacket1(SshPacket1 packet) throws IOException {
         write(packet.getPayLoad(crypto));
         lastPacketSentType = packet.getType();
+    }
+    
+    /**
+     * Given a host key return the finger print string for that key.
+     * @param host_key
+     * @return
+     */
+    private String fingerprint(byte[] host_key) {
+        MD5 md5 = new MD5();
+        byte[] fprint = md5.digest(host_key);
+        StringBuffer buf = new StringBuffer();
+        int n = fprint.length;
+        for (int i = 0; i < n; i++) {
+            int j = fprint[i] & 0xff;
+            String hex = Integer.toHexString(j);
+            if (hex.length() == 1) {
+                buf.append('0');
+            }
+            buf.append(hex);
+            if (i + 1 < n) buf.append(':');
+        }
+        return buf.toString();
     }
 
 //#ifdef ssh2
@@ -862,6 +839,10 @@ public class SshIO {
             byte[] sig_of_h = p.getByteString();
 
             boolean ok = dhkex.next(K_S, dhserverpub, sig_of_h);
+            
+            System.out.println(dhkex.getKeyAlg());
+            System.out.println(fingerprint(K_S));
+            
             /* signature is a new blob, length is Int32. */
             /*
              * RSA: String type (ssh-rsa) Int32/byte[] signed signature
@@ -1152,7 +1133,7 @@ public class SshIO {
         packet.putInt32(protocol_flags);
         sendPacket1(packet);
         crypto = new SshCrypto(cipher_type, session_key);
-        return "";
+        return null;
     }
 
     private boolean hasCipher(String cipherName) {

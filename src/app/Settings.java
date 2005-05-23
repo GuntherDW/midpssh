@@ -64,9 +64,15 @@ public class Settings extends MyRecordStore {
 
     public static boolean terminalFullscreen ;
     
+    public static String sessionsImportUrl;
+    
+//#ifdef ssh2
     public static int sshVersionPreferred;
     
-    public static String sessionsImportUrl;
+    public static boolean ssh2StoreKey;
+    
+    public static byte [] ssh2x, ssh2y;
+//#endif
 	
 	public static void init() {
         defaults();
@@ -91,8 +97,15 @@ public class Settings extends MyRecordStore {
         terminalRotated = ROT_NORMAL;
         fontMode = FONT_NORMAL;
         terminalFullscreen = false;
+//#ifdef ssh2
         sshVersionPreferred = 1;
+//#endif
         sessionsImportUrl = "http://";
+//#ifdef ssh2
+        ssh2StoreKey = true;
+        ssh2x = null;
+        ssh2y = null;
+//#endif
     }
 	
     /* (non-Javadoc)
@@ -107,8 +120,15 @@ public class Settings extends MyRecordStore {
 		terminalRotated = in.readInt();
         fontMode = in.readInt();
         terminalFullscreen = in.readBoolean();
+//#ifdef ssh2
         sshVersionPreferred = in.readInt();
+//#endif
         sessionsImportUrl = in.readUTF();
+//#ifdef ssh2
+        ssh2StoreKey = in.readBoolean();
+        ssh2x = readByteArray(in);
+        ssh2y = readByteArray(in);
+//#endif
         return null;
     }
     
@@ -124,7 +144,44 @@ public class Settings extends MyRecordStore {
 		out.writeInt( terminalRotated );
         out.writeInt( fontMode );
         out.writeBoolean( terminalFullscreen );
+//#ifdef ssh2
         out.writeInt(sshVersionPreferred);
+//#else
+        out.writeInt(1);
+//#endif
         out.writeUTF(sessionsImportUrl);
+//#ifdef ssh2
+        out.writeBoolean(ssh2StoreKey);
+        writeByteArray(out, ssh2x);
+        writeByteArray(out, ssh2y);
+//#else
+        out.writeBoolean(true);
+        out.writeInt(0);
+        out.writeInt(0);
+//#endif
     }
+    
+//#ifdef ssh2
+    private byte[] readByteArray(DataInputStream in) throws IOException {
+        int length = in.readInt();
+        if (length == 0) {
+            return null;
+        }
+        else {
+            byte[] buf = new byte[length];
+            in.readFully(buf);
+            return buf;
+        }
+    }
+    
+    private void writeByteArray(DataOutputStream out, byte[] ray) throws IOException {
+        if (ray != null) {
+            out.writeInt(ray.length);
+            out.write(ray);
+        }
+        else {
+            out.writeInt(0);
+        }
+    }
+//#endif   
 }

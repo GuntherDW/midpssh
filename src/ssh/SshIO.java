@@ -30,9 +30,6 @@ package ssh;
 import java.io.IOException;
 import java.util.Random;
 
-import app.Settings;
-import app.session.SshSession;
-
 import ssh.v1.BigInteger;
 import ssh.v1.Cipher;
 import ssh.v1.MD5;
@@ -42,6 +39,8 @@ import ssh.v2.DHKeyExchange;
 import ssh.v2.SHA1Digest;
 import ssh.v2.SshCrypto2;
 import ssh.v2.SshPacket2;
+import app.Settings;
+import app.session.SshSession;
 
 /**
  * Secure Shell IO
@@ -827,8 +826,21 @@ public class SshIO {
 
             byte[] I_C = pn.getData();
             sendPacket2(pn);
-
-            dhkex = new DHKeyExchange();
+            
+            if (Settings.ssh2StoreKey) {
+                if (Settings.ssh2x == null || Settings.ssh2y == null) {
+                    byte[][] keys = DHKeyExchange.generateKeyPairBytes();
+                    Settings.ssh2x = keys[0];
+                    Settings.ssh2y = keys[1];
+                    Settings.saveSettings();
+                }
+                
+                dhkex = new DHKeyExchange(Settings.ssh2x, Settings.ssh2y);
+            }
+            else {
+                dhkex = new DHKeyExchange();
+            }
+            
             dhkex.setV_S(idstr.trim().getBytes());
             dhkex.setV_C(idstr_sent.trim().getBytes());
             dhkex.setI_S(add20(p.getData()));
@@ -838,7 +850,7 @@ public class SshIO {
             pn.putMpInt(dhkex.getE());
             sendPacket2(pn);
 
-            return "Negotiating keys...";
+            return "Negotiating...";
         }
 
         case SSH2_MSG_KEXDH_REPLY: {

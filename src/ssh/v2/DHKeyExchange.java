@@ -36,9 +36,9 @@ import java.util.Random;
 
 public class DHKeyExchange {
 
-	public static final byte[] g_array = { 2 };
+	public static final BigInteger g = new BigInteger(new byte[] { 2 });
 
-	public static final byte[] p_array = { (byte) 0x00, (byte) 0xFF, (byte) 0xFF,
+	public static final BigInteger p = new BigInteger(new byte[] { (byte) 0x00, (byte) 0xFF, (byte) 0xFF,
 			(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
 			(byte) 0xFF, (byte) 0xC9, (byte) 0x0F, (byte) 0xDA, (byte) 0xA2,
 			(byte) 0x21, (byte) 0x68, (byte) 0xC2, (byte) 0x34, (byte) 0xC4,
@@ -64,7 +64,7 @@ public class DHKeyExchange {
 			(byte) 0x49, (byte) 0x28, (byte) 0x66, (byte) 0x51, (byte) 0xEC,
 			(byte) 0xE6, (byte) 0x53, (byte) 0x81, (byte) 0xFF, (byte) 0xFF,
 			(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-			(byte) 0xFF };
+			(byte) 0xFF });
 
 	static final int RSA = 0;
 
@@ -84,22 +84,27 @@ public class DHKeyExchange {
 
 	private byte[] e, f, K;
 
-    private BigInteger p, x, y;
+    private BigInteger x, y;
 
 	public DHKeyExchange() {
-        p = new BigInteger( p_array );
-		getE();
+        BigInteger[] keys = generateKeyPair();
+        x = keys[0];
+        y = keys[1];
 	}
+    
+    public DHKeyExchange(byte[] x_array, byte[] y_array) {
+        x = new BigInteger(x_array);
+        y = new BigInteger(y_array);
+    }
 
 	public byte[] getE() {
 		if (e == null) {
-			generateKeyPair( new Random(), p, new BigInteger( g_array ) );
 			e = y.toByteArray();
 		}
 		return e;
 	}
     
-    private void generateKeyPair(Random random, BigInteger p, BigInteger g) {
+    public static BigInteger[] generateKeyPair() {
         int qLength = p.bitLength() - 1 - 1;
 
         // Use a smaller qLength so that's it's quicker to generate
@@ -109,16 +114,22 @@ public class DHKeyExchange {
         //
         // calculate the private key
         //
-        this.x = new BigInteger(qLength, random);
+        BigInteger x = new BigInteger(qLength, new Random());
 
         //System.out.println( "PRIVATE KEY=" + this.x );
         //System.out.println( "Generating public key" );
         //
         // calculate the public key.
         //
-        this.y = g.modPow(x, p);
+        BigInteger y = g.modPow(x, p);
         //System.out.println( "PUBLIC KEY=" + this.y );
         //System.out.println( "Generated both keys" );
+        return new BigInteger[] { x, y };
+    }
+    
+    public static byte[][] generateKeyPairBytes() {
+        BigInteger[] keys = generateKeyPair();
+        return new byte[][] { keys[0].toByteArray(), keys[1].toByteArray() };
     }
     
     /**

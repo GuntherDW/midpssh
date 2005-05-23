@@ -68,6 +68,8 @@ public class SettingsForm extends EditableForm {
 	
 //#ifdef ssh2   
     protected ChoiceGroup cgSsh = new ChoiceGroup("Preferred Protocol", ChoiceGroup.EXCLUSIVE);
+    
+    protected ChoiceGroup cgSshKeys = new ChoiceGroup("Store Keys", ChoiceGroup.EXCLUSIVE);
 //#endif
     
 	public SettingsForm( String title, int mode ) {
@@ -122,6 +124,10 @@ public class SettingsForm extends EditableForm {
             cgSsh.append( "SSH1", null);
             cgSsh.append( "SSH2", null);
             append(cgSsh);
+            
+            cgSshKeys.append("On", null);
+            cgSshKeys.append("Off", null);
+            append(cgSshKeys);
         }
         break;
 //#endif
@@ -221,6 +227,7 @@ public class SettingsForm extends EditableForm {
                 cgSsh.setSelectedIndex(0, true);
                 break;
             }
+            cgSshKeys.setSelectedIndex(Settings.ssh2StoreKey ? 0 : 1, true);
         }
         break;
 //#endif
@@ -315,6 +322,12 @@ public class SettingsForm extends EditableForm {
         case MODE_SSH:
         {
             Settings.sshVersionPreferred = cgSsh.getSelectedIndex() == 1 ? 2 : 1;
+            boolean ssh2StoreKey = cgSshKeys.getSelectedIndex() == 0;
+            Settings.ssh2StoreKey = ssh2StoreKey;
+            if (!ssh2StoreKey) {
+                Settings.ssh2x = null;
+                Settings.ssh2y = null;
+            }
         }
         break;
 //#endif

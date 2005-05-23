@@ -107,7 +107,7 @@ public class Settings extends MyRecordStore {
         ssh2StoreKey = true;
         ssh2x = null;
         ssh2y = null;
-        ssh2KeySize = 32;
+        ssh2KeySize = 512;
 //#endif
     }
 	

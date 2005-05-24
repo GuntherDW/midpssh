@@ -240,7 +240,7 @@ public abstract class Session implements Activatable {
 			    filter.handleReceiveData( buf, 0, 1 );
 			}
 			catch ( RuntimeException e ) {
-			    throw new RuntimeException( "read.filter2 " + n + ": " + e );
+			    throw new RuntimeException( "read.filter2: " + e );
 			}
 			c = in.read();
 	    }

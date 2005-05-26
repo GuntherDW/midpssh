@@ -49,7 +49,7 @@ public class SessionForm extends EditableForm {
 
 	private ChoiceGroup cgType;
     
-//#ifdef blackberry
+//#ifdef blackberryconntypes
     private ChoiceGroup cgBlackberryConnType;
 //#endif
 
@@ -95,7 +95,7 @@ public class SessionForm extends EditableForm {
 		append( tfPassword );
 		
 
-//#ifdef blackberry
+//#ifdef blackberryconntypes
         cgBlackberryConnType = new ChoiceGroup( "Connection Type", ChoiceGroup.EXCLUSIVE);
         cgBlackberryConnType.append( "Default", null );
         cgBlackberryConnType.append( "TCP/IP", null );
@@ -141,7 +141,7 @@ public class SessionForm extends EditableForm {
 			tfUsername.setString( conn.username );
 			tfPassword.setString( conn.password );
             
-//#ifdef blackberry
+//#ifdef blackberryconntypes
             switch ( conn.blackberryConnType ) {
             case SessionSpec.BLACKBERRY_CONN_TYPE_DEFAULT:
                 cgBlackberryConnType.setSelectedIndex( 0, true );
@@ -191,7 +191,7 @@ public class SessionForm extends EditableForm {
 				conn.username = username;
 				conn.password = password;
 
-//#ifdef blackberry
+//#ifdef blackberryconntypes
                 conn.blackberryConnType = selectedBlackberryConnType();
 //#endif
                 
@@ -217,7 +217,7 @@ public class SessionForm extends EditableForm {
 			conn.username = username;
 			conn.password = password;
             
-//#ifdef blackberry
+//#ifdef blackberryconntypes
             conn.blackberryConnType = selectedBlackberryConnType();
 //#endif
             
@@ -276,7 +276,7 @@ public class SessionForm extends EditableForm {
 		}
 	}
 
-//#ifdef blackberry
+//#ifdef blackberryconntypes
     protected int selectedBlackberryConnType() {
         switch ( cgBlackberryConnType.getSelectedIndex() ) {
         case 0:

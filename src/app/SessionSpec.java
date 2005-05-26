@@ -38,7 +38,7 @@ public class SessionSpec {
 	
 	public String alias, type, host, username, password;
     
-//#ifdef blackberry
+//#ifdef blackberryconntypes
     public static final int BLACKBERRY_CONN_TYPE_DEFAULT = 0;
     public static final int BLACKBERRY_CONN_TYPE_DEVICESIDE = 1;
     public static final int BLACKBERRY_CONN_TYPE_PROXY = 2;
@@ -52,7 +52,7 @@ public class SessionSpec {
 		host = in.readUTF();
 		username = in.readUTF();
 		password = in.readUTF();
-//#ifdef blackberry
+//#ifdef blackberryconntypes
         try {
             blackberryConnType = in.readInt();
         }
@@ -68,7 +68,7 @@ public class SessionSpec {
 		out.writeUTF( host );
 		out.writeUTF( username );
 		out.writeUTF( password );
-//#ifdef blackberry
+//#ifdef blackberryconntypes
         out.writeInt(blackberryConnType);
 //#endif
 	}

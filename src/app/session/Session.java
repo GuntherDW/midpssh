@@ -182,13 +182,16 @@ public abstract class Session implements Activatable {
 		String conn = "socket://" + host;
 		if ( host.indexOf( ":" ) == -1 )
 			conn += ":" + defaultPort();
-//#ifdef blackberry
+//#ifdef blackberryconntypes
         if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_PROXY ) {
             conn += ";deviceside=false";
         }
         else if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_DEVICESIDE ) {
             conn += ";deviceside=true";
         }
+//#endif
+//#ifdef blackberryenterprise
+        conn += ";deviceside=false";
 //#endif
         
 		socket = (StreamConnection) Connector.open( conn, Connector.READ_WRITE, false );

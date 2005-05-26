@@ -171,22 +171,23 @@
 	</target>
 		
 	<target name="blackberry">
-		<!--
-		<antcall target="build-blackberry">
-			<param name="filename" value="midpsshbbota"/>
-			<param name="midp1" value="true"/>
-			<param name="mode" value="blackberry-ota"/>
-			<param name="bb.codename" value="midpsshbbota"/>
-		</antcall>
-		-->
 		<antcall target="build-blackberry">
 			<param name="filename" value="midpssh-bb"/>
 			<param name="midp1" value="true"/>
 			<param name="mode" value="blackberry"/>
-			<!--<param name="noobfuscate" value="true"/>-->
 			<param name="bb.codename" value="midpssh"/>
+			<param name="bb.name" value="MidpSSH" />
+		</antcall>
+		<antcall target="build-blackberry">
+			<param name="name" value="${name}e" />
+			<param name="filename" value="midpssh-bb-e"/>
+			<param name="midp1" value="true"/>
+			<param name="mode" value="blackberry-enterprise"/>
+			<param name="bb.codename" value="midpsshe"/>
+			<param name="bb.name" value="MidpSSHe" />
 		</antcall>
 	</target>
+	
 	<!--
 	<target name="blackberry-source">
 		<copy todir="blackberry" overwrite="true">

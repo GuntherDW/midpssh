@@ -50,12 +50,11 @@
 	</target>
 
 	<target name="alx">
-		<copy todir="${dist.dir}">
-			<fileset dir="conf">
-				<include name="midpssh.alx" />
-			</fileset>
+		<copy file="conf/midpssh.alx" tofile="${dist.dir}/${bb.codename}.alx">
 			<filterset>
 				<filter token="VERSION" value="${version}" />
+				<filter token="NAME" value="${bb.name}" />
+				<filter token="CODNAME" value="${bb.codename}" />
 			</filterset>
 		</copy>
 	</target>
@@ -65,30 +64,30 @@
 		
 		<!-- Unzip main COD file and rename constituents -->
 		<unzip src="${dist.dir}/${cod.file}" dest="${build.dir}/blackberry/ota" />
-		<copy file="${build.dir}/blackberry/ota/midpssh.cod" tofile="${dist.dir}/midpssh-1.cod" />
-		<copy file="${build.dir}/blackberry/ota/midpssh-1.cod" tofile="${dist.dir}/midpssh-2.cod" />
+		<copy file="${build.dir}/blackberry/ota/${bb.codename}.cod" tofile="${dist.dir}/${bb.codename}-1.cod" />
+		<copy file="${build.dir}/blackberry/ota/${bb.codename}-1.cod" tofile="${dist.dir}/${bb.codename}-2.cod" />
 		
 		<mkdir dir="${build.dir}/tasks" />
 		<javac srcdir="tasks" destdir="${build.dir}/tasks" />
 		
 		<java classname="FileLength" classpath="${build.dir}/tasks" outputproperty="cod.size.1">
-			<arg value="${dist.dir}/midpssh-1.cod" />
+			<arg value="${dist.dir}/${bb.codename}-1.cod" />
 		</java>
 		
 		<java classname="FileLength" classpath="${build.dir}/tasks" outputproperty="cod.size.2">
-			<arg value="${dist.dir}/midpssh-2.cod" />
+			<arg value="${dist.dir}/${bb.codename}-2.cod" />
 		</java>
 		
 		<!--
-		<length property="cod.size.1" file="${build.dir}/blackberry/ota/midpssh.cod" />
-		<length property="cod.size.2" file="${build.dir}/blackberry/ota/midpssh-1.cod" />
+		<length property="cod.size.1" file="${build.dir}/blackberry/ota/${bb.codename}.cod" />
+		<length property="cod.size.2" file="${build.dir}/blackberry/ota/${bb.codename}-1.cod" />
 		-->
 		
-		<java classname="RewriteBlackberryJAD" classpath="${build.dir}/tasks" outputproperty="cod.size.2">
+		<java classname="RewriteBlackberryJAD" classpath="${build.dir}/tasks">
 			<arg value="${dist.dir}/${jad.file}" />
 			<arg value="${dist.dir}/${ota.jad.file}" />
-			<arg value="midpssh-1.cod" />
-			<arg value="midpssh-2.cod" />
+			<arg value="${bb.codename}-1.cod" />
+			<arg value="${bb.codename}-2.cod" />
 			<arg value="${cod.size.1}" />
 			<arg value="${cod.size.2}" />
 		</java>

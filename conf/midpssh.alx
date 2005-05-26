@@ -1,29 +1,29 @@
 <loader version="1.0">
-	<application id="MidpSSH">
-		<name >
-			MidpSSH
+	<application id="@NAME@">
+		<name>
+			@NAME@
 		</name>
-		<description >
+		<description>
 			Telnet and SSH application for Java compatible phone and other mobile devices.
 			Please visit the project website for more information:
 			http://www.xk72.com/midpssh/
 		</description>
-		<version >
+		<version>
 			@VERSION@
 		</version>
-		<vendor >
+		<vendor>
 			Developed by Karl von Randow, based upon FloydSSH and Telnet Floyd by Radek Polak
 		</vendor>
-		<copyright >
+		<copyright>
 			Distributed under the GPL License.
 		</copyright>
 		<fileset Java="1.5">
-			<directory >
+			<directory>
 
 			</directory>
-			<files >
-				MidpSSH.cod
-				MidpSSH-1.cod
+			<files>
+				@CODNAME@.cod
+				@CODNAME@-1.cod
 			</files>
 		</fileset>
 	</application>

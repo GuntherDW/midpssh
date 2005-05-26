@@ -30,7 +30,6 @@ package ssh;
 import java.io.IOException;
 import java.util.Random;
 
-import ssh.v1.BigInteger;
 import ssh.v1.Cipher;
 import ssh.v1.MD5;
 import ssh.v1.SshCrypto;
@@ -95,9 +94,6 @@ public class SshIO {
     private final int PHASE_INIT = 0;
 
     private final int PHASE_SSH_RECEIVE_PACKET = 1;
-
-    // SSH v2 RSA
-    private BigInteger rsa_e, rsa_n;
 
     // handlePacket
     // messages

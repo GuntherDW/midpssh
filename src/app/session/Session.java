@@ -77,8 +77,12 @@ public abstract class Session implements Activatable {
 
 	private SessionSpec spec;
 
+//#ifdef readwriteio
+    private Thread readWriter;
+//#else
 	private Thread reader, writer;
-
+//#endif
+    
 	/**
 	 * We will collect here data for writing. Data will be sent when nothing is
 	 * in input stream, otherwise midlet hung up.
@@ -110,15 +114,23 @@ public abstract class Session implements Activatable {
 //#endif
 		};
 		terminal = new Terminal( emulation, this );
+//#ifdef readwriteio
+        readWriter = new ReadWriter();
+//#else
 		reader = new Reader();
 		writer = new Writer();
+//#endif
 	}
 
 	protected void connect( SessionSpec spec, SessionIOHandler filter ) {
 		this.spec = spec;
 		this.filter = filter;
 
+//#ifdef readwriteio
+        readWriter.start();
+//#else
 		writer.start();
+//#endif
 	}
 
 	protected abstract int defaultPort();
@@ -202,7 +214,50 @@ public abstract class Session implements Activatable {
 		return true;
 	}
 
-	/**
+//#ifdef readwriteio
+    private void readWrite() throws IOException {
+        byte [] buf = new byte[512];
+        
+        while (!disconnecting) {
+            boolean doneSomething = false;
+            
+            /* Check if there is any data to read */
+            int a = in.available();
+            if (a > 0) {
+                /* Read only as much data as is available */
+                int n = in.read( buf, 0, Math.min( a, buf.length ) );
+                bytesRead += n;
+                try {
+                    filter.handleReceiveData( buf, 0, n );
+                }
+                catch ( RuntimeException e ) {
+                    throw new RuntimeException( "read.filter1 " + n + ": " + e );
+                }
+                doneSomething = true;
+            }
+        
+            /* Check if there is any data to write */
+            synchronized (writerMutex) {
+                if (outputCount > 0) {
+                    bytesWritten += outputCount;
+                    out.write( outputBuffer, 0, outputCount );
+                    out.flush();
+                    outputCount = 0;
+                    doneSomething = true;
+                }
+            }
+            
+            if (!doneSomething) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    
+                }
+            }
+        }
+    }
+//#else
+    /**
 	 * Continuously read from remote host and display the data on screen.
 	 */
 	private void read() throws IOException {
@@ -302,7 +357,8 @@ public abstract class Session implements Activatable {
 //#endif
 		}
 	}
-
+//#endif
+    
 	private void handleException( String where, Throwable t ) {
 		if ( !disconnecting ) {
 			Alert alert = new Alert( "Session Error" );
@@ -410,7 +466,28 @@ public abstract class Session implements Activatable {
 	public void activate( Activatable back ) {
 		activate();
 	}
-	
+    
+//#ifdef readwriteio
+    private class ReadWriter extends Thread {
+        public void run() {
+            try {
+                connect();
+                terminal.connected();
+                readWrite();
+                
+                doDisconnect();
+                terminal.disconnected();
+                sessionReport();
+            }
+            catch ( Exception e ) {
+                handleException( "ReadWriter", e );
+                erroredDisconnect = true;
+                doDisconnect();
+                terminal.disconnected();
+            }
+        }
+    }
+//#else
 	private class Reader extends Thread {
 		public void run() {
 			try {
@@ -448,4 +525,5 @@ public abstract class Session implements Activatable {
 			}
 		}
 	}
+//#endif
 }

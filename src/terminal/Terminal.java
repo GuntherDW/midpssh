@@ -836,7 +836,9 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 		g.fillRect( 0, 0, getWidth(), getHeight() );
 
 		// Draw terminal image
+//#ifndef nopaintsync
 		synchronized ( paintMutex ) {
+//#endif
 			// Redraw backing store if necessary
 			redrawBackingStore();
 			
@@ -855,16 +857,22 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 				g.drawImage( backingStore, 0, 1, Graphics.TOP | Graphics.LEFT );
                 break;
             }
+//#ifndef nopaintsync
 		}
+//#endif
 	}
 
 	private boolean invalid = true;
 
 	public void redraw() {
+//#ifndef nopaintsync
 	    synchronized ( paintMutex ) {
+//#endif
 	        invalid = true;
 	        repaint();
+//#ifndef nopaintsync
 	    }
+//#endif
 	}
 
 	/** Required paint implementation */

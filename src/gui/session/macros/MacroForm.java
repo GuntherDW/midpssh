@@ -67,6 +67,10 @@ public class MacroForm extends EditableForm {
         }
         else {
     		tfValue = new TextField( "Value:", null, 255, TextField.ANY );
+//#ifdef midp2
+            tfValue.setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+//#endif
+            
     		tfName = new TextField( "Name (Optional):", null, 255, TextField.ANY );
     		cgType = new ChoiceGroup( "Mode", ChoiceGroup.EXCLUSIVE );
     		cgType.append( "Enter", null );

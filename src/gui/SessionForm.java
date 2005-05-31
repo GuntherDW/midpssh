@@ -77,7 +77,13 @@ public class SessionForm extends EditableForm {
 
 		tfAlias = new TextField( "Alias:", null, 255, TextField.ANY );
 		tfHost = new TextField( "Host:", null, 255, TextField.ANY );
+//#ifdef midp2
+        tfHost.setConstraints(TextField.ANY | TextField.URL);
+//#endif
 		tfUsername = new TextField( "Username:", null, 255, TextField.ANY );
+//#ifdef midp2
+        tfUsername.setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+//#endif
 		tfPassword = new TextField( "Password:", null, 255, TextField.PASSWORD );
 		cgType = new ChoiceGroup( "Type", ChoiceGroup.EXCLUSIVE );
 		for ( int i = 0; i < typeNames.length; i++ ) {

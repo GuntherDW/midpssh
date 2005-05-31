@@ -1,3 +1,8 @@
+1.4.5
+Blackberry type mode freeze fix
+Blackberry enterprise version added (for MDS only to avoid split-pipe security constraint)
+More text fields non-predictive
+
 1.4.4
 Setting for ssh2 private key strength
 Setting to pregenerate ssh2 private and public key on phone and store

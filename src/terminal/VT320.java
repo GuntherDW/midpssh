@@ -312,18 +312,18 @@ public abstract class VT320 {
 		for ( int i = 0; i < nw; i += 8 ) {
 			Tabs[i] = 1;
 		}
+        
+        /* top row of numpad */
+        PF1 = "\u001bOP";
+        PF2 = "\u001bOQ";
+        PF3 = "\u001bOR";
+        PF4 = "\u001bOS";
 
 //#ifndef simplevt320
-		/* top row of numpad */
-		PF1 = "\u001bOP";
-		PF2 = "\u001bOQ";
-		PF3 = "\u001bOR";
-		PF4 = "\u001bOS";
-
 		/* the 3x2 keyblock on PC keyboards */
-		Insert = new String[4];
 		Remove = new String[4];
 //#endif
+        Insert = new String[4];
         KeyHome = new String[4];
         KeyEnd = new String[4];
         NextScn = new String[4];
@@ -332,9 +332,9 @@ public abstract class VT320 {
 		BackSpace = new String[4];
 		TabKey = new String[4];
 //#ifndef simplevt320
-		Insert[0] = Insert[1] = Insert[2] = Insert[3] = "\u001b[2~";
 		Remove[0] = Remove[1] = Remove[2] = Remove[3] = "\u001b[3~";
 //#endif
+        Insert[0] = Insert[1] = Insert[2] = Insert[3] = "\u001b[2~";
         KeyHome[0] = KeyHome[1] = KeyHome[2] = KeyHome[3] = "\u001b[H";
         KeyEnd[0] = KeyEnd[1] = KeyEnd[2] = KeyEnd[3] = "\u001b[F";
         PrevScn[0] = PrevScn[1] = PrevScn[2] = PrevScn[3] = "\u001b[5~";
@@ -349,36 +349,37 @@ public abstract class VT320 {
 			BackSpace[0] = BackSpace[1] = BackSpace[2] = BackSpace[3] = "\b";
 		}
 
+        FunctionKey = new String[21];
+        FunctionKey[0] = "";
+        FunctionKey[1] = PF1;
+        FunctionKey[2] = PF2;
+        FunctionKey[3] = PF3;
+        FunctionKey[4] = PF4;
+        /* following are defined differently for vt220 / vt132 ... */
+        FunctionKey[5] = "\u001b[15~";
+        FunctionKey[6] = "\u001b[17~";
+        FunctionKey[7] = "\u001b[18~";
+        FunctionKey[8] = "\u001b[19~";
+        FunctionKey[9] = "\u001b[20~";
+        FunctionKey[10] = "\u001b[21~";
+        FunctionKey[11] = "\u001b[23~";
+        FunctionKey[12] = "\u001b[24~";
+
 //#ifndef simplevt320
+        FunctionKey[13] = "\u001b[25~";
+        FunctionKey[14] = "\u001b[26~";
+        FunctionKey[15] = Help;
+        FunctionKey[16] = Do;
+        FunctionKey[17] = "\u001b[31~";
+        FunctionKey[18] = "\u001b[32~";
+        FunctionKey[19] = "\u001b[33~";
+        FunctionKey[20] = "\u001b[34~";
+        
 		/* some more VT100 keys */
 		Find = "\u001b[1~";
 		Select = "\u001b[4~";
 		Help = "\u001b[28~";
 		Do = "\u001b[29~";
-
-		FunctionKey = new String[21];
-		FunctionKey[0] = "";
-		FunctionKey[1] = PF1;
-		FunctionKey[2] = PF2;
-		FunctionKey[3] = PF3;
-		FunctionKey[4] = PF4;
-		/* following are defined differently for vt220 / vt132 ... */
-		FunctionKey[5] = "\u001b[15~";
-		FunctionKey[6] = "\u001b[17~";
-		FunctionKey[7] = "\u001b[18~";
-		FunctionKey[8] = "\u001b[19~";
-		FunctionKey[9] = "\u001b[20~";
-		FunctionKey[10] = "\u001b[21~";
-		FunctionKey[11] = "\u001b[23~";
-		FunctionKey[12] = "\u001b[24~";
-		FunctionKey[13] = "\u001b[25~";
-		FunctionKey[14] = "\u001b[26~";
-		FunctionKey[15] = Help;
-		FunctionKey[16] = Do;
-		FunctionKey[17] = "\u001b[31~";
-		FunctionKey[18] = "\u001b[32~";
-		FunctionKey[19] = "\u001b[33~";
-		FunctionKey[20] = "\u001b[34~";
 
 		FunctionKeyShift = new String[21];
 		FunctionKeyAlt = new String[21];
@@ -850,12 +851,12 @@ public abstract class VT320 {
 	//7e Middle Dot
 	};
 //#endif
+
+    private String FunctionKey[];
 	
 //#ifndef simplevt320
 	/** Strings to send on function key pressing */
 	private String Numpad[];
-
-	private String FunctionKey[];
 
 	private String FunctionKeyShift[];
 
@@ -868,15 +869,17 @@ public abstract class VT320 {
 
 	private String KeyUp[], KeyDown[], KeyLeft[], KeyRight[];
 
+    private String PF1, PF2, PF3, PF4;
+
 //#ifndef simplevt320
 	private String KPMinus, KPComma, KPPeriod, KPEnter;
 
-	private String PF1, PF2, PF3, PF4;
-
 	private String Help, Do, Find, Select;
 
-	private String Insert[], Remove[];
+	private String Remove[];
 //#endif
+    
+    private String Insert[];
 	
 	private String KeyHome[], KeyEnd[], PrevScn[], NextScn[], Escape[], BackSpace[], NUMDot[], NUMPlus[];
 
@@ -999,8 +1002,9 @@ public abstract class VT320 {
 		int xind;
 		String fmap[];
 		xind = 0;
+        
+        fmap = FunctionKey;
 //#ifndef simplevt320
-		fmap = FunctionKey;
 		if ( shift ) {
 			fmap = FunctionKeyShift;
 			xind = 1;
@@ -1031,6 +1035,7 @@ public abstract class VT320 {
 				if ( shift || control )
 					sendTelnetCommand( (byte) 243 ); // BREAK
 				break;
+//#endif
 			case VT320.VK_F1:
 				writeSpecial( fmap[1] );
 				break;
@@ -1067,7 +1072,6 @@ public abstract class VT320 {
 			case VT320.VK_F12:
 				writeSpecial( fmap[12] );
 				break;
-//#endif
 			case VT320.VK_UP:
 				writeSpecial( KeyUp[xind] );
 				break;
@@ -1086,10 +1090,10 @@ public abstract class VT320 {
 			case VT320.VK_PAGE_UP:
 				writeSpecial( PrevScn[xind] );
 				break;
+            case VT320.VK_INSERT:
+                writeSpecial( Insert[xind] );
+                break;
 //#ifndef simplevt320
-			case VT320.VK_INSERT:
-				writeSpecial( Insert[xind] );
-				break;
 			case VT320.VK_DELETE:
 				writeSpecial( Remove[xind] );
 				break;
@@ -1273,9 +1277,9 @@ public abstract class VT320 {
 		String fmap[];
 		int xind;
 		xind = 0;
-		
+
+        fmap = FunctionKey;
 //#ifndef simplevt320
-		fmap = FunctionKey;
 		if ( shift ) {
 			fmap = FunctionKeyShift;
 			xind = 1;

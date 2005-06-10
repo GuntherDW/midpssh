@@ -39,6 +39,12 @@ public class SessionManager extends MyRecordStore {
 	
 	private static SessionManager me = new SessionManager();
 
+    protected int compare(Object a, Object b) {
+        SessionSpec aa = (SessionSpec) a;
+        SessionSpec bb = (SessionSpec) b;
+        return aa.alias.compareTo(bb.alias);
+    }
+    
 	public static Vector getSessions() {
 		if ( sessions == null ) {
 			SessionManager.sessions = me.load( RMS_NAME, true );
@@ -121,4 +127,5 @@ public class SessionManager extends MyRecordStore {
         SessionSpec spec = (SessionSpec) ob;
         spec.write( out );
     }
+    
 }

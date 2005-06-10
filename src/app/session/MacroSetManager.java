@@ -42,13 +42,19 @@ public class MacroSetManager extends MyRecordStore {
 	private static Vector macroSets;
 	
 	private static MacroSetManager me = new MacroSetManager();
+
+    protected int compare(Object a, Object b) {
+        MacroSet aa = (MacroSet) a;
+        MacroSet bb = (MacroSet) b;
+        return aa.name.compareTo(bb.name);
+    }
 	
 	public static Vector getMacroSets() {
 		if ( macroSets == null ) {
 			MacroSetManager.macroSets = me.load( RMS_NAME, true );
             if ( macroSets.isEmpty() ) {
                 MacroSet macroSet = new MacroSet();
-                macroSet.setName( "Untitled Set" );
+                macroSet.name = "Untitled Set";
                 macroSets.addElement( macroSet );
                 saveMacroSets();
             }

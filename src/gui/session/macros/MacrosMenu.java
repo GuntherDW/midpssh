@@ -54,7 +54,7 @@ public class MacrosMenu extends EditableMenu {
     }
     
 	public MacrosMenu( MacroSet macroSet, int macroSetIndex ) {
-		super( "Macros: " + macroSet.getName() );
+		super( "Macros: " + macroSet.name );
         isMacroSets = false;
 		this.macroSet = macroSet;
 		this.macroSetIndex = macroSetIndex;
@@ -77,7 +77,7 @@ public class MacrosMenu extends EditableMenu {
                     if ( macro != null ) {
                         InputDialog input = new InputDialog();
                         input.activate( session );
-                        input.setString( macro.getValue().trim() );
+                        input.setString( macro.value.trim() );
                     }
                 }
                 else {
@@ -100,18 +100,18 @@ public class MacrosMenu extends EditableMenu {
             if ( macroSets != null ) {
                 for ( int i = 0; i < macroSets.size(); i++ ) {
                     MacroSet macroSet = (MacroSet) macroSets.elementAt( i );
-                    append( macroSet.getName(), null );
+                    append( macroSet.name, null );
                 }
             }
         }
         else {
-    		Vector macros = macroSet.getMacros();
+    		Vector macros = macroSet.macros;
     		if ( macros != null ) {
     			for ( int i = 0; i < macros.size(); i++ ) {
     				Macro macro = (Macro) macros.elementAt( i );
-    				String name = macro.getName();
+    				String name = macro.name;
     				if ( name == null || name.length() == 0 ) {
-    					name = macro.getValue().trim(); // trim off whitespace as it may end with a newline
+    					name = macro.value.trim(); // trim off whitespace as it may end with a newline
     				}
     				append( name, null );
     			}
@@ -147,7 +147,7 @@ public class MacrosMenu extends EditableMenu {
     			if ( session != null ) {
     				Macro macro = macroSet.getMacro( i );
     				if ( macro != null ) {
-    					session.typeString( macro.getValue() );
+    					session.typeString( macro.value );
     					session.activate();
     				}
     			}

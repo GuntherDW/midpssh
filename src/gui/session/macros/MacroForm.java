@@ -112,7 +112,7 @@ public class MacroForm extends EditableForm {
         if ( isMacroSet ) {
             MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
             if ( macroSet != null ) {
-                tfName.setString( macroSet.getName() );
+                tfName.setString( macroSet.name );
             }
         }
 	}
@@ -123,9 +123,9 @@ public class MacroForm extends EditableForm {
 
 		MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
 		Macro macro = macroSet.getMacro( macroIndex );
-		tfName.setString( macro.getName() );
+		tfName.setString( macro.name );
 		
-		String value = macro.getValue();
+		String value = macro.value;
 		if ( value.endsWith( "\n" ) ) {
 			cgType.setSelectedIndex( 0, true );
 			value = value.substring( 0, value.length() - 1 );
@@ -159,7 +159,7 @@ public class MacroForm extends EditableForm {
 			if ( validateForm() ) {
                 if ( isMacroSet ) {
                     MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
-                    macroSet.setName( tfName.getString() );
+                    macroSet.name = tfName.getString();
                     MacroSetManager.replaceMacroSet( macroSetIndex, macroSet );
                 }
                 else {
@@ -181,7 +181,7 @@ public class MacroForm extends EditableForm {
 		if ( validateForm() ) {
             if ( isMacroSet ) {
                 MacroSet macroSet = new MacroSet();
-                macroSet.setName( tfName.getString() );
+                macroSet.name = tfName.getString();
                 MacroSetManager.addMacroSet( macroSet );
             }
             else {

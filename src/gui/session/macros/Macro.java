@@ -27,9 +27,9 @@ package gui.session.macros;
  * @author Karl von Randow
  */
 public class Macro {
-	private String name;
+	public String name;
 	
-	private String value;
+	public String value;
 	
 	/**
 	 * @param name
@@ -39,17 +39,5 @@ public class Macro {
 		super();
 		this.name = name;
 		this.value = value;
-	}
-	/**
-	 * @return Returns the name.
-	 */
-	public String getName() {
-		return name;
-	}
-	/**
-	 * @return Returns the value.
-	 */
-	public String getValue() {
-        return value;
 	}
 }

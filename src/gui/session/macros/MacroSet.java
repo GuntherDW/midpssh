@@ -37,35 +37,17 @@ public class MacroSet {
 	
 	private static final byte VERSION = 1;
 	
-	private String name;
+	public String name;
 	
-	private Vector macros = new Vector();
+	public Vector macros = new Vector();
 	
-	/**
-	 * @return Returns the macros.
-	 */
-	public Vector getMacros() {
-		return macros;
-	}
-	/**
-	 * @return Returns the name.
-	 */
-	public String getName() {
-		return name;
-	}
-	/**
-	 * @param name The name to set.
-	 */
-	public void setName( String name ) {
-		this.name = name;
-	}
 	/**
 	 * @param in
 	 * @throws IOException
 	 */
 	public void read( DataInputStream in ) throws IOException {
 		int version = in.readByte(); // for future use
-		setName( in.readUTF() );
+		name = in.readUTF();
 		
 		int n = in.readByte();
 		for ( int i = 0; i < n; i++ ) {
@@ -82,13 +64,13 @@ public class MacroSet {
 	 */
 	public void write( DataOutputStream out ) throws IOException {
 		out.writeByte( VERSION );
-		out.writeUTF( getName() );
+		out.writeUTF( name );
 		
 		out.writeByte( macros.size() );
 		for ( int i = 0; i < macros.size(); i++ ) {
 			Macro macro = (Macro) macros.elementAt( i );
-			out.writeUTF( macro.getName() );
-			out.writeUTF( macro.getValue() );
+			out.writeUTF( macro.name );
+			out.writeUTF( macro.value );
 		}
 	}
 	

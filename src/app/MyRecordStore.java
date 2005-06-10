@@ -11,7 +11,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
-import javax.microedition.rms.RecordEnumeration;
 import javax.microedition.rms.RecordStore;
 import javax.microedition.rms.RecordStoreException;
 import javax.microedition.rms.RecordStoreFullException;
@@ -27,11 +26,11 @@ public abstract class MyRecordStore {
         try {
             RecordStore rec = RecordStore.openRecordStore(rmsName, false);
 
-            RecordEnumeration recs = rec.enumerateRecords(null, null, false);
             Vector vector = new Vector();
 
-            while (recs.hasNextElement()) {
-                byte[] data = recs.nextRecord();
+            int n = rec.getNumRecords();
+            for (int i = 0; i < n; i++) {
+                byte[] data = rec.getRecord(i);
                 DataInputStream in = new DataInputStream(new ByteArrayInputStream(data));
                 try {
                     vector.addElement(read(in));

@@ -663,7 +663,15 @@ public class SshIO {
             pn.putString("ssh-userauth");
 
             sendPacket2(pn);
+            
+            //#ifndef small
+            //#ifdef removeme
+            if (1 == 1)
+            //#endif
+            return "Requesting authentication\r\n";
+            //#else
             break;
+            //#endif
         }
 
         case SSH2_MSG_SERVICE_ACCEPT: {
@@ -676,7 +684,15 @@ public class SshIO {
             buf.putString(password);
 
             sendPacket2(buf);
+            
+            //#ifndef small
+            //#ifdef removeme
+            if (1 == 1)
+            //#endif
+            return "Sent authentication\r\n";
+            //#else
             break;
+            //#endif
         }
 
         case SSH2_MSG_USERAUTH_SUCCESS: {
@@ -687,7 +703,15 @@ public class SshIO {
             pn.putInt32(0x100000);
             pn.putInt32(0x4000);
             sendPacket2(pn);
+            
+            //#ifndef small
+            //#ifdef removeme
+            if (1 == 1)
+            //#endif
+            return "Authentication accepted\r\n";
+            //#else
             break;
+            //#endif
         }
 
         case SSH2_MSG_CHANNEL_OPEN_CONFIRMATION: {
@@ -717,7 +741,15 @@ public class SshIO {
             sendPacket2(pn);
 
             cansenddata = true;
+            
+            //#ifndef small
+            //#ifdef removeme
+            if (1 == 1)
+            //#endif
+            return "Shell opened\r\n";
+            //#else
             break;
+            //#endif
         }
 
         case SSH2_MSG_CHANNEL_DATA: {

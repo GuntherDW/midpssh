@@ -1,3 +1,9 @@
+1.4.6
+Function keys and insert keys now work on Blackberry and some other builds where they didn't work before.
+Connection type option for session import on Blackberries
+Sorting of sessions and macro sets fixed
+IOOBException on BB better fixed
+
 1.4.5
 Blackberry type mode freeze fix
 Blackberry enterprise version added (for MDS only to avoid split-pipe security constraint)

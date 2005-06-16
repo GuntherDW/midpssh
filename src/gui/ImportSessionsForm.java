@@ -11,8 +11,11 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
+import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.TextField;
 
 import app.LineInputStream;
@@ -28,9 +31,14 @@ import app.Settings;
  * @author Karl
  *
  */
-public class ImportSessionsForm extends ExtendedTextBox implements Runnable {
-
-    private String url;
+public class ImportSessionsForm extends Form implements Activatable, Runnable, CommandListener {
+    private TextField tfUrl;
+    
+    private Activatable back;
+    
+//#ifdef blackberryconntypes
+    private ChoiceGroup cgBlackberryConnType;
+//#endif
     
     /**
      * @param title
@@ -39,19 +47,44 @@ public class ImportSessionsForm extends ExtendedTextBox implements Runnable {
      * @param constraints
      */
     public ImportSessionsForm() {
-        super("Import Sessions URL", Settings.sessionsImportUrl, 255, TextField.ANY);
+        super("Import Sessions");
         
+        tfUrl = new TextField( "URL:", null, 255, TextField.ANY );
+//#ifdef midp2
+        tfUrl.setConstraints(TextField.ANY | TextField.URL);
+//#endif
+        append(tfUrl);
+        
+//#ifdef blackberryconntypes
+        cgBlackberryConnType = new ChoiceGroup( "Connection Type", ChoiceGroup.EXCLUSIVE);
+        cgBlackberryConnType.append( "Default", null );
+        cgBlackberryConnType.append( "TCP/IP", null );
+        cgBlackberryConnType.append( "BES", null );
+        append(cgBlackberryConnType);
+//#endif
+              
         addCommand(MessageForm.okCommand);
         addCommand(MessageForm.backCommand);
+        setCommandListener(this);
     }
     
-    /* (non-Javadoc)
-     * @see gui.ExtendedTextBox#handleText(javax.microedition.lcdui.Command, java.lang.String)
-     */
-    protected boolean handleText(Command command, String url) {
-        this.url = url;
-        new Thread(this).start();
-        return false;
+    public void commandAction(Command command, Displayable arg1) {
+        if (command == MessageForm.okCommand) {
+            new Thread(this).start();
+        }
+        else if (command == MessageForm.backCommand) {
+            if (back != null) {
+                back.activate();
+            }
+        }
+    }
+    
+    public void activate() {
+        Main.setDisplay(this);
+    }
+    public void activate(Activatable back) {
+        this.back = back;
+        activate();
     }
     
     public void run() {
@@ -60,6 +93,19 @@ public class ImportSessionsForm extends ExtendedTextBox implements Runnable {
         
         try {
             int imported = 0;
+            
+            String url = tfUrl.getString();
+//#ifdef blackberryconntypes
+            if (cgBlackberryConnType.getSelectedIndex() == 1) {
+                url += ";deviceside=true";
+            }
+            else if (cgBlackberryConnType.getSelectedIndex() == 2) {
+                url += ";deviceside=false";
+            }
+//#endif
+//#ifdef blackberryenterprise
+            url += ";deviceside=false";
+//#endif
             
             c = (HttpConnection) Connector.open(url);
             int rc = c.getResponseCode();

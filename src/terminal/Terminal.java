@@ -566,6 +566,9 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         else if ( keycode == KEY_SHIFT ) {
             typingShift = false;
         }
+        else if ( keycode > 0 && keycode < 32) {
+            buffer.keyTyped( keycode, (char)keycode, 0);
+        }
         else if ( keycode >= 32 && keycode < 128 ) {
             char c = (char) keycode;
             if ( typingShift ) {

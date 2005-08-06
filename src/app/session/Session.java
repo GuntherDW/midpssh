@@ -58,6 +58,8 @@ public abstract class Session implements Activatable {
 	private boolean disconnecting, erroredDisconnect;
 	
 	private boolean forcedDisconnect;
+	
+	private boolean pollingIO;
 
 	/**
 	 * Holds the socket connetion object (from the Generic Connection Framework)
@@ -266,9 +268,7 @@ public abstract class Session implements Activatable {
 //#ifndef slowreadio
 		buf = new byte[512]; // try a smaller buffer, maybe works better on some phones
 		
-		// Read at least 1 byte, and at most the number of bytes available
-		int a = in.available();
-		int n = in.read( buf, 0, Math.max( 1, Math.min( a, buf.length ) ) );
+		int n = 0;
 		while ( n != -1 ) {
 			bytesRead += n;
 			try {
@@ -278,7 +278,20 @@ public abstract class Session implements Activatable {
 			    throw new RuntimeException( "read.filter1 " + n + ": " + e );
 			}
 			
-			a = in.available();
+			int a = in.available();
+            if (pollingIO) {
+	            while (a == 0 && !disconnecting) {
+	                try {
+	                    Thread.sleep(100);
+	                }
+	                catch (InterruptedException e) {
+	                    
+	                }
+	                a = in.available();
+	            }
+            }
+            
+            // Read at least 1 byte, and at most the number of bytes available
 			n = in.read( buf, 0, Math.max( 1, Math.min( a, buf.length ) ) );
 		}
 //#else
@@ -311,6 +324,8 @@ public abstract class Session implements Activatable {
 		while ( !disconnecting ) {
 //#ifndef noiosync
 			synchronized ( writerMutex ) {
+//#else
+			    int sleepCount = 0;
 //#endif
 			    while ( outputCount == 0 && !disconnecting ) {
 					try {
@@ -318,7 +333,12 @@ public abstract class Session implements Activatable {
 					    writerMutex.wait( keepAliveTime );
 //#else
 					    Thread.sleep(100);
-                        continue; // to avoid the keep-alive send below
+                        if (sleepCount++ < 600) {
+                            continue; // to avoid the keep-alive send below
+                        }
+                        else {
+                            sleepCount = 0; // and go ahead and send keep-alive
+                        }
 //#endif
 					}
 					catch ( InterruptedException e ) {

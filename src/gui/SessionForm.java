@@ -238,7 +238,6 @@ public class SessionForm extends EditableForm {
 		String host = tfHost.getString();
 		String type = selectedConnectionType();
 		String username = tfUsername.getString();
-		String password = tfPassword.getString();
 		String errorMessage;
 
 		if ( type != null ) {

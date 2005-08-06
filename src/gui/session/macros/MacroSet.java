@@ -46,7 +46,7 @@ public class MacroSet {
 	 * @throws IOException
 	 */
 	public void read( DataInputStream in ) throws IOException {
-		int version = in.readByte(); // for future use
+		in.readByte(); // a version byte, for future use
 		name = in.readUTF();
 		
 		int n = in.readByte();

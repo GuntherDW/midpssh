@@ -6,7 +6,6 @@ import gui.MessageForm;
 import gui.session.InputDialog;
 import gui.session.ModifierInputDialog;
 import gui.session.SpecialMenu;
-import gui.session.macros.MacrosMenu;
 
 import java.io.InputStream;
 
@@ -17,9 +16,7 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
-//#ifdef midp2
 import javax.microedition.lcdui.game.Sprite;
-//#endif
 
 import app.Main;
 import app.Settings;
@@ -197,10 +194,6 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     private Session session;
 
     private static InputDialog inputDialog;
-    
-//#ifndef nomacros
-    private static MacrosMenu macrosMenu;
-//#endif
     
 //#ifndef nospecialmenu 
     private SpecialMenu menuSpecialKeys;

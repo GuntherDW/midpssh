@@ -185,25 +185,25 @@ public abstract class TelnetProtocolHandler {
 	/** Telnet option: Terminal Type */
 	private final static byte TELOPT_TTYPE = (byte) 24; /* terminal type */
 
-	private final static byte[] IACWILL = {
-			IAC, WILL
-	};
-
-	private final static byte[] IACWONT = {
-			IAC, WONT
-	};
-
-	private final static byte[] IACDO = {
-			IAC, DO
-	};
-
-	private final static byte[] IACDONT = {
-			IAC, DONT
-	};
-
-	private final static byte[] IACSB = {
-			IAC, SB
-	};
+//	private final static byte[] IACWILL = {
+//			IAC, WILL
+//	};
+//
+//	private final static byte[] IACWONT = {
+//			IAC, WONT
+//	};
+//
+//	private final static byte[] IACDO = {
+//			IAC, DO
+//	};
+//
+//	private final static byte[] IACDONT = {
+//			IAC, DONT
+//	};
+//
+//	private final static byte[] IACSB = {
+//			IAC, SB
+//	};
 
 	private final static byte[] IACSE = {
 			IAC, SE

@@ -78,8 +78,6 @@ public class DHKeyExchange {
 
 	private byte[] I_C;
 
-	private byte[] K_S;
-
 	private byte[] H;
 
 	private byte[] e, f, K;

@@ -30,7 +30,6 @@ import ssh.SshMisc;
 import ssh.SshPacket;
 
 public class SshPacket2 extends SshPacket {
-	private final static boolean debug = true;
 
 	//SSH_RECEIVE_PACKET
 	private byte[] packet_length_array = new byte[8]; // 8 bytes
@@ -38,8 +37,6 @@ public class SshPacket2 extends SshPacket {
 	private int packet_length = 0; // 32-bit sign int
 
 	private int padlen = 0; // packet length 1 byte unsigned
-
-	private byte[] crc_array = new byte[4]; // 32-bit crc
 
 	private int position = 0;
 
@@ -166,8 +163,6 @@ public class SshPacket2 extends SshPacket {
 	private byte block[];
 
 	public int addPayload(byte buff[], int boffset, int length) {
-		byte b;
-		byte[] newbuf = null;
 		int hmaclen = 0;
 		int boffsetend = boffset + length;
 

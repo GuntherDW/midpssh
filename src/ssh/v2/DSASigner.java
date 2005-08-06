@@ -10,12 +10,12 @@ package ssh.v2;
  * Cryptography", pages 452 - 453.
  */
 public class DSASigner {
-	private BigInteger x, y, p, q, g;
+	private BigInteger y, p, q, g;
 
 	public boolean verifySignature(byte[] message, byte[] sig) {
 		SshPacket2 buf = new SshPacket2(null);
 		buf.putBytes(sig);
-		byte[] alg = buf.getByteString();
+		buf.getByteString(); // algorithm
 		byte[] blob = buf.getByteString();
 
 		int rslen = blob.length / 2;
@@ -63,14 +63,6 @@ public class DSASigner {
 		BigInteger v = u1.multiply(u2).mod(p).mod(q);
 
 		return v.equals(r);
-	}
-
-	/**
-	 * @param x
-	 *            The x to set.
-	 */
-	public void setX(BigInteger x) {
-		this.x = x;
 	}
 
 	/**

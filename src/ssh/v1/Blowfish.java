@@ -64,7 +64,7 @@ public final class Blowfish extends Cipher {
 
 	public void setKey( byte[] key ) {
 
-		int i, j, k, len = key.length;
+		int i, j, len = key.length;
 		int temp;
 		int L, R;
 		int[] output = new int[2];

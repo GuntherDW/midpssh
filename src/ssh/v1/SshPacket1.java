@@ -33,7 +33,6 @@ import ssh.SshPacket;
  * @version $Id$
  */
 public class SshPacket1 extends SshPacket {
-	private final static boolean debug = false;
 
 	//SSH_RECEIVE_PACKET
 	private byte[] packet_length_array = new byte[4];
@@ -45,10 +44,6 @@ public class SshPacket1 extends SshPacket {
 	private byte[] crc_array = new byte[4];
 
 	private byte[] block = null;
-
-	private byte[] encryptedBlock = null; // encrypted part (Padding + Type +
-
-	// Data + Check)
 
 	private byte[] decryptedBlock = null; // decrypted part (Padding + Type +
 

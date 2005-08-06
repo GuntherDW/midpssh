@@ -27,10 +27,10 @@ public class BigInteger {
 	private BigInteger() {
 	}
 
-	private BigInteger(int nWords) {
-		sign = 1;
-		magnitude = new int[nWords];
-	}
+//	private BigInteger(int nWords) {
+//		sign = 1;
+//		magnitude = new int[nWords];
+//	}
 
 	private BigInteger(int signum, int[] mag) {
 		sign = signum;
@@ -430,19 +430,19 @@ public class BigInteger {
 										: (w < 1 << 30 ? 30 : 31)))));
 	}
 
-	private final static byte[] bitLengths = { 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4,
-			4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6,
-			6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-			6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-			7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-			8, 8, 8 };
+//	private final static byte[] bitLengths = { 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4,
+//			4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6,
+//			6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+//			6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+//			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+//			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+//			7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+//			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+//			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+//			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+//			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+//			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+//			8, 8, 8 };
 
 	public int compareTo(Object o) {
 		return compareTo((BigInteger) o);
@@ -846,7 +846,7 @@ public class BigInteger {
 		BigInteger v3 = b;
 
 		while (v3.compareTo(BigInteger.ZERO) > 0) {
-			BigInteger q, tn, tv;
+			BigInteger q, tn;
 
 			q = u3.divide(v3);
 
@@ -1608,11 +1608,11 @@ public class BigInteger {
 		return new BigInteger(b);
 	}
 
-	private int max(int a, int b) {
-		if (a < b)
-			return b;
-		return a;
-	}
+//	private int max(int a, int b) {
+//		if (a < b)
+//			return b;
+//		return a;
+//	}
 
 	public int getLowestSetBit() {
 		if (this.equals(ZERO)) {

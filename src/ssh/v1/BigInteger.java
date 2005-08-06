@@ -253,41 +253,41 @@ public class BigInteger {
 		return this;
 	}
 
-	/** Add two ints, yielding a BigInteger. */
-	private static final BigInteger add( int x, int y ) {
-		return valueOf( (long) x + (long) y );
-	}
+//	/** Add two ints, yielding a BigInteger. */
+//	private static final BigInteger add( int x, int y ) {
+//		return valueOf( (long) x + (long) y );
+//	}
 
-	/** Add a BigInteger and an int, yielding a new BigInteger. */
-	private static BigInteger add( BigInteger x, int y ) {
-		if ( x.words == null )
-			return BigInteger.add( x.ival, y );
-		BigInteger result = new BigInteger( 0 );
-		result.setAdd( x, y );
-		return result.canonicalize();
-	}
+//	/** Add a BigInteger and an int, yielding a new BigInteger. */
+//	private static BigInteger add( BigInteger x, int y ) {
+//		if ( x.words == null )
+//			return BigInteger.add( x.ival, y );
+//		BigInteger result = new BigInteger( 0 );
+//		result.setAdd( x, y );
+//		return result.canonicalize();
+//	}
 
-	/**
-	 * Set this to the sum of x and y. OK if x==this.
-	 */
-	private void setAdd( BigInteger x, int y ) {
-		if ( x.words == null ) {
-			set( (long) x.ival + (long) y );
-			return;
-		}
-		int len = x.ival;
-		realloc( len + 1 );
-		long carry = y;
-		for ( int i = 0; i < len; i++ ) {
-			carry += ( (long) x.words[i] & 0xffffffffL );
-			words[i] = (int) carry;
-			carry >>= 32;
-		}
-		if ( x.words[len - 1] < 0 )
-			carry--;
-		words[len] = (int) carry;
-		ival = wordsNeeded( words, len + 1 );
-	}
+//	/**
+//	 * Set this to the sum of x and y. OK if x==this.
+//	 */
+//	private void setAdd( BigInteger x, int y ) {
+//		if ( x.words == null ) {
+//			set( (long) x.ival + (long) y );
+//			return;
+//		}
+//		int len = x.ival;
+//		realloc( len + 1 );
+//		long carry = y;
+//		for ( int i = 0; i < len; i++ ) {
+//			carry += ( (long) x.words[i] & 0xffffffffL );
+//			words[i] = (int) carry;
+//			carry >>= 32;
+//		}
+//		if ( x.words[len - 1] < 0 )
+//			carry--;
+//		words[len] = (int) carry;
+//		ival = wordsNeeded( words, len + 1 );
+//	}
 
 	/** Destructively set the value of this to a long. */
 	private final void set( long y ) {
@@ -313,49 +313,49 @@ public class BigInteger {
 		this.words = words;
 	}
 
-	/** Destructively set the value of this to that of y. */
-	private final void set( BigInteger y ) {
-		if ( y.words == null )
-			set( y.ival );
-		else if ( this != y ) {
-			realloc( y.ival );
-			System.arraycopy( y.words, 0, words, 0, y.ival );
-			ival = y.ival;
-		}
-	}
-
-	/** Add two BigIntegers, yielding their sum as another BigInteger. */
-	private static BigInteger add( BigInteger x, BigInteger y, int k ) {
-		if ( x.words == null && y.words == null )
-			return valueOf( (long) k * (long) y.ival + (long) x.ival );
-		if ( k != 1 )
-			y = BigInteger.times( y, valueOf( k ) );
-		if ( x.words == null )
-			return BigInteger.add( y, x.ival );
-		if ( y.words == null )
-			return BigInteger.add( x, y.ival );
-		// Both are big
-		if ( y.ival > x.ival ) { // Swap so x is longer then y.
-			BigInteger tmp = x;
-			x = y;
-			y = tmp;
-		}
-		BigInteger result = alloc( x.ival + 1 );
-		int i = y.ival;
-		long carry = add_n( result.words, x.words, y.words, i );
-		long y_ext = y.words[i - 1] < 0 ? 0xffffffffL : 0;
-		for ( ; i < x.ival; i++ ) {
-			carry += ( (long) x.words[i] & 0xffffffffL ) + y_ext;
-			;
-			result.words[i] = (int) carry;
-			carry >>>= 32;
-		}
-		if ( x.words[i - 1] < 0 )
-			y_ext--;
-		result.words[i] = (int) ( carry + y_ext );
-		result.ival = i + 1;
-		return result.canonicalize();
-	}
+//	/** Destructively set the value of this to that of y. */
+//	private final void set( BigInteger y ) {
+//		if ( y.words == null )
+//			set( y.ival );
+//		else if ( this != y ) {
+//			realloc( y.ival );
+//			System.arraycopy( y.words, 0, words, 0, y.ival );
+//			ival = y.ival;
+//		}
+//	}
+//
+//	/** Add two BigIntegers, yielding their sum as another BigInteger. */
+//	private static BigInteger add( BigInteger x, BigInteger y, int k ) {
+//		if ( x.words == null && y.words == null )
+//			return valueOf( (long) k * (long) y.ival + (long) x.ival );
+//		if ( k != 1 )
+//			y = BigInteger.times( y, valueOf( k ) );
+//		if ( x.words == null )
+//			return BigInteger.add( y, x.ival );
+//		if ( y.words == null )
+//			return BigInteger.add( x, y.ival );
+//		// Both are big
+//		if ( y.ival > x.ival ) { // Swap so x is longer then y.
+//			BigInteger tmp = x;
+//			x = y;
+//			y = tmp;
+//		}
+//		BigInteger result = alloc( x.ival + 1 );
+//		int i = y.ival;
+//		long carry = add_n( result.words, x.words, y.words, i );
+//		long y_ext = y.words[i - 1] < 0 ? 0xffffffffL : 0;
+//		for ( ; i < x.ival; i++ ) {
+//			carry += ( (long) x.words[i] & 0xffffffffL ) + y_ext;
+//			;
+//			result.words[i] = (int) carry;
+//			carry >>>= 32;
+//		}
+//		if ( x.words[i - 1] < 0 )
+//			y_ext--;
+//		result.words[i] = (int) ( carry + y_ext );
+//		result.ival = i + 1;
+//		return result.canonicalize();
+//	}
 
 	private static final BigInteger times( BigInteger x, int y ) {
 		if ( y == 0 )

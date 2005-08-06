@@ -75,6 +75,8 @@ public class Settings extends MyRecordStore {
     
     public static int ssh2KeySize;
 //#endif
+    
+    public static boolean pollingIO;
 	
 	public static void init() {
         defaults();
@@ -109,6 +111,7 @@ public class Settings extends MyRecordStore {
         ssh2y = null;
         ssh2KeySize = 512;
 //#endif
+        pollingIO = false;
     }
 	
     /* (non-Javadoc)
@@ -133,6 +136,7 @@ public class Settings extends MyRecordStore {
         ssh2y = readByteArray(in);
         ssh2KeySize = in.readInt();
 //#endif
+        pollingIO = in.readBoolean();
         return null;
     }
     
@@ -150,8 +154,6 @@ public class Settings extends MyRecordStore {
         out.writeBoolean( terminalFullscreen );
 //#ifdef ssh2
         out.writeInt(sshVersionPreferred);
-//#else
-        out.writeInt(1);
 //#endif
         out.writeUTF(sessionsImportUrl);
 //#ifdef ssh2
@@ -159,12 +161,8 @@ public class Settings extends MyRecordStore {
         writeByteArray(out, ssh2x);
         writeByteArray(out, ssh2y);
         out.writeInt(ssh2KeySize);
-//#else
-        out.writeBoolean(true);
-        out.writeInt(0);
-        out.writeInt(0);
-        out.writeInt(0);
 //#endif
+        out.writeBoolean(pollingIO);
     }
     
 //#ifdef ssh2

@@ -37,6 +37,7 @@ import terminal.Terminal;
 import terminal.VT320;
 import app.Main;
 import app.SessionSpec;
+import app.Settings;
 
 /**
  * @author Karl von Randow
@@ -115,6 +116,7 @@ public abstract class Session implements Activatable {
             }
 //#endif
 		};
+		pollingIO = Settings.pollingIO;
 		terminal = new Terminal( emulation, this );
 //#ifdef readwriteio
         readWriter = new ReadWriter();

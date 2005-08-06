@@ -18,8 +18,6 @@ import app.Main;
 public abstract class ExtendedTextBox extends TextBox implements Activatable, CommandListener {
     protected Activatable back;
 
-    private int modifier;
-
     public ExtendedTextBox( String title, String text, int maxSize, int constraints ) {
         super( title, text, maxSize, constraints);
 

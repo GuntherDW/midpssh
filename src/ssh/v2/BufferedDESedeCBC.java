@@ -18,10 +18,6 @@ public class BufferedDESedeCBC {
 
 	protected int bufOff;
 
-	protected boolean partialBlockOkay;
-
-	protected boolean pgpCFB;
-	
 	private byte[] IV;
 
 	private byte[] cbcV;
@@ -50,22 +46,6 @@ public class BufferedDESedeCBC {
 
 		buf = new byte[cipher.getBlockSize()];
 		bufOff = 0;
-
-		//
-		// check if we can handle partial blocks on doFinal.
-		//
-		String name = cipher.getAlgorithmName();
-		int idx = name.indexOf('/') + 1;
-
-		pgpCFB = (idx > 0 && name.startsWith("PGP", idx));
-
-		if (pgpCFB) {
-			partialBlockOkay = true;
-		} else {
-			partialBlockOkay = (idx > 0 && (name.startsWith("CFB", idx)
-					|| name.startsWith("OFB", idx) || name.startsWith(
-					"OpenPGP", idx)));
-		}
 	}
 
 	/**
@@ -113,11 +93,7 @@ public class BufferedDESedeCBC {
 		int total = len + bufOff;
 		int leftOver;
 
-		if (pgpCFB) {
-			leftOver = total % buf.length - (cipher.getBlockSize() + 2);
-		} else {
-			leftOver = total % buf.length;
-		}
+		leftOver = total % buf.length;
 
 		return total - leftOver;
 	}
@@ -135,13 +111,9 @@ public class BufferedDESedeCBC {
 		int total = len + bufOff;
 		int leftOver;
 
-		if (pgpCFB) {
-			leftOver = total % buf.length - (cipher.getBlockSize() + 2);
-		} else {
-			leftOver = total % buf.length;
-			if (leftOver == 0) {
-				return total;
-			}
+		leftOver = total % buf.length;
+		if (leftOver == 0) {
+			return total;
 		}
 
 		return total - leftOver + buf.length;
@@ -270,12 +242,7 @@ public class BufferedDESedeCBC {
 					"output buffer too short for doFinal()");
 		}
 
-		if (bufOff != 0 && partialBlockOkay) {
-			processBlock(buf, 0, buf, 0);
-			resultLen = bufOff;
-			bufOff = 0;
-			System.arraycopy(buf, 0, out, outOff, resultLen);
-		} else if (bufOff != 0) {
+		if (bufOff != 0) {
 			throw new IllegalStateException("data not block size aligned");
 		}
 

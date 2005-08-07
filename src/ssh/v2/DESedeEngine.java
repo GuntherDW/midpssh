@@ -49,10 +49,6 @@ public class DESedeEngine {
 		workingKey3 = generateWorkingKey(encrypting, key3);
 	}
 
-	public String getAlgorithmName() {
-		return "DESede";
-	}
-
 	public int getBlockSize() {
 		return BLOCK_SIZE;
 	}

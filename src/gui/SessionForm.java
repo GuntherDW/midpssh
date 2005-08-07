@@ -30,6 +30,7 @@ import javax.microedition.lcdui.TextField;
 
 import app.SessionManager;
 import app.SessionSpec;
+import app.Settings;
 
 /**
  * @author Karl von Randow
@@ -82,7 +83,9 @@ public class SessionForm extends EditableForm {
 //#endif
 		tfUsername = new TextField( "Username:", null, 255, TextField.ANY );
 //#ifdef midp2
-        tfUsername.setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+		if (!Settings.predictiveText) {
+			tfUsername.setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+		}
 //#endif
 		tfPassword = new TextField( "Password:", null, 255, TextField.PASSWORD );
 		cgType = new ChoiceGroup( "Type", ChoiceGroup.EXCLUSIVE );

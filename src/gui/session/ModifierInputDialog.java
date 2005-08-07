@@ -29,6 +29,7 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.TextField;
 
 import app.Main;
+import app.Settings;
 import app.session.Session;
 
 /**
@@ -47,7 +48,9 @@ public class ModifierInputDialog extends ExtendedTextBox {
         addCommand(MessageForm.backCommand);
         
 //#ifdef midp2
-        setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+        if (!Settings.predictiveText) {
+        	setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+        }
 //#endif
 	}
 

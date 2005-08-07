@@ -30,6 +30,7 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.TextField;
 
+import app.Settings;
 import app.session.MacroSetManager;
 
 
@@ -68,7 +69,9 @@ public class MacroForm extends EditableForm {
         else {
     		tfValue = new TextField( "Value:", null, 255, TextField.ANY );
 //#ifdef midp2
-            tfValue.setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+    		if (!Settings.predictiveText) {
+    			tfValue.setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+    		}
 //#endif
             
     		tfName = new TextField( "Name (Optional):", null, 255, TextField.ANY );

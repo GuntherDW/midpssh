@@ -1,3 +1,11 @@
+1.4.7
+Setting for polling I/O
+Keep-alive sending re-added for Blackberry (and other no-io-sync).
+Code tidy and shrinkage, especially in SSH2 code
+SSH2 lite version now <64KB
+Predictive text usage is now a setting
+Settings renamed and slighly reorganised
+
 1.4.6
 Function keys and insert keys now work on Blackberry and some other builds where they didn't work before.
 Connection type option for session import on Blackberries

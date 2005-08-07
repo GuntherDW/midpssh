@@ -18,13 +18,21 @@ public class BufferedDESedeCBC {
 
 	protected int bufOff;
 
-	protected boolean forEncryption;
-
-	protected DESedeCBC cipher;
-
 	protected boolean partialBlockOkay;
 
 	protected boolean pgpCFB;
+	
+	private byte[] IV;
+
+	private byte[] cbcV;
+
+	private byte[] cbcNextV;
+
+	private int blockSize;
+
+	private DESedeEngine cipher = null;
+
+	private boolean encrypting;
 
 	/**
 	 * Create a buffered block cipher without padding.
@@ -33,7 +41,12 @@ public class BufferedDESedeCBC {
 	 *            the underlying block cipher this buffering object wraps.
 	 */
 	public BufferedDESedeCBC() {
-		this.cipher = new DESedeCBC();
+		this.cipher = new DESedeEngine();
+		this.blockSize = cipher.getBlockSize();
+
+		this.IV = new byte[blockSize];
+		this.cbcV = new byte[blockSize];
+		this.cbcNextV = new byte[blockSize];
 
 		buf = new byte[cipher.getBlockSize()];
 		bufOff = 0;
@@ -56,15 +69,6 @@ public class BufferedDESedeCBC {
 	}
 
 	/**
-	 * return the cipher this object wraps.
-	 * 
-	 * @return the cipher this object wraps.
-	 */
-	public DESedeCBC getUnderlyingCipher() {
-		return cipher;
-	}
-
-	/**
 	 * initialise the cipher.
 	 * 
 	 * @param forEncryption
@@ -75,13 +79,16 @@ public class BufferedDESedeCBC {
 	 * @exception IllegalArgumentException
 	 *                if the params argument is inappropriate.
 	 */
-	public void init(boolean forEncryption, byte[] iv, byte[] key)
+	public void init(boolean encrypting, byte[] iv, byte[] key)
 			throws IllegalArgumentException {
-		this.forEncryption = forEncryption;
+		reset();
+
+		this.encrypting = encrypting;
+		System.arraycopy(iv, 0, IV, 0, blockSize);
 
 		reset();
 
-		cipher.init(forEncryption, iv, key);
+		cipher.init(encrypting, key);
 	}
 
 	/**
@@ -162,7 +169,7 @@ public class BufferedDESedeCBC {
 		buf[bufOff++] = in;
 
 		if (bufOff == buf.length) {
-			resultLen = cipher.processBlock(buf, 0, out, outOff);
+			resultLen = processBlock(buf, 0, out, outOff);
 			bufOff = 0;
 		}
 
@@ -210,14 +217,14 @@ public class BufferedDESedeCBC {
 		if (len > gapLen) {
 			System.arraycopy(in, inOff, buf, bufOff, gapLen);
 
-			resultLen += cipher.processBlock(buf, 0, out, outOff);
+			resultLen += processBlock(buf, 0, out, outOff);
 
 			bufOff = 0;
 			len -= gapLen;
 			inOff += gapLen;
 
 			while (len > buf.length) {
-				resultLen += cipher.processBlock(in, inOff, out, outOff
+				resultLen += processBlock(in, inOff, out, outOff
 						+ resultLen);
 
 				len -= blockSize;
@@ -230,7 +237,7 @@ public class BufferedDESedeCBC {
 		bufOff += len;
 
 		if (bufOff == buf.length) {
-			resultLen += cipher.processBlock(buf, 0, out, outOff + resultLen);
+			resultLen += processBlock(buf, 0, out, outOff + resultLen);
 			bufOff = 0;
 		}
 
@@ -264,7 +271,7 @@ public class BufferedDESedeCBC {
 		}
 
 		if (bufOff != 0 && partialBlockOkay) {
-			cipher.processBlock(buf, 0, buf, 0);
+			processBlock(buf, 0, buf, 0);
 			resultLen = bufOff;
 			bufOff = 0;
 			System.arraycopy(buf, 0, out, outOff, resultLen);
@@ -294,6 +301,118 @@ public class BufferedDESedeCBC {
 		//
 		// reset the underlying cipher.
 		//
+		System.arraycopy(IV, 0, cbcV, 0, IV.length);
+
 		cipher.reset();
+	}
+
+	/**
+	 * Process one block of input from the array in and write it to the out
+	 * array.
+	 * 
+	 * @param in
+	 *            the array containing the input data.
+	 * @param inOff
+	 *            offset into the in array the data starts at.
+	 * @param out
+	 *            the array the output data will be copied into.
+	 * @param outOff
+	 *            the offset into the out array the output will start at.
+	 * @exception DataLengthException
+	 *                if there isn't enough data in in, or space in out.
+	 * @exception IllegalStateException
+	 *                if the cipher isn't initialised.
+	 * @return the number of bytes processed and produced.
+	 */
+	public int processBlock(byte[] in, int inOff, byte[] out, int outOff)
+			throws IllegalStateException {
+		return (encrypting) ? encryptBlock(in, inOff, out, outOff)
+				: decryptBlock(in, inOff, out, outOff);
+	}
+
+	/**
+	 * Do the appropriate chaining step for CBC mode encryption.
+	 * 
+	 * @param in
+	 *            the array containing the data to be encrypted.
+	 * @param inOff
+	 *            offset into the in array the data starts at.
+	 * @param out
+	 *            the array the encrypted data will be copied into.
+	 * @param outOff
+	 *            the offset into the out array the output will start at.
+	 * @exception DataLengthException
+	 *                if there isn't enough data in in, or space in out.
+	 * @exception IllegalStateException
+	 *                if the cipher isn't initialised.
+	 * @return the number of bytes processed and produced.
+	 */
+	private int encryptBlock(byte[] in, int inOff, byte[] out, int outOff)
+			throws IllegalStateException {
+		if ((inOff + blockSize) > in.length) {
+			throw new IllegalStateException("input buffer too short");
+		}
+
+		/*
+		 * XOR the cbcV and the input, then encrypt the cbcV
+		 */
+		for (int i = 0; i < blockSize; i++) {
+			cbcV[i] ^= in[inOff + i];
+		}
+
+		int length = cipher.processBlock(cbcV, 0, out, outOff);
+
+		/*
+		 * copy ciphertext to cbcV
+		 */
+		System.arraycopy(out, outOff, cbcV, 0, cbcV.length);
+
+		return length;
+	}
+
+	/**
+	 * Do the appropriate chaining step for CBC mode decryption.
+	 * 
+	 * @param in
+	 *            the array containing the data to be decrypted.
+	 * @param inOff
+	 *            offset into the in array the data starts at.
+	 * @param out
+	 *            the array the decrypted data will be copied into.
+	 * @param outOff
+	 *            the offset into the out array the output will start at.
+	 * @exception DataLengthException
+	 *                if there isn't enough data in in, or space in out.
+	 * @exception IllegalStateException
+	 *                if the cipher isn't initialised.
+	 * @return the number of bytes processed and produced.
+	 */
+	private int decryptBlock(byte[] in, int inOff, byte[] out, int outOff)
+			throws IllegalStateException {
+		if ((inOff + blockSize) > in.length) {
+			throw new IllegalStateException("input buffer too short");
+		}
+
+		System.arraycopy(in, inOff, cbcNextV, 0, blockSize);
+
+		int length = cipher.processBlock(in, inOff, out, outOff);
+
+		/*
+		 * XOR the cbcV and the output
+		 */
+		for (int i = 0; i < blockSize; i++) {
+			out[outOff + i] ^= cbcV[i];
+		}
+
+		/*
+		 * swap the back up buffer into next position
+		 */
+		byte[] tmp;
+
+		tmp = cbcV;
+		cbcV = cbcNextV;
+		cbcNextV = tmp;
+
+		return length;
 	}
 }

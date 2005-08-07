@@ -31,56 +31,63 @@ import java.util.Vector;
  * @author Karl von Randow
  */
 public class Settings extends MyRecordStore {
-	
-	public static final int DEFAULT_BGCOLOR = 0x000000, DEFAULT_FGCOLOR = 0xffffff;
-    
-    public static final int ROT_NORMAL = 0;
-    
-    public static final int ROT_270 = 1;
-    
-    public static final int ROT_90 = 2;
-    
-    public static final int FONT_NORMAL = 0;
-    
-    public static final int FONT_SMALL = 1;
-    
-    public static final int FONT_MEDIUM = 2;
-    
-    public static final int FONT_LARGE = 3;
-    
-    private static final String RMS_NAME = "settings";
-	
+
+	public static final int DEFAULT_BGCOLOR = 0x000000,
+			DEFAULT_FGCOLOR = 0xffffff;
+
+	public static final int ROT_NORMAL = 0;
+
+	public static final int ROT_270 = 1;
+
+	public static final int ROT_90 = 2;
+
+	public static final int FONT_NORMAL = 0;
+
+	public static final int FONT_SMALL = 1;
+
+	public static final int FONT_MEDIUM = 2;
+
+	public static final int FONT_LARGE = 3;
+
+	private static final String RMS_NAME = "settings";
+
 	public static int bgcolor, fgcolor;
-	
+
 	public static int terminalCols, terminalRows;
-	
+
 	public static String terminalType;
 
-	public static int terminalRotated ;
-    
-    public static int fontMode;
-	
+	public static int terminalRotated;
+
+	public static int fontMode;
+
 	private static Settings me = new Settings();
 
-    public static boolean terminalFullscreen ;
-    
-    public static String sessionsImportUrl;
-    
-//#ifdef ssh2
-    public static int sshVersionPreferred;
-    
-    public static boolean ssh2StoreKey;
-    
-    public static byte [] ssh2x, ssh2y;
-    
-    public static int ssh2KeySize;
-//#endif
-    
-    public static boolean pollingIO;
-	
+	public static boolean terminalFullscreen;
+
+	public static String sessionsImportUrl;
+
+	//#ifdef ssh2
+	public static int sshVersionPreferred;
+
+	public static boolean ssh2StoreKey;
+
+	public static byte[] ssh2x, ssh2y;
+
+	public static int ssh2KeySize;
+
+	//#endif
+
+	public static boolean pollingIO;
+
+	//#ifdef ssh2
+	public static boolean predictiveText;
+
+	//#endif
+
 	public static void init() {
-        defaults();
-		me.load( RMS_NAME, false );
+		defaults();
+		me.load(RMS_NAME, false);
 	}
 
 	/**
@@ -88,104 +95,117 @@ public class Settings extends MyRecordStore {
 	 */
 	public static void saveSettings() {
 		Vector v = new Vector();
-		v.addElement( null ); // doesn't matter what we pass through, it just calls write()
-		me.save( RMS_NAME, v );
+		v.addElement(null); // doesn't matter what we pass through, it just
+							// calls write()
+		me.save(RMS_NAME, v);
 	}
-    
-    public static void defaults() {
-        bgcolor = DEFAULT_BGCOLOR;
-        fgcolor = DEFAULT_FGCOLOR;
-        terminalCols = 0;
-        terminalRows = 0;
-        terminalType = "";
-        terminalRotated = ROT_NORMAL;
-        fontMode = FONT_NORMAL;
-        terminalFullscreen = false;
-//#ifdef ssh2
-        sshVersionPreferred = 1;
-//#endif
-        sessionsImportUrl = "http://";
-//#ifdef ssh2
-        ssh2StoreKey = true;
-        ssh2x = null;
-        ssh2y = null;
-        ssh2KeySize = 512;
-//#endif
-        pollingIO = false;
-    }
-	
-    /* (non-Javadoc)
-     * @see app.MyRecordStore#read(java.io.DataInputStream)
-     */
-    protected Object read(DataInputStream in) throws IOException {
-    	fgcolor = in.readInt();
+
+	public static void defaults() {
+		bgcolor = DEFAULT_BGCOLOR;
+		fgcolor = DEFAULT_FGCOLOR;
+		terminalCols = 0;
+		terminalRows = 0;
+		terminalType = "";
+		terminalRotated = ROT_NORMAL;
+		fontMode = FONT_NORMAL;
+		terminalFullscreen = false;
+		//#ifdef ssh2
+		sshVersionPreferred = 1;
+		//#endif
+		sessionsImportUrl = "http://";
+		//#ifdef ssh2
+		ssh2StoreKey = true;
+		ssh2x = null;
+		ssh2y = null;
+		ssh2KeySize = 512;
+		//#endif
+		pollingIO = false;
+		//#ifdef ssh2
+		predictiveText = true;
+		//#endif
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see app.MyRecordStore#read(java.io.DataInputStream)
+	 */
+	protected Object read(DataInputStream in) throws IOException {
+		fgcolor = in.readInt();
 		bgcolor = in.readInt();
 		terminalCols = in.readInt();
 		terminalRows = in.readInt();
 		terminalType = in.readUTF();
 		terminalRotated = in.readInt();
-        fontMode = in.readInt();
-        terminalFullscreen = in.readBoolean();
-//#ifdef ssh2
-        sshVersionPreferred = in.readInt();
-//#endif
-        sessionsImportUrl = in.readUTF();
-//#ifdef ssh2
-        ssh2StoreKey = in.readBoolean();
-        ssh2x = readByteArray(in);
-        ssh2y = readByteArray(in);
-        ssh2KeySize = in.readInt();
-//#endif
-        pollingIO = in.readBoolean();
-        return null;
-    }
-    
-    /* (non-Javadoc)
-     * @see app.MyRecordStore#write(java.io.DataOutputStream, java.lang.Object)
-     */
-    protected void write(DataOutputStream out, Object ob) throws IOException {
-    	out.writeInt( fgcolor );
-		out.writeInt( bgcolor );
-		out.writeInt( terminalCols );
-		out.writeInt( terminalRows );
-		out.writeUTF( terminalType );
-		out.writeInt( terminalRotated );
-        out.writeInt( fontMode );
-        out.writeBoolean( terminalFullscreen );
-//#ifdef ssh2
-        out.writeInt(sshVersionPreferred);
-//#endif
-        out.writeUTF(sessionsImportUrl);
-//#ifdef ssh2
-        out.writeBoolean(ssh2StoreKey);
-        writeByteArray(out, ssh2x);
-        writeByteArray(out, ssh2y);
-        out.writeInt(ssh2KeySize);
-//#endif
-        out.writeBoolean(pollingIO);
-    }
-    
-//#ifdef ssh2
-    private byte[] readByteArray(DataInputStream in) throws IOException {
-        int length = in.readInt();
-        if (length == 0) {
-            return null;
-        }
-        else {
-            byte[] buf = new byte[length];
-            in.readFully(buf);
-            return buf;
-        }
-    }
-    
-    private void writeByteArray(DataOutputStream out, byte[] ray) throws IOException {
-        if (ray != null) {
-            out.writeInt(ray.length);
-            out.write(ray);
-        }
-        else {
-            out.writeInt(0);
-        }
-    }
-//#endif   
+		fontMode = in.readInt();
+		terminalFullscreen = in.readBoolean();
+		//#ifdef ssh2
+		sshVersionPreferred = in.readInt();
+		//#endif
+		sessionsImportUrl = in.readUTF();
+		//#ifdef ssh2
+		ssh2StoreKey = in.readBoolean();
+		ssh2x = readByteArray(in);
+		ssh2y = readByteArray(in);
+		ssh2KeySize = in.readInt();
+		//#endif
+		pollingIO = in.readBoolean();
+		//#ifdef ssh2
+		predictiveText = in.readBoolean();
+		//#endif
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see app.MyRecordStore#write(java.io.DataOutputStream, java.lang.Object)
+	 */
+	protected void write(DataOutputStream out, Object ob) throws IOException {
+		out.writeInt(fgcolor);
+		out.writeInt(bgcolor);
+		out.writeInt(terminalCols);
+		out.writeInt(terminalRows);
+		out.writeUTF(terminalType);
+		out.writeInt(terminalRotated);
+		out.writeInt(fontMode);
+		out.writeBoolean(terminalFullscreen);
+		//#ifdef ssh2
+		out.writeInt(sshVersionPreferred);
+		//#endif
+		out.writeUTF(sessionsImportUrl);
+		//#ifdef ssh2
+		out.writeBoolean(ssh2StoreKey);
+		writeByteArray(out, ssh2x);
+		writeByteArray(out, ssh2y);
+		out.writeInt(ssh2KeySize);
+		//#endif
+		out.writeBoolean(pollingIO);
+		//#ifdef ssh2
+		out.writeBoolean(predictiveText);
+		//#endif
+	}
+
+	//#ifdef ssh2
+	private byte[] readByteArray(DataInputStream in) throws IOException {
+		int length = in.readInt();
+		if (length == 0) {
+			return null;
+		} else {
+			byte[] buf = new byte[length];
+			in.readFully(buf);
+			return buf;
+		}
+	}
+
+	private void writeByteArray(DataOutputStream out, byte[] ray)
+			throws IOException {
+		if (ray != null) {
+			out.writeInt(ray.length);
+			out.write(ray);
+		} else {
+			out.writeInt(0);
+		}
+	}
+	//#endif
 }

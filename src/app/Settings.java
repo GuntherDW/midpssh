@@ -128,7 +128,7 @@ public class Settings extends MyRecordStore {
 		ssh2KeySize = 512;
 		//#endif
 		pollingIO = false;
-		//#ifdef ssh2
+		//#ifdef midp2
 		predictiveText = true;
 		//#endif
 	}

@@ -37,9 +37,21 @@ public class HMACSHA1 {
 
 	private int bsize = 20;
 
-	private HMac mac;
-
 	private byte[] tmp = new byte[4];
+	
+	private final static int BLOCK_LENGTH = 64;
+
+	private final static byte IPAD = (byte) 0x36;
+
+	private final static byte OPAD = (byte) 0x5C;
+
+	private SHA1Digest digest;
+
+	private int digestSize;
+
+	private byte[] inputPad = new byte[BLOCK_LENGTH];
+
+	private byte[] outputPad = new byte[BLOCK_LENGTH];
 
 	public int getBlockSize() {
 		return bsize;
@@ -51,8 +63,37 @@ public class HMACSHA1 {
 			System.arraycopy(key, 0, tmp, 0, bsize);
 			key = tmp;
 		}
-		mac = new HMac(new SHA1Digest());
-		mac.init(key);
+		
+		digest = new SHA1Digest();
+		digestSize = digest.getDigestSize();
+		
+		digest.reset();
+
+		if (key.length > BLOCK_LENGTH) {
+			digest.update(key, 0, key.length);
+			digest.doFinal(inputPad, 0);
+			for (int i = digestSize; i < inputPad.length; i++) {
+				inputPad[i] = 0;
+			}
+		} else {
+			System.arraycopy(key, 0, inputPad, 0, key.length);
+			for (int i = key.length; i < inputPad.length; i++) {
+				inputPad[i] = 0;
+			}
+		}
+
+		outputPad = new byte[inputPad.length];
+		System.arraycopy(inputPad, 0, outputPad, 0, inputPad.length);
+
+		for (int i = 0; i < inputPad.length; i++) {
+			inputPad[i] ^= IPAD;
+		}
+
+		for (int i = 0; i < outputPad.length; i++) {
+			outputPad[i] ^= OPAD;
+		}
+
+		digest.update(inputPad, 0, inputPad.length);
 	}
 
 	public void update(int i) {
@@ -64,13 +105,38 @@ public class HMACSHA1 {
 	}
 
 	public void update(byte foo[], int s, int l) {
-		mac.update(foo, s, l);
+		digest.update(foo, s, l);
 	}
 
 	public byte[] doFinal() {
-		byte[] out = new byte[mac.getMacSize()];
-		mac.doFinal(out, 0);
+		byte[] out = new byte[digestSize];
+		
+		byte[] tmp = new byte[digestSize];
+		digest.doFinal(tmp, 0);
+
+		digest.update(outputPad, 0, outputPad.length);
+		digest.update(tmp, 0, tmp.length);
+
+		digest.doFinal(out, 0);
+
+		reset();
+
 		return out;
+	}
+
+	/**
+	 * Reset the mac generator.
+	 */
+	public void reset() {
+		/*
+		 * reset the underlying digest.
+		 */
+		digest.reset();
+
+		/*
+		 * reinitialize the digest.
+		 */
+		digest.update(inputPad, 0, inputPad.length);
 	}
 
 	public String getName() {

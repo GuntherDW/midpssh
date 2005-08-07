@@ -550,6 +550,9 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     }
     
     protected void keyReleasedTyping( int keycode ) {
+    	/* Debug typing */
+//    	buffer.putString("KEY" + keycode + " ");
+    	
         if ( keycode == 8 || keycode == KEY_BACKSPACE ) {
             // Backspace
             buffer.keyPressed( VT320.VK_BACK_SPACE, 0 );

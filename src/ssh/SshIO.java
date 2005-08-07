@@ -50,9 +50,7 @@ import app.session.SshSession;
  */
 public class SshIO {
 
-	//#ifndef nossh1
 	private static MD5 md5 = new MD5();
-	//#endif
 	
 	private SshSession sshSession;
 
@@ -438,7 +436,6 @@ public class SshIO {
 	 * @return
 	 */
 	private String fingerprint(byte[] host_key) {
-		MD5 md5 = new MD5();
 		byte[] fprint = md5.digest(host_key);
 		StringBuffer buf = new StringBuffer();
 		int n = fprint.length;
@@ -1107,9 +1104,9 @@ public class SshIO {
 		// zase
 		// RANDOM
 
-		random_bits1 = md5.digest(SshMisc.addArrayOfBytes(md5
+		random_bits1 = md5.digest(addArrayOfBytes(md5
 				.digest((password + login).getBytes()), random_bits1));
-		random_bits2 = md5.digest(SshMisc.addArrayOfBytes(md5
+		random_bits2 = md5.digest(addArrayOfBytes(md5
 				.digest((password + login).getBytes()), random_bits2));
 
 		// SecureRandom random = new java.security.SecureRandom(random_bits1);
@@ -1117,12 +1114,12 @@ public class SshIO {
 		// random.nextBytes(random_bits1);
 		// random.nextBytes(random_bits2);
 
-		session_key = SshMisc.addArrayOfBytes(random_bits1, random_bits2);
+		session_key = addArrayOfBytes(random_bits1, random_bits2);
 
 		// Xor the 16 first bytes with the session-id
-		byte[] session_keyXored = SshMisc.XORArrayOfBytes(random_bits1,
+		byte[] session_keyXored = XORArrayOfBytes(random_bits1,
 				hash_md5);
-		session_keyXored = SshMisc.addArrayOfBytes(session_keyXored,
+		session_keyXored = addArrayOfBytes(session_keyXored,
 				random_bits2);
 
 		// We encrypt now!!
@@ -1186,7 +1183,7 @@ public class SshIO {
 		EncryptionBlock[1] = 2;
 		offset = 2;
 		for ( int i = 2; i < ( EncryptionBlock.length - clearData.length - 1 ); i++ )
-			EncryptionBlock[offset++] = SshMisc.getNotZeroRandomByte();
+			EncryptionBlock[offset++] = getNotZeroRandomByte();
 		EncryptionBlock[offset++] = 0;
 		for ( int i = 0; i < clearData.length; i++ )
 			EncryptionBlock[offset++] = clearData[i];
@@ -1228,7 +1225,7 @@ public class SshIO {
 
 		offset = 2;
 		for ( int i = 2; i < ( EncryptionBlock.length - clearData.length - 1 ); i++ )
-			EncryptionBlock[offset++] = SshMisc.getNotZeroRandomByte(); //random
+			EncryptionBlock[offset++] = getNotZeroRandomByte(); //random
 		// !=0
 		EncryptionBlock[offset++] = 0;
 		for ( int i = 0; i < clearData.length; i++ )
@@ -1269,6 +1266,34 @@ public class SshIO {
 			encrypted_session_key[i + 2] = messageByte[i];
 		return encrypted_session_key;
 	}
+
+    static public byte[] addArrayOfBytes( byte[] a, byte[] b ) {
+        if ( a == null )
+            return b;
+        if ( b == null )
+            return a;
+        byte[] temp = new byte[a.length + b.length];
+        for ( int i = 0; i < a.length; i++ )
+            temp[i] = a[i];
+        for ( int i = 0; i < b.length; i++ )
+            temp[i + a.length] = b[i];
+        return temp;
+    }
+
+    static public byte[] XORArrayOfBytes( byte[] a, byte[] b ) {
+        if ( a == null )
+            return null;
+        if ( b == null )
+            return null;
+        if ( a.length != b.length )
+            return null;
+        byte[] result = new byte[a.length];
+        for ( int i = 0; i < result.length; i++ )
+            result[i] = (byte) ( ( ( a[i] & 0xff ) ^ ( b[i] & 0xff ) ) & 0xff );// ^
+        // xor
+        // operator
+        return result;
+    }
 
 	private boolean hasCipher(String cipherName) {
 		return (Cipher.getInstance(cipherName) != null);
@@ -1383,4 +1408,23 @@ public class SshIO {
 	protected int getTerminalWidth() {
 		return sshSession.getTerminalWidth();
 	}
+
+    static public byte getNotZeroRandomByte() {
+        java.util.Date date = new java.util.Date();
+        String randomString = String.valueOf( SshIO.rnd.nextLong() * date.getTime() ); // RADEK
+        // date.GetTime()
+        // *
+        // Math.random()
+        byte[] randomBytes = md5.digest( randomString.getBytes() );
+        int i = 0;
+        while ( i < 20 ) {
+            byte b = 0;
+            if ( i < randomBytes.length )
+                b = randomBytes[i];
+            if ( b != 0 )
+                return b;
+            i++;
+        }
+        return getNotZeroRandomByte();
+    }
 }

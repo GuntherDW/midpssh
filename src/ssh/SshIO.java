@@ -69,7 +69,13 @@ public class SshIO {
 	/**
 	 * State variable for Ssh negotiation reader
 	 */
-	private SshCrypto crypto = null;
+	//#ifndef nossh1
+	private SshCrypto crypto;
+	//#endif
+	
+	//#ifdef ssh2
+	private SshCrypto2 crypto2;
+	//#endif
 	
 	String cipher_type;// = "IDEA";
 
@@ -238,10 +244,10 @@ public class SshIO {
 	}
 
 	public void disconnect() {
-		login = "";
-		password = "";
+//		login = "";
+//		password = "";
 		phase = 0;
-		crypto = null;
+//		crypto = null;
 	}
 
 	protected void sendDisconnect() throws IOException {
@@ -415,7 +421,7 @@ public class SshIO {
 				//#ifdef ssh2
 				if (useprotocol == 2) {
 					result = result + handlePacket2((SshPacket2) currentpacket);
-					currentpacket = new SshPacket2((SshCrypto2) crypto);
+					currentpacket = new SshPacket2(crypto2);
 				}
 				//#endif
 				//#ifndef nossh1
@@ -699,7 +705,7 @@ public class SshIO {
 	}
 
 	private void sendPacket2(SshPacket2 packet) throws IOException {
-		write(packet.getPayLoad((SshCrypto2) crypto, outgoingseq));
+		write(packet.getPayLoad(crypto2, outgoingseq));
 		outgoingseq++;
 		lastPacketSentType = packet.getType();
 	}
@@ -798,7 +804,7 @@ public class SshIO {
 			Ec2s = bar;
 		}
 
-		crypto = new SshCrypto2(IVc2s, IVs2c, Ec2s, Es2c, MACc2s, MACs2c);
+		crypto2 = new SshCrypto2(IVc2s, IVs2c, Ec2s, Es2c, MACc2s, MACs2c);
 	}
 
 	private byte[] add20(byte[] in) {

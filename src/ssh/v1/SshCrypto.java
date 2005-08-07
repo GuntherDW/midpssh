@@ -31,10 +31,6 @@ package ssh.v1;
 public class SshCrypto {
 	private Cipher sndCipher, rcvCipher;
 
-	protected SshCrypto() {
-
-	}
-
 	public SshCrypto(String type, final byte[] key) {
 		sndCipher = Cipher.getInstance(type);
 		rcvCipher = Cipher.getInstance(type);

@@ -20,9 +20,8 @@
  */
 package ssh.v2;
 
-import ssh.v1.SshCrypto;
 
-public class SshCrypto2 extends SshCrypto {
+public class SshCrypto2 {
 	private BufferedDESedeCBC sndCipher, rcvCipher;
 
 	private HMACSHA1 sndHmac, rcvHmac;

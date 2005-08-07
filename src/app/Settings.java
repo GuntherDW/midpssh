@@ -57,14 +57,18 @@ public class Settings extends MyRecordStore {
 
 	public static String terminalType;
 
+	//#ifdef midp2
 	public static int terminalRotated;
-
+	//#endif
+	
 	public static int fontMode;
 
 	private static Settings me = new Settings();
 
+	//#ifdef midp2
 	public static boolean terminalFullscreen;
-
+	//#endif
+	
 	public static String sessionsImportUrl;
 
 	//#ifdef ssh2
@@ -80,7 +84,7 @@ public class Settings extends MyRecordStore {
 
 	public static boolean pollingIO;
 
-	//#ifdef ssh2
+	//#ifdef midp2
 	public static boolean predictiveText;
 
 	//#endif
@@ -106,9 +110,13 @@ public class Settings extends MyRecordStore {
 		terminalCols = 0;
 		terminalRows = 0;
 		terminalType = "";
+		//#ifdef midp2
 		terminalRotated = ROT_NORMAL;
+		//#endif
 		fontMode = FONT_NORMAL;
+		//#ifdef midp2
 		terminalFullscreen = false;
+		//#endif
 		//#ifdef ssh2
 		sshVersionPreferred = 1;
 		//#endif
@@ -136,9 +144,13 @@ public class Settings extends MyRecordStore {
 		terminalCols = in.readInt();
 		terminalRows = in.readInt();
 		terminalType = in.readUTF();
+		//#ifdef midp2
 		terminalRotated = in.readInt();
+		//#endif
 		fontMode = in.readInt();
+		//#ifdef midp2
 		terminalFullscreen = in.readBoolean();
+		//#endif
 		//#ifdef ssh2
 		sshVersionPreferred = in.readInt();
 		//#endif
@@ -150,7 +162,7 @@ public class Settings extends MyRecordStore {
 		ssh2KeySize = in.readInt();
 		//#endif
 		pollingIO = in.readBoolean();
-		//#ifdef ssh2
+		//#ifdef midp2
 		predictiveText = in.readBoolean();
 		//#endif
 		return null;
@@ -167,9 +179,13 @@ public class Settings extends MyRecordStore {
 		out.writeInt(terminalCols);
 		out.writeInt(terminalRows);
 		out.writeUTF(terminalType);
+		//#ifdef midp2
 		out.writeInt(terminalRotated);
+		//#endif
 		out.writeInt(fontMode);
+		//#ifdef midp2
 		out.writeBoolean(terminalFullscreen);
+		//#endif
 		//#ifdef ssh2
 		out.writeInt(sshVersionPreferred);
 		//#endif
@@ -181,7 +197,7 @@ public class Settings extends MyRecordStore {
 		out.writeInt(ssh2KeySize);
 		//#endif
 		out.writeBoolean(pollingIO);
-		//#ifdef ssh2
+		//#ifdef midp2
 		out.writeBoolean(predictiveText);
 		//#endif
 	}

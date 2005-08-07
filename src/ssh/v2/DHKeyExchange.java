@@ -211,14 +211,9 @@ public class DHKeyExchange {
 			byte [] q = pp.getByteString();
 			byte [] g = pp.getByteString();
 			byte [] y = pp.getByteString();
-			
-			DSASigner sig = new DSASigner();
-			sig.setY(new BigInteger(y));
-			sig.setP(new BigInteger(p));
-			sig.setQ(new BigInteger(q));
-			sig.setG(new BigInteger(g));
 
-			result = sig.verifySignature(H, sig_of_h);
+			result = verifyDSASignature(H, sig_of_h, new BigInteger(y), new BigInteger(p),
+					new BigInteger(q), new BigInteger(g));
 		}
 		else {
 			//System.out.println("unknow alg");
@@ -226,6 +221,52 @@ public class DHKeyExchange {
 		}
 		
 		return result;
+	}
+	
+	public static boolean verifyDSASignature(byte[] message, byte[] sig, BigInteger y,
+			BigInteger p, BigInteger q, BigInteger g) {
+		SshPacket2 buf = new SshPacket2(null);
+		buf.putBytes(sig);
+		buf.getByteString(); // algorithm
+		byte[] blob = buf.getByteString();
+
+		int rslen = blob.length / 2;
+		byte[] tmp = new byte[rslen];
+		tmp[0] = 0;
+		System.arraycopy(blob, 0, tmp, 0, rslen);
+		BigInteger r = new BigInteger(1, tmp);
+		System.arraycopy(blob, rslen, tmp, 0, rslen);
+		BigInteger s = new BigInteger(1, tmp);
+
+		//boolean verifySignature(byte[] message, BigInteger r, BigInteger s)
+		SHA1Digest digest = new SHA1Digest();
+		digest.update(message, 0, message.length);
+		byte[] hash = new byte[digest.getDigestSize()];
+		digest.doFinal(hash, 0);
+		message = hash;
+
+		BigInteger m = new BigInteger(1, message);
+		BigInteger zero = BigInteger.valueOf(0);
+
+		if (zero.compareTo(r) >= 0 || q.compareTo(r) <= 0) {
+			return false;
+		}
+
+		if (zero.compareTo(s) >= 0 || q.compareTo(s) <= 0) {
+			return false;
+		}
+
+		BigInteger w = s.modInverse(q);
+
+		BigInteger u1 = m.multiply(w).mod(q);
+		BigInteger u2 = r.multiply(w).mod(q);
+
+		u1 = g.modPow(u1, p);
+		u2 = y.modPow(u2, p);
+
+		BigInteger v = u1.multiply(u2).mod(p).mod(q);
+
+		return v.equals(r);
 	}
 
 	/**

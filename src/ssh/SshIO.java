@@ -93,8 +93,6 @@ public class SshIO {
 
     private final int PHASE_INIT = 0;
 
-    private final int PHASE_SSH_RECEIVE_PACKET = 1;
-
     // handlePacket
     // messages
     // The supported packet types and the corresponding message numbers are
@@ -168,13 +166,13 @@ public class SshIO {
 
     private static final byte SSH2_MSG_CHANNEL_OPEN_CONFIRMATION = 91;
 
-    private static final byte SSH2_MSG_CHANNEL_OPEN_FAILURE = 92;
+//    private static final byte SSH2_MSG_CHANNEL_OPEN_FAILURE = 92;
 
     private static final byte SSH2_MSG_CHANNEL_WINDOW_ADJUST = 93;
 
     private static final byte SSH2_MSG_CHANNEL_DATA = 94;
 
-    private static final byte SSH2_MSG_CHANNEL_EXTENDED_DATA = 95;
+//    private static final byte SSH2_MSG_CHANNEL_EXTENDED_DATA = 95;
 
     private static final byte SSH2_MSG_CHANNEL_EOF = 96;
 
@@ -182,19 +180,16 @@ public class SshIO {
 
     private static final byte SSH2_MSG_CHANNEL_REQUEST = 98;
 
-    private static final byte SSH2_MSG_CHANNEL_SUCCESS = 99;
+//    private static final byte SSH2_MSG_CHANNEL_SUCCESS = 99;
 
-    private static final byte SSH2_MSG_CHANNEL_FAILURE = 100;
+//    private static final byte SSH2_MSG_CHANNEL_FAILURE = 100;
 
-    private String kexalgs, hostkeyalgs, encalgs2c, encalgc2s, macalgs2c,
-            macalgc2s, compalgc2s, compalgs2c, langc2s, langs2;
-
-    private int outgoingseq = 0, incomingseq = 0;
+    private int outgoingseq = 0;
 
     //
     // encryption types
     //
-    private int SSH_CIPHER_NONE = 0; // No encryption
+//    private int SSH_CIPHER_NONE = 0; // No encryption
 
     private int SSH_CIPHER_IDEA = 1; // IDEA in CFB mode (patented)
 
@@ -202,9 +197,9 @@ public class SshIO {
 
     private int SSH_CIPHER_3DES = 3; // Triple-DES in CBC mode
 
-    private int SSH_CIPHER_TSS = 4; // An experimental stream cipher
+//    private int SSH_CIPHER_TSS = 4; // An experimental stream cipher
 
-    private int SSH_CIPHER_RC4 = 5; // RC4 (patented)
+//    private int SSH_CIPHER_RC4 = 5; // RC4 (patented)
 
     private int SSH_CIPHER_BLOWFISH = 6; // Bruce Scheiers blowfish (public
                                             // d)
@@ -212,15 +207,15 @@ public class SshIO {
     //
     // authentication methods
     //
-    private final int SSH_AUTH_RHOSTS = 1; // .rhosts or /etc/hosts.equiv
+//    private final int SSH_AUTH_RHOSTS = 1; // .rhosts or /etc/hosts.equiv
 
-    private final int SSH_AUTH_RSA = 2; // pure RSA authentication
+//    private final int SSH_AUTH_RSA = 2; // pure RSA authentication
 
-    private final int SSH_AUTH_PASSWORD = 3; // password authentication,
+//    private final int SSH_AUTH_PASSWORD = 3; // password authentication,
 
     // implemented !
 
-    private final int SSH_AUTH_RHOSTS_RSA = 4; // .rhosts with RSA host
+//    private final int SSH_AUTH_RHOSTS_RSA = 4; // .rhosts with RSA host
 
     // authentication
 
@@ -239,13 +234,6 @@ public class SshIO {
     /** write data to our back end */
     public void write(byte[] b) throws IOException {
         sshSession.sendData(b);
-    }
-
-    byte[] one = new byte[1];
-
-    private void write(byte b) throws IOException {
-        one[0] = b;
-        write(one);
     }
 
     public void disconnect() {
@@ -426,8 +414,6 @@ public class SshIO {
         // and its
         // length is
 
-        byte b; // of course, byte is a signed entity (-128 -> 127)
-
         // we have to deal with data....
 
         // if (debug > 0)
@@ -444,26 +430,22 @@ public class SshIO {
 
         case SSH_SMSG_PUBLIC_KEY:
             byte[] anti_spoofing_cookie; // 8 bytes
-            byte[] server_key_bits; // 32-bit int
             byte[] server_key_public_exponent; // mp-int
             byte[] server_key_public_modulus; // mp-int
-            byte[] host_key_bits; // 32-bit int
             byte[] host_key_public_exponent; // mp-int
             byte[] host_key_public_modulus; // mp-int
-            byte[] protocol_flags; // 32-bit int
             byte[] supported_ciphers_mask; // 32-bit int
-            byte[] supported_authentications_mask; // 32-bit int
 
             anti_spoofing_cookie = p.getBytes(8);
-            server_key_bits = p.getBytes(4);
+            p.getBytes(4); // server_key_bits
             server_key_public_exponent = p.getMpInt();
             server_key_public_modulus = p.getMpInt();
-            host_key_bits = p.getBytes(4);
+            p.getBytes(4); // host_key_bits
             host_key_public_exponent = p.getMpInt();
             host_key_public_modulus = p.getMpInt();
-            protocol_flags = p.getBytes(4);
+            p.getBytes(4); // protocol_flags
             supported_ciphers_mask = p.getBytes(4);
-            supported_authentications_mask = p.getBytes(4);
+            p.getBytes(4); // supported_authentications_mask
 
             // We have completely received the PUBLIC_KEY
             // We prepare the answer ...
@@ -570,7 +552,7 @@ public class SshIO {
         case SSH_SMSG_EXITSTATUS: // sent by the server to indicate that
             // the client program has terminated.
             // 32-bit int exit status of the command
-            int value = p.getInt32();
+            p.getInt32();
             Send_SSH_CMSG_EXIT_CONFIRMATION();
             // System.out.println("SshIO : Exit status " + value);
             disconnect();
@@ -643,7 +625,7 @@ public class SshIO {
     private String handlePacket2(SshPacket2 p) throws IOException {
         switch (p.getType()) {
         case SSH2_MSG_DISCONNECT:
-            int discreason = p.getInt32();
+            p.getInt32(); // disconnect reason
             String discreason1 = p.getString();
             /* String discreason2 = p.getString(); */
             // System.out.println("SSH2: SSH2_MSG_DISCONNECT(" + discreason
@@ -715,10 +697,10 @@ public class SshIO {
         }
 
         case SSH2_MSG_CHANNEL_OPEN_CONFIRMATION: {
-            int localId = p.getInt32();
+            p.getInt32(); // localId
             int remoteId = p.getInt32();
-            int remoteWindowSize = p.getInt32();
-            int remotePacketSize = p.getInt32();
+            p.getInt32(); // remoteWindowSize
+            p.getInt32(); // remotePacketSize
 
             // Open PTY
             SshPacket2 pn = new SshPacket2(SSH2_MSG_CHANNEL_REQUEST);
@@ -753,14 +735,14 @@ public class SshIO {
         }
 
         case SSH2_MSG_CHANNEL_DATA: {
-            int localId = p.getInt32();
+            p.getInt32(); // localId
             String data = p.getString();
             return data;
         }
 
         case SSH2_MSG_USERAUTH_FAILURE:
             String methods = p.getString();
-            int partial_success = p.getByte();
+            p.getByte(); // partialSuccess
 
             return "Login and password not accepted.\r\nAvailable methods are: "
                     + methods + "\r\n";
@@ -778,32 +760,21 @@ public class SshIO {
         }
 
         case SSH2_MSG_KEXINIT: {
-            byte[] fupp;
-            byte kexcookie[] = p.getBytes(16); // unused.
-
-            String kexalgs = p.getString();
-            // System.out.println("- " + kexalgs);
-            String hostkeyalgs = p.getString();
-            // System.out.println("- " + hostkeyalgs);
-            String encalgc2s = p.getString();
-            // System.out.println("- " + encalgc2s);
-            String encalgs2c = p.getString();
-            // System.out.println("- " + encalgs2c);
-            String macalgc2s = p.getString();
-            // System.out.println("- " + macalgc2s);
-            String macalgs2c = p.getString();
-            // System.out.println("- " + macalgs2c);
-            String compalgc2s = p.getString();
-            // System.out.println("- " + compalgc2s);
-            String compalgs2c = p.getString();
-            // System.out.println("- " + compalgs2c);
-            String langc2s = p.getString();
-            // System.out.println("- " + langc2s);
-            String langs2c = p.getString();
-            // System.out.println("- " + langs2c);
-            fupp = p.getBytes(1);
-            // System.out.println("- first_kex_follows: " + fupp[0]);
-            /* int32 reserved (0) */
+        	/* Described http://www.ietf.org/internet-drafts/draft-ietf-secsh-transport-24.txt
+        	 * Section 7.1
+        	 */
+            p.getBytes(16); // cookie
+            p.getString(); // kex_algorithms
+            p.getString(); // server_host_key_algorithms
+            p.getString(); // encryption_algorithms_client_to_server
+            p.getString(); // encryption_algorithms_server_to_client
+            p.getString(); // mac_algorithms_client_to_server
+            p.getString(); // mac_algorithms_server_to_client
+            p.getString(); // compression_algorithms_client_to_server
+            p.getString(); // compression_algorithms_server_to_client
+            p.getString(); // languages_client_to_server
+            p.getString(); // languages_server_to_client
+            p.getBytes(1); // first_kex_packet_follows
 
             SshPacket2 pn = new SshPacket2(SSH2_MSG_KEXINIT);
             byte[] kexsend = new byte[16];
@@ -1013,9 +984,6 @@ public class SshIO {
             byte[] server_key_public_modulus, byte[] host_key_public_modulus,
             byte[] supported_ciphers_mask, byte[] server_key_public_exponent,
             byte[] host_key_public_exponent) throws IOException {
-
-        String str;
-        int boffset;
 
         byte cipher_types; // encryption types
         byte[] session_key; // mp-int

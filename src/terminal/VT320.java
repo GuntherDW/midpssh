@@ -1274,22 +1274,21 @@ public abstract class VT320 {
 //#endif
 
 		// FIXME: not used?
-		String fmap[];
-		int xind;
-		xind = 0;
+//		String fmap[];
+		int xind = 0;
 
-        fmap = FunctionKey;
+//        fmap = FunctionKey;
 //#ifndef simplevt320
 		if ( shift ) {
-			fmap = FunctionKeyShift;
+//			fmap = FunctionKeyShift;
 			xind = 1;
 		}
 		if ( control ) {
-			fmap = FunctionKeyCtrl;
+//			fmap = FunctionKeyCtrl;
 			xind = 2;
 		}
 		if ( alt ) {
-			fmap = FunctionKeyAlt;
+//			fmap = FunctionKeyAlt;
 			xind = 3;
 		}
 //#else

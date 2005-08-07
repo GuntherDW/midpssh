@@ -42,20 +42,17 @@ import app.Settings;
 public class SettingsMenu extends ExtendedList implements Activatable,
 		CommandListener {
 
-	protected static final int SETTINGS_OPTIONS = 2;
-
 	private Activatable back;
 
 	protected SettingsMenu(String title) {
 		super(title, List.IMPLICIT);
 
-		append("Terminal", null);
-		append("Display", null);
+		append("Network", null);
+		append("Interface", null);
 		append("Fonts", null);
 		//#ifdef ssh2
 		append("SSH", null);
 		//#endif
-		append("Network", null);
 		append("Restore Defaults", null);
 
 		// setSelectCommand( selectCommand );
@@ -85,9 +82,9 @@ public class SettingsMenu extends ExtendedList implements Activatable,
 	protected void doSelect(int i) {
 		int j = 0;
 		if (j++ == i) {
-			showSettingsForm(i, SettingsForm.MODE_TERMINAL);
+			showSettingsForm(i, SettingsForm.MODE_NETWORK);
 		} else if (j++ == i) {
-			showSettingsForm(i, SettingsForm.MODE_DISPLAY);
+			showSettingsForm(i, SettingsForm.MODE_INTERFACE);
 		} else if (j++ == i) {
 			showSettingsForm(i, SettingsForm.MODE_FONTS);
 		}
@@ -97,8 +94,6 @@ public class SettingsMenu extends ExtendedList implements Activatable,
 		}
 		//#endif
 		else if (j++ == i) {
-			showSettingsForm(i, SettingsForm.MODE_NETWORK);
-		} else if (j++ == i) {
 			Settings.defaults();
 			Settings.saveSettings();
 			Main.alertBackToMain(new Alert("Settings",

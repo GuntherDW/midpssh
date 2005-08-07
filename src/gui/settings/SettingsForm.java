@@ -42,17 +42,15 @@ import app.Settings;
  */
 public class SettingsForm extends EditableForm {
     
-    public static final int MODE_TERMINAL = 1;
+    public static final int MODE_NETWORK = 1;
     
-    public static final int MODE_DISPLAY = 2;
+    public static final int MODE_INTERFACE = 2;
     
     public static final int MODE_FONTS = 3;
     
 //#ifdef ssh2   
     public static final int MODE_SSH = 4;
 //#endif
-    
-    public static final int MODE_NETWORK = 5;
     
     private int mode;
     
@@ -69,7 +67,10 @@ public class SettingsForm extends EditableForm {
     protected ChoiceGroup cgFullscreen = new ChoiceGroup( "Full Screen", ChoiceGroup.EXCLUSIVE );
     
     protected ChoiceGroup cgRotated = new ChoiceGroup( "Orientation", ChoiceGroup.EXCLUSIVE );
+    
+    protected ChoiceGroup cgPredictiveText = new ChoiceGroup("Predictive Text", ChoiceGroup.EXCLUSIVE);
 //#endif
+    
     protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size", ChoiceGroup.EXCLUSIVE );
     
     protected ChoiceGroup cgPolling = new ChoiceGroup("Polling I/O", ChoiceGroup.EXCLUSIVE);
@@ -84,23 +85,29 @@ public class SettingsForm extends EditableForm {
     private static final int[] sshKeySizes = new int[] { 32, 64, 128, 256, 512, 1024 };
 //#endif
     
+    private void booleanChoiceGroup(ChoiceGroup cg) {
+    	cg.append( "On", null );
+        cg.append( "Off", null );
+    }
+    
 	public SettingsForm( String title, int mode ) {
 		super( title );
         
         this.mode = mode;
         
         switch ( mode ) {
-        case MODE_TERMINAL:
+        case MODE_NETWORK:
         {
             append( new StringItem( "Terminal Type", "The terminal type reported to the remote server. The default type is VT320." ) );
             append( tfType );
+            booleanChoiceGroup(cgPolling);
+            append(cgPolling);
         }
         break;
-        case MODE_DISPLAY:
+        case MODE_INTERFACE:
         {
 //#ifdef midp2
-            cgFullscreen.append( "Off", null );
-            cgFullscreen.append( "On", null );
+            booleanChoiceGroup(cgFullscreen);
             append( cgFullscreen );
 //#endif
             
@@ -116,6 +123,11 @@ public class SettingsForm extends EditableForm {
             append( new StringItem( "Terminal Size", "The default is to use the maximum available screen area." ) );
             append( tfCols );
             append( tfRows );
+            
+            //#ifdef midp2
+            booleanChoiceGroup(cgPredictiveText);
+            append(cgPredictiveText);
+            //#endif
         }
         break;
         case MODE_FONTS:
@@ -137,8 +149,7 @@ public class SettingsForm extends EditableForm {
             cgSsh.append( "SSH2", null);
             append(cgSsh);
             
-            cgSshKeys.append("On", null);
-            cgSshKeys.append("Off", null);
+            booleanChoiceGroup(cgSshKeys);
             append(cgSshKeys);
             
             for (int i = 0; i < sshKeySizes.length; i++) {
@@ -148,13 +159,6 @@ public class SettingsForm extends EditableForm {
         }
         break;
 //#endif
-        case MODE_NETWORK:
-        {
-        	cgPolling.append("On", null);
-            cgPolling.append("Off", null);
-            append(cgPolling);
-        }
-        break;
         }
         
         addCommand(MessageForm.okCommand);
@@ -177,16 +181,16 @@ public class SettingsForm extends EditableForm {
 	 */
 	public void activate() {
         switch ( mode ) {
-        case MODE_TERMINAL:
+        case MODE_NETWORK:
         {
             tfType.setString( Settings.terminalType );
-            
+        	cgPolling.setSelectedIndex(Settings.pollingIO ? 0 : 1, true);
         }
         break;
-        case MODE_DISPLAY:
+        case MODE_INTERFACE:
         {
 //#ifdef midp2
-            cgFullscreen.setSelectedIndex( Settings.terminalFullscreen ? 1 : 0, true );
+            cgFullscreen.setSelectedIndex( Settings.terminalFullscreen ? 0 : 1, true );
 //#endif
             
 //#ifdef midp2
@@ -217,6 +221,10 @@ public class SettingsForm extends EditableForm {
             else {
                 tfRows.setString( "" );
             }
+            
+            //#ifdef midp2
+            cgPredictiveText.setSelectedIndex(Settings.predictiveText ? 0 : 1, true);
+            //#endif
         }
         break;
         case MODE_FONTS:
@@ -261,11 +269,6 @@ public class SettingsForm extends EditableForm {
         }
         break;
 //#endif
-        case MODE_NETWORK:
-        {
-        	cgPolling.setSelectedIndex(Settings.pollingIO ? 0 : 1, true);
-        }
-        break;
         }
 		
 		super.activate();
@@ -281,15 +284,16 @@ public class SettingsForm extends EditableForm {
 	
 	protected boolean doSave() {
         switch ( mode ) {
-        case MODE_TERMINAL:
+        case MODE_NETWORK:
         {
             Settings.terminalType = tfType.getString();
+        	Settings.pollingIO = cgPolling.getSelectedIndex() == 0;
         }
         break;
-        case MODE_DISPLAY:
+        case MODE_INTERFACE:
         {
 //#ifdef midp2
-            Settings.terminalFullscreen = cgFullscreen.getSelectedIndex() == 1;
+            Settings.terminalFullscreen = cgFullscreen.getSelectedIndex() == 0;
 //#endif
                 
 //#ifdef midp2
@@ -318,6 +322,10 @@ public class SettingsForm extends EditableForm {
             catch ( NumberFormatException e ) {
                 Settings.terminalRows = 0;
             }
+            
+            //#ifdef midp2
+            Settings.predictiveText = cgPredictiveText.getSelectedIndex() == 0;
+            //#endif
         }
         break;
         case MODE_FONTS:
@@ -398,11 +406,6 @@ public class SettingsForm extends EditableForm {
         }
         break;
 //#endif
-        case MODE_NETWORK:
-        {
-        	Settings.pollingIO = cgPolling.getSelectedIndex() == 0;
-        }
-        break;
         }
 		return true;
 	}

@@ -83,21 +83,22 @@ public class SettingsMenu extends ExtendedList implements Activatable,
 	}
 
 	protected void doSelect(int i) {
-		if (i-- == 0) {
+		int j = 0;
+		if (j++ == i) {
 			showSettingsForm(i, SettingsForm.MODE_TERMINAL);
-		} else if (i-- == 0) {
+		} else if (j++ == i) {
 			showSettingsForm(i, SettingsForm.MODE_DISPLAY);
-		} else if (i-- == 0) {
+		} else if (j++ == i) {
 			showSettingsForm(i, SettingsForm.MODE_FONTS);
 		}
 		//#ifdef ssh2
-		else if (i-- == 0) {
+		else if (j++ == i) {
 			showSettingsForm(i, SettingsForm.MODE_SSH);
 		}
 		//#endif
-		else if (i-- == 0) {
+		else if (j++ == i) {
 			showSettingsForm(i, SettingsForm.MODE_NETWORK);
-		} else if (i-- == 0) {
+		} else if (j++ == i) {
 			Settings.defaults();
 			Settings.saveSettings();
 			Main.alertBackToMain(new Alert("Settings",

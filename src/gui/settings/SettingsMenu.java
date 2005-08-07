@@ -39,97 +39,97 @@ import app.Settings;
 /**
  * @author Karl von Randow
  */
-public class SettingsMenu extends ExtendedList implements Activatable, CommandListener {
+public class SettingsMenu extends ExtendedList implements Activatable,
+		CommandListener {
 
 	protected static final int SETTINGS_OPTIONS = 2;
-	
+
 	private Activatable back;
-	
-	protected SettingsMenu( String title ) {
-		super( title, List.IMPLICIT );
-		
-		append( "Terminal", null );
-        append( "Display", null );
-        append( "Fonts", null );
-//#ifdef ssh2
-        append( "SSH", null );
-//#endif
-        append( "Restore Defaults", null );
-		
-		//setSelectCommand( selectCommand );
-		addCommand( MessageForm.backCommand );
-		
-		setCommandListener( this );
+
+	protected SettingsMenu(String title) {
+		super(title, List.IMPLICIT);
+
+		append("Terminal", null);
+		append("Display", null);
+		append("Fonts", null);
+		//#ifdef ssh2
+		append("SSH", null);
+		//#endif
+		append("Network", null);
+		append("Restore Defaults", null);
+
+		// setSelectCommand( selectCommand );
+		addCommand(MessageForm.backCommand);
+
+		setCommandListener(this);
 	}
-	
+
 	public SettingsMenu() {
-		this( "Settings" );
+		this("Settings");
 	}
-	/* (non-Javadoc)
-	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
+	 *      javax.microedition.lcdui.Displayable)
 	 */
-	public void commandAction( Command command, Displayable displayable ) {
-		if ( command == List.SELECT_COMMAND ) {
-			doSelect( getSelectedIndex() );
-		}
-		else if ( command == MessageForm.backCommand ) {
+	public void commandAction(Command command, Displayable displayable) {
+		if (command == List.SELECT_COMMAND) {
+			doSelect(getSelectedIndex());
+		} else if (command == MessageForm.backCommand) {
 			doBack();
 		}
 	}
-	
-	protected void doSelect( int i ) {
-		switch ( i ) {
-			case 0:
-            {
-                showSettingsForm(i, SettingsForm.MODE_TERMINAL );
-            }
-			break;
-            case 1:
-            {
-                showSettingsForm(i, SettingsForm.MODE_DISPLAY );
-            }
-            break;
-            case 2:
-            {
-                showSettingsForm(i, SettingsForm.MODE_FONTS);
-            }
-            break;
-            case 3:
-//#ifdef ssh2
-            {
-                showSettingsForm(i, SettingsForm.MODE_SSH);
-            }
-            break;
-            case 4:
-//#endif
-            {
-                Settings.defaults();
-                Settings.saveSettings();
-                Main.alertBackToMain( new Alert("Settings","Default settings have been restored.",null,AlertType.INFO) );
-            }
-            break;
+
+	protected void doSelect(int i) {
+		if (i-- == 0) {
+			showSettingsForm(i, SettingsForm.MODE_TERMINAL);
+		} else if (i-- == 0) {
+			showSettingsForm(i, SettingsForm.MODE_DISPLAY);
+		} else if (i-- == 0) {
+			showSettingsForm(i, SettingsForm.MODE_FONTS);
+		}
+		//#ifdef ssh2
+		else if (i-- == 0) {
+			showSettingsForm(i, SettingsForm.MODE_SSH);
+		}
+		//#endif
+		else if (i-- == 0) {
+			showSettingsForm(i, SettingsForm.MODE_NETWORK);
+		} else if (i-- == 0) {
+			Settings.defaults();
+			Settings.saveSettings();
+			Main.alertBackToMain(new Alert("Settings",
+					"Default settings have been restored.", null,
+					AlertType.INFO));
 		}
 	}
-    
-    private void showSettingsForm(int i, int mode) {
-        SettingsForm f = new SettingsForm( getString( i ), mode );
-        f.activate( this );
-    }
-	
+
+	private void showSettingsForm(int i, int mode) {
+		SettingsForm f = new SettingsForm(getString(i), mode);
+		f.activate(this);
+	}
+
 	private void doBack() {
 		back.activate();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gui.Activatable#activate()
 	 */
 	public void activate() {
-		Main.setDisplay( this );
+		Main.setDisplay(this);
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gui.Activatable#activate(gui.Activatable)
 	 */
-	public void activate( Activatable back ) {
+	public void activate(Activatable back) {
 		this.back = back;
 		activate();
 	}

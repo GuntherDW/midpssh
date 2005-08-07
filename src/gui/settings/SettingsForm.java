@@ -52,6 +52,8 @@ public class SettingsForm extends EditableForm {
     public static final int MODE_SSH = 4;
 //#endif
     
+    public static final int MODE_NETWORK = 5;
+    
     private int mode;
     
 	protected TextField tfType = new TextField( "Type", "", 20, TextField.ANY );
@@ -69,6 +71,8 @@ public class SettingsForm extends EditableForm {
     protected ChoiceGroup cgRotated = new ChoiceGroup( "Orientation", ChoiceGroup.EXCLUSIVE );
 //#endif
     protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size", ChoiceGroup.EXCLUSIVE );
+    
+    protected ChoiceGroup cgPolling = new ChoiceGroup("Polling I/O", ChoiceGroup.EXCLUSIVE);
 	
 //#ifdef ssh2   
     protected ChoiceGroup cgSsh = new ChoiceGroup("Preferred Protocol", ChoiceGroup.EXCLUSIVE);
@@ -144,6 +148,13 @@ public class SettingsForm extends EditableForm {
         }
         break;
 //#endif
+        case MODE_NETWORK:
+        {
+        	cgPolling.append("On", null);
+            cgPolling.append("Off", null);
+            append(cgPolling);
+        }
+        break;
         }
         
         addCommand(MessageForm.okCommand);
@@ -250,6 +261,11 @@ public class SettingsForm extends EditableForm {
         }
         break;
 //#endif
+        case MODE_NETWORK:
+        {
+        	cgPolling.setSelectedIndex(Settings.pollingIO ? 0 : 1, true);
+        }
+        break;
         }
 		
 		super.activate();
@@ -382,6 +398,11 @@ public class SettingsForm extends EditableForm {
         }
         break;
 //#endif
+        case MODE_NETWORK:
+        {
+        	Settings.pollingIO = cgPolling.getSelectedIndex() == 0;
+        }
+        break;
         }
 		return true;
 	}

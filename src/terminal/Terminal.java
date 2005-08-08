@@ -195,7 +195,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 
     private Session session;
 
-    private static InputDialog inputDialog;
+    private InputDialog inputDialog;
     
 //#ifndef nospecialmenu 
     private SpecialMenu menuSpecialKeys;

@@ -30,6 +30,8 @@ import java.util.Vector;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
 
+import terminal.VT320;
+
 import app.Main;
 import app.session.MacroSetManager;
 import app.session.Session;
@@ -147,7 +149,7 @@ public class MacrosMenu extends EditableMenu {
     			if ( session != null ) {
     				Macro macro = macroSet.getMacro( i );
     				if ( macro != null ) {
-    					session.typeString( macro.value );
+    					doMacro(session, macro);
     					session.activate();
     				}
     			}
@@ -157,6 +159,70 @@ public class MacrosMenu extends EditableMenu {
             }
 		}
 	}
+	
+	private static final char MACRO_CTRL = '^';
+	
+	private static final char MACRO_BACKSLASH = '\\';
+	
+	private int indexOfCommand(String value, int start) {
+		int n = value.length();
+		for (int i = start; i < n; i++) {
+			char c = value.charAt(i);
+			if (c == MACRO_CTRL || c == MACRO_BACKSLASH) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	private void doMacro(Session session, Macro macro) {
+		String value = macro.value;
+		
+		int start = 0;
+		int i = indexOfCommand(value, 0);
+		while (i != -1) {
+			if (i + 1 < value.length()) {
+				if (i > start) {
+					/* Output text before the control char */
+					session.typeString(value.substring(start, i));
+				}
+				char com = value.charAt(i);
+				char arg = value.charAt(i+1);
+				if (arg == com) {
+					/* An escaped command char */
+					session.typeString(value.substring(i, i + 2));
+				}
+				else if (com == MACRO_CTRL) {
+					/* Type control char */
+					session.typeChar(arg, VT320.KEY_CONTROL);
+				}
+				else if (com == MACRO_BACKSLASH) {
+					if (arg == 'n') {
+						session.typeChar('\n', 0);
+					}
+					else if (arg == 'r') {
+						session.typeChar('\r', 0);
+					}
+					else if (arg == 't') {
+						session.typeChar('\t', 0);
+					}
+					else {
+						session.typeString(value.substring(i, i + 2));
+					}
+				}
+				start = i + 2;
+			}
+			else {
+				start = i + 1;
+			}
+			i = indexOfCommand(value, start);
+		}
+		
+		if (start < value.length()) {
+			session.typeString(value.substring(start));
+		}
+	}
+	
 	protected void doEdit( int i ) {
 		if ( i != -1 ) {
             MacroForm editMacroForm = new MacroForm( true, isMacroSets );

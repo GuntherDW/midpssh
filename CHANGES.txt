@@ -1,3 +1,7 @@
+1.4.8
+Fix for BitVise SSH (and maybe others) which sends KEX_INIT immediately after its id string
+Support for typing control chars and newlines in macros
+
 1.4.7
 Setting for polling I/O
 Keep-alive sending re-added for Blackberry (and other no-io-sync).

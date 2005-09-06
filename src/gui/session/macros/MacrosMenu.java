@@ -206,6 +206,9 @@ public class MacrosMenu extends EditableMenu {
 					else if (arg == 't') {
 						session.typeChar('\t', 0);
 					}
+					else if (arg == 'e') {
+						session.typeChar((char)27, 0);
+					}
 					else {
 						session.typeString(value.substring(i, i + 2));
 					}

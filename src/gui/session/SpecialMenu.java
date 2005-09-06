@@ -39,19 +39,9 @@ import app.session.Session;
  */
 public class SpecialMenu extends ExtendedList implements CommandListener, Activatable {
 
-    private static final String[] MAIN_OPTIONS = new String[] {      
-        "Backspace", "Home", "End", "Page Up", "Page Down", "Delete", "Insert",
-        "Function Keys", 
-        "|", "\\", "~", ":", ";", "'", "\"",
-        ",", "<", ".", ">", "/", "?",
-        "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")",
-        "-", "_", "+", "=",
-        "[", "{", "]", "}"
-    };
+    private static final String MAIN_OPTIONS = "Bksp|Home|End|PgU|PgD|Del|Ins|Func|||\\|~|:|;|'|\"|,|<|.|>|/|?|`|!|@|#|$|%|^|&|*|(|)|-|_|+|=|[|{|]|}|";
     
-    private static final String[] FUNCTION_KEY_OPTIONS = new String[] {
-        "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"
-    };
+    private static final String FUNCTION_KEY_OPTIONS = "F1|F2|F3|F4|F5|F6|F7|F8|F9|F10|F11|F12|";
     
     private SpecialMenu menuFunctionKeys;
     
@@ -65,11 +55,15 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
         this( "Special Keys", MAIN_OPTIONS );
     }
     
-    public SpecialMenu( String title, String [] options ) {
+    public SpecialMenu( String title, String options ) {
         super(title, List.IMPLICIT);
         
-        for ( int i = 0; i < options.length; i++ ) {
-            append( options[i], null );
+        int start = 0;
+        int i = options.indexOf('|');
+        while (i != -1) {
+        	append(options.substring(start, i), null);
+        	start = i + 1;
+        	i = options.indexOf('|', start + 1); // +1 to that we see tokens that are single |
         }
 
 		//setSelectCommand( selectCommand );
@@ -145,12 +139,18 @@ public class SpecialMenu extends ExtendedList implements CommandListener, Activa
 		}
 	}
     
-    private int find( String [] options, String option ) {
-        for (int i = 0; i < options.length; i++) {
-            if ( options[i].equals( option ) ) {
-                return i;
-            }
-        }
+    private int find( String options, String option ) {
+    	int start = 0;
+    	int i = options.indexOf('|');
+    	int count = 0;
+    	while (i != -1) {
+    		if (options.substring(start, i).equals(option)) {
+    			return count;
+    		}
+    		count++;
+    		start = i + 1;
+    		i = options.indexOf('|', start + 1);
+    	}
         return -1;
     }
     public void activate() {

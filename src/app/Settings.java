@@ -48,7 +48,11 @@ public class Settings extends MyRecordStore {
 	public static final int FONT_MEDIUM = 2;
 
 	public static final int FONT_LARGE = 3;
-
+	
+	//#ifdef midp2
+	public static final int FONT_TEST = 4;
+	//#endif
+	
 	private static final String RMS_NAME = "settings";
 
 	public static int bgcolor, fgcolor;

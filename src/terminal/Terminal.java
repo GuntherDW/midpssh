@@ -883,6 +883,8 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 		// paint then we save
 		// time not redrawing our backingStore each time
 		if ( invalid ) {
+			//long st = System.currentTimeMillis();
+			
 			Graphics g = backingStore.getGraphics();
 			g.setColor( bgcolor );
 			g.fillRect( 0, 0, width, height );
@@ -947,7 +949,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 					g.setColor( fg );
 
 					// draw the characters
-					drawChars( g, buffer.charArray[buffer.windowBase + l], c, addr, ( c - left ) * fontWidth,
+					drawChars( g, fg, bg, buffer.charArray[buffer.windowBase + l], c, addr, ( c - left ) * fontWidth,
 							( l - top ) * fontHeight );
 
 					c += addr - 1;
@@ -965,8 +967,15 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 			}
 
 			invalid = false;
+			//System.out.println("REDRAW " + (System.currentTimeMillis() - st));
 		}
 	}
+	
+//#ifndef small
+	private LCDFont lcdfont;
+	
+	private int prevfg = -1, prevbg = -1;
+//#endif
 	
 	private void initFont() {
 //#ifdef small
@@ -985,6 +994,13 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         case Settings.FONT_LARGE:
             initSystemFont( Font.SIZE_LARGE );
             break;
+            //#ifdef midp2
+        case Settings.FONT_TEST:
+        	lcdfont = new LCDFont("/font4x7lcd.png", false);
+        	fontWidth = lcdfont.fontWidth;
+        	fontHeight = lcdfont.fontHeight;
+        	break;
+        	//#endif
         }
 //#endif
 	}
@@ -1024,7 +1040,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 		fontWidth = font.charWidth( 'W' );
 	}
 	
-	protected void drawChars( Graphics g, char[] chars, int offset, int length, int x, int y ) {
+	protected void drawChars( Graphics g, int fg, int bg, char[] chars, int offset, int length, int x, int y ) {
 //#ifndef small
 	    if ( fontMode == Settings.FONT_NORMAL ) {
 //#endif
@@ -1034,6 +1050,21 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 			}
 //#ifndef small
 	    }
+	    //#ifdef midp2
+	    else if (fontMode == Settings.FONT_TEST) {
+	    	/* Change colour */
+	    	if (fg != prevfg || bg != prevbg) {
+	    		lcdfont.setColor(fg, bg);
+	    		prevfg = fg;
+	    		prevbg = bg;
+	    	}
+	    	/* Draw chars */
+	    	for ( int i = offset; i < offset + length; i++ ) {
+				lcdfont.drawChar( g, chars[i], x, y );
+				x += fontWidth;
+			}
+	    }
+	    //#endif
 	    else {
 	        g.setFont( font );
 			for ( int i = offset; i < offset + length; i++ ) {

@@ -216,6 +216,7 @@
 				<include name="src/**"/>
 				<include name="res/**"/>
 				<include name="lib"/>
+				<include name="tasks/"/>
 				<include name="*.txt"/>
 				<include name="*.xml"/>
 				<include name="*.properties"/>

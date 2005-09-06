@@ -202,21 +202,21 @@ public class MacroForm extends EditableForm {
 	}
 
 	protected boolean validateForm() {
-		String errorMessage = null;
+		boolean invalid = false;
 		
         if ( isMacroSet ) {
             if ( tfName.getString() == null || tfName.getString().length() == 0 ) {
-                errorMessage = "Please fill in the Macro Set Name";
+                invalid = true;
             }
         }
         else {
     		if ( tfValue.getString() == null || tfValue.getString().length() == 0 ) {
-    			errorMessage = "Please fill in the value";
+    			invalid = true;
     		}
         }
 
-		if ( errorMessage != null ) {
-			showErrorMessage( errorMessage );
+		if (invalid = true) {
+			showErrorMessage(SessionForm.WARNING_REQUIRED);
 			return false;
 		}
 		else {

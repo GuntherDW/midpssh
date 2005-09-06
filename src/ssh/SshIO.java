@@ -1,7 +1,7 @@
 /*
  * This file is part of "The Java Telnet Application".
  *
- * (c) Matthias L. Jugel, Marcus Meißner 1996-2002. All Rights Reserved.
+ * (c) Matthias L. Jugel, Marcus Meiï¿½ner 1996-2002. All Rights Reserved.
  * The file was changed by Radek Polak to work as midlet in MIDP 1.0
  * 
  * This file has been modified by Karl von Randow for MidpSSH.
@@ -96,9 +96,7 @@ public class SshIO {
 	private byte lastPacketSentType;
 
 	// phase : handleBytes
-	private int phase = 0;
-
-	private final int PHASE_INIT = 0;
+	private boolean initting = true;
 
 	// handlePacket
 	// messages
@@ -246,7 +244,7 @@ public class SshIO {
 	public void disconnect() {
 //		login = "";
 //		password = "";
-		phase = 0;
+		initting = true;
 //		crypto = null;
 	}
 
@@ -319,7 +317,7 @@ public class SshIO {
 		// Telnet.console.append("SshIO.getPacket(" + buff + "," + length +
 		// ")");
 
-		if (phase == PHASE_INIT) {
+		PHASE_INIT: if (initting) {
 			byte b; // of course, byte is a signed entity (-128 -> 127)
 
 			while (boffset < boffsetend) {
@@ -329,88 +327,91 @@ public class SshIO {
 				// followed by newline character(ascii 10 = '\n' or '\r')
 				idstr += (char) b;
 				if (b == '\n') {
-					phase++;
-					// if (!idstr.substring(0, 4).equals("SSH-")) {
-					// System.out.println("Received invalid ID string: " +
-					// idstr
-					// + ", (substr " + idstr.substring(0, 4) + ")");
-					// throw (new IOException());
-					// }
-					remotemajor = Integer.parseInt(idstr.substring(4, 5));
-					String minorverstr = idstr.substring(6, 8);
-					if (!Character.isDigit(minorverstr.charAt(1)))
-						minorverstr = minorverstr.substring(0, 1);
-					remoteminor = Integer.parseInt(minorverstr);
-
-					// System.out.println("remotemajor " + remotemajor);
-					// System.out.println("remoteminor " + remoteminor);
-
-					//#ifdef ssh2
-					if (remotemajor == 2) {
-						mymajor = 2;
-						myminor = 0;
-						useprotocol = 2;
-					} else {
-						//#ifndef nossh1
-						/*
-						 * Check if we have discretion over whether to use ssh1
-						 * or ssh2
-						 */
-						if (remoteminor == 99
-								&& Settings.sshVersionPreferred == 2) {
+					if (idstr.startsWith("SSH-")) {
+						initting = false;
+						
+						remotemajor = Integer.parseInt(idstr.substring(4, 5));
+						String minorverstr = idstr.substring(6, 8);
+						if (!Character.isDigit(minorverstr.charAt(1)))
+							minorverstr = minorverstr.substring(0, 1);
+						remoteminor = Integer.parseInt(minorverstr);
+	
+						//#ifdef ssh2
+						if (remotemajor == 2) {
 							mymajor = 2;
 							myminor = 0;
 							useprotocol = 2;
+						} else {
+							//#ifndef nossh1
+							/*
+							 * Check if we have discretion over whether to use ssh1
+							 * or ssh2
+							 */
+							if (remoteminor == 99
+									&& Settings.sshVersionPreferred == 2) {
+								mymajor = 2;
+								myminor = 0;
+								useprotocol = 2;
+							} else {
+								mymajor = 1;
+								myminor = 5;
+								useprotocol = 1;
+							}
+							//#else
+							if (remoteminor == 99) {
+								mymajor = 2;
+								myminor = 0;
+								useprotocol = 2;
+							}
+							else {
+								return "Server requires SSH1.\r\n".getBytes();
+							}
+							//#endif
+						}
+						//#else
+						if (remotemajor == 2) {
+							// TODO disconnect
+							return "Server requires SSH2.\r\n".getBytes();
 						} else {
 							mymajor = 1;
 							myminor = 5;
 							useprotocol = 1;
 						}
-						//#else
-						if (remoteminor == 99) {
-							mymajor = 2;
-							myminor = 0;
-							useprotocol = 2;
+						//#endif
+						// this is how we tell the remote server what protocol
+						// we
+						// use.
+						idstr_sent = "SSH-" + mymajor + "." + myminor + "-"
+								+ idstr_sent;
+						write(idstr_sent.getBytes());
+	
+						//#ifdef ssh2
+						if (useprotocol == 2) {
+							currentpacket = new SshPacket2(null);
 						}
+						//#ifndef nossh1
 						else {
-							return "Server requires SSH1.\r\n".getBytes();
+							currentpacket = new SshPacket1(null);
 						}
 						//#endif
-					}
-					//#else
-					if (remotemajor == 2) {
-						// TODO disconnect
-						return "Server requires SSH2.\r\n".getBytes();
-					} else {
-						mymajor = 1;
-						myminor = 5;
-						useprotocol = 1;
-					}
-					//#endif
-					// this is how we tell the remote server what protocol
-					// we
-					// use.
-					idstr_sent = "SSH-" + mymajor + "." + myminor + "-"
-							+ idstr_sent;
-					write(idstr_sent.getBytes());
-
-					//#ifdef ssh2
-					if (useprotocol == 2) {
-						currentpacket = new SshPacket2(null);
-					}
-					//#ifndef nossh1
-					else {
+						//#else
 						currentpacket = new SshPacket1(null);
+						//#endif
+						
+						break PHASE_INIT;
 					}
-					//#endif
-					//#else
-					currentpacket = new SshPacket1(null);
-					//#endif
+					else {
+						/* Lines sent during init that do not start SSH- should be ignored
+						 * http://www.ietf.org/internet-drafts/draft-ietf-secsh-transport-24.txt
+						 * section 4.2
+						 */
+						idstr = "";
+					}
 				}
 			}
 			if (boffset == boffsetend)
 				return "".getBytes();
-			return "SSH PHASE_INIT error\n".getBytes();
+			return "PHASE_INIT error\n".getBytes();
 		}
 
 		result = "";

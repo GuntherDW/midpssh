@@ -899,28 +899,30 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 					int fg = fgcolor;
 					int bg = bgcolor;
                     
-                    int fgcolorindex = ( ( currAttr & VT320.COLOR_FG ) >> 4 ) - 1;
-					if ( fgcolorindex >= 0 && fgcolorindex < 8 ) {
-                        /* Colour index 8 is invalid, 9 means use default */
-                        if ( (currAttr & VT320.BOLD) != 0) {
-                            fg = boldcolor[fgcolorindex];
-                        }
-                        else if (( currAttr & VT320.LOW ) != 0) {
-                            fg = lowcolor[fgcolorindex];
-                        }
-                        else {
-                            fg = color[fgcolorindex];
-                        }
-					}
-                    int bgcolorindex = ( ( currAttr & VT320.COLOR_BG ) >> 8 ) - 1;
-					if ( bgcolorindex >= 0 && bgcolorindex < 8) {
-                        /* Colour index 8 is invalid, 9 means use default */
-                        bg = color[bgcolorindex];
-					}
-					if ( ( currAttr & VT320.INVERT ) != 0 ) {
-						int swapc = bg;
-						bg = fg;
-						fg = swapc;
+					if (Main.useColors) {
+	                    int fgcolorindex = ( ( currAttr & VT320.COLOR_FG ) >> 4 ) - 1;
+						if ( fgcolorindex >= 0 && fgcolorindex < 8 ) {
+	                        /* Colour index 8 is invalid, 9 means use default */
+	                        if ( (currAttr & VT320.BOLD) != 0) {
+	                            fg = boldcolor[fgcolorindex];
+	                        }
+	                        else if (( currAttr & VT320.LOW ) != 0) {
+	                            fg = lowcolor[fgcolorindex];
+	                        }
+	                        else {
+	                            fg = color[fgcolorindex];
+	                        }
+						}
+	                    int bgcolorindex = ( ( currAttr & VT320.COLOR_BG ) >> 8 ) - 1;
+						if ( bgcolorindex >= 0 && bgcolorindex < 8) {
+	                        /* Colour index 8 is invalid, 9 means use default */
+	                        bg = color[bgcolorindex];
+						}
+						if ( ( currAttr & VT320.INVERT ) != 0 ) {
+							int swapc = bg;
+							bg = fg;
+							fg = swapc;
+						}
 					}
 
 					// determine the maximum of characters we can print in one
@@ -938,17 +940,11 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 
 					// clear the part of the screen we want to change (fill
 					// rectangle)
-					if ( Main.useColors )
-						g.setColor( bg );
-					else
-						g.setColor( bgcolor );
+					g.setColor( bg );
 
 					g.fillRect( ( c - left ) * fontWidth, ( l - top ) * fontHeight, addr * fontWidth, fontHeight );
 
-					if ( Main.useColors )
-						g.setColor( fg );
-					else
-						g.setColor( fgcolor );
+					g.setColor( fg );
 
 					// draw the characters
 					drawChars( g, buffer.charArray[buffer.windowBase + l], c, addr, ( c - left ) * fontWidth,

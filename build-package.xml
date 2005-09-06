@@ -180,6 +180,7 @@
 		</copy>
 		
 		<antcall target="resources-icon" />
+		<antcall target="resources-fonts" />
     </target>
     
     <target name="resources-icon" if="jad.icon">
@@ -189,6 +190,14 @@
         	</fileset>
 		</copy>
     </target>
+	
+	<target name="resources-fonts" unless="lite">
+		<copy todir="${build.dir}/bin/${filename}">
+			<fileset dir="res">
+        		<include name="font*" />
+        	</fileset>
+		</copy>
+	</target>
 	
 	<target name="obfuscate" depends="obfuscate-normal,obfuscate-lite,obfuscate-lite-nossh1,obfuscate-blackberry" unless="noobfuscate" />
 		

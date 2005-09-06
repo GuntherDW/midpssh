@@ -41,6 +41,8 @@ public class SessionForm extends EditableForm {
 	public static final Command saveCommand = new Command( "Save", Command.SCREEN, 1 );
 
 	public static final Command createCommand = new Command( "Create", Command.SCREEN, 1 );
+	
+	public static final String WARNING_REQUIRED = "Please fill in required fields.";
 
 	private int connectionIndex = 1;
 
@@ -95,10 +97,11 @@ public class SessionForm extends EditableForm {
 
 		append( tfAlias );
 		append( tfHost );
-		append( new StringItem( null, "To specify an alternative port append a colon and the port number to the host name." ) );
 		append( cgType );
 //#ifndef notelnet
+		//#ifndef small
 		append( new StringItem( "Authentication:\n", "For SSH connections only." ) );
+		//#endif
 //#endif
 		append( tfUsername );
 		append( tfPassword );
@@ -241,32 +244,26 @@ public class SessionForm extends EditableForm {
 		String host = tfHost.getString();
 		String type = selectedConnectionType();
 		String username = tfUsername.getString();
-		String errorMessage;
-
+		boolean invalid = false;
+		
 		if ( type != null ) {
 			if ( type.equals( SessionSpec.TYPE_SSH ) ) {
-				if ( alias.length() > 0 && host.length() > 0 && username.length() > 0 ) {
-					errorMessage = null;
-				}
-				else {
-					errorMessage = "Please fill in the Alias, Host and Username fields.";
+				if ( alias.length() == 0 || host.length() == 0 || username.length() == 0 ) {
+					invalid = true;
 				}
 			}
 			else {
-				if ( alias.length() > 0 && host.length() > 0 ) {
-					errorMessage = null;
-				}
-				else {
-					errorMessage = "Please fill in the Alias and Host fields.";
+				if ( alias.length() == 0 || host.length() == 0 ) {
+					invalid = true;
 				}
 			}
 		}
 		else {
-			errorMessage = "Please choose the connection type.";
+			invalid = true;
 		}
 
-		if ( errorMessage != null ) {
-			showErrorMessage( errorMessage );
+		if (invalid) {
+			showErrorMessage(WARNING_REQUIRED);
 			return false;
 		}
 		else {

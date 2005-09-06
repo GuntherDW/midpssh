@@ -54,7 +54,7 @@ public class SettingsForm extends EditableForm {
     
     private int mode;
     
-	protected TextField tfType = new TextField( "Type", "", 20, TextField.ANY );
+	protected TextField tfType = new TextField( "Terminal Type", "", 20, TextField.ANY );
 	
 	protected TextField tfCols = new TextField( "Cols", "", 3, TextField.NUMERIC );
 	
@@ -78,7 +78,7 @@ public class SettingsForm extends EditableForm {
     protected ChoiceGroup cgPolling = new ChoiceGroup("Polling I/O", ChoiceGroup.EXCLUSIVE);
 	
 //#ifdef ssh2   
-    protected ChoiceGroup cgSsh = new ChoiceGroup("Preferred Protocol", ChoiceGroup.EXCLUSIVE);
+    protected ChoiceGroup cgSsh = new ChoiceGroup("Prefer", ChoiceGroup.EXCLUSIVE);
     
     protected ChoiceGroup cgSshKeys = new ChoiceGroup("Store Keys", ChoiceGroup.EXCLUSIVE);
     
@@ -100,7 +100,6 @@ public class SettingsForm extends EditableForm {
         switch ( mode ) {
         case MODE_NETWORK:
         {
-            append( new StringItem( "Terminal Type", "The terminal type reported to the remote server. The default type is VT320." ) );
             append( tfType );
             booleanChoiceGroup(cgPolling);
             append(cgPolling);
@@ -118,11 +117,12 @@ public class SettingsForm extends EditableForm {
             cgRotated.append( "Landscape", null );
             cgRotated.append( "Landscape Flipped", null );
             append( cgRotated );
-//#else
-            append( new StringItem( "Orientation", "Not available on this device." ) );
 //#endif
 
+            //#ifndef small
             append( new StringItem( "Terminal Size", "The default is to use the maximum available screen area." ) );
+            //#endif
+            
             append( tfCols );
             append( tfRows );
             
@@ -365,7 +365,7 @@ public class SettingsForm extends EditableForm {
             }
 //#endif
             try {
-                int col = fromHex( tfFg.getString() );
+                int col = Integer.parseInt( tfFg.getString(), 16 );
                 Settings.fgcolor = col;
             }
             catch ( NumberFormatException e ) {
@@ -373,7 +373,7 @@ public class SettingsForm extends EditableForm {
             }
             
             try {
-                int col = fromHex( tfBg.getString() );
+                int col = Integer.parseInt( tfBg.getString(), 16 );
                 Settings.bgcolor = col;
             }
             catch ( NumberFormatException e ) {
@@ -398,7 +398,7 @@ public class SettingsForm extends EditableForm {
                 if (Settings.ssh2x == null || Settings.ssh2y == null) {
                     /* Pregenerate ssh2 key */
                     Alert alert = new Alert("MidpSSH");
-                    alert.setString("Please wait while the SSH2 key is generated");
+                    alert.setString("Please wait");
                     alert.setTimeout(1);
                     alert.setCommandListener(new CommandListener() {
                         /* (non-Javadoc)
@@ -430,40 +430,43 @@ public class SettingsForm extends EditableForm {
 		return true;
 	}
 	
-	private static int fromHex( String hex ) throws NumberFormatException {
-		hex = hex.toLowerCase();
-		int total = 0;
-		for ( int i = 0; i < hex.length(); i++ ) {
-			total <<= 4;
-			char c = hex.charAt( i );
-			if ( c >= '0' && c <= '9' ) {
-				total += ( c - '0' );
-			}
-			else if ( c >= 'a' && c <= 'f' ) {
-				total += ( c - 'a' ) + 10;
-			}
-			else {
-				throw new NumberFormatException( hex );
-			}
+	private static String toHex(int i) {
+		String str = Integer.toHexString(i);
+		while (str.length() < 6) {
+			str = "0" + str;
 		}
-		return total;
+		return str;
 	}
 	
-	private static String toHex( int i ) {
-		char[] buf = new char[32];
-		int charPos = 32;
-		do {
-		    buf[--charPos] = digits[i & 15];
-		    i >>>= 4;
-		//} while (i != 0);
-		} while ( charPos > 26 || i != 0 );
-
-		return new String(buf, charPos, (32 - charPos));
-	}
-	
-    private final static char[] digits = {
-    		'0' , '1' , '2' , '3' , '4' , '5' ,
-    		'6' , '7' , '8' , '9' , 'a' , 'b' ,
-    		'c' , 'd' , 'e' , 'f' 
-    	    };
+//	private static int fromHex( String hex ) throws NumberFormatException {
+//		hex = hex.toLowerCase();
+//		int total = 0;
+//		for ( int i = 0; i < hex.length(); i++ ) {
+//			total <<= 4;
+//			char c = hex.charAt( i );
+//			if ( c >= '0' && c <= '9' ) {
+//				total += ( c - '0' );
+//			}
+//			else if ( c >= 'a' && c <= 'f' ) {
+//				total += ( c - 'a' ) + 10;
+//			}
+//			else {
+//				throw new NumberFormatException( hex );
+//			}
+//		}
+//		return total;
+//	}
+//	
+//	private static String toHex( int i ) {
+//		char[] buf = new char[32];
+//		int charPos = 32;
+//		do {
+//		    buf[--charPos] = digits.charAt(i & 15);
+//		    i >>>= 4;
+//		} while ( charPos > 26 || i != 0 );
+//
+//		return new String(buf, charPos, (32 - charPos));
+//	}
+//	
+//	private static final String digits = "0123456789abcdef";
 }

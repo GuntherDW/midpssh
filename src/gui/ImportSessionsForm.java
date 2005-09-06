@@ -126,7 +126,7 @@ public class ImportSessionsForm extends Form implements Activatable, Runnable, C
             c = (HttpConnection) Connector.open(url);
             int rc = c.getResponseCode();
             if (rc != HttpConnection.HTTP_OK) {
-                throw new IOException("HTTP response code: " + rc);
+                throw new IOException("HTTP " + rc);
             }
             
             in = new LineInputStream(c.openInputStream());

@@ -1,6 +1,6 @@
 /* This file is part of "The Java Telnet Application".
  *
- * (c) Matthias L. Jugel, Marcus Meißner 1996-2002. All Rights Reserved.
+ * (c) Matthias L. Jugel, Marcus Meiï¿½ner 1996-2002. All Rights Reserved.
  * The file was changed by Radek Polak to work as midlet in MIDP 1.0
  * 
  * This file has been modified by Karl von Randow for MidpSSH.
@@ -32,10 +32,10 @@ import java.io.IOException;
 /**
  * Implementation of a VT terminal emulation plus ANSI compatible.
  * <P>
- * <B>Maintainer: </B> Marcus Meißner
+ * <B>Maintainer: </B> Marcus Meiï¿½ner
  * 
  * @version $Id$
- * @author Matthias L. Jugel, Marcus Meißner
+ * @author Matthias L. Jugel, Marcus Meiï¿½ner
  */
 public abstract class VT320 {
 
@@ -636,9 +636,9 @@ public abstract class VT320 {
 		this.terminalID = terminalID;
 	}
 
-	public void setAnswerBack( String ab ) {
-		this.answerBack = unEscape( ab );
-	}
+//	public void setAnswerBack( String ab ) {
+//		this.answerBack = unEscape( ab );
+//	}
 
 	/**
 	 * Get the terminal id used to identify this terminal.
@@ -692,7 +692,7 @@ public abstract class VT320 {
 
 	private String terminalID = "vt320";
 
-	private String answerBack = "answerBack\n";
+//	private String answerBack = "answerBack\n";
 
 	// X - COLUMNS, Y - ROWS
 	public int R, C;
@@ -1763,10 +1763,10 @@ public abstract class VT320 {
 						term_state = TSTATE_ESC;
 						lastwaslf = 0;
 						break;
-					case 5: /* ENQ */
-						write( answerBack, false );
-						flush();
-						break;
+//					case 5: /* ENQ */
+//						write( answerBack, false );
+//						flush();
+//						break;
 					case 12:
 						/* FormFeed, Home for the BBS world */
 						deleteArea( 0, 0, columns, rows, attributes );

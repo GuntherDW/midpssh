@@ -96,9 +96,10 @@ public class SettingsMenu extends ExtendedList implements Activatable,
 		else if (j++ == i) {
 			Settings.defaults();
 			Settings.saveSettings();
-			Main.alertBackToMain(new Alert("Settings",
-					"Default settings have been restored.", null,
-					AlertType.INFO));
+//			Main.alertBackToMain(new Alert("Settings",
+//					"Default settings have been restored.", null,
+//					AlertType.INFO));
+			Main.goMainMenu();
 		}
 	}
 

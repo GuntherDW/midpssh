@@ -59,7 +59,7 @@ public class SshIO {
 	 */
 	private String idstr = ""; // ("SSH-<protocolmajor>.<protocolminor>-<version>\n")
 
-	private String idstr_sent = "SSH/JTA (c) Marcus Meissner, Matthias L. Jugel\n";
+	private String idstr_sent = "SSH/MidpSSH\n";
 
 	/**
 	 * Debug level. This results in additional diagnostic messages on the java
@@ -700,7 +700,7 @@ public class SshIO {
 			return "SSH2: Unimplemented\r\n";
 
 		default:
-			return "SSH2: handlePacket2 Unknown type " + p.getType() + "\r\n";
+			return "SSH2: Unknown type " + p.getType() + "\r\n";
 		}
 		return "";
 	}
@@ -1080,7 +1080,7 @@ public class SshIO {
 						// supported IDEA, BlowFish or 3DES, support cypher mask
 						// is " + supported_ciphers_mask[3] + ".\n");
 						disconnect();
-						return "\rIncompatible ciphers, closing connection.\r\n";
+						return "\rIncompatible ciphers.\r\n";
 					}
 				}
 			}

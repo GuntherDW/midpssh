@@ -42,11 +42,13 @@
 			<param name="filename" value="midpssh-ssh2-lite"/>
 			<param name="midp2" value="true"/>
 			<param name="mode" value="ssh2-lite"/>
+			<param name="lite" value="true" />
 		</antcall>
 		<antcall target="build">
 			<param name="filename" value="midpssh-ssh1-lite"/>
 			<param name="midp2" value="true"/>
 			<param name="mode" value="ssh1-lite"/>
+			<param name="lite" value="true" />
 		</antcall>
 		
 		<antcall target="build">
@@ -63,11 +65,13 @@
 			<param name="filename" value="midpssh-midp1-ssh2-lite"/>
 			<param name="midp1" value="true"/>
 			<param name="mode" value="ssh2-lite"/>
+			<param name="lite" value="true" />
 		</antcall>
 		<antcall target="build">
 			<param name="filename" value="midpssh-midp1-ssh1-lite"/>
 			<param name="midp1" value="true"/>
 			<param name="mode" value="ssh1-lite"/>
+			<param name="lite" value="true" />
 		</antcall>
 		<antcall target="build">
 			<param name="filename" value="midpssh-midp1-full-noobf"/>
@@ -92,11 +96,13 @@
 			<param name="filename" value="midpssh-ssh1-lite"/>
 			<param name="midp2" value="true"/>
 			<param name="mode" value="ssh1-lite"/>
+			<param name="lite" value="true"/>
 		</antcall>
 		<antcall target="build">
 			<param name="filename" value="midpssh-ssh2-lite"/>
 			<param name="midp2" value="true"/>
 			<param name="mode" value="ssh2-lite"/>
+			<param name="lite" value="true"/>
 		</antcall>
 	</target>
 	
@@ -155,7 +161,11 @@
 		<property file="build.properties"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="output"/>
-		<delete dir="${dist.dir}"/>
+		<delete>
+			<fileset dir="${dist.dir}">
+				<include name="**" />
+			</fileset>
+		</delete>
 	</target>
 	
 	<target name="run-blackberry" depends="blackberry" description="Run Blackberry version">

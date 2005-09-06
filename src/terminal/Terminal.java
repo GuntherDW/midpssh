@@ -181,7 +181,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     };
 //#endif
     
-    private static final int [] bindingKeys = new int[] {
+    private static int [] bindingKeys = new int[] {
             Canvas.KEY_NUM1, Canvas.KEY_NUM2, Canvas.KEY_NUM3,
             Canvas.KEY_NUM4, Canvas.KEY_NUM5, Canvas.KEY_NUM6,
             Canvas.KEY_NUM7, Canvas.KEY_NUM8, Canvas.KEY_NUM9,
@@ -802,29 +802,31 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 
 	/** A list of colors used for representation of the display */
     
-    private int color[] = {
+    private static final int color[] = {
             // black, red, green, yellow
             0x000000, 0xcc0000, 0x00cc00, 0xcccc00,
             // blue, magenta, cyan, white
             0x0000cc, 0xcc00cc, 0x00cccc, 0xcccccc 
     };
     
-    private int boldcolor[] = {
+    private static final int boldcolor[] = {
             // black, red, green, yellow
             0x333333, 0xff0000, 0x00ff00, 0xffff00,
             // blue, magenta, cyan, white
             0x0000ff, 0xff00ff, 0x00ffff, 0xffffff
     };
     
-    private int lowcolor[] = {
+    private static final int lowcolor[] = {
             // black, red, green, yellow
             0x000000, 0x990000, 0x009900, 0x999900,
             // blue, magenta, cyan, white
             0x000099, 0x990099, 0x009999, 0x999999 
     };
 
+    //#ifndef nopaintsync
 	private Object paintMutex = new Object();
-
+	//#endif
+	
 	protected void paint( Graphics g ) {
 		
 		// Erase display
@@ -870,12 +872,6 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 	    }
 //#endif
 	}
-
-	/** Required paint implementation */
-	/*
-	 * protected void paint(Graphics g) { g.setColor(bgcolor); g.fillRect( 0, 0,
-	 * getWidth(), getHeight() ); g.drawImage(backingStore, 0, 0, 0); }
-	 */
 
 	protected void redrawBackingStore() {
 		// Only redraw if we've been marked as invalid by a call to redraw

@@ -71,7 +71,9 @@ public class SettingsForm extends EditableForm {
     protected ChoiceGroup cgPredictiveText = new ChoiceGroup("Predictive Text", ChoiceGroup.EXCLUSIVE);
 //#endif
     
+//#ifndef small
     protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size", ChoiceGroup.EXCLUSIVE );
+//#endif
     
     protected ChoiceGroup cgPolling = new ChoiceGroup("Polling I/O", ChoiceGroup.EXCLUSIVE);
 	
@@ -132,12 +134,16 @@ public class SettingsForm extends EditableForm {
         break;
         case MODE_FONTS:
         {
+//#ifndef small
             cgFont.append( "Tiny", null );
             cgFont.append( "Small", null );
             cgFont.append( "Medium", null );
             cgFont.append( "Large", null );
+            //#ifdef midp2
+            cgFont.append( "Test", null );
+            //#endif
             append( cgFont );
-            
+//#endif
             append( tfFg );
             append( tfBg );
         }
@@ -229,6 +235,7 @@ public class SettingsForm extends EditableForm {
         break;
         case MODE_FONTS:
         {
+//#ifndef small
             switch ( Settings.fontMode ) {
             case Settings.FONT_NORMAL:
                 cgFont.setSelectedIndex( 0, true );
@@ -242,7 +249,13 @@ public class SettingsForm extends EditableForm {
             case Settings.FONT_LARGE:
                 cgFont.setSelectedIndex( 3, true );
                 break;
+                //#ifdef midp2
+            case Settings.FONT_TEST:
+            	cgFont.setSelectedIndex(4, true);
+            	break;
+            	//#endif
             }
+//#endif
             
             tfFg.setString( toHex( Settings.fgcolor ) );
             tfBg.setString( toHex( Settings.bgcolor ) );
@@ -330,6 +343,7 @@ public class SettingsForm extends EditableForm {
         break;
         case MODE_FONTS:
         {
+//#ifndef small
             switch (cgFont.getSelectedIndex()) {
             case 0:
                 Settings.fontMode = Settings.FONT_NORMAL;
@@ -343,7 +357,13 @@ public class SettingsForm extends EditableForm {
             case 3:
                 Settings.fontMode = Settings.FONT_LARGE;
                 break;
+                //#ifdef midp2
+            case 4:
+            	Settings.fontMode = Settings.FONT_TEST;
+            	break;
+            	//#endif
             }
+//#endif
             try {
                 int col = fromHex( tfFg.getString() );
                 Settings.fgcolor = col;

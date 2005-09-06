@@ -231,12 +231,7 @@ public abstract class Session implements Activatable {
                 /* Read only as much data as is available */
                 int n = in.read( buf, 0, Math.min( a, buf.length ) );
                 bytesRead += n;
-                try {
-                    filter.handleReceiveData( buf, 0, n );
-                }
-                catch ( RuntimeException e ) {
-                    throw new RuntimeException( "read.filter1 " + n + ": " + e );
-                }
+                filter.handleReceiveData( buf, 0, n );
                 doneSomething = true;
             }
         
@@ -273,12 +268,7 @@ public abstract class Session implements Activatable {
 		int n = 0;
 		while ( n != -1 ) {
 			bytesRead += n;
-			try {
-			    filter.handleReceiveData( buf, 0, n );
-			}
-			catch ( RuntimeException e ) {
-			    throw new RuntimeException( "read.filter1 " + n + ": " + e );
-			}
+		    filter.handleReceiveData( buf, 0, n );
 			
 			int a = in.available();
             if (pollingIO) {
@@ -309,12 +299,7 @@ public abstract class Session implements Activatable {
 	    while ( c != -1 ) {
 	        bytesRead++;
 	        buf[0] = (byte) ( c & 0xff );
-	        try {
-			    filter.handleReceiveData( buf, 0, 1 );
-			}
-			catch ( RuntimeException e ) {
-			    throw new RuntimeException( "read.filter2: " + e );
-			}
+		    filter.handleReceiveData( buf, 0, 1 );
 			c = in.read();
 	    }
 //#endif

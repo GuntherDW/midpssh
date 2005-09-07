@@ -36,9 +36,9 @@ public class SshSession extends Session implements SessionIOHandler {
 
     private SshIO sshIO;
     
-	public void connect( SessionSpec spec, String password ) {
+	public void connect(SessionSpec spec, String username, String password) {
         sshIO = new SshIO( this );
-        sshIO.login = spec.username;
+        sshIO.login = username != null ? username : spec.username;
         sshIO.password = password != null ? password : spec.password;
         
 		super.connect( spec, this );

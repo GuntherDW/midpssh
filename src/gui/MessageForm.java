@@ -37,7 +37,7 @@ public class MessageForm extends Form implements Activatable, CommandListener {
     
     public static final Command okCommand = new Command( "OK", Command.OK, 1 );
     
-    public static final Command backCommand = new Command( "Back", Command.BACK, 2 );
+    public static final Command backCommand = new Command( "Back", Command.BACK, 99 );
     
 	private Activatable back;
 	

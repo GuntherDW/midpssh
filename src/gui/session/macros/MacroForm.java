@@ -215,7 +215,7 @@ public class MacroForm extends EditableForm {
     		}
         }
 
-		if (invalid = true) {
+		if (invalid) {
 			showErrorMessage(SessionForm.WARNING_REQUIRED);
 			return false;
 		}

@@ -138,6 +138,9 @@ public class MainMenu extends List implements CommandListener, Activatable {
 				Main.quitApp();
 			}
 		}
+		else if (com == okCommand) {
+			goMainMenu();
+		}
 		else if ( com == quitCommand ) {
 			Main.quitApp();
 		}

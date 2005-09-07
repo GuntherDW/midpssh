@@ -23,7 +23,6 @@
 package gui.session.macros;
 
 import gui.EditableMenu;
-import gui.session.InputDialog;
 
 import java.util.Vector;
 
@@ -31,7 +30,6 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
 
 import terminal.VT320;
-
 import app.Main;
 import app.session.MacroSetManager;
 import app.session.Session;
@@ -77,9 +75,7 @@ public class MacrosMenu extends EditableMenu {
                 if ( session != null ) {
                     Macro macro = macroSet.getMacro( i );
                     if ( macro != null ) {
-                        InputDialog input = new InputDialog();
-                        input.activate( session );
-                        input.setString( macro.value.trim() );
+                    	session.getTerminal().doTextInput(macro.value.trim());
                     }
                 }
                 else {

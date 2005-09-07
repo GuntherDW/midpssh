@@ -28,7 +28,6 @@ import gui.MainMenu;
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
@@ -135,11 +134,11 @@ public class SettingsForm extends EditableForm {
         {
 //#ifndef small
             cgFont.append( "Tiny", null );
-            cgFont.append( "Small", null );
-            cgFont.append( "Medium", null );
-            cgFont.append( "Large", null );
+            cgFont.append( "Device", null );
             //#ifdef midp2
-            cgFont.append( "Test", null );
+            cgFont.append( "LCD 3x6", null );
+            cgFont.append( "LCD 4x6", null );
+            cgFont.append( "LCD 4x7", null );
             //#endif
             append( cgFont );
 //#endif
@@ -172,12 +171,25 @@ public class SettingsForm extends EditableForm {
     /* (non-Javadoc)
      * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable)
      */
-    public void commandAction( Command command, Displayable arg1 ) {
+    public void commandAction( Command command, Displayable displayable ) {
+    	//#ifdef ssh2
+    	if (displayable instanceof Alert) {
+    		byte[][] keys = DHKeyExchange.generateKeyPairBytes(Settings.ssh2KeySize);
+            Settings.ssh2x = keys[0];
+            Settings.ssh2y = keys[1];
+            Settings.saveSettings();
+            //#ifdef midp2
+            MainMenu.getDisplay().vibrate(300);
+            //#endif
+            doBack();
+            return;
+    	}
+    	//#endif
         if ( command == MainMenu.okCommand ) {
             save();
         }
         else {
-            super.commandAction( command, arg1 );
+            super.commandAction( command, displayable );
         }
     }
     
@@ -235,25 +247,7 @@ public class SettingsForm extends EditableForm {
         case MODE_FONTS:
         {
 //#ifndef small
-            switch ( Settings.fontMode ) {
-            case Settings.FONT_NORMAL:
-                cgFont.setSelectedIndex( 0, true );
-                break;
-            case Settings.FONT_SMALL:
-                cgFont.setSelectedIndex( 1, true );
-                break;
-            case Settings.FONT_MEDIUM:
-                cgFont.setSelectedIndex( 2, true );
-                break;
-            case Settings.FONT_LARGE:
-                cgFont.setSelectedIndex( 3, true );
-                break;
-                //#ifdef midp2
-            case Settings.FONT_TEST:
-            	cgFont.setSelectedIndex(4, true);
-            	break;
-            	//#endif
-            }
+        	cgFont.setSelectedIndex(Settings.fontMode, true);
 //#endif
             
             tfFg.setString( toHex( Settings.fgcolor ) );
@@ -343,25 +337,7 @@ public class SettingsForm extends EditableForm {
         case MODE_FONTS:
         {
 //#ifndef small
-            switch (cgFont.getSelectedIndex()) {
-            case 0:
-                Settings.fontMode = Settings.FONT_NORMAL;
-                break;
-            case 1:
-                Settings.fontMode = Settings.FONT_SMALL;
-                break;
-            case 2:
-                Settings.fontMode = Settings.FONT_MEDIUM;
-                break;
-            case 3:
-                Settings.fontMode = Settings.FONT_LARGE;
-                break;
-                //#ifdef midp2
-            case 4:
-            	Settings.fontMode = Settings.FONT_TEST;
-            	break;
-            	//#endif
-            }
+        	Settings.fontMode = cgFont.getSelectedIndex();
 //#endif
             try {
                 int col = Integer.parseInt( tfFg.getString(), 16 );
@@ -399,21 +375,7 @@ public class SettingsForm extends EditableForm {
                     Alert alert = new Alert("MidpSSH");
                     alert.setString("Please wait");
                     alert.setTimeout(1);
-                    alert.setCommandListener(new CommandListener() {
-                        /* (non-Javadoc)
-                         * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable)
-                         */
-                        public void commandAction(Command arg0, Displayable arg1) {
-                            byte[][] keys = DHKeyExchange.generateKeyPairBytes(Settings.ssh2KeySize);
-                            Settings.ssh2x = keys[0];
-                            Settings.ssh2y = keys[1];
-                            Settings.saveSettings();
-//#ifdef midp2
-                            MainMenu.getDisplay().vibrate(300);
-//#endif
-                            doBack();
-                        }
-                    });
+                    alert.setCommandListener(this);
                     MainMenu.setDisplay(alert);
                     return false;
                 }

@@ -1045,27 +1045,35 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 //#ifdef small
         initInternalFont();
 //#else
+        //#ifdef midp2
+        String lcdFontFile = null;
+        //#endif
 	    switch ( fontMode ) {
         case Settings.FONT_NORMAL:
 	        initInternalFont();
             break;
-        case Settings.FONT_SMALL:
+        case Settings.FONT_DEVICE:
 	        initSystemFont( Font.SIZE_SMALL );
             break;
-        case Settings.FONT_MEDIUM:
-            initSystemFont( Font.SIZE_MEDIUM );
-            break;
-        case Settings.FONT_LARGE:
-            initSystemFont( Font.SIZE_LARGE );
-            break;
             //#ifdef midp2
-        case Settings.FONT_TEST:
-        	lcdfont = new LCDFont("/font4x7lcd.png", false);
-        	fontWidth = lcdfont.fontWidth;
-        	fontHeight = lcdfont.fontHeight;
+        case 2:
+        	lcdFontFile = "/font3x6lcd.png";
+        	break;
+        case 3:
+        	lcdFontFile = "/font4x6lcd.png";
+        	break;
+        case 4:
+        	lcdFontFile = "/font4x7lcd.png";
         	break;
         	//#endif
+	    }
+	    //#ifdef midp2
+	    if (lcdFontFile != null) {
+        	lcdfont = new LCDFont(lcdFontFile, false);
+        	fontWidth = lcdfont.fontWidth;
+        	fontHeight = lcdfont.fontHeight;
         }
+	    //#endif
 //#endif
 	}
 
@@ -1114,8 +1122,15 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 			}
 //#ifndef small
 	    }
+	    else if (fontMode == Settings.FONT_DEVICE) {
+	        g.setFont( font );
+			for ( int i = offset; i < offset + length; i++ ) {
+				g.drawChar( chars[i], x, y, Graphics.TOP|Graphics.LEFT);
+				x += fontWidth;
+			}
+	    }
 	    //#ifdef midp2
-	    else if (fontMode == Settings.FONT_TEST) {
+	    else {
 	    	/* Change colour */
 	    	if (fg != prevfg || bg != prevbg) {
 	    		lcdfont.setColor(fg, bg);
@@ -1129,13 +1144,6 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 			}
 	    }
 	    //#endif
-	    else {
-	        g.setFont( font );
-			for ( int i = offset; i < offset + length; i++ ) {
-				g.drawChar( chars[i], x, y, Graphics.TOP|Graphics.LEFT);
-				x += fontWidth;
-			}
-	    }
 //#endif
 	}
 

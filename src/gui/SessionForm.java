@@ -243,26 +243,8 @@ public class SessionForm extends EditableForm {
 		String alias = tfAlias.getString();
 		String host = tfHost.getString();
 		String type = selectedConnectionType();
-		String username = tfUsername.getString();
-		boolean invalid = false;
-		
-		if ( type != null ) {
-			if ( type.equals( SessionSpec.TYPE_SSH ) ) {
-				if ( alias.length() == 0 || host.length() == 0 || username.length() == 0 ) {
-					invalid = true;
-				}
-			}
-			else {
-				if ( alias.length() == 0 || host.length() == 0 ) {
-					invalid = true;
-				}
-			}
-		}
-		else {
-			invalid = true;
-		}
 
-		if (invalid) {
+		if (type == null || alias.length() == 0 || host.length() == 0) {
 			showErrorMessage(WARNING_REQUIRED);
 			return false;
 		}

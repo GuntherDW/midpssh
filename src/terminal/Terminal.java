@@ -23,8 +23,6 @@ package terminal;
 import gui.Activatable;
 import gui.MainMenu;
 import gui.MessageForm;
-import gui.session.InputDialog;
-import gui.session.ModifierInputDialog;
 import gui.session.SpecialMenu;
 
 import java.io.InputStream;
@@ -36,9 +34,8 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
-//#ifdef midp2
-import javax.microedition.lcdui.game.Sprite;
-//#endif
+import javax.microedition.lcdui.TextBox;
+import javax.microedition.lcdui.TextField;
 
 import app.Main;
 import app.Settings;
@@ -68,6 +65,8 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     
     private static int commandPriority = 1;
 
+    private static final Command textEnterCommand = new Command("Enter", Command.ITEM, commandPriority++);
+    
     // Have this separate back command as a Command.ITEM so that it will show first in the menu on
     // the phone, so that you know you're in typing mode
     private static final Command backMainCommand = new Command( "Back", Command.ITEM, commandPriority++ );
@@ -190,13 +189,13 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 
     private Session session;
 
-    private InputDialog inputDialog;
+    private TextBox inputDialog;
     
 //#ifndef nospecialmenu 
     private SpecialMenu menuSpecialKeys;
 //#endif
     
-    private ModifierInputDialog controlKeyDialog, altKeyDialog, shiftKeyDialog;
+    private TextBox controlKeyDialog, altKeyDialog, shiftKeyDialog;
 
     private Command[] currentCommands;
 
@@ -345,11 +344,35 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     }
 
     public void commandAction( Command command, Displayable displayable ) {
-        if ( command == disconnectCommand || command == closeCommand ) {
+    	if (displayable == inputDialog) {
+    		if (command != backCommand) {
+	            commandBuffer.setLength( 0 );
+	            commandBuffer.append(inputDialog.getString());
+	            if ( command == textEnterCommand ) {
+	                commandBuffer.append( '\n' );
+	            }
+	            if ( command == tabCommand ) {
+	                commandBuffer.append( '\t' );
+	            }
+	            session.typeString( commandBuffer.toString() );
+	    		inputDialog.setString( "" );
+    		}
+            activate();
+        }
+    	else if (displayable == controlKeyDialog) {
+    		handleModifierDialog(command, controlKeyDialog, VT320.KEY_CONTROL);
+    	}
+    	else if (displayable == altKeyDialog) {
+    		handleModifierDialog(command, altKeyDialog, VT320.KEY_ALT);
+    	}
+    	else if (displayable == shiftKeyDialog) {
+    		handleModifierDialog(command, shiftKeyDialog, VT320.KEY_SHIFT);
+    	}
+    	else if ( command == disconnectCommand || command == closeCommand ) {
             doDisconnect();
         }
         else if ( command == textInputCommand ) {
-            doTextInput();
+            doTextInput(null);
         }
 //#ifndef nomacros
         else if ( command == macrosCommand ) {
@@ -410,6 +433,19 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         /*else if ( command == settingsCommand ) {
             doSettings();
         }*/
+    }
+	
+	private StringBuffer commandBuffer = new StringBuffer();
+    
+    private void handleModifierDialog(Command command, TextBox box, int modifier) {
+    	if (command != backCommand) {
+    		String str = box.getString();
+	    	for ( int i = 0; i < str.length(); i++ ) {
+				session.typeChar( str.charAt( i ), modifier );
+			}
+	    	box.setString("");
+    	}
+    	activate();
     }
 
     protected void keyPressed( int keycode ) { 
@@ -711,32 +747,62 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         session.goMainMenu();
     }
     
-    private void doTextInput() {
+    public void doTextInput(String text) {
         if ( inputDialog == null ) {
-            inputDialog = new InputDialog();
+            inputDialog = new TextBox( "Input", "", 255, TextField.ANY );
+            inputDialog.addCommand( textEnterCommand );
+            inputDialog.addCommand( typeCommand );
+            inputDialog.addCommand( tabCommand );
+            inputDialog.addCommand( backCommand );
+
+    		//#ifdef midp2
+    		if (!Settings.predictiveText) {
+    			inputDialog.setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+    		}
+    		//#endif
+    		
+    		inputDialog.setCommandListener(this);
         }
-        inputDialog.activate( this );
+        if (text != null) {
+        	inputDialog.setString(text);
+        }
+        Main.setDisplay(inputDialog);
+    }
+    
+    private TextBox makeModifierInputDialog(String title) {
+    	TextBox box = new TextBox( title, "", 10, TextField.ANY );
+    	box.addCommand(typeCommand);
+    	box.addCommand(backCommand);
+        
+        //#ifdef midp2
+        if (!Settings.predictiveText) {
+        	box.setConstraints(TextField.ANY | TextField.NON_PREDICTIVE);
+        }
+        //#endif
+        
+        box.setCommandListener(this);
+        return box;
     }
 
     private void doControlKeyInput() {
         if ( controlKeyDialog == null ) {
-            controlKeyDialog = new ModifierInputDialog( "Control Keys", VT320.KEY_CONTROL );
+            controlKeyDialog = makeModifierInputDialog("CTRL"); //new ModifierInputDialog( "Control Keys", VT320.KEY_CONTROL );
         }
-        controlKeyDialog.activate( this );
+        Main.setDisplay(controlKeyDialog);
     }
 
     private void doAltKeyInput() {
         if ( altKeyDialog == null ) {
-            altKeyDialog = new ModifierInputDialog( "Alt Keys", VT320.KEY_ALT );
+            altKeyDialog = makeModifierInputDialog("ALT"); //new ModifierInputDialog( "Alt Keys", VT320.KEY_ALT );
         }
-        altKeyDialog.activate( this );
+        Main.setDisplay(altKeyDialog);
     }
 
     private void doShiftKeyInput() {
         if ( shiftKeyDialog == null ) {
-            shiftKeyDialog = new ModifierInputDialog( "Shift Keys", VT320.KEY_SHIFT );
+            shiftKeyDialog = makeModifierInputDialog("SHIFT"); //new ModifierInputDialog( "Shift Keys", VT320.KEY_SHIFT );
         }
-        shiftKeyDialog.activate( this );
+        Main.setDisplay(shiftKeyDialog);
     }
 
 //#ifndef nocursororscroll
@@ -843,10 +909,10 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 			switch ( rotated ) {
 //#ifdef midp2
             case Settings.ROT_270:
-                g.drawRegion( backingStore, 0, 0, width - 1, height, Sprite.TRANS_ROT270, 0, 1, Graphics.TOP | Graphics.LEFT );
+                g.drawRegion( backingStore, 0, 0, width - 1, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT270, 0, 1, Graphics.TOP | Graphics.LEFT );
                 break;
             case Settings.ROT_90:
-                g.drawRegion( backingStore, 0, 0, width - 1, height, Sprite.TRANS_ROT90, 0, 1, Graphics.TOP | Graphics.LEFT );
+                g.drawRegion( backingStore, 0, 0, width - 1, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT90, 0, 1, Graphics.TOP | Graphics.LEFT );
                 break;
 //#endif
             default:

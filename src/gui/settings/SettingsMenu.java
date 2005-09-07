@@ -23,11 +23,8 @@
 package gui.settings;
 
 import gui.Activatable;
-import gui.ExtendedList;
 import gui.MessageForm;
 
-import javax.microedition.lcdui.Alert;
-import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
@@ -39,7 +36,7 @@ import app.Settings;
 /**
  * @author Karl von Randow
  */
-public class SettingsMenu extends ExtendedList implements Activatable,
+public class SettingsMenu extends List implements Activatable,
 		CommandListener {
 
 	private Activatable back;

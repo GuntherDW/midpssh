@@ -21,7 +21,6 @@
 package gui.session;
 
 import gui.Activatable;
-import gui.ExtendedList;
 import gui.MessageForm;
 
 import javax.microedition.lcdui.Command;
@@ -37,7 +36,7 @@ import app.session.Session;
  * @author Karl
  *
  */
-public class SpecialMenu extends ExtendedList implements CommandListener, Activatable {
+public class SpecialMenu extends List implements CommandListener, Activatable {
 
     private static final String MAIN_OPTIONS = "Bksp|Home|End|PgU|PgD|Del|Ins|Func|||\\|~|:|;|'|\"|,|<|.|>|/|?|`|!|@|#|$|%|^|&|*|(|)|-|_|+|=|[|{|]|}|";
     

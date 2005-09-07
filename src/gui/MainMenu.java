@@ -35,7 +35,7 @@ import app.Main;
 /**
  * @author Karl von Randow
  */
-public class MainMenu extends ExtendedList implements CommandListener, Activatable {
+public class MainMenu extends List implements CommandListener, Activatable {
 
 	private static Command quitCommand = new Command( "Quit", Command.EXIT, 2 );
 

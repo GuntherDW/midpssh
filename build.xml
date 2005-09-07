@@ -153,6 +153,7 @@
 			<param name="filename" value="midpssh-run"/>
 			<param name="midp2" value="true"/>
 			<param name="mode" value="ssh2-lite"/>
+			<param name="lite" value="true"/>
     		<param name="run" value="true"/>
 		</antcall>
 	</target>

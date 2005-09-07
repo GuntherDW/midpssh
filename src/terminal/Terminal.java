@@ -63,7 +63,9 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     
     private static int commandPriority = 1;
 
-    private static final Command textEnterCommand = new Command("Enter", Command.ITEM, commandPriority++);
+    private static final Command textEnterCommand = new Command("Enter", Command.OK, commandPriority++);
+
+    private static final Command textTypeCommand = new Command("Type", Command.OK, commandPriority++);
     
     // Have this separate back command as a Command.ITEM so that it will show first in the menu on
     // the phone, so that you know you're in typing mode
@@ -773,7 +775,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     
     private TextBox makeModifierInputDialog(String title) {
     	TextBox box = new TextBox( title, "", 10, TextField.ANY );
-    	box.addCommand(typeCommand);
+    	box.addCommand(textTypeCommand);
     	box.addCommand(backCommand);
         
         //#ifdef midp2

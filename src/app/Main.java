@@ -25,36 +25,27 @@ package app;
 
 import gui.MainMenu;
 
-import javax.microedition.lcdui.Alert;
-import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.Displayable;
 import javax.microedition.midlet.MIDlet;
-
-import app.session.Session;
 
 public class Main extends MIDlet {
 
-	private static Main instance;
-
-	public static boolean useColors;
-
-	private static MainMenu mainMenu = new MainMenu();
+	public static Main instance;
 	
-	private static Session currentSession;
+	private static MainMenu mainMenu;
     
     private static boolean paused;
 	
 	/** Constructor */
 	public Main() {
-		instance = this;
-		useColors = getDisplay().isColor();
+		Main.instance = this;
+		mainMenu = new MainMenu();
 		Settings.init();
 	}
 
 	/** Main method */
 	protected void startApp() {
         if ( !paused ) {
-            setDisplay( mainMenu );
+            mainMenu.activate();
         }
         paused = false;
 	}
@@ -74,41 +65,6 @@ public class Main extends MIDlet {
 		instance.destroyApp( true );
 		instance.notifyDestroyed();
 		instance = null;
-	}
-
-	public static void setDisplay( Displayable display ) {
-		getDisplay().setCurrent( display );
-	}
-
-	public static void alert( Alert alert, Displayable back ) {
-		getDisplay().setCurrent( alert, back );
-	}
-
-	public static Display getDisplay() {
-		return Display.getDisplay( instance );
-	}
-
-	/**
-	 *  
-	 */
-	public static void goMainMenu() {
-		setDisplay( mainMenu );
-	}
-
-	/**
-	 * @param alert
-	 */
-	public static void alertBackToMain( Alert alert ) {
-		getDisplay().setCurrent( alert, mainMenu );
-	}
-	
-	public static void openSession( Session session ) {
-		currentSession = session;
-		session.activate();
-	}
-	
-	public static Session currentSession() {
-		return currentSession;
 	}
     
     /*

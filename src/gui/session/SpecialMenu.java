@@ -21,7 +21,7 @@
 package gui.session;
 
 import gui.Activatable;
-import gui.MessageForm;
+import gui.MainMenu;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -29,7 +29,6 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
 import terminal.VT320;
-import app.Main;
 import app.session.Session;
 
 /**
@@ -66,14 +65,14 @@ public class SpecialMenu extends List implements CommandListener, Activatable {
         }
 
 		//setSelectCommand( selectCommand );
-		addCommand( MessageForm.backCommand );
+		addCommand( MainMenu.backCommand );
 		
 		setCommandListener( this );
     }
     
     public void commandAction( Command command, Displayable displayed ) {
 		if ( command == List.SELECT_COMMAND ) {
-	        Session session = Main.currentSession();
+	        Session session = MainMenu.currentSession();
 			if ( session != null ) {
 			    String option = getString( getSelectedIndex() );
 			    int keyCode = 0;
@@ -131,7 +130,7 @@ public class SpecialMenu extends List implements CommandListener, Activatable {
 			    }
 		    }
 		}
-		else if ( command == MessageForm.backCommand ) {
+		else if ( command == MainMenu.backCommand ) {
 		    if ( back != null ) {
 		        back.activate();
 		    }
@@ -153,7 +152,7 @@ public class SpecialMenu extends List implements CommandListener, Activatable {
         return -1;
     }
     public void activate() {
-        Main.setDisplay( this );
+        MainMenu.setDisplay( this );
     }
     public void activate(Activatable back) {
         activate( back, back );

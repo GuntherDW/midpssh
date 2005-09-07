@@ -23,6 +23,7 @@
 package gui.session.macros;
 
 import gui.EditableMenu;
+import gui.MainMenu;
 
 import java.util.Vector;
 
@@ -30,7 +31,6 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
 
 import terminal.VT320;
-import app.Main;
 import app.session.MacroSetManager;
 import app.session.Session;
 
@@ -59,7 +59,7 @@ public class MacrosMenu extends EditableMenu {
 		this.macroSet = macroSet;
 		this.macroSetIndex = macroSetIndex;
         
-        if ( Main.currentSession() != null ) {
+        if ( MainMenu.currentSession() != null ) {
             addCommand( useCommand );
         }
 	}
@@ -71,7 +71,7 @@ public class MacrosMenu extends EditableMenu {
         if ( command == useCommand ) {
             int i = getSelectedIndex();
             if ( i >= 0 && i < size() ) {
-                Session session = Main.currentSession();
+                Session session = MainMenu.currentSession();
                 if ( session != null ) {
                     Macro macro = macroSet.getMacro( i );
                     if ( macro != null ) {
@@ -141,7 +141,7 @@ public class MacrosMenu extends EditableMenu {
                 macrosMenu.activate( this );
             }
             else {
-    			Session session = Main.currentSession();
+    			Session session = MainMenu.currentSession();
     			if ( session != null ) {
     				Macro macro = macroSet.getMacro( i );
     				if ( macro != null ) {

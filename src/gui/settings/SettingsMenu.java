@@ -23,14 +23,13 @@
 package gui.settings;
 
 import gui.Activatable;
-import gui.MessageForm;
+import gui.MainMenu;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
-import app.Main;
 import app.Settings;
 
 /**
@@ -53,7 +52,7 @@ public class SettingsMenu extends List implements Activatable,
 		append("Restore Defaults", null);
 
 		// setSelectCommand( selectCommand );
-		addCommand(MessageForm.backCommand);
+		addCommand(MainMenu.backCommand);
 
 		setCommandListener(this);
 	}
@@ -71,7 +70,7 @@ public class SettingsMenu extends List implements Activatable,
 	public void commandAction(Command command, Displayable displayable) {
 		if (command == List.SELECT_COMMAND) {
 			doSelect(getSelectedIndex());
-		} else if (command == MessageForm.backCommand) {
+		} else if (command == MainMenu.backCommand) {
 			doBack();
 		}
 	}
@@ -96,7 +95,7 @@ public class SettingsMenu extends List implements Activatable,
 //			Main.alertBackToMain(new Alert("Settings",
 //					"Default settings have been restored.", null,
 //					AlertType.INFO));
-			Main.goMainMenu();
+			MainMenu.goMainMenu();
 		}
 	}
 
@@ -115,7 +114,7 @@ public class SettingsMenu extends List implements Activatable,
 	 * @see gui.Activatable#activate()
 	 */
 	public void activate() {
-		Main.setDisplay(this);
+		MainMenu.setDisplay(this);
 	}
 
 	/*

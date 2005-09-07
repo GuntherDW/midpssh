@@ -27,8 +27,6 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
-import app.Main;
-
 /**
  * @author Karl von Randow
  *
@@ -52,7 +50,7 @@ public abstract class EditableMenu extends List implements CommandListener, Acti
 		addCommand( newCommand );
 		addCommand( editCommand );
 		addCommand( deleteCommand );
-		addCommand( MessageForm.backCommand );
+		addCommand( MainMenu.backCommand );
 
 		setCommandListener( this );
 	}
@@ -107,7 +105,7 @@ public abstract class EditableMenu extends List implements CommandListener, Acti
 				doDelete( i );
 			}
 		}
-		else if ( command == MessageForm.backCommand ) {
+		else if ( command == MainMenu.backCommand ) {
 			doBack();
 		}
 	}
@@ -117,7 +115,7 @@ public abstract class EditableMenu extends List implements CommandListener, Acti
 	 */
 	public void activate() {
 		addItems();
-		Main.setDisplay( this );
+		MainMenu.setDisplay( this );
 	}
 	
 	public void activate( Activatable back ) {

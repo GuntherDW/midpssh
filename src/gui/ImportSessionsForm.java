@@ -35,7 +35,6 @@ import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.TextField;
 
 import app.LineInputStream;
-import app.Main;
 import app.SessionManager;
 import app.SessionSpec;
 import app.Settings;
@@ -79,16 +78,16 @@ public class ImportSessionsForm extends Form implements Activatable, Runnable, C
         append(cgBlackberryConnType);
 //#endif
               
-        addCommand(MessageForm.okCommand);
-        addCommand(MessageForm.backCommand);
+        addCommand(MainMenu.okCommand);
+        addCommand(MainMenu.backCommand);
         setCommandListener(this);
     }
     
     public void commandAction(Command command, Displayable arg1) {
-        if (command == MessageForm.okCommand) {
+        if (command == MainMenu.okCommand) {
             new Thread(this).start();
         }
-        else if (command == MessageForm.backCommand) {
+        else if (command == MainMenu.backCommand) {
             if (back != null) {
                 back.activate();
             }
@@ -96,7 +95,7 @@ public class ImportSessionsForm extends Form implements Activatable, Runnable, C
     }
     
     public void activate() {
-        Main.setDisplay(this);
+        MainMenu.setDisplay(this);
     }
     public void activate(Activatable back) {
         this.back = back;
@@ -187,7 +186,7 @@ public class ImportSessionsForm extends Form implements Activatable, Runnable, C
             Alert alert = new Alert( "Import Complete" );
             alert.setType( AlertType.INFO );
             alert.setString( "Imported " + imported + " sessions" );
-            Main.alert(alert, (Displayable)back);
+            MainMenu.alert(alert, (Displayable)back);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -197,7 +196,7 @@ public class ImportSessionsForm extends Form implements Activatable, Runnable, C
         
             alert.setString( e.getMessage() );
             alert.setTimeout( Alert.FOREVER );
-            Main.alert(alert, this);
+            MainMenu.alert(alert, this);
         }
         finally {
             if (in != null) {

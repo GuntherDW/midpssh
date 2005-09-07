@@ -23,6 +23,7 @@
 package app.session;
 
 import gui.Activatable;
+import gui.MainMenu;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +36,6 @@ import javax.microedition.lcdui.AlertType;
 
 import terminal.Terminal;
 import terminal.VT320;
-import app.Main;
 import app.SessionSpec;
 import app.Settings;
 
@@ -112,7 +112,7 @@ public abstract class Session implements Activatable {
             
 //#ifdef midp2
             public void beep() {
-                Main.getDisplay().vibrate(200);
+                MainMenu.getDisplay().vibrate(200);
             }
 //#endif
 		};
@@ -376,7 +376,7 @@ public abstract class Session implements Activatable {
 				msg = t.toString();
 
 			alert.setString( where + ": " + msg );
-			Main.setDisplay( alert );
+			MainMenu.setDisplay( alert );
 		}
 	}
 
@@ -449,16 +449,16 @@ public abstract class Session implements Activatable {
     		alert.setTimeout( Alert.FOREVER );
     		
     		if ( forcedDisconnect ) {
-    		    Main.alertBackToMain( alert );
+    		    MainMenu.alertBackToMain( alert );
     		}
     		else {
-    		    Main.alert( alert, terminal );
+    		    MainMenu.alert( alert, terminal );
     		}
         }
 	}
 	
 	public void goMainMenu() {
-		Main.goMainMenu();
+		MainMenu.goMainMenu();
 	}
 
 	/*

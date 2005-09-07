@@ -23,7 +23,7 @@
 package gui.settings;
 
 import gui.EditableForm;
-import gui.MessageForm;
+import gui.MainMenu;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.ChoiceGroup;
@@ -34,7 +34,6 @@ import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
 import ssh.v2.DHKeyExchange;
-import app.Main;
 import app.Settings;
 
 /**
@@ -167,14 +166,14 @@ public class SettingsForm extends EditableForm {
 //#endif
         }
         
-        addCommand(MessageForm.okCommand);
+        addCommand(MainMenu.okCommand);
 	}
     
     /* (non-Javadoc)
      * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable)
      */
     public void commandAction( Command command, Displayable arg1 ) {
-        if ( command == MessageForm.okCommand ) {
+        if ( command == MainMenu.okCommand ) {
             save();
         }
         else {
@@ -410,12 +409,12 @@ public class SettingsForm extends EditableForm {
                             Settings.ssh2y = keys[1];
                             Settings.saveSettings();
 //#ifdef midp2
-                            Main.getDisplay().vibrate(300);
+                            MainMenu.getDisplay().vibrate(300);
 //#endif
                             doBack();
                         }
                     });
-                    Main.setDisplay(alert);
+                    MainMenu.setDisplay(alert);
                     return false;
                 }
             }

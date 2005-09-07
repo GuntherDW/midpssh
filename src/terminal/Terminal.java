@@ -22,7 +22,6 @@ package terminal;
 
 import gui.Activatable;
 import gui.MainMenu;
-import gui.MessageForm;
 import gui.session.SpecialMenu;
 
 import java.io.InputStream;
@@ -37,7 +36,6 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.TextBox;
 import javax.microedition.lcdui.TextField;
 
-import app.Main;
 import app.Settings;
 import app.session.Session;
 
@@ -214,7 +212,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         }
 //#endif
 
-        if ( Main.useColors ) {
+        if ( MainMenu.useColors ) {
             fgcolor = color[7];
             bgcolor = color[0];
         }
@@ -237,7 +235,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         setCommandListener( this );
         
         // Settings
-        if ( Main.useColors ) {
+        if ( MainMenu.useColors ) {
             bgcolor = Settings.bgcolor;
             /* If specified fgcolor is white then use default fgcolor, which is our off white */
             if (Settings.fgcolor != 0xffffff) {
@@ -336,7 +334,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
      * @see gui.Activatable#activate()
      */
     public void activate() {
-        Main.setDisplay( this );
+        MainMenu.setDisplay( this );
     }
     
     public void activate( Activatable back ) {
@@ -367,6 +365,10 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     	}
     	else if (displayable == shiftKeyDialog) {
     		handleModifierDialog(command, shiftKeyDialog, VT320.KEY_SHIFT);
+    	}
+    	else if (displayable != this) {
+    		/* A message form or something, just come back to this screen */
+    		activate();
     	}
     	else if ( command == disconnectCommand || command == closeCommand ) {
             doDisconnect();
@@ -766,7 +768,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         if (text != null) {
         	inputDialog.setString(text);
         }
-        Main.setDisplay(inputDialog);
+        MainMenu.setDisplay(inputDialog);
     }
     
     private TextBox makeModifierInputDialog(String title) {
@@ -788,21 +790,21 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         if ( controlKeyDialog == null ) {
             controlKeyDialog = makeModifierInputDialog("CTRL"); //new ModifierInputDialog( "Control Keys", VT320.KEY_CONTROL );
         }
-        Main.setDisplay(controlKeyDialog);
+        MainMenu.setDisplay(controlKeyDialog);
     }
 
     private void doAltKeyInput() {
         if ( altKeyDialog == null ) {
             altKeyDialog = makeModifierInputDialog("ALT"); //new ModifierInputDialog( "Alt Keys", VT320.KEY_ALT );
         }
-        Main.setDisplay(altKeyDialog);
+        MainMenu.setDisplay(altKeyDialog);
     }
 
     private void doShiftKeyInput() {
         if ( shiftKeyDialog == null ) {
             shiftKeyDialog = makeModifierInputDialog("SHIFT"); //new ModifierInputDialog( "Shift Keys", VT320.KEY_SHIFT );
         }
-        Main.setDisplay(shiftKeyDialog);
+        MainMenu.setDisplay(shiftKeyDialog);
     }
 
 //#ifndef nocursororscroll
@@ -836,7 +838,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
             }
         }
         
-        new MessageForm( "Key Bindings", str.toString() ).activate( this );
+        MainMenu.showMessage("Key Bindings", str.toString(), this);
     }
     
     
@@ -963,7 +965,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 					int fg = fgcolor;
 					int bg = bgcolor;
                     
-					if (Main.useColors) {
+					if (MainMenu.useColors) {
 	                    int fgcolorindex = ( ( currAttr & VT320.COLOR_FG ) >> 4 ) - 1;
 						if ( fgcolorindex >= 0 && fgcolorindex < 8 ) {
 	                        /* Colour index 8 is invalid, 9 means use default */

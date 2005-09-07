@@ -29,7 +29,6 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.TextField;
 
-import app.Main;
 import app.SessionManager;
 import app.SessionSpec;
 import app.session.SshSession;
@@ -72,7 +71,7 @@ public class SessionsMenu extends EditableMenu {
     	if (displayable == authenticationDialog) {
     		SshSession session = new SshSession();
     		session.connect(conn, usernameField.getString(), passwordField.getString());
-            Main.openSession( session );
+            MainMenu.openSession( session );
     	}
     	else {
     		//#ifndef small
@@ -119,15 +118,15 @@ public class SessionsMenu extends EditableMenu {
                     	passwordField = new TextField("Password", conn.password, 255, TextField.PASSWORD);
                     	authenticationDialog.append(usernameField);
                     	authenticationDialog.append(passwordField);
-                    	authenticationDialog.addCommand(MessageForm.okCommand);
-                    	authenticationDialog.addCommand(MessageForm.backCommand);
+                    	authenticationDialog.addCommand(MainMenu.okCommand);
+                    	authenticationDialog.addCommand(MainMenu.backCommand);
                     	authenticationDialog.setCommandListener(this);
-                    	Main.setDisplay(authenticationDialog);
+                    	MainMenu.setDisplay(authenticationDialog);
                     }
                     else {
                     	SshSession session = new SshSession();
     					session.connect( conn, null, null );
-    					Main.openSession( session );
+    					MainMenu.openSession( session );
                     }
 				}
 //#endif
@@ -135,7 +134,7 @@ public class SessionsMenu extends EditableMenu {
 				if ( conn.type.equals( SessionSpec.TYPE_TELNET ) ) {
 					TelnetSession session = new TelnetSession();
 					session.connect( conn );
-					Main.openSession( session );
+					MainMenu.openSession( session );
 				}
 //#endif
 			}

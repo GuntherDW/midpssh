@@ -25,21 +25,37 @@ package gui;
 import gui.session.macros.MacrosMenu;
 import gui.settings.SettingsMenu;
 
+import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
+import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.List;
+import javax.microedition.lcdui.StringItem;
 
 import app.Main;
+import app.session.Session;
 
 /**
  * @author Karl von Randow
  */
 public class MainMenu extends List implements CommandListener, Activatable {
 
+	public static final Command okCommand = new Command( "OK", Command.OK, 1 );
+    
+    public static final Command backCommand = new Command( "Back", Command.BACK, 99 );
+    
 	private static Command quitCommand = new Command( "Quit", Command.EXIT, 2 );
+	
+	private static MainMenu instance;
+	
+	public static boolean useColors;
+	
+	private static Session currentSession;
 
 	private SessionsMenu sessionsMenu;
+	
 //#ifndef nomacros
 	private static MacrosMenu macrosMenu;
 //#endif	
@@ -64,6 +80,10 @@ public class MainMenu extends List implements CommandListener, Activatable {
 	 */
 	public MainMenu() {
 		super( "MidpSSH", List.IMPLICIT );
+		
+		MainMenu.instance = this;
+		
+		useColors = getDisplay().isColor();
 
 		append( ITEM_SESSIONS, null );
 //#ifndef nomacros
@@ -90,7 +110,7 @@ public class MainMenu extends List implements CommandListener, Activatable {
 	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
 	 *      javax.microedition.lcdui.Displayable)
 	 */
-	public void commandAction( Command com, Displayable displayed ) {
+	public void commandAction( Command com, Displayable displayable ) {
 		if ( com == List.SELECT_COMMAND /*|| com == selectCommand*/ ) {
 			String command = getString( getSelectedIndex() );
 			if ( command.equals( ITEM_SESSIONS ) ) {
@@ -148,8 +168,17 @@ public class MainMenu extends List implements CommandListener, Activatable {
 	}
 //#endif
 	
+	public static Form showMessage(String title, String msg, CommandListener commandListener) {
+		Form form = new Form(title);
+		form.append( new StringItem( null, msg ) );
+		form.addCommand(okCommand);
+		form.setCommandListener(commandListener);
+		setDisplay(form);
+		return form;
+	}
+	
 	private void doAbout() {
-		new MessageForm( "About MidpSSH",
+		showMessage( "About MidpSSH",
 				"Version @VERSION@\n\n" +
 		        "MidpSSH is a Telnet and SSH application for Java compatible phones and other mobile devices.\n\n" +
 				"Please visit the project website for more information:\n" +
@@ -157,32 +186,67 @@ public class MainMenu extends List implements CommandListener, Activatable {
 				"MidpSSH is developed by Karl von Randow. MidpSSH is based upon " +
 				"FloydSSH and Telnet Floyd by Radek Polak.\n\n" +
 				"MidpSSH is distributed under the GPL licence. For more information please " +
-				"visit the website." 
-				).activate( this );
+				"visit the website.",
+				this);
 	}
 	
 	private void doHelp() {
-		new MessageForm( "MidpSSH Help",
+		showMessage( "MidpSSH Help",
 				"Connecting\n\n" +
 				"To connect to a remote server choose the Sessions option " +
 				"from the main menu - create a new session, entering in the host and other details. " +
 				"You can then connect to that server by choosing the new session.\n\n" +
 				
 				"More Information\n\n" +
-				"For more information please visit the project website http://www.xk72.com/midpssh/"
-				).activate( this );
+				"For more information please visit the project website http://www.xk72.com/midpssh/",
+				this);
 	}
 	
 	/* (non-Javadoc)
 	 * @see app.Activatable#activate()
 	 */
 	public void activate() {
-		Main.setDisplay( this );
+		setDisplay( this );
 	}
 	/* (non-Javadoc)
 	 * @see gui.Activatable#activate(gui.Activatable)
 	 */
 	public void activate( Activatable back ) {
 		activate();
+	}
+
+	public static void setDisplay( Displayable display ) {
+		getDisplay().setCurrent( display );
+	}
+
+	public static void alert( Alert alert, Displayable back ) {
+		getDisplay().setCurrent( alert, back );
+	}
+
+	public static Display getDisplay() {
+		return Display.getDisplay(Main.instance);
+	}
+
+	/**
+	 *  
+	 */
+	public static void goMainMenu() {
+		setDisplay(instance);
+	}
+
+	/**
+	 * @param alert
+	 */
+	public static void alertBackToMain( Alert alert ) {
+		getDisplay().setCurrent(alert, instance);
+	}
+	
+	public static void openSession( Session session ) {
+		currentSession = session;
+		session.activate();
+	}
+	
+	public static Session currentSession() {
+		return currentSession;
 	}
 }

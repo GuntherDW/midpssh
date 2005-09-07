@@ -29,8 +29,6 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 
-import app.Main;
-
 /**
  * @author Karl von Randow
  */
@@ -41,7 +39,7 @@ public abstract class EditableForm extends Form implements CommandListener, Acti
 	public EditableForm( String title ) {
 		super( title );
 
-		addCommand( MessageForm.backCommand );
+		addCommand( MainMenu.backCommand );
 		setCommandListener( this );
 	}
 
@@ -52,7 +50,7 @@ public abstract class EditableForm extends Form implements CommandListener, Acti
 	 *      javax.microedition.lcdui.Displayable)
 	 */
 	public void commandAction( Command command, Displayable displayed ) {
-		if ( command == MessageForm.backCommand ) {
+		if ( command == MainMenu.backCommand ) {
 			doBack();
 		}
 	}
@@ -65,13 +63,13 @@ public abstract class EditableForm extends Form implements CommandListener, Acti
 		Alert alert = new Alert( "Error" );
 		alert.setString( errorMessage );
 		alert.setType( AlertType.ERROR );
-		Main.setDisplay( alert );
+		MainMenu.setDisplay( alert );
 	}
 	/* (non-Javadoc)
 	 * @see gui.Activatable#activate()
 	 */
 	public void activate() {
-		Main.setDisplay( this );
+		MainMenu.setDisplay( this );
 	}
 	/* (non-Javadoc)
 	 * @see gui.Activatable#activate(gui.Activatable)

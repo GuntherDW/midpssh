@@ -22,16 +22,16 @@
  */
 package gui;
 
-import gui.session.PasswordDialog;
-
 import java.util.Vector;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Form;
+import javax.microedition.lcdui.TextField;
 
+import app.Main;
 import app.SessionManager;
 import app.SessionSpec;
-import app.Main;
 import app.session.SshSession;
 import app.session.TelnetSession;
 
@@ -53,6 +53,12 @@ public class SessionsMenu extends EditableMenu {
     private ImportSessionsForm importSessionsForm;
 //#endif
     
+    private Form authenticationDialog;
+    
+    private TextField usernameField, passwordField;
+    
+    private SessionSpec conn;
+    
 	public SessionsMenu() {
 		super( "Sessions" );
 		replaceSelectCommand( connectCommand );
@@ -62,20 +68,29 @@ public class SessionsMenu extends EditableMenu {
 //#endif
 	}
     
-//#ifndef small
     public void commandAction(Command command, Displayable displayable) {
-        if (command == importCommand) {
-            /* Import */
-            if (importSessionsForm == null) {
-                importSessionsForm = new ImportSessionsForm();
-            }
-            importSessionsForm.activate(this);
-        }
-        else {
-            super.commandAction(command, displayable);
-        }
+    	if (displayable == authenticationDialog) {
+    		SshSession session = new SshSession();
+    		session.connect(conn, usernameField.getString(), passwordField.getString());
+            Main.openSession( session );
+    	}
+    	else {
+    		//#ifndef small
+	        if (command == importCommand) {
+	            /* Import */
+	            if (importSessionsForm == null) {
+	                importSessionsForm = new ImportSessionsForm();
+	            }
+	            importSessionsForm.activate(this);
+	        }
+	        else
+	        	//#endif
+	        {
+	            super.commandAction(command, displayable);
+	        }
+    	}
     }
-//#endif
+
     
 	protected void addItems() {
 		deleteAll();
@@ -91,19 +106,27 @@ public class SessionsMenu extends EditableMenu {
 
 	protected void doSelect( int i ) {
 		if ( i != -1 ) {
-			SessionSpec conn = SessionManager.getSession( i );
+			conn = SessionManager.getSession( i );
 			if ( conn != null ) {
 //#ifndef nossh
 				if ( conn.type.equals( SessionSpec.TYPE_SSH ) ) {
-					SshSession session = new SshSession();
+					String username = conn.username;
                     String password = conn.password;
                     
-                    if (password == null || password.length() == 0) {
-                        /* Prompt for password */
-                        new PasswordDialog(session, conn).activate(this);
+                    if (username == null || username.length() == 0 || password == null || password.length() == 0) {
+                    	authenticationDialog = new Form("Authentication");
+                    	usernameField = new TextField("Username", conn.username, 255, TextField.ANY);
+                    	passwordField = new TextField("Password", conn.password, 255, TextField.PASSWORD);
+                    	authenticationDialog.append(usernameField);
+                    	authenticationDialog.append(passwordField);
+                    	authenticationDialog.addCommand(MessageForm.okCommand);
+                    	authenticationDialog.addCommand(MessageForm.backCommand);
+                    	authenticationDialog.setCommandListener(this);
+                    	Main.setDisplay(authenticationDialog);
                     }
                     else {
-    					session.connect( conn, null );
+                    	SshSession session = new SshSession();
+    					session.connect( conn, null, null );
     					Main.openSession( session );
                     }
 				}

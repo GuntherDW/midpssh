@@ -1,3 +1,8 @@
+1.4.9
+Added settings menu for SSH2 Lite (as a result of size savings elsewhere)
+Username & Password now optional on sessions and both will be prompted for at connect
+Roar font test
+
 1.4.8
 Fix for BitVise SSH (and maybe others) which sends KEX_INIT immediately after its id string
 Support for typing control chars and newlines in macros

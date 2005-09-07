@@ -33,7 +33,7 @@ import app.Main;
  * @author Karl von Randow
  *
  */
-public abstract class EditableMenu extends ExtendedList implements CommandListener, Activatable {
+public abstract class EditableMenu extends List implements CommandListener, Activatable {
 
 	protected static Command newCommand = new Command( "New", Command.SCREEN, 8 );
 
@@ -61,8 +61,24 @@ public abstract class EditableMenu extends ExtendedList implements CommandListen
 		//removeCommand( this.selectCommand );
 		this.selectCommand = selectCommand;
 		
-		setSelectCommand( selectCommand );
+		//#ifdef midp2
+	    super.setSelectCommand( selectCommand );
+	    //#else
+	    //#ifndef blackberry
+	    // On the blackberry we don't require the command to be added as the implicit command is also listed in
+	    // the menu.
+	    addCommand( selectCommand );
+	    //#endif
+	    //#endif
 	}
+	
+	//#ifndef midp2
+	public void deleteAll() {
+		while ( size() > 0 ) {
+			delete(0);
+		}
+	}
+	//#endif
 	
 	protected abstract void addItems();
 	

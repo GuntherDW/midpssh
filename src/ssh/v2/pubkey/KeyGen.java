@@ -1,15 +1,13 @@
 package ssh.v2.pubkey;
 
-import java.math.BigInteger;
-import java.util.Random;
-
+import ssh.v2.BigInteger;
 import ssh.v2.SHA1Digest;
 import ssh.v2.SshPacket2;
 
 public class KeyGen {
     private int                        strength = 1024;
     private int                        certainty = 20;
-    private Random random = new Random();
+    private SecureRandom random = new SecureRandom();
     
     private BigInteger p, q, g, x, y;
 
@@ -18,6 +16,12 @@ public class KeyGen {
     private static BigInteger TWO = BigInteger.valueOf(2);
     private static final byte[] sshdss="ssh-dss".getBytes();
     
+    public static void main(String[] argv) {
+    	KeyGen kg = new KeyGen();
+    	kg.generateKeyPair();
+    	System.out.println(kg.getPublicKeyText());
+    }
+
     public String getPublicKeyText() {
         byte[] pubblob=getPublicKeyBlob();
         byte[] pub=toBase64(pubblob, 0, pubblob.length);

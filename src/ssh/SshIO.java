@@ -105,39 +105,39 @@ public class SshIO {
 	// be sent by either side. Messages with _CMSG_ are only sent by the
 	// client, and messages with _SMSG_ only by the server.
 	//
-	private final byte SSH_MSG_NONE = 0;
+	private static final byte SSH_MSG_NONE = 0;
 
-	private final byte SSH_MSG_DISCONNECT = 1;
+	private static final byte SSH_MSG_DISCONNECT = 1;
 
-	private final byte SSH_SMSG_PUBLIC_KEY = 2;
+	private static final byte SSH_SMSG_PUBLIC_KEY = 2;
 
-	private final byte SSH_CMSG_SESSION_KEY = 3;
+	private static final byte SSH_CMSG_SESSION_KEY = 3;
 
-	private final byte SSH_CMSG_USER = 4;
+	private static final byte SSH_CMSG_USER = 4;
 
-	private final byte SSH_CMSG_AUTH_PASSWORD = 9;
+	private static final byte SSH_CMSG_AUTH_PASSWORD = 9;
 
-	private final byte SSH_CMSG_REQUEST_PTY = 10;
+	private static final byte SSH_CMSG_REQUEST_PTY = 10;
 
-	private final byte SSH_CMSG_EXEC_SHELL = 12;
+	private static final byte SSH_CMSG_EXEC_SHELL = 12;
 
-	private final byte SSH_SMSG_SUCCESS = 14;
+	private static final byte SSH_SMSG_SUCCESS = 14;
 
-	private final byte SSH_SMSG_FAILURE = 15;
+	private static final byte SSH_SMSG_FAILURE = 15;
 
-	private final byte SSH_CMSG_STDIN_DATA = 16;
+	private static final byte SSH_CMSG_STDIN_DATA = 16;
 
-	private final byte SSH_SMSG_STDOUT_DATA = 17;
+	private static final byte SSH_SMSG_STDOUT_DATA = 17;
 
-	private final byte SSH_SMSG_STDERR_DATA = 18;
+	private static final byte SSH_SMSG_STDERR_DATA = 18;
 
-	private final byte SSH_SMSG_EXITSTATUS = 20;
+	private static final byte SSH_SMSG_EXITSTATUS = 20;
 
-	private final byte SSH_MSG_IGNORE = 32;
+	private static final byte SSH_MSG_IGNORE = 32;
 
-	private final byte SSH_CMSG_EXIT_CONFIRMATION = 33;
+	private static final byte SSH_CMSG_EXIT_CONFIRMATION = 33;
 
-	private final byte SSH_MSG_DEBUG = 36;
+	private static final byte SSH_MSG_DEBUG = 36;
 
 	/* SSH v2 stuff */
 
@@ -194,19 +194,19 @@ public class SshIO {
 	//
 	// encryption types
 	//
-	// private int SSH_CIPHER_NONE = 0; // No encryption
+	// private static final int SSH_CIPHER_NONE = 0; // No encryption
 
-	private int SSH_CIPHER_IDEA = 1; // IDEA in CFB mode (patented)
+	private static final int SSH_CIPHER_IDEA = 1; // IDEA in CFB mode (patented)
 
-	private int SSH_CIPHER_DES = 2; // DES in CBC mode
+	private static final int SSH_CIPHER_DES = 2; // DES in CBC mode
 
-	private int SSH_CIPHER_3DES = 3; // Triple-DES in CBC mode
+	private static final int SSH_CIPHER_3DES = 3; // Triple-DES in CBC mode
 
-	// private int SSH_CIPHER_TSS = 4; // An experimental stream cipher
+	// private static final int SSH_CIPHER_TSS = 4; // An experimental stream cipher
 
-	// private int SSH_CIPHER_RC4 = 5; // RC4 (patented)
+	// private static final int SSH_CIPHER_RC4 = 5; // RC4 (patented)
 
-	private int SSH_CIPHER_BLOWFISH = 6; // Bruce Scheiers blowfish (public
+	private static final int SSH_CIPHER_BLOWFISH = 6; // Bruce Scheiers blowfish (public
 
 	// d)
 

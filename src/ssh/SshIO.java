@@ -516,7 +516,7 @@ public class SshIO {
 			//#ifdef removeme
 			if (1 == 1)
 				//#endif
-				return "Sent authentication\r\n";
+				return "Sent password\r\n";
 			//#else
 			break;
 			//#endif

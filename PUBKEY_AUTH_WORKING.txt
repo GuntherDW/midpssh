@@ -1,0 +1,5 @@
+DSA PUBLIC KEY BLOB IS:
+p = built in
+q
+g = built in
+y = public key

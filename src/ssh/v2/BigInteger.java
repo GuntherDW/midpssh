@@ -1591,7 +1591,7 @@ public class BigInteger {
 
 	public static final BigInteger ONE = valueOf(1);
 
-	private static final BigInteger TWO = valueOf(2);
+	public static final BigInteger TWO = valueOf(2);
 
 	public static BigInteger valueOf(long val) {
 		if (val == 0) {

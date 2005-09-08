@@ -66,10 +66,6 @@ public class DHKeyExchange {
 			(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
 			(byte) 0xFF });
     
-	static final int RSA = 0;
-
-	static final int DSS = 1;
-
 	private byte[] V_S;
 
 	private byte[] V_C;

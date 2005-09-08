@@ -114,8 +114,8 @@ public class SessionsMenu extends EditableMenu {
                     
                     if (username == null || username.length() == 0 || password == null || password.length() == 0) {
                     	authenticationDialog = new Form("Authentication");
-                    	usernameField = new TextField("Username", conn.username, 255, TextField.ANY);
-                    	passwordField = new TextField("Password", conn.password, 255, TextField.PASSWORD);
+                    	usernameField = new TextField("Username:", conn.username, 255, TextField.ANY);
+                    	passwordField = new TextField("Password:", conn.password, 255, TextField.PASSWORD);
                     	authenticationDialog.append(usernameField);
                     	authenticationDialog.append(passwordField);
                     	authenticationDialog.addCommand(MainMenu.okCommand);

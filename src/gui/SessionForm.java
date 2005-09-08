@@ -100,7 +100,7 @@ public class SessionForm extends EditableForm {
 		append( cgType );
 //#ifndef notelnet
 		//#ifndef small
-		append( new StringItem( "Authentication:\n", "For SSH connections only." ) );
+		append( new StringItem( "Authentication:\n", "For SSH connections only. Optional." ) );
 		//#endif
 //#endif
 		append( tfUsername );

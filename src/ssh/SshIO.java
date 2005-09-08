@@ -589,7 +589,7 @@ public class SshIO {
 			String methods = p.getString();
 			p.getByte(); // partialSuccess
 
-			return "Login and password not accepted.\r\nAvailable methods are: "
+			return "Authentication failure.\r\nAvailable methods are: "
 					+ methods + "\r\n";
 
 		case SSH2_MSG_IGNORE:

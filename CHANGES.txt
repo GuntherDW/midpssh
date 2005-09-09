@@ -1,3 +1,8 @@
+1.4.10
+Public key authentication added
+Special menu refactored
+Source code overhaul to reduce file size for lite versions
+
 1.4.9
 Added settings menu for SSH2 Lite (as a result of size savings elsewhere)
 Username & Password now optional on sessions and both will be prompted for at connect

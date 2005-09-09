@@ -45,7 +45,9 @@ public class SettingsForm extends EditableForm {
     
     public static final int MODE_INTERFACE = 2;
     
+    //#ifndef small
     public static final int MODE_FONTS = 3;
+    //#endif
     
 //#ifdef ssh2   
     public static final int MODE_SSH = 4;
@@ -58,10 +60,6 @@ public class SettingsForm extends EditableForm {
 	protected TextField tfCols = new TextField( "Cols", "", 3, TextField.NUMERIC );
 	
 	protected TextField tfRows = new TextField( "Rows", "", 3, TextField.NUMERIC );
-	
-	protected TextField tfFg = new TextField( "Foreground", "", 6, TextField.ANY );
-	
-	protected TextField tfBg = new TextField( "Background", "", 6, TextField.ANY );
 //#ifdef midp2    
     protected ChoiceGroup cgFullscreen = new ChoiceGroup( "Full Screen", ChoiceGroup.EXCLUSIVE );
     
@@ -72,6 +70,10 @@ public class SettingsForm extends EditableForm {
     
 //#ifndef small
     protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size", ChoiceGroup.EXCLUSIVE );
+	
+	protected TextField tfFg = new TextField( "Foreground", "", 6, TextField.ANY );
+	
+	protected TextField tfBg = new TextField( "Background", "", 6, TextField.ANY );
 //#endif
     
     protected ChoiceGroup cgPolling = new ChoiceGroup("Polling I/O", ChoiceGroup.EXCLUSIVE);
@@ -135,9 +137,9 @@ public class SettingsForm extends EditableForm {
             //#endif
         }
         break;
+        //#ifndef small
         case MODE_FONTS:
         {
-//#ifndef small
             cgFont.append( "Tiny", null );
             cgFont.append( "Device", null );
             //#ifdef midp2
@@ -146,11 +148,12 @@ public class SettingsForm extends EditableForm {
             cgFont.append( "LCD 4x7", null );
             //#endif
             append( cgFont );
-//#endif
+
             append( tfFg );
             append( tfBg );
         }
         break;
+        //#endif
 //#ifdef ssh2
         case MODE_SSH:
         {
@@ -206,8 +209,8 @@ public class SettingsForm extends EditableForm {
             MainMenu.getDisplay().vibrate(300);
             //#endif
             doBack();
-            return;
     	}
+    	else
     	//#endif
         if ( command == MainMenu.okCommand ) {
             if ( doSave() ) {
@@ -271,16 +274,15 @@ public class SettingsForm extends EditableForm {
             //#endif
         }
         break;
+        //#ifndef small
         case MODE_FONTS:
         {
-//#ifndef small
         	cgFont.setSelectedIndex(Settings.fontMode, true);
-//#endif
-            
             tfFg.setString( toHex( Settings.fgcolor ) );
             tfBg.setString( toHex( Settings.bgcolor ) );
         }
         break;
+        //#endif
 //#ifdef ssh2
         case MODE_SSH:
         {
@@ -349,11 +351,10 @@ public class SettingsForm extends EditableForm {
             //#endif
         }
         break;
+        //#ifndef small
         case MODE_FONTS:
         {
-//#ifndef small
         	Settings.fontMode = cgFont.getSelectedIndex();
-//#endif
             try {
                 int col = Integer.parseInt( tfFg.getString(), 16 );
                 Settings.fgcolor = col;
@@ -371,6 +372,7 @@ public class SettingsForm extends EditableForm {
             }
         }
         break;
+        //#endif
 //#ifdef ssh2
         case MODE_SSH:
         {

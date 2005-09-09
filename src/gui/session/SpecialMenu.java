@@ -28,7 +28,9 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
+import ssh.v2.PublicKeyAuthentication;
 import terminal.VT320;
+import app.Settings;
 import app.session.Session;
 
 /**
@@ -36,25 +38,48 @@ import app.session.Session;
  *
  */
 public class SpecialMenu extends List implements CommandListener, Activatable {
-
-    private static final String MAIN_OPTIONS = "Bksp|Home|End|PgU|PgD|Del|Ins|Func|||\\|~|:|;|'|\"|,|<|.|>|/|?|`|!|@|#|$|%|^|&|*|(|)|-|_|+|=|[|{|]|}|";
-    
-    private static final String FUNCTION_KEY_OPTIONS = "F1|F2|F3|F4|F5|F6|F7|F8|F9|F10|F11|F12|";
-    
-    private SpecialMenu menuFunctionKeys;
     
     private Activatable back, done;
+    
+    private int index;
     
     /**
      * @param title
      * @param mode
      */
     public SpecialMenu() {
-        this( "Special", MAIN_OPTIONS );
+        this( "Special", 0 );
     }
     
-    public SpecialMenu( String title, String options ) {
+    public SpecialMenu( String title, int index ) {
         super(title, List.IMPLICIT);
+
+		//setSelectCommand( selectCommand );
+		addCommand( MainMenu.backCommand );
+		setCommandListener( this );
+
+        String options;
+        this.index = index;
+        switch (index) {
+        case 0:
+        	options = "Keys|Funcs|Symbols|Output|";
+        	break;
+        case 1:
+        	options = "Bksp|Home|End|PgU|PgD|Del|Ins|";
+        	break;
+        case 2:
+        	options = "F1|F2|F3|F4|F5|F6|F7|F8|F9|F10|F11|F12|";
+        	break;
+        case 3:
+        	options = "||\\|~|:|;|'|\"|,|<|.|>|/|?|`|!|@|#|$|%|^|&|*|(|)|-|_|+|=|[|{|]|}|";
+        	break;
+        default:
+        	//#ifdef ssh2
+        	options = "Public Key|";
+        	//#else
+        	options = "";
+        	//#endif
+        }
         
         int start = 0;
         int i = options.indexOf('|');
@@ -63,71 +88,69 @@ public class SpecialMenu extends List implements CommandListener, Activatable {
         	start = i + 1;
         	i = options.indexOf('|', start + 1); // +1 to that we see tokens that are single |
         }
-
-		//setSelectCommand( selectCommand );
-		addCommand( MainMenu.backCommand );
-		
-		setCommandListener( this );
     }
     
     public void commandAction( Command command, Displayable displayed ) {
 		if ( command == List.SELECT_COMMAND ) {
 	        Session session = MainMenu.currentSession();
 			if ( session != null ) {
-			    String option = getString( getSelectedIndex() );
-			    int keyCode = 0;
-			    String str = null;
-			    
-			    // Main options
-			    int i = find( MAIN_OPTIONS, option );
-			    if ( i != -1 ) {
-			        switch ( i ) {
-			            case 0:
-			                keyCode = VT320.VK_BACK_SPACE;
-			                break;
-                        case 1:
-                            keyCode = VT320.VK_HOME;
-                            break;
-                        case 2:
-                            keyCode = VT320.VK_END;
-                            break;
-                        case 3:
-                            keyCode = VT320.VK_PAGE_UP;
-                            break;
-                        case 4:
-                            keyCode = VT320.VK_PAGE_DOWN;
-                            break;
-                        case 5:
-                            keyCode = VT320.VK_DELETE;
-                            break;
-                        case 6:
-                            keyCode = VT320.VK_INSERT;
-                            break;
-			            case 7:
-			                if ( menuFunctionKeys == null ) {
-					            menuFunctionKeys = new SpecialMenu( "Function Keys", FUNCTION_KEY_OPTIONS );
-					        }
-					        menuFunctionKeys.activate( this, done );
-					        break;
-			            default:
-			                str = option;
-			            	break;
-			        }
-			    }
-			    
-			    // Function keys
-			    i = find( FUNCTION_KEY_OPTIONS, option );
-			    if ( i != -1 ) {
-			        keyCode = VT320.VK_F1 + i;
-			    }
-			    if ( keyCode != 0 ) {
-			        session.typeKey( keyCode, 0 );
+				int selectedIndex = getSelectedIndex();
+				String option = null;
+				int keyCode = 0;
+				if (index == 0) {
+					new SpecialMenu(getString(selectedIndex), selectedIndex + 1).activate(this, done);
+				}
+				else if (index == 1) {
+					switch (selectedIndex) {
+		            case 0:
+		                keyCode = VT320.VK_BACK_SPACE;
+		                break;
+                    case 1:
+                        keyCode = VT320.VK_HOME;
+                        break;
+                    case 2:
+                        keyCode = VT320.VK_END;
+                        break;
+                    case 3:
+                        keyCode = VT320.VK_PAGE_UP;
+                        break;
+                    case 4:
+                        keyCode = VT320.VK_PAGE_DOWN;
+                        break;
+                    case 5:
+                        keyCode = VT320.VK_DELETE;
+                        break;
+                    case 6:
+                        keyCode = VT320.VK_INSERT;
+                        break;
+					}
+				}
+				else if (index == 2) {
+					keyCode = VT320.VK_F1 + selectedIndex;
+				}
+				else if (index == 3) {
+					option = getString(selectedIndex);
+				}
+				else if (index == 4) {
+		        	//#ifdef ssh2
+		        	if (Settings.x != null) {
+		        		PublicKeyAuthentication pk = new PublicKeyAuthentication();
+		        		option = pk.getPublicKeyText();
+		        	}
+		        	else {
+		        		option = "";
+		        	}
+		        	//#endif
+				}
+				
+				if (keyCode != 0) {
+					session.typeKey(keyCode, 0);
 					done.activate();
-			    }
-			    else if ( str != null ) {
-			        session.typeString( str );
+				}
+				else if (option != null) {
+					session.typeString(option);
 					done.activate();
-			    }
+				}
 		    }
 		}
 		else if ( command == MainMenu.backCommand ) {
@@ -137,20 +160,6 @@ public class SpecialMenu extends List implements CommandListener, Activatable {
 		}
 	}
     
-    private int find( String options, String option ) {
-    	int start = 0;
-    	int i = options.indexOf('|');
-    	int count = 0;
-    	while (i != -1) {
-    		if (options.substring(start, i).equals(option)) {
-    			return count;
-    		}
-    		count++;
-    		start = i + 1;
-    		i = options.indexOf('|', start + 1);
-    	}
-        return -1;
-    }
     public void activate() {
         MainMenu.setDisplay( this );
     }

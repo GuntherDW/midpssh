@@ -22,7 +22,7 @@ package terminal;
 
 import gui.Activatable;
 import gui.MainMenu;
-import gui.session.NewSpecialMenu;
+import gui.session.SpecialMenu;
 
 import java.io.InputStream;
 
@@ -193,7 +193,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     private TextBox inputDialog;
     
 //#ifndef nospecialmenu 
-    private NewSpecialMenu menuSpecialKeys;
+    private SpecialMenu menuSpecialKeys;
 //#endif
     
     private TextBox controlKeyDialog, altKeyDialog, shiftKeyDialog;
@@ -424,7 +424,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 //#ifndef nospecialmenu
         else if ( command == specialCommand ) {
             if ( menuSpecialKeys == null ) {
-                menuSpecialKeys = new NewSpecialMenu();
+                menuSpecialKeys = new SpecialMenu();
             }
             menuSpecialKeys.activate( this );
         }

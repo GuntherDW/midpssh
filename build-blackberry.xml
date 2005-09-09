@@ -67,9 +67,6 @@
 		<copy file="${build.dir}/blackberry/ota/${bb.codename}.cod" tofile="${dist.dir}/${bb.codename}-1.cod" />
 		<copy file="${build.dir}/blackberry/ota/${bb.codename}-1.cod" tofile="${dist.dir}/${bb.codename}-2.cod" />
 		
-		<mkdir dir="${build.dir}/tasks" />
-		<javac srcdir="tasks" destdir="${build.dir}/tasks" />
-		
 		<java classname="FileLength" classpath="${build.dir}/tasks" outputproperty="cod.size.1">
 			<arg value="${dist.dir}/${bb.codename}-1.cod" />
 		</java>

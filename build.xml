@@ -104,9 +104,17 @@
 			<param name="mode" value="ssh2-lite"/>
 			<param name="lite" value="true"/>
 		</antcall>
+		
+		<java classname="FileLength" classpath="${build.dir}/tasks" outputproperty="lite.size.1">
+			<arg value="${dist.dir}/midpssh-ssh1-lite.jar" />
+		</java>
+		<java classname="FileLength" classpath="${build.dir}/tasks" outputproperty="lite.size.2">
+			<arg value="${dist.dir}/midpssh-ssh2-lite.jar" />
+		</java>
+		<echo message="Lite SSH1=${lite.size.1} SSH2=${lite.size.2}" />
 	</target>
 	
-	<target name="build" if="filename">
+	<target name="build" if="filename" depends="build-tasks">
 		<ant antfile="build-package.xml" />
 	</target>
 	
@@ -179,6 +187,11 @@
 		</copy>
 		
 		<exec executable="${bb.simulator.run}" dir="${bb.simulator}" />
+	</target>
+	
+	<target name="build-tasks">
+		<mkdir dir="${build.dir}/tasks" />
+		<javac srcdir="tasks" destdir="${build.dir}/tasks" />
 	</target>
 		
 	<target name="blackberry">

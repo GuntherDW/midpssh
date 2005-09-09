@@ -54,7 +54,7 @@ public class MacrosMenu extends EditableMenu {
     }
     
 	public MacrosMenu( MacroSet macroSet, int macroSetIndex ) {
-		super( "Macros: " + macroSet.name );
+		super( macroSet.name );
         isMacroSets = false;
 		this.macroSet = macroSet;
 		this.macroSetIndex = macroSetIndex;

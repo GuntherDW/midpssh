@@ -24,6 +24,7 @@ package app;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -102,7 +103,12 @@ public class SessionManager extends MyRecordStore {
      */
     protected Object read(DataInputStream in) throws IOException {
         SessionSpec spec = new SessionSpec();
-        spec.read( in );
+        try {
+        	spec.read( in );
+        }
+        catch (EOFException e) {
+        	/* ignore EOFExceptions as they result from us adding more fields to the end of the spec */
+        }
         return spec;
     }
     /* (non-Javadoc)

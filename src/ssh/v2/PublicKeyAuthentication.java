@@ -86,7 +86,7 @@ public class PublicKeyAuthentication {
 	public String getPublicKeyText() {
 		byte[] pubblob = getPublicKeyBlob();
 		byte[] pub = toBase64(pubblob, 0, pubblob.length);
-		return DHKeyExchange.SSH_DSS + " " + new String(pub);
+		return new String(pub);
 	}
 
 	public byte[] getPublicKeyBlob() {

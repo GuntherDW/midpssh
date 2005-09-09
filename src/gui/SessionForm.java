@@ -167,7 +167,9 @@ public class SessionForm extends EditableForm {
 			tfPassword.setString( conn.password );
 			
 			//#ifdef ssh2
-			cgUsePublicKey.setSelectedIndex(conn.usepublickey ? 0 : 1, true);
+			if (cgUsePublicKey != null) {
+				cgUsePublicKey.setSelectedIndex(conn.usepublickey ? 0 : 1, true);
+			}
             //#endif
 			
 //#ifdef blackberryconntypes
@@ -218,7 +220,9 @@ public class SessionForm extends EditableForm {
 				conn.username = tfUsername.getString();
 				conn.password = tfPassword.getString();
 				//#ifdef ssh2
-				conn.usepublickey = cgUsePublicKey.getSelectedIndex() == 0;
+				if (cgUsePublicKey != null) {
+					conn.usepublickey = cgUsePublicKey.getSelectedIndex() == 0;
+				}
 				//#endif
 //#ifdef blackberryconntypes
                 conn.blackberryConnType = selectedBlackberryConnType();

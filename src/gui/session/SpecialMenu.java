@@ -50,7 +50,7 @@ public class SpecialMenu extends List implements CommandListener, Activatable {
      * @param mode
      */
     public SpecialMenu() {
-        this( "Special Keys", MAIN_OPTIONS );
+        this( "Special", MAIN_OPTIONS );
     }
     
     public SpecialMenu( String title, String options ) {

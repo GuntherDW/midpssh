@@ -170,7 +170,7 @@ public class SettingsForm extends EditableForm {
             append(cgSshKeys);
             
             for (int i = 0; i < sshKeySizes.length; i++) {
-                cgSshKeySize.append("" + sshKeySizes[i], null);
+                cgSshKeySize.append(String.valueOf(sshKeySizes[i]), null);
             }
             append(cgSshKeySize);
         }
@@ -251,13 +251,13 @@ public class SettingsForm extends EditableForm {
             int cols = Settings.terminalCols;
             int rows = Settings.terminalRows;
             if ( cols > 0 ) {
-                tfCols.setString( "" + cols );
+                tfCols.setString( String.valueOf(cols) );
             }
             else {
                 tfCols.setString( "" );
             }
             if ( rows > 0 ) {
-                tfRows.setString( "" + rows );
+                tfRows.setString( String.valueOf(rows) );
             }
             else {
                 tfRows.setString( "" );

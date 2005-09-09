@@ -195,22 +195,23 @@ public abstract class Session implements Activatable {
         
 		emulation.putString( "Connecting to " + host + "..." );
 
-		String conn = "socket://" + host;
+		StringBuffer conn = new StringBuffer("socket://");
+		conn.append(host);
 		if ( host.indexOf( ":" ) == -1 )
-			conn += ":" + defaultPort();
+			conn.append(defaultPort());
 //#ifdef blackberryconntypes
         if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_PROXY ) {
-            conn += ";deviceside=false";
+            conn.append(";deviceside=false");
         }
         else if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_DEVICESIDE ) {
-            conn += ";deviceside=true";
+            conn.append(";deviceside=true");
         }
 //#endif
 //#ifdef blackberryenterprise
-        conn += ";deviceside=false";
+        conn.append(";deviceside=false");
 //#endif
         
-		socket = (StreamConnection) Connector.open( conn, Connector.READ_WRITE, false );
+		socket = (StreamConnection) Connector.open( conn.toString(), Connector.READ_WRITE, false );
 		in = socket.openDataInputStream();
 		out = socket.openDataOutputStream();
 		emulation.putString( "OK\r\n" );

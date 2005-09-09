@@ -22,6 +22,8 @@
  */
 package gui;
 
+import gui.settings.SettingsForm;
+
 import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Displayable;
@@ -55,6 +57,10 @@ public class SessionForm extends EditableForm {
 //#ifdef blackberryconntypes
     private ChoiceGroup cgBlackberryConnType;
 //#endif
+    
+    //#ifdef ssh2
+    private ChoiceGroup cgUsePublicKey;
+    //#endif
 
 	private static String[] typeNames = new String[] {
 			"SSH"
@@ -106,6 +112,13 @@ public class SessionForm extends EditableForm {
 		append( tfUsername );
 		append( tfPassword );
 		
+		//#ifdef ssh2
+		if (Settings.x != null) {
+			cgUsePublicKey = new ChoiceGroup("Use Public Key", ChoiceGroup.EXCLUSIVE);
+			SettingsForm.booleanChoiceGroup(cgUsePublicKey);
+			append(cgUsePublicKey);
+		}
+		//#endif
 
 //#ifdef blackberryconntypes
         cgBlackberryConnType = new ChoiceGroup( "Connection Type", ChoiceGroup.EXCLUSIVE);
@@ -152,7 +165,11 @@ public class SessionForm extends EditableForm {
 			}
 			tfUsername.setString( conn.username );
 			tfPassword.setString( conn.password );
-            
+			
+			//#ifdef ssh2
+			cgUsePublicKey.setSelectedIndex(conn.usepublickey ? 0 : 1, true);
+            //#endif
+			
 //#ifdef blackberryconntypes
             switch ( conn.blackberryConnType ) {
             case SessionSpec.BLACKBERRY_CONN_TYPE_DEFAULT:
@@ -177,65 +194,41 @@ public class SessionForm extends EditableForm {
 	 */
 	public void commandAction( Command command, Displayable displayed ) {
 		if ( command == saveCommand ) {
-			doSave();
+			doSave(false);
 		}
 		else if ( command == createCommand ) {
-			doCreate();
+			doSave(true);
 		}
 		else {
 			super.commandAction( command, displayed );
 		}
 	}
 
-	private void doSave() {
-		if ( connectionIndex != -1 ) {
+	private void doSave(boolean create) {
+		if ( !create || connectionIndex != -1 ) {
 			if ( validateForm() ) {
-				String alias = tfAlias.getString();
-				String type = selectedConnectionType();
-				String host = tfHost.getString();
-				String username = tfUsername.getString();
-				String password = tfPassword.getString();
-
 				SessionSpec conn = new SessionSpec();
-				conn.alias = alias;
-				conn.type = type;
-				conn.host = host;
-				conn.username = username;
-				conn.password = password;
-
+				conn.alias = tfAlias.getString();
+				conn.type = selectedConnectionType();
+				conn.host = tfHost.getString();
+				conn.username = tfUsername.getString();
+				conn.password = tfPassword.getString();
+				//#ifdef ssh2
+				conn.usepublickey = cgUsePublicKey.getSelectedIndex() == 0;
+				//#endif
 //#ifdef blackberryconntypes
                 conn.blackberryConnType = selectedBlackberryConnType();
 //#endif
                 
-				SessionManager.replaceSession( connectionIndex, conn );
-
+                if (create) {
+                	SessionManager.addSession( conn );
+                }
+                else {
+                	SessionManager.replaceSession( connectionIndex, conn );
+                }
+                
 				doBack();
 			}
-		}
-	}
-
-	private void doCreate() {
-		if ( validateForm() ) {
-			String alias = tfAlias.getString();
-			String type = selectedConnectionType();
-			String host = tfHost.getString();
-			String username = tfUsername.getString();
-			String password = tfPassword.getString();
-
-			SessionSpec conn = new SessionSpec();
-			conn.alias = alias;
-			conn.type = type;
-			conn.host = host;
-			conn.username = username;
-			conn.password = password;
-            
-//#ifdef blackberryconntypes
-            conn.blackberryConnType = selectedBlackberryConnType();
-//#endif
-            
-			SessionManager.addSession( conn );
-
-			doBack();
 		}
 	}
     

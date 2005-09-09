@@ -33,6 +33,7 @@ import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
 import ssh.v2.DHKeyExchange;
+import ssh.v2.PublicKeyAuthentication;
 import app.Settings;
 
 /**
@@ -78,6 +79,8 @@ public class SettingsForm extends EditableForm {
 //#ifdef ssh2   
     protected ChoiceGroup cgSsh = new ChoiceGroup("Prefer", ChoiceGroup.EXCLUSIVE);
     
+    protected ChoiceGroup cgSshPublicKey = new ChoiceGroup("Public Key", ChoiceGroup.EXCLUSIVE);
+    
     protected ChoiceGroup cgSshKeys = new ChoiceGroup("Store Keys", ChoiceGroup.EXCLUSIVE);
     
     protected ChoiceGroup cgSshKeySize = new ChoiceGroup("Key Size", ChoiceGroup.EXCLUSIVE);
@@ -85,7 +88,7 @@ public class SettingsForm extends EditableForm {
     private static final int[] sshKeySizes = new int[] { 32, 64, 128, 256, 512, 1024 };
 //#endif
     
-    private void booleanChoiceGroup(ChoiceGroup cg) {
+    public static void booleanChoiceGroup(ChoiceGroup cg) {
     	cg.append( "On", null );
         cg.append( "Off", null );
     }
@@ -153,6 +156,16 @@ public class SettingsForm extends EditableForm {
             cgSsh.append( "SSH2", null);
             append(cgSsh);
             
+            booleanChoiceGroup(cgSshPublicKey);
+            append(cgSshPublicKey);
+            
+            if (Settings.x != null) {
+            	/* Show public key */
+            	PublicKeyAuthentication pk = new PublicKeyAuthentication(Settings.x, Settings.y);
+            	append(new StringItem("Public Key:", pk.getPublicKeyText()));
+            	System.out.println(pk.getPublicKeyText());
+            }
+            
             booleanChoiceGroup(cgSshKeys);
             append(cgSshKeys);
             
@@ -174,9 +187,18 @@ public class SettingsForm extends EditableForm {
     public void commandAction( Command command, Displayable displayable ) {
     	//#ifdef ssh2
     	if (displayable instanceof Alert) {
-    		byte[][] keys = DHKeyExchange.generateKeyPairBytes(Settings.ssh2KeySize);
-            Settings.ssh2x = keys[0];
-            Settings.ssh2y = keys[1];
+    		if (cgSshKeys.getSelectedIndex() == 0 && Settings.ssh2x == null) {
+	    		byte[][] keys = DHKeyExchange.generateKeyPairBytes(Settings.ssh2KeySize);
+	            Settings.ssh2x = keys[0];
+	            Settings.ssh2y = keys[1];
+    		}
+    		if (cgSshPublicKey.getSelectedIndex() == 0 && Settings.x == null) {
+    			PublicKeyAuthentication pk = new PublicKeyAuthentication();
+    			pk.generateKeyPair();
+    			Settings.x = pk.x.toByteArray();
+    			Settings.y = pk.y.toByteArray();
+    		}
+    		
             Settings.saveSettings();
             //#ifdef midp2
             MainMenu.getDisplay().vibrate(300);
@@ -265,6 +287,7 @@ public class SettingsForm extends EditableForm {
                 cgSsh.setSelectedIndex(0, true);
                 break;
             }
+            cgSshPublicKey.setSelectedIndex(Settings.x != null ? 0 : 1, true);
             cgSshKeys.setSelectedIndex(Settings.ssh2StoreKey ? 0 : 1, true);
             for (int i = 0; i < sshKeySizes.length; i++) {
                 if (Settings.ssh2KeySize == sshKeySizes[i]) {
@@ -369,16 +392,20 @@ public class SettingsForm extends EditableForm {
                 Settings.ssh2y = null;
             }
             
-            if (ssh2StoreKey) {
-                if (Settings.ssh2x == null || Settings.ssh2y == null) {
-                    /* Pregenerate ssh2 key */
-                    Alert alert = new Alert("MidpSSH");
-                    alert.setString("Please wait");
-                    alert.setTimeout(1);
-                    alert.setCommandListener(this);
-                    MainMenu.setDisplay(alert);
-                    return false;
-                }
+            boolean ssh2PublicKey = cgSshPublicKey.getSelectedIndex() == 0;
+            if (!ssh2PublicKey) {
+            	Settings.x = null;
+            	Settings.y = null;
+            }
+            
+            if ((ssh2StoreKey && Settings.ssh2x == null) || (ssh2PublicKey && Settings.x == null)) {
+                /* Pregenerate ssh2 key */
+                Alert alert = new Alert("MidpSSH");
+                alert.setString("Generating keys, please wait...");
+                alert.setTimeout(1);
+                alert.setCommandListener(this);
+                MainMenu.setDisplay(alert);
+                return false;
             }
             else {
                 Settings.ssh2x = null;

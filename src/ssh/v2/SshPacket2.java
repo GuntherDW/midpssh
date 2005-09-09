@@ -1,7 +1,7 @@
 /*
  * This file is part of "The Java Telnet Application".
  * 
- * (c) Matthias L. Jugel, Marcus Meißner 1996-2002. All Rights Reserved. The
+ * (c) Matthias L. Jugel, Marcus Meiï¿½ner 1996-2002. All Rights Reserved. The
  * file was changed by Radek Polak to work as midlet in MIDP 1.0
  * 
  * This file has been modified by Karl von Randow for MidpSSH.
@@ -31,32 +31,34 @@ import ssh.SshPacket;
 
 public class SshPacket2 extends SshPacket {
 
+	private static final int PHASE_packet_length = 0;
+
+	private static final int PHASE_block = 1;
+
 	//SSH_RECEIVE_PACKET
 	private byte[] packet_length_array = new byte[8]; // 8 bytes
 
-	private int packet_length = 0; // 32-bit sign int
+	private int packet_length; // 32-bit sign int
 
-	private int padlen = 0; // packet length 1 byte unsigned
+	private int padlen; // packet length 1 byte unsigned
 
-	private int position = 0;
+	private int position;
 
-	private int phase_packet = 0;
+	private int phase_packet = PHASE_packet_length;
 
-	private final int PHASE_packet_length = 0;
+	private SshCrypto2 crypto;
 
-	private final int PHASE_block = 1;
-
-	private SshCrypto2 crypto = null;
-
+	public SshPacket2() {
+		
+	}
+	
 	public SshPacket2(SshCrypto2 _crypto) {
 		/* receiving packet */
-		position = 0;
-		phase_packet = PHASE_packet_length;
 		crypto = _crypto;
 	}
 
 	public SshPacket2(byte newType) {
-		setType(newType);
+		packet_type = newType;
 	}
 
 	/**
@@ -269,7 +271,7 @@ public class SshPacket2 extends SshPacket {
 							decryptedBlock.length);
 					decryptedBlock = dd;
 
-					setType(decryptedBlock[0]);
+					packet_type = decryptedBlock[0];
 					//System.err.println( "IN Packet type: " + getType() );
 					//System.err.println( "Packet len: " + packet_length );
 

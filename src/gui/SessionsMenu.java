@@ -69,9 +69,14 @@ public class SessionsMenu extends EditableMenu {
     
     public void commandAction(Command command, Displayable displayable) {
     	if (displayable == authenticationDialog) {
-    		SshSession session = new SshSession();
-    		session.connect(conn, usernameField.getString(), passwordField.getString());
-            MainMenu.openSession( session );
+    		if (command == MainMenu.okCommand) {
+	    		SshSession session = new SshSession();
+	    		session.connect(conn, usernameField.getString(), passwordField.getString());
+	            MainMenu.openSession( session );
+    		}
+    		else {
+    			activate();
+    		}
     	}
     	else {
     		//#ifndef small
@@ -112,12 +117,14 @@ public class SessionsMenu extends EditableMenu {
 					String username = conn.username;
                     String password = conn.password;
                     
-                    if (username == null || username.length() == 0 || password == null || password.length() == 0) {
+                    if (username.length() == 0 || (password.length() == 0 && !conn.usepublickey)) {
                     	authenticationDialog = new Form("Authentication");
-                    	usernameField = new TextField("Username:", conn.username, 255, TextField.ANY);
-                    	passwordField = new TextField("Password:", conn.password, 255, TextField.PASSWORD);
+                    	usernameField = new TextField("Username:", username, 255, TextField.ANY);
                     	authenticationDialog.append(usernameField);
-                    	authenticationDialog.append(passwordField);
+                    	if (!conn.usepublickey) {
+                    		passwordField = new TextField("Password:", password, 255, TextField.PASSWORD);
+                        	authenticationDialog.append(passwordField);
+                    	}
                     	authenticationDialog.addCommand(MainMenu.okCommand);
                     	authenticationDialog.addCommand(MainMenu.backCommand);
                     	authenticationDialog.setCommandListener(this);

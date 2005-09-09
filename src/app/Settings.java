@@ -73,9 +73,10 @@ public class Settings extends MyRecordStore {
 	public static boolean ssh2StoreKey;
 
 	public static byte[] ssh2x, ssh2y;
+	
+	public static byte[] x, y;
 
 	public static int ssh2KeySize;
-
 	//#endif
 
 	public static boolean pollingIO;
@@ -127,6 +128,10 @@ public class Settings extends MyRecordStore {
 		//#ifdef midp2
 		predictiveText = true;
 		//#endif
+		//#ifdef ssh2
+		x = null;
+		y = null;
+		//#endif
 	}
 
 	/*
@@ -160,6 +165,10 @@ public class Settings extends MyRecordStore {
 		pollingIO = in.readBoolean();
 		//#ifdef midp2
 		predictiveText = in.readBoolean();
+		//#endif
+		//#ifdef ssh2
+		x = readByteArray(in);
+		y = readByteArray(in);
 		//#endif
 		return null;
 	}
@@ -195,6 +204,10 @@ public class Settings extends MyRecordStore {
 		out.writeBoolean(pollingIO);
 		//#ifdef midp2
 		out.writeBoolean(predictiveText);
+		//#endif
+		//#ifdef ssh2
+		writeByteArray(out, x);
+		writeByteArray(out, y);
 		//#endif
 	}
 

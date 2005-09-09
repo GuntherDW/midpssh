@@ -36,6 +36,7 @@ import ssh.v1.MD5;
 import ssh.v1.SshCrypto;
 import ssh.v1.SshPacket1;
 import ssh.v2.DHKeyExchange;
+import ssh.v2.PublicKeyAuthentication;
 import ssh.v2.SHA1Digest;
 import ssh.v2.SshCrypto2;
 import ssh.v2.SshPacket2;
@@ -97,6 +98,14 @@ public class SshIO {
 
 	// phase : handleBytes
 	private boolean initting = true;
+	
+	private int authmode;
+	
+	public boolean usepublickey = false;
+	
+	private static final byte MODE_PUBLICKEY = 1;
+	
+	private static final byte MODE_PASSWORD = 2;
 
 	// handlePacket
 	// messages
@@ -133,11 +142,11 @@ public class SshIO {
 
 	private static final byte SSH_SMSG_EXITSTATUS = 20;
 
-	private static final byte SSH_MSG_IGNORE = 32;
+//	private static final byte SSH_MSG_IGNORE = 32;
 
 	private static final byte SSH_CMSG_EXIT_CONFIRMATION = 33;
 
-	private static final byte SSH_MSG_DEBUG = 36;
+//	private static final byte SSH_MSG_DEBUG = 36;
 
 	/* SSH v2 stuff */
 
@@ -145,7 +154,7 @@ public class SshIO {
 
 	private static final byte SSH2_MSG_IGNORE = 2;
 
-	private static final byte SSH2_MSG_UNIMPLEMENTED = 3;
+//	private static final byte SSH2_MSG_UNIMPLEMENTED = 3;
 
 	private static final byte SSH2_MSG_SERVICE_REQUEST = 5;
 
@@ -165,7 +174,9 @@ public class SshIO {
 
 	private static final byte SSH2_MSG_USERAUTH_SUCCESS = 52;
 
-	private static final byte SSH2_MSG_USERAUTH_BANNER = 53;
+//	private static final byte SSH2_MSG_USERAUTH_BANNER = 53;
+
+//	private static final byte SSH2_MSG_USERAUTH_PK_OK = 60;
 
 	private static final byte SSH2_MSG_CHANNEL_OPEN = 90;
 
@@ -173,13 +184,13 @@ public class SshIO {
 
 	// private static final byte SSH2_MSG_CHANNEL_OPEN_FAILURE = 92;
 
-	private static final byte SSH2_MSG_CHANNEL_WINDOW_ADJUST = 93;
+//	private static final byte SSH2_MSG_CHANNEL_WINDOW_ADJUST = 93;
 
 	private static final byte SSH2_MSG_CHANNEL_DATA = 94;
 
 	// private static final byte SSH2_MSG_CHANNEL_EXTENDED_DATA = 95;
 
-	private static final byte SSH2_MSG_CHANNEL_EOF = 96;
+//	private static final byte SSH2_MSG_CHANNEL_EOF = 96;
 
 	private static final byte SSH2_MSG_CHANNEL_CLOSE = 97;
 
@@ -241,17 +252,6 @@ public class SshIO {
 		sshSession.sendData(b);
 	}
 
-	public void disconnect() {
-//		login = "";
-//		password = "";
-		initting = true;
-//		crypto = null;
-	}
-
-	protected void sendDisconnect() throws IOException {
-		sendDisconnect(11, "Finished");
-	}
-
 	protected void sendDisconnect(int reason, String reasonStr)
 			throws IOException {
 		//#ifdef ssh2
@@ -272,8 +272,6 @@ public class SshIO {
 			sendPacket1(pn);
 		}
 		//#endif
-
-		disconnect();
 	}
 
 	public void sendData(byte[] data, int offset, int length)
@@ -387,15 +385,15 @@ public class SshIO {
 	
 						//#ifdef ssh2
 						if (useprotocol == 2) {
-							currentpacket = new SshPacket2(null);
+							currentpacket = new SshPacket2();
 						}
 						//#ifndef nossh1
 						else {
-							currentpacket = new SshPacket1(null);
+							currentpacket = new SshPacket1();
 						}
 						//#endif
 						//#else
-						currentpacket = new SshPacket1(null);
+						currentpacket = new SshPacket1();
 						//#endif
 						
 						break PHASE_INIT;
@@ -503,24 +501,82 @@ public class SshIO {
 
 		case SSH2_MSG_SERVICE_ACCEPT: {
 			// Send login request
+			
 			SshPacket2 buf = new SshPacket2(SSH2_MSG_USERAUTH_REQUEST);
 			buf.putString(login);
 			buf.putString("ssh-connection");
-			buf.putString("password");
-			buf.putByte((byte) 0);
-			buf.putString(password);
+			if (usepublickey && Settings.x != null) {
+				/* Try publickey */
+				authmode = MODE_PUBLICKEY;
+				
+				PublicKeyAuthentication kg = new PublicKeyAuthentication(Settings.x, Settings.y);
+				
+				buf.putString("publickey");
+				buf.putByte((byte) 1);
+				buf.putString("ssh-dss");
+				buf.putString(kg.getPublicKeyBlob());
+				byte[] sig = kg.sign(session_id, buf.getData());
+				buf.putString(sig);
+				sendPacket2(buf);
 
-			sendPacket2(buf);
-
-			//#ifndef small
-			//#ifdef removeme
-			if (1 == 1)
+				//#ifndef small
+				//#ifdef removeme
+				if (1 == 1)
+					//#endif
+					return "Sent publickey\r\n";
+				//#else
+				break;
 				//#endif
-				return "Sent password\r\n";
-			//#else
-			break;
-			//#endif
+			}
+			else {
+				/* Do password auth */
+				authmode = MODE_PASSWORD;
+				
+				buf.putString("password");
+				buf.putByte((byte) 0);
+				buf.putString(password);
+				sendPacket2(buf);
+
+				//#ifndef small
+				//#ifdef removeme
+				if (1 == 1)
+					//#endif
+					return "Sent password\r\n";
+				//#else
+				break;
+				//#endif
+			}
 		}
+
+		case SSH2_MSG_USERAUTH_FAILURE:
+			String methods = p.getString();
+			p.getByte(); // partialSuccess
+
+			if (authmode != MODE_PASSWORD) {
+				/* Try again with password */
+				authmode = MODE_PASSWORD;
+				
+				SshPacket2 buf = new SshPacket2(SSH2_MSG_USERAUTH_REQUEST);
+				buf.putString(login);
+				buf.putString("ssh-connection");
+				buf.putString("password");
+				buf.putByte((byte) 0);
+				buf.putString(password);
+				sendPacket2(buf);
+
+				//#ifndef small
+				//#ifdef removeme
+				if (1 == 1)
+					//#endif
+					return "Retrying with password\r\n";
+				//#else
+				break;
+				//#endif
+			}
+			else {
+				return "Authentication failure.\r\nAvailable methods are: "
+						+ methods + "\r\n";
+			}
 
 		case SSH2_MSG_USERAUTH_SUCCESS: {
 			// Open channel
@@ -585,22 +641,8 @@ public class SshIO {
 			return data;
 		}
 
-		case SSH2_MSG_USERAUTH_FAILURE:
-			String methods = p.getString();
-			p.getByte(); // partialSuccess
-
-			return "Authentication failure.\r\nAvailable methods are: "
-					+ methods + "\r\n";
-
-		case SSH2_MSG_IGNORE:
-		case SSH2_MSG_CHANNEL_WINDOW_ADJUST:
-		case SSH2_MSG_USERAUTH_BANNER:
-		case SSH2_MSG_CHANNEL_EOF:
-		case SSH2_MSG_CHANNEL_REQUEST:
-			break;
-
 		case SSH2_MSG_CHANNEL_CLOSE: {
-			sendDisconnect();
+			sendDisconnect(11, "Finished");
 			break;
 		}
 
@@ -610,18 +652,18 @@ public class SshIO {
 			 * http://www.ietf.org/internet-drafts/draft-ietf-secsh-transport-24.txt
 			 * Section 7.1
 			 */
-			p.getBytes(16); // cookie
-			p.getString(); // kex_algorithms
-			p.getString(); // server_host_key_algorithms
-			p.getString(); // encryption_algorithms_client_to_server
-			p.getString(); // encryption_algorithms_server_to_client
-			p.getString(); // mac_algorithms_client_to_server
-			p.getString(); // mac_algorithms_server_to_client
-			p.getString(); // compression_algorithms_client_to_server
-			p.getString(); // compression_algorithms_server_to_client
-			p.getString(); // languages_client_to_server
-			p.getString(); // languages_server_to_client
-			p.getBytes(1); // first_kex_packet_follows
+//			p.getBytes(16); // cookie
+//			p.getString(); // kex_algorithms
+//			p.getString(); // server_host_key_algorithms
+//			p.getString(); // encryption_algorithms_client_to_server
+//			p.getString(); // encryption_algorithms_server_to_client
+//			p.getString(); // mac_algorithms_client_to_server
+//			p.getString(); // mac_algorithms_server_to_client
+//			p.getString(); // compression_algorithms_client_to_server
+//			p.getString(); // compression_algorithms_server_to_client
+//			p.getString(); // languages_client_to_server
+//			p.getString(); // languages_server_to_client
+//			p.getBytes(1); // first_kex_packet_follows
 
 			SshPacket2 pn = new SshPacket2(SSH2_MSG_KEXINIT);
 			byte[] kexsend = new byte[16];
@@ -689,18 +731,12 @@ public class SshIO {
 			if (ok) {
 				// TODO handle fingerprint better
 				return "OK\r\n" + dhkex.getKeyAlg() + " " + fingerprint(K_S)
-						+ "\r\n\r\n";
+						+ "\r\n";
 			} else {
 				sendDisconnect(3, "Key exchange failed");
 				return "FAILED\r\n";
 			}
 		}
-
-		case SSH2_MSG_UNIMPLEMENTED:
-			return "SSH2: Unimplemented\r\n";
-
-		default:
-			return "SSH2: Unknown type " + p.getType() + "\r\n";
 		}
 		return "";
 	}
@@ -734,7 +770,7 @@ public class SshIO {
 		 * Integrity key server to client: HASH (K || H || "F" || session_id)
 		 */
 
-		SshPacket2 buf = new SshPacket2(null);
+		SshPacket2 buf = new SshPacket2();
 		buf.putMpInt(K);
 		buf.putBytes(H);
 		buf.putByte((byte) 0x41);
@@ -775,7 +811,7 @@ public class SshIO {
 		int keySize = 24;
 
 		while (keySize > Es2c.length) {
-			buf = new SshPacket2(null);
+			buf = new SshPacket2();
 			buf.putMpInt(K);
 			buf.putBytes(H);
 			buf.putBytes(Es2c);
@@ -790,7 +826,7 @@ public class SshIO {
 			Es2c = bar;
 		}
 		while (keySize > Ec2s.length) {
-			buf = new SshPacket2(null);
+			buf = new SshPacket2();
 			buf.putMpInt(K);
 			buf.putBytes(H);
 			buf.putBytes(Ec2s);
@@ -834,13 +870,9 @@ public class SshIO {
 		// System.out.println("1 packet to handle, type " + p.getType());
 
 		switch (p.getType()) {
-		case SSH_MSG_IGNORE:
-			return "";
 
 		case SSH_MSG_DISCONNECT:
-			String str = p.getString();
-			disconnect();
-			return str;
+			return p.getString();
 
 		case SSH_SMSG_PUBLIC_KEY:
 			byte[] anti_spoofing_cookie; // 8 bytes
@@ -880,7 +912,7 @@ public class SshIO {
 					host_key_public_modulus.length,
 					server_key_public_exponent.length);
 			String fingerprint = fingerprint(host_key_combined);
-			return fingerprint + "\r\n\r\n";
+			return fingerprint + "\r\n";
 
 		// break;
 
@@ -937,7 +969,6 @@ public class SshIO {
 			if (lastPacketSentType == SSH_CMSG_AUTH_PASSWORD) {// password
 				// incorrect ???
 				// System.out.println("failed to log in");
-				disconnect();
 				return "Login & password not accepted\r\n";
 			}
 			if (lastPacketSentType == SSH_CMSG_USER) {
@@ -958,12 +989,7 @@ public class SshIO {
 			return p.getString();
 
 		case SSH_SMSG_STDERR_DATA: // receive some error data from the
-			// server
-			// if(debug > 1)
-			str = "Error : " + p.getString();
-			// System.out.println("SshIO.handlePacket : " + "STDERR_DATA " +
-			// str);
-			return str;
+			return "Error : " + p.getString();
 
 		case SSH_SMSG_EXITSTATUS: // sent by the server to indicate that
 			// the client program has terminated.
@@ -971,32 +997,6 @@ public class SshIO {
 			p.getInt32();
 			Send_SSH_CMSG_EXIT_CONFIRMATION();
 			// System.out.println("SshIO : Exit status " + value);
-			disconnect();
-			break;
-
-		case SSH_MSG_DEBUG:
-			str = p.getString();
-			// if (debug > 0) {
-			// System.out.println("SshIO.handlePacket : " + " DEBUG " +
-			// str);
-
-			// bad bad bad bad bad. We should not do actions in DEBUG
-			// messages,
-			// but apparently some SSH demons does not send SSH_SMSG_FAILURE
-			// for
-			// just USER CMS.
-			/*
-			 * if(lastPacketSentType==SSH_CMSG_USER) {
-			 * Send_SSH_CMSG_AUTH_PASSWORD(); break; }
-			 */
-			// return str;
-			// }
-			return "";
-
-		default:
-			// System.err.print("SshIO.handlePacket1: Packet Type unknown: "
-			// +
-			// p.getType());
 			break;
 
 		}
@@ -1079,7 +1079,6 @@ public class SshIO {
 						// System.err.println("SshIO: remote server does not
 						// supported IDEA, BlowFish or 3DES, support cypher mask
 						// is " + supported_ciphers_mask[3] + ".\n");
-						disconnect();
 						return "\rIncompatible ciphers.\r\n";
 					}
 				}

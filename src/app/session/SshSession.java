@@ -40,7 +40,7 @@ public class SshSession extends Session implements SessionIOHandler {
         sshIO = new SshIO( this );
         sshIO.login = username != null ? username : spec.username;
         sshIO.password = password != null ? password : spec.password;
-        
+        sshIO.usepublickey = spec.usepublickey;
 		super.connect( spec, this );
 	}
 

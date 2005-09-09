@@ -182,7 +182,7 @@ public class DHKeyExchange {
 		// authenti-
 		// cate the key exchange.
 
-		SshPacket2 buf = new SshPacket2(null);
+		SshPacket2 buf = new SshPacket2();
 		buf.putString(V_C);
 		buf.putString(V_S);
 		buf.putString(I_C);
@@ -223,7 +223,7 @@ public class DHKeyExchange {
 	
 	public static boolean verifyDSASignature(byte[] message, byte[] sig, BigInteger y,
 			BigInteger p, BigInteger q, BigInteger g) {
-		SshPacket2 buf = new SshPacket2(null);
+		SshPacket2 buf = new SshPacket2();
 		buf.putBytes(sig);
 		buf.getByteString(); // algorithm
 		byte[] blob = buf.getByteString();

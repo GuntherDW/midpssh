@@ -1,7 +1,7 @@
 /*
  * This file is part of "The Java Telnet Application".
  *
- * (c) Matthias L. Jugel, Marcus Meißner 1996-2002. All Rights Reserved.
+ * (c) Matthias L. Jugel, Marcus Meiï¿½ner 1996-2002. All Rights Reserved.
  * The file was changed by Radek Polak to work as midlet in MIDP 1.0
  *
  * Please visit http://javatelnet.org/ for updates and contact.
@@ -34,32 +34,40 @@ import ssh.SshPacket;
  */
 public class SshPacket1 extends SshPacket {
 
+	private static final int PHASE_packet_length = 0;
+
+	private static final int PHASE_block = 1;
+
 	//SSH_RECEIVE_PACKET
 	private byte[] packet_length_array = new byte[4];
 
-	private int packet_length = 0;
+	private int packet_length;
 
-	private byte[] padding = null;
+	private byte[] padding;
 
 	private byte[] crc_array = new byte[4];
 
-	private byte[] block = null;
+	private byte[] block;
 
-	private byte[] decryptedBlock = null; // decrypted part (Padding + Type +
+	private byte[] decryptedBlock; // decrypted part (Padding + Type + Data + Check)
 
-	// Data + Check)
+	private int position;
 
-	private SshCrypto crypto = null;
+	private int phase_packet = PHASE_packet_length;
 
+	private SshCrypto crypto;
+
+	public SshPacket1() {
+		
+	}
+	
 	public SshPacket1( SshCrypto _crypto ) {
 		/* receiving packet */
-		position = 0;
-		phase_packet = PHASE_packet_length;
 		crypto = _crypto;
 	}
 
 	public SshPacket1( byte newType ) {
-		setType( newType );
+		packet_type = newType;
 	}
 
 	/**
@@ -139,15 +147,7 @@ public class SshPacket1 extends SshPacket {
 		System.arraycopy( packet_length_array, 0, full, 0, 4 );
 		System.arraycopy( block, 0, full, 4, block.length );
 		return full;
-	};
-
-	private int position = 0;
-
-	private int phase_packet = 0;
-
-	private static final int PHASE_packet_length = 0;
-
-	private static final int PHASE_block = 1;
+	}
 
 	public int addPayload( byte[] buff, int boffset, int length ) {
 		//byte newbuf[] = null;
@@ -214,7 +214,7 @@ public class SshPacket1 extends SshPacket {
 							padding[i] = decryptedBlock[blockOffset++];
 
 						//packet type
-						setType( decryptedBlock[blockOffset++] );
+						packet_type = decryptedBlock[blockOffset++];
 
 						byte[] data;
 						//data

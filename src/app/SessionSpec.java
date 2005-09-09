@@ -37,6 +37,8 @@ public class SessionSpec {
 	public static final String TYPE_TELNET = "telnet";
 	
 	public String alias, type, host, username, password;
+	
+	public boolean usepublickey;
     
 //#ifdef blackberryconntypes
     public static final int BLACKBERRY_CONN_TYPE_DEFAULT = 0;
@@ -60,6 +62,12 @@ public class SessionSpec {
             // Ignore as this is newly added and people's saved state won't have it, maybe remove this at a later stage
         }
 //#endif
+        try {
+        	usepublickey = in.readBoolean();
+        }
+        catch (EOFException e) {
+        	
+        }
 	}
 
 	public void write( DataOutputStream out ) throws IOException {
@@ -71,5 +79,6 @@ public class SessionSpec {
 //#ifdef blackberryconntypes
         out.writeInt(blackberryConnType);
 //#endif
+        out.writeBoolean(usepublickey);
 	}
 }

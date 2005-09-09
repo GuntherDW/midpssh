@@ -197,8 +197,10 @@ public abstract class Session implements Activatable {
 
 		StringBuffer conn = new StringBuffer("socket://");
 		conn.append(host);
-		if ( host.indexOf( ":" ) == -1 )
+		if ( host.indexOf( ':' ) == -1 ) {
+			conn.append(':');
 			conn.append(defaultPort());
+		}
 //#ifdef blackberryconntypes
         if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_PROXY ) {
             conn.append(";deviceside=false");

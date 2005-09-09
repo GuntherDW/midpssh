@@ -73,7 +73,7 @@ public class MacrosMenu extends EditableMenu {
             if ( i >= 0 && i < size() ) {
                 Session session = MainMenu.currentSession();
                 if ( session != null ) {
-                    Macro macro = macroSet.getMacro( i );
+                    MacroSet macro = macroSet.getMacro( i );
                     if ( macro != null ) {
                     	session.getTerminal().doTextInput(macro.value.trim());
                     }
@@ -103,7 +103,7 @@ public class MacrosMenu extends EditableMenu {
         else {
     		Vector macros = macroSet.macros;
 			for ( int i = 0; i < macros.size(); i++ ) {
-				Macro macro = (Macro) macros.elementAt( i );
+				MacroSet macro = (MacroSet) macros.elementAt( i );
 				String name = macro.name;
 				if (name.length() == 0) {
 					name = macro.value.trim(); // trim off whitespace as it may end with a newline
@@ -139,7 +139,7 @@ public class MacrosMenu extends EditableMenu {
             else {
     			Session session = MainMenu.currentSession();
     			if ( session != null ) {
-    				Macro macro = macroSet.getMacro( i );
+    				MacroSet macro = macroSet.getMacro( i );
     				if ( macro != null ) {
     					doMacro(session, macro);
     					session.activate();
@@ -167,7 +167,7 @@ public class MacrosMenu extends EditableMenu {
 		return -1;
 	}
 	
-	private void doMacro(Session session, Macro macro) {
+	private void doMacro(Session session, MacroSet macro) {
 		String value = macro.value;
 		
 		int start = 0;

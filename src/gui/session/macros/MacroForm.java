@@ -126,7 +126,7 @@ public class MacroForm extends EditableForm {
 		this.macroIndex = macroIndex;
 
 		MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
-		Macro macro = macroSet.getMacro( macroIndex );
+		MacroSet macro = macroSet.getMacro( macroIndex );
 		tfName.setString( macro.name );
 		
 		String value = macro.value;
@@ -177,7 +177,7 @@ public class MacroForm extends EditableForm {
     				if ( cgType.getSelectedIndex() == 0 ) {
     					value += "\n";
     				}
-    				Macro macro = new Macro( tfName.getString(), value );
+    				MacroSet macro = new MacroSet( tfName.getString(), value );
     				if (create) {
     					macroSet.addMacro( macro );
     				}

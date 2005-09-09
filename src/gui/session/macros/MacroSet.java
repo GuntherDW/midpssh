@@ -37,9 +37,18 @@ public class MacroSet {
 	
 	private static final byte VERSION = 1;
 	
-	public String name;
+	public String name, value;
 	
-	public Vector macros = new Vector();
+	public Vector macros;
+	
+	public MacroSet() {
+		macros = new Vector();
+	}
+	
+	public MacroSet(String name, String value) {
+		this.name = name;
+		this.value = value;
+	}
 	
 	/**
 	 * @param in
@@ -54,7 +63,7 @@ public class MacroSet {
 			String name = in.readUTF();
 			String value = in.readUTF();
 			
-			Macro macro = new Macro( name, value );
+			MacroSet macro = new MacroSet( name, value );
 			macros.addElement( macro );
 		}
 	}
@@ -68,17 +77,17 @@ public class MacroSet {
 		
 		out.writeByte( macros.size() );
 		for ( int i = 0; i < macros.size(); i++ ) {
-			Macro macro = (Macro) macros.elementAt( i );
+			MacroSet macro = (MacroSet) macros.elementAt( i );
 			out.writeUTF( macro.name );
 			out.writeUTF( macro.value );
 		}
 	}
 	
-	public Macro getMacro( int i ) {
-		return ( i >= macros.size() ? null : (Macro) macros.elementAt( i ));
+	public MacroSet getMacro( int i ) {
+		return ( i >= macros.size() ? null : (MacroSet) macros.elementAt( i ));
 	}
 	
-	public void addMacro( Macro macro ) {
+	public void addMacro( MacroSet macro ) {
 		macros.addElement( macro );
 		MacroSetManager.saveMacroSets();
 	}
@@ -90,7 +99,7 @@ public class MacroSet {
 		}
 	}
 	
-	public void replaceMacro( int i, Macro macro ) {
+	public void replaceMacro( int i, MacroSet macro ) {
 		if ( i >= macros.size() ) {
 			macros.addElement( macro );
 		}

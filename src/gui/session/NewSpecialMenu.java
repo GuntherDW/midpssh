@@ -28,7 +28,9 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
+import ssh.v2.PublicKeyAuthentication;
 import terminal.VT320;
+import app.Settings;
 import app.session.Session;
 
 /**
@@ -60,7 +62,7 @@ public class NewSpecialMenu extends List implements CommandListener, Activatable
         this.index = index;
         switch (index) {
         case 0:
-        	options = "Keys|Funcs|Symbols|";
+        	options = "Keys|Funcs|Symbols|Output|";
         	break;
         case 1:
         	options = "Bksp|Home|End|PgU|PgD|Del|Ins|";
@@ -68,8 +70,15 @@ public class NewSpecialMenu extends List implements CommandListener, Activatable
         case 2:
         	options = "F1|F2|F3|F4|F5|F6|F7|F8|F9|F10|F11|F12|";
         	break;
-        default:
+        case 3:
         	options = "||\\|~|:|;|'|\"|,|<|.|>|/|?|`|!|@|#|$|%|^|&|*|(|)|-|_|+|=|[|{|]|}|";
+        	break;
+        default:
+        	//#ifdef ssh2
+        	options = "Public Key|";
+        	//#else
+        	options = "";
+        	//#endif
         }
         
         int start = 0;
@@ -121,6 +130,17 @@ public class NewSpecialMenu extends List implements CommandListener, Activatable
 				}
 				else if (index == 3) {
 					option = getString(selectedIndex);
+				}
+				else if (index == 4) {
+		        	//#ifdef ssh2
+		        	if (Settings.x != null) {
+		        		PublicKeyAuthentication pk = new PublicKeyAuthentication();
+		        		option = pk.getPublicKeyText();
+		        	}
+		        	else {
+		        		option = "";
+		        	}
+		        	//#endif
 				}
 				
 				if (keyCode != 0) {

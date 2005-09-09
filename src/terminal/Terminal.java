@@ -36,7 +36,6 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.TextBox;
 import javax.microedition.lcdui.TextField;
 
-import ssh.v2.PublicKeyAuthentication;
 import app.Settings;
 import app.session.Session;
 
@@ -386,13 +385,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         }
 //#endif
         else if ( command == tabCommand ) {
-            //buffer.keyTyped( 0, '\t', 0 );
-        	//#ifdef ssh2
-        	if (Settings.x != null) {
-        		PublicKeyAuthentication pk = new PublicKeyAuthentication();
-        		buffer.stringTyped(pk.getPublicKeyText());
-        	}
-        	//#endif
+            buffer.keyTyped( 0, '\t', 0 );
         }
         else if ( command == spaceCommand ) {
             buffer.keyTyped( 0, ' ', 0 );

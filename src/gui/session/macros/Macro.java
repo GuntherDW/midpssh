@@ -36,7 +36,6 @@ public class Macro {
 	 * @param value
 	 */
 	public Macro( String name, String value ) {
-		super();
 		this.name = name;
 		this.value = value;
 	}

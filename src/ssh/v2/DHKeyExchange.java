@@ -36,6 +36,8 @@ import java.util.Random;
 
 public class DHKeyExchange {
 
+	public static final String SSH_DSS = "ssh-dss";
+	
 	public static final BigInteger g = new BigInteger("2", 16);
 //	public static final BigInteger g = new BigInteger(new byte[] { 2 });
 
@@ -68,21 +70,23 @@ public class DHKeyExchange {
 //			(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
 //			(byte) 0xFF });
     
-	private byte[] V_S;
+	public byte[] V_S;
 
-	private byte[] V_C;
+	public byte[] V_C;
 
-	private byte[] I_S;
+	public byte[] I_S;
 
-	private byte[] I_C;
+	public byte[] I_C;
 
-	private byte[] H;
+	public byte[] H;
 
-	private byte[] e, f, K;
+	private byte[] e;
+	
+	public byte[] K;
 
     private BigInteger x, y;
     
-    private String keyalg;
+    public String keyalg;
 
 	public DHKeyExchange(int qLength) {
         BigInteger[] keys = generateKeyPair(qLength);
@@ -126,24 +130,6 @@ public class DHKeyExchange {
         BigInteger[] keys = generateKeyPair(qLength);
         return new byte[][] { keys[0].toByteArray(), keys[1].toByteArray() };
     }
-    
-    /**
-     * given a short term public key from a given party calculate the next
-     * message in the agreement sequence.
-     */
-    private BigInteger calculateAgreement(BigInteger y) {
-        return y.modPow(x, p);
-    }
-
-	/**
-	 * @return Returns the k.
-	 */
-	public byte[] getK() {
-		if (K == null) {
-			K = calculateAgreement( new BigInteger( f ) ).toByteArray();
-		}
-		return K;
-	}
 
 	/**
 	 * 
@@ -164,9 +150,9 @@ public class DHKeyExchange {
 		// impint g of dsa
 		// impint pub_key of dsa
 
-		this.f = f;
-		getK();
-
+		//K = calculateAgreement( new BigInteger( f ) ).toByteArray();
+		K = new BigInteger(f).modPow(x, p).toByteArray();
+		
 		//The hash H is computed as the HASH hash of the concatenation
 		// of the
 		//following:
@@ -204,7 +190,7 @@ public class DHKeyExchange {
 		keyalg = pp.getString();
 		boolean result;
 		
-		if ( keyalg.equals( "ssh-dss" ) ) {
+		if ( keyalg.equals(SSH_DSS) ) {
 			byte [] p = pp.getByteString();
 			byte [] q = pp.getByteString();
 			byte [] g = pp.getByteString();
@@ -266,47 +252,4 @@ public class DHKeyExchange {
 
 		return v.equals(r);
 	}
-
-	/**
-	 * @param i_c
-	 *            The i_C to set.
-	 */
-	public void setI_C(byte[] i_c) {
-		I_C = i_c;
-	}
-
-	/**
-	 * @param i_s
-	 *            The i_S to set.
-	 */
-	public void setI_S(byte[] i_s) {
-		I_S = i_s;
-	}
-
-	/**
-	 * @param v_c
-	 *            The v_C to set.
-	 */
-	public void setV_C(byte[] v_c) {
-		V_C = v_c;
-	}
-
-	/**
-	 * @param v_s
-	 *            The v_S to set.
-	 */
-	public void setV_S(byte[] v_s) {
-		V_S = v_s;
-	}
-
-	/**
-	 * @return Returns the h.
-	 */
-	public byte[] getH() {
-		return H;
-	}
-    
-    public String getKeyAlg() {
-        return keyalg;
-    }
 }

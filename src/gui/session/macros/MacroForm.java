@@ -147,23 +147,28 @@ public class MacroForm extends EditableForm {
 	 */
 	public void commandAction( Command command, Displayable displayed ) {
 		if ( command == SessionForm.saveCommand ) {
-			doSave();
+			doSave(false);
 		}
 		else if ( command == SessionForm.createCommand ) {
-		    doCreate();
+		    doSave(true);
 		}
 		else {
 			super.commandAction( command, displayed );
 		}
 	}
 
-	private void doSave() {
-		if ( macroSetIndex != -1 ) {
+	private void doSave(boolean create) {
+		if (create || macroSetIndex != -1 ) {
 			if ( validateForm() ) {
                 if ( isMacroSet ) {
-                    MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
+                    MacroSet macroSet = create ? new MacroSet() : MacroSetManager.getMacroSet( macroSetIndex );
                     macroSet.name = tfName.getString();
-                    MacroSetManager.replaceMacroSet( macroSetIndex, macroSet );
+                    if (create) {
+                    	MacroSetManager.addMacroSet( macroSet );
+                    }
+                    else {
+                    	MacroSetManager.replaceMacroSet( macroSetIndex, macroSet );
+                    }
                 }
                 else {
     				MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
@@ -172,7 +177,12 @@ public class MacroForm extends EditableForm {
     					value += "\n";
     				}
     				Macro macro = new Macro( tfName.getString(), value );
-    				macroSet.replaceMacro( macroIndex, macro );
+    				if (create) {
+    					macroSet.addMacro( macro );
+    				}
+    				else {
+    					macroSet.replaceMacro( macroIndex, macro );
+    				}
                 }
 
 				doBack();
@@ -180,42 +190,9 @@ public class MacroForm extends EditableForm {
 		}
 	}
 
-	private void doCreate() {
-		if ( validateForm() ) {
-            if ( isMacroSet ) {
-                MacroSet macroSet = new MacroSet();
-                macroSet.name = tfName.getString();
-                MacroSetManager.addMacroSet( macroSet );
-            }
-            else {
-    			MacroSet macroSet = MacroSetManager.getMacroSet( macroSetIndex );
-    			String value = tfValue.getString();
-    			if ( cgType.getSelectedIndex() == 0 ) {
-    				value += "\n";
-    			}
-    			Macro macro = new Macro( tfName.getString(), value );
-    			macroSet.addMacro( macro );
-            }
-            
-			doBack();
-		}
-	}
-
 	protected boolean validateForm() {
-		boolean invalid = false;
-		
-        if ( isMacroSet ) {
-            if ( tfName.getString() == null || tfName.getString().length() == 0 ) {
-                invalid = true;
-            }
-        }
-        else {
-    		if ( tfValue.getString() == null || tfValue.getString().length() == 0 ) {
-    			invalid = true;
-    		}
-        }
-
-		if (invalid) {
+		if ((isMacroSet && tfName.getString().length() == 0)
+				|| (!isMacroSet && tfValue.getString().length() == 0)) {
 			showErrorMessage(SessionForm.WARNING_REQUIRED);
 			return false;
 		}

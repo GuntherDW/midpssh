@@ -75,11 +75,7 @@ public class MacroSet {
 	}
 	
 	public Macro getMacro( int i ) {
-		if ( i < 0 )
-			return null;
-		if ( i >= macros.size() )
-			return null;
-		return (Macro) macros.elementAt( i );
+		return ( i >= macros.size() ? null : (Macro) macros.elementAt( i ));
 	}
 	
 	public void addMacro( Macro macro ) {
@@ -88,17 +84,13 @@ public class MacroSet {
 	}
 	
 	public void deleteMacro( int i ) {
-		if ( i < 0 )
-			return;
-		if ( i >= macros.size() )
-			return;
-		macros.removeElementAt( i );
-		MacroSetManager.saveMacroSets();
+		if ( i < macros.size() ) {
+			macros.removeElementAt( i );
+			MacroSetManager.saveMacroSets();
+		}
 	}
 	
 	public void replaceMacro( int i, Macro macro ) {
-		if ( i < 0 )
-			return;
 		if ( i >= macros.size() ) {
 			macros.addElement( macro );
 		}

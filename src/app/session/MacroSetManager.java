@@ -71,12 +71,8 @@ public class MacroSetManager extends MyRecordStore {
 	 * @return
 	 */
 	public static MacroSet getMacroSet( int i ) {
-		if ( i < 0 )
-			return null;
 		Vector macroSets = getMacroSets();
-		if ( macroSets == null || i >= macroSets.size() )
-			return null;
-		return (MacroSet) macroSets.elementAt( i );
+		return ( macroSets == null || i >= macroSets.size() ? null : (MacroSet) macroSets.elementAt( i ));
 	}
 
 	/**
@@ -84,9 +80,6 @@ public class MacroSetManager extends MyRecordStore {
 	 */
 	public static void addMacroSet( MacroSet macroSet ) {
 		Vector macroSets = getMacroSets();
-		if ( macroSets == null ) {
-			macroSets = new Vector();
-		}
 		macroSets.addElement( macroSet );
 		saveMacroSets();
 	}
@@ -95,13 +88,11 @@ public class MacroSetManager extends MyRecordStore {
 	 * @param i
 	 */
 	public static void deleteMacroSet( int i ) {
-		if ( i < 0 )
-			return;
 		Vector macroSets = getMacroSets();
-		if ( macroSets == null || i >= macroSets.size() )
-			return;
-		macroSets.removeElementAt( i );
-		saveMacroSets();
+		if (i < macroSets.size() ) {
+			macroSets.removeElementAt( i );
+			saveMacroSets();
+		}
 	}
 
 	/**
@@ -109,11 +100,7 @@ public class MacroSetManager extends MyRecordStore {
 	 * @param conn
 	 */
 	public static void replaceMacroSet( int i, MacroSet macroSet ) {
-		if ( i < 0 )
-			return;
 		Vector macroSets = getMacroSets();
-		if ( macroSets == null )
-			macroSets = new Vector();
 		if ( i >= macroSets.size() ) {
 			macroSets.addElement( macroSet );
 		}

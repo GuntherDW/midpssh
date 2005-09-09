@@ -29,7 +29,6 @@ import java.util.Vector;
 
 import javax.microedition.rms.RecordEnumeration;
 import javax.microedition.rms.RecordStore;
-import javax.microedition.rms.RecordStoreNotFoundException;
 
 /**
  * @author Karl
@@ -93,7 +92,7 @@ public abstract class MyRecordStore {
             try {
                 try {
                     RecordStore.deleteRecordStore(rmsName);
-                } catch (RecordStoreNotFoundException e1) {
+                } catch (Exception e) {
 
                 }
 

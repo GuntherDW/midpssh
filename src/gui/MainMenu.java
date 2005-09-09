@@ -230,16 +230,10 @@ public class MainMenu extends List implements CommandListener, Activatable {
 		return Display.getDisplay(Main.instance);
 	}
 
-	/**
-	 *  
-	 */
 	public static void goMainMenu() {
 		setDisplay(instance);
 	}
 
-	/**
-	 * @param alert
-	 */
 	public static void alertBackToMain( Alert alert ) {
 		getDisplay().setCurrent(alert, instance);
 	}

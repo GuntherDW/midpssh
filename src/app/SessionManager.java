@@ -40,9 +40,7 @@ public class SessionManager extends MyRecordStore {
 	private static SessionManager me = new SessionManager();
 
     protected int compare(Object a, Object b) {
-        SessionSpec aa = (SessionSpec) a;
-        SessionSpec bb = (SessionSpec) b;
-        return aa.alias.compareTo(bb.alias);
+        return ((SessionSpec) a).alias.compareTo(((SessionSpec) b).alias);
     }
     
 	public static Vector getSessions() {
@@ -61,9 +59,6 @@ public class SessionManager extends MyRecordStore {
 	 */
 	public static void addSession( SessionSpec conn ) {
 		Vector connections = getSessions();
-		if ( connections == null ) {
-			connections = new Vector();
-		}
 		connections.addElement( conn );
 		saveSessions();
 	}
@@ -73,25 +68,19 @@ public class SessionManager extends MyRecordStore {
 	 * @return
 	 */
 	public static SessionSpec getSession( int i ) {
-		if ( i < 0 )
-			return null;
 		Vector connections = getSessions();
-		if ( connections == null || i >= connections.size() )
-			return null;
-		return (SessionSpec) connections.elementAt( i );
+		return (i >= connections.size() ? null : (SessionSpec) connections.elementAt( i ));
 	}
 
 	/**
 	 * @param i
 	 */
 	public static void deleteSession( int i ) {
-		if ( i < 0 )
-			return;
 		Vector connections = getSessions();
-		if ( connections == null || i >= connections.size() )
-			return;
-		connections.removeElementAt( i );
-		saveSessions();
+		if (i < connections.size()) {
+			connections.removeElementAt( i );
+			saveSessions();
+		}
 	}
 
 	/**
@@ -99,11 +88,7 @@ public class SessionManager extends MyRecordStore {
 	 * @param conn
 	 */
 	public static void replaceSession( int i, SessionSpec conn ) {
-		if ( i < 0 )
-			return;
 		Vector connections = getSessions();
-		if ( connections == null )
-			connections = new Vector();
 		if ( i >= connections.size() ) {
 			connections.addElement( conn );
 		}

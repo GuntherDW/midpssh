@@ -509,11 +509,11 @@ public class SshIO {
 				/* Try publickey */
 				authmode = MODE_PUBLICKEY;
 				
-				PublicKeyAuthentication kg = new PublicKeyAuthentication(Settings.x, Settings.y);
+				PublicKeyAuthentication kg = new PublicKeyAuthentication();
 				
 				buf.putString("publickey");
 				buf.putByte((byte) 1);
-				buf.putString("ssh-dss");
+				buf.putString(DHKeyExchange.SSH_DSS);
 				buf.putString(kg.getPublicKeyBlob());
 				byte[] sig = kg.sign(session_id, buf.getData());
 				buf.putString(sig);
@@ -674,7 +674,7 @@ public class SshIO {
 			String ciphername;
 			pn.putBytes(kexsend);
 			pn.putString("diffie-hellman-group1-sha1");
-			pn.putString("ssh-dss");
+			pn.putString(DHKeyExchange.SSH_DSS);
 
 			cipher_type = "DES3";
 			ciphername = "3des-cbc";
@@ -707,10 +707,10 @@ public class SshIO {
 				dhkex = new DHKeyExchange(Settings.ssh2KeySize);
 			}
 
-			dhkex.setV_S(idstr.trim().getBytes());
-			dhkex.setV_C(idstr_sent.trim().getBytes());
-			dhkex.setI_S(add20(p.getData()));
-			dhkex.setI_C(add20(I_C));
+			dhkex.V_S = idstr.trim().getBytes();
+			dhkex.V_C = idstr_sent.trim().getBytes();
+			dhkex.I_S = add20(p.getData());
+			dhkex.I_C = add20(I_C);
 
 			pn = new SshPacket2(SSH2_MSG_KEXDH_INIT);
 			pn.putMpInt(dhkex.getE());
@@ -730,7 +730,7 @@ public class SshIO {
 			boolean ok = dhkex.next(K_S, dhserverpub, sig_of_h);
 			if (ok) {
 				// TODO handle fingerprint better
-				return "OK\r\n" + dhkex.getKeyAlg() + " " + fingerprint(K_S)
+				return "OK\r\n" + dhkex.keyalg + " " + fingerprint(K_S)
 						+ "\r\n";
 			} else {
 				sendDisconnect(3, "Key exchange failed");
@@ -752,8 +752,8 @@ public class SshIO {
 	private byte[] session_id;
 
 	private void updateKeys(DHKeyExchange kex) {
-		byte[] K = kex.getK();
-		byte[] H = kex.getH();
+		byte[] K = kex.K;
+		byte[] H = kex.H;
 		SHA1Digest hash = new SHA1Digest();
 
 		if (session_id == null) {

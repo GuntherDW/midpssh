@@ -40,7 +40,7 @@ import app.session.Session;
  */
 public class MacrosMenu extends EditableMenu {
     
-    protected static Command useCommand = new Command( "Use", Command.ITEM, 1 );
+    protected static final Command useCommand = new Command( "Use", Command.ITEM, 1 );
 	
 	private MacroSet macroSet;
 	
@@ -95,25 +95,21 @@ public class MacrosMenu extends EditableMenu {
 
         if ( isMacroSets ) {
             Vector macroSets = MacroSetManager.getMacroSets();
-            if ( macroSets != null ) {
-                for ( int i = 0; i < macroSets.size(); i++ ) {
-                    MacroSet macroSet = (MacroSet) macroSets.elementAt( i );
-                    append( macroSet.name, null );
-                }
+            for ( int i = 0; i < macroSets.size(); i++ ) {
+                MacroSet macroSet = (MacroSet) macroSets.elementAt( i );
+                append( macroSet.name, null );
             }
         }
         else {
     		Vector macros = macroSet.macros;
-    		if ( macros != null ) {
-    			for ( int i = 0; i < macros.size(); i++ ) {
-    				Macro macro = (Macro) macros.elementAt( i );
-    				String name = macro.name;
-    				if ( name == null || name.length() == 0 ) {
-    					name = macro.value.trim(); // trim off whitespace as it may end with a newline
-    				}
-    				append( name, null );
-    			}
-    		}
+			for ( int i = 0; i < macros.size(); i++ ) {
+				Macro macro = (Macro) macros.elementAt( i );
+				String name = macro.name;
+				if (name.length() == 0) {
+					name = macro.value.trim(); // trim off whitespace as it may end with a newline
+				}
+				append( name, null );
+			}
         }
 	}
 	/* (non-Javadoc)

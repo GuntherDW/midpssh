@@ -76,14 +76,16 @@ public class SettingsForm extends EditableForm {
     
     protected ChoiceGroup cgPolling = new ChoiceGroup("Polling I/O", ChoiceGroup.EXCLUSIVE);
 	
-//#ifdef ssh2   
+//#ifdef ssh2
+    //#ifndef nossh1
     protected ChoiceGroup cgSsh = new ChoiceGroup("Prefer", ChoiceGroup.EXCLUSIVE);
+    //#endif
     
     protected ChoiceGroup cgSshPublicKey = new ChoiceGroup("Public Key", ChoiceGroup.EXCLUSIVE);
     
-    protected ChoiceGroup cgSshKeys = new ChoiceGroup("Store Keys", ChoiceGroup.EXCLUSIVE);
+    protected ChoiceGroup cgSshKeys = new ChoiceGroup("Store Session Key", ChoiceGroup.EXCLUSIVE);
     
-    protected ChoiceGroup cgSshKeySize = new ChoiceGroup("Key Size", ChoiceGroup.EXCLUSIVE);
+    protected ChoiceGroup cgSshKeySize = new ChoiceGroup("Session Key Size", ChoiceGroup.EXCLUSIVE);
     
     private static final int[] sshKeySizes = new int[] { 32, 64, 128, 256, 512, 1024 };
 //#endif
@@ -152,18 +154,19 @@ public class SettingsForm extends EditableForm {
 //#ifdef ssh2
         case MODE_SSH:
         {
+        	//#ifndef nossh1
             cgSsh.append( "SSH1", null);
             cgSsh.append( "SSH2", null);
             append(cgSsh);
+            //#endif
             
             booleanChoiceGroup(cgSshPublicKey);
             append(cgSshPublicKey);
             
             if (Settings.x != null) {
             	/* Show public key */
-            	PublicKeyAuthentication pk = new PublicKeyAuthentication(Settings.x, Settings.y);
+            	PublicKeyAuthentication pk = new PublicKeyAuthentication();
             	append(new StringItem("Public Key:", pk.getPublicKeyText()));
-            	System.out.println(pk.getPublicKeyText());
             }
             
             booleanChoiceGroup(cgSshKeys);
@@ -193,10 +196,9 @@ public class SettingsForm extends EditableForm {
 	            Settings.ssh2y = keys[1];
     		}
     		if (cgSshPublicKey.getSelectedIndex() == 0 && Settings.x == null) {
-    			PublicKeyAuthentication pk = new PublicKeyAuthentication();
-    			pk.generateKeyPair();
-    			Settings.x = pk.x.toByteArray();
-    			Settings.y = pk.y.toByteArray();
+    			byte[][] keys = PublicKeyAuthentication.generateKeyPair();
+    			Settings.x = keys[0];
+    			Settings.y = keys[1];
     		}
     		
             Settings.saveSettings();
@@ -208,7 +210,10 @@ public class SettingsForm extends EditableForm {
     	}
     	//#endif
         if ( command == MainMenu.okCommand ) {
-            save();
+            if ( doSave() ) {
+                Settings.saveSettings( );
+                doBack();
+            }
         }
         else {
             super.commandAction( command, displayable );
@@ -279,14 +284,9 @@ public class SettingsForm extends EditableForm {
 //#ifdef ssh2
         case MODE_SSH:
         {
-            switch (Settings.sshVersionPreferred) {
-            case 2:
-                cgSsh.setSelectedIndex(1, true);
-                break;
-            default:
-                cgSsh.setSelectedIndex(0, true);
-                break;
-            }
+        	//#ifndef nossh1
+        	cgSsh.setSelectedIndex(Settings.sshVersionPreferred == 2 ? 1 : 0, true);
+            //#endif
             cgSshPublicKey.setSelectedIndex(Settings.x != null ? 0 : 1, true);
             cgSshKeys.setSelectedIndex(Settings.ssh2StoreKey ? 0 : 1, true);
             for (int i = 0; i < sshKeySizes.length; i++) {
@@ -302,14 +302,6 @@ public class SettingsForm extends EditableForm {
 		
 		super.activate();
 	}
-    
-    private void save() {
-        boolean ok = doSave();
-        if ( ok ) {
-            Settings.saveSettings( );
-            doBack();
-        }
-    }
 	
 	protected boolean doSave() {
         switch ( mode ) {
@@ -382,11 +374,13 @@ public class SettingsForm extends EditableForm {
 //#ifdef ssh2
         case MODE_SSH:
         {
+        	//#ifndef nossh1
             Settings.sshVersionPreferred = cgSsh.getSelectedIndex() == 1 ? 2 : 1;
+            //#endif
             boolean ssh2StoreKey = cgSshKeys.getSelectedIndex() == 0;
             Settings.ssh2StoreKey = ssh2StoreKey;
             int newKeySize = sshKeySizes[cgSshKeySize.getSelectedIndex()];
-            if (newKeySize != Settings.ssh2KeySize) {
+            if (newKeySize != Settings.ssh2KeySize || !ssh2StoreKey) {
                 Settings.ssh2KeySize = newKeySize;
                 Settings.ssh2x = null;
                 Settings.ssh2y = null;
@@ -406,10 +400,6 @@ public class SettingsForm extends EditableForm {
                 alert.setCommandListener(this);
                 MainMenu.setDisplay(alert);
                 return false;
-            }
-            else {
-                Settings.ssh2x = null;
-                Settings.ssh2y = null;
             }
         }
         break;

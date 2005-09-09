@@ -2,9 +2,11 @@ package ssh.v2;
 
 import java.util.Random;
 
+import app.Settings;
+
 public class PublicKeyAuthentication {
 
-	private static final BigInteger p = new BigInteger(
+	public static final BigInteger p = new BigInteger(
 			"d1c9009c7f181e9b27ce020e014d72c499f604c8d978a4dd9a8614362b09a74be4004cdd1b6ccf2bb2d2a4d4710be0817a375c85e8b0ce05e92a1f7c0b4886418dc6de84457dfd8dc19efdc0efb5c15bbab7a860b3e95c169d6e8aceef445deddc85ab44a11d5870847b99239011ff7d36a0f52cd11c3a0a33c415cdd58d85a1",
 			16),
 			q = new BigInteger("e691d26b30a8b43081b981d96a8189fe78d04f8f", 16),
@@ -14,14 +16,12 @@ public class PublicKeyAuthentication {
 
 	public BigInteger x, y;
 
+	//#ifdef ssh2
 	public PublicKeyAuthentication() {
-
+		this.x = new BigInteger(Settings.x);
+		this.y = new BigInteger(Settings.y);
 	}
-
-	public PublicKeyAuthentication(byte[] x, byte[] y) {
-		this.x = new BigInteger(x);
-		this.y = new BigInteger(y);
-	}
+	//#endif
 
 	public byte[] sign(byte[] session_id, byte[] message) {
 		SshPacket2 buf = new SshPacket2();
@@ -39,7 +39,7 @@ public class PublicKeyAuthentication {
 		BigInteger[] rs = generateSignature(hash);
 
 		buf = new SshPacket2();
-		buf.putString(sshdss);
+		buf.putString(DHKeyExchange.SSH_DSS);
 		byte[] r = rs[0].toByteArray();
 		byte[] s = rs[1].toByteArray();
 		byte[] sig = new byte[40];
@@ -83,17 +83,15 @@ public class PublicKeyAuthentication {
 		return res;
 	}
 
-	private static final byte[] sshdss = "ssh-dss".getBytes();
-
 	public String getPublicKeyText() {
 		byte[] pubblob = getPublicKeyBlob();
 		byte[] pub = toBase64(pubblob, 0, pubblob.length);
-		return "ssh-dss " + new String(pub);
+		return DHKeyExchange.SSH_DSS + " " + new String(pub);
 	}
 
 	public byte[] getPublicKeyBlob() {
 		SshPacket2 buf = new SshPacket2();
-		buf.putString(sshdss);
+		buf.putString(DHKeyExchange.SSH_DSS);
 		buf.putMpInt(p.toByteArray());
 		buf.putMpInt(q.toByteArray());
 		buf.putMpInt(g.toByteArray());
@@ -101,7 +99,9 @@ public class PublicKeyAuthentication {
 		return buf.getData();
 	}
 
-	public void generateKeyPair() {
+	public static byte[][] generateKeyPair() {
+		BigInteger x, y;
+		
 		do {
 			x = new BigInteger(160, new Random());
 		} while (x.equals(BigInteger.ZERO) || x.compareTo(q) >= 0);
@@ -110,6 +110,11 @@ public class PublicKeyAuthentication {
 		// calculate the public key.
 		//
 		y = g.modPow(x, p);
+		
+		byte[][] res = new byte[2][];
+		res[0] = x.toByteArray();
+		res[1] = y.toByteArray();
+		return res;
 	}
 
 	private static final byte[] b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="

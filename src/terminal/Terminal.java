@@ -36,6 +36,8 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.TextBox;
 import javax.microedition.lcdui.TextField;
 
+import ssh.v2.PublicKeyAuthentication;
+
 import app.Settings;
 import app.session.Session;
 
@@ -73,9 +75,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     
     private static final Command textInputCommand = new Command( "Input", Command.ITEM, commandPriority++ );
 
-//#ifndef notyping
     private static final Command typeCommand = new Command( "Type", Command.ITEM, commandPriority++ );
-//#endif
     
 //#ifndef nomacros
     private static final Command macrosCommand = new Command( "Macros", Command.ITEM, commandPriority++ );
@@ -109,8 +109,10 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     
     private static final Command backCommand = new Command( "Back", Command.BACK, commandPriority++ );
     
+    //#ifndef small
     private static final Command showBindingsCommand = new Command( "Show Key Bindings", Command.ITEM, commandPriority++ );
-
+    //#endif
+    
     //private static final Command settingsCommand = new Command( "Settings", Command.ITEM, commandPriority++ );
     
     private static final Command disconnectCommand = new Command( "Disconnect", Command.ITEM, commandPriority++ );
@@ -143,8 +145,9 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 //#ifndef nocursororscroll
         cursorCommand, scrollCommand,
 //#endif
+        //#ifndef small
         showBindingsCommand,
-        //settingsCommand,
+        //#endif
         disconnectCommand
     };
 
@@ -384,7 +387,13 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         }
 //#endif
         else if ( command == tabCommand ) {
-            buffer.keyTyped( 0, '\t', 0 );
+            //buffer.keyTyped( 0, '\t', 0 );
+        	//#ifdef ssh2
+        	if (Settings.x != null) {
+        		PublicKeyAuthentication pk = new PublicKeyAuthentication();
+        		buffer.stringTyped(pk.getPublicKeyText());
+        	}
+        	//#endif
         }
         else if ( command == spaceCommand ) {
             buffer.keyTyped( 0, ' ', 0 );
@@ -431,12 +440,11 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         else if ( command == backCommand  || command == backMainCommand ) {
             changeMode( MODE_CONNECTED );
         }
+    	//#ifndef small
         else if ( command == showBindingsCommand ) {
             doShowBindings();
         }
-        /*else if ( command == settingsCommand ) {
-            doSettings();
-        }*/
+    	//#endif
     }
 	
 	private StringBuffer commandBuffer = new StringBuffer();
@@ -825,6 +833,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     }
 //#endif
     
+    //#ifndef small
     private void doShowBindings() {
         StringBuffer str = new StringBuffer();
         
@@ -842,6 +851,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         
         MainMenu.showMessage("Key Bindings", str.toString(), this);
     }
+    //#endif
     
     
     

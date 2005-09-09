@@ -26,6 +26,7 @@ import gui.session.macros.MacrosMenu;
 import gui.settings.SettingsMenu;
 
 import javax.microedition.lcdui.Alert;
+import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Display;
@@ -245,5 +246,12 @@ public class MainMenu extends List implements CommandListener, Activatable {
 	
 	public static Session currentSession() {
 		return currentSession;
+	}
+	
+	public static void showErrorMessage( String errorMessage ) {
+		Alert alert = new Alert( "Error" );
+		alert.setString( errorMessage );
+		alert.setType( AlertType.ERROR );
+		MainMenu.setDisplay( alert );
 	}
 }

@@ -22,8 +22,6 @@
  */
 package gui;
 
-import javax.microedition.lcdui.Alert;
-import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
@@ -59,12 +57,6 @@ public abstract class EditableForm extends Form implements CommandListener, Acti
 		back.activate();
 	}
 	
-	protected void showErrorMessage( String errorMessage ) {
-		Alert alert = new Alert( "Error" );
-		alert.setString( errorMessage );
-		alert.setType( AlertType.ERROR );
-		MainMenu.setDisplay( alert );
-	}
 	/* (non-Javadoc)
 	 * @see gui.Activatable#activate()
 	 */

@@ -166,12 +166,6 @@ public class SettingsForm extends EditableForm {
             booleanChoiceGroup(cgSshPublicKey);
             append(cgSshPublicKey);
             
-            if (Settings.x != null) {
-            	/* Show public key */
-            	PublicKeyAuthentication pk = new PublicKeyAuthentication();
-            	append(new StringItem("Public Key:", pk.getPublicKeyText()));
-            }
-            
             booleanChoiceGroup(cgSshKeys);
             append(cgSshKeys);
             
@@ -208,7 +202,7 @@ public class SettingsForm extends EditableForm {
             //#ifdef midp2
             MainMenu.getDisplay().vibrate(300);
             //#endif
-            doBack();
+        	doBack();
     	}
     	else
     	//#endif

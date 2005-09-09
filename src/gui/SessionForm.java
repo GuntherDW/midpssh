@@ -51,8 +51,6 @@ public class SessionForm extends EditableForm {
 	private boolean edit;
 	
 	private TextField tfAlias, tfHost, tfUsername, tfPassword;
-
-	private ChoiceGroup cgType;
     
 //#ifdef blackberryconntypes
     private ChoiceGroup cgBlackberryConnType;
@@ -62,19 +60,17 @@ public class SessionForm extends EditableForm {
     private ChoiceGroup cgUsePublicKey;
     //#endif
 
+    //#ifndef notelnet
+	private ChoiceGroup cgType;
+	
 	private static String[] typeNames = new String[] {
-			"SSH"
-//#ifndef notelnet
-	        , "Telnet"
-//#endif
+			"SSH", "Telnet"
 	};
 
 	private static String[] typeCodes = new String[] {
-			SessionSpec.TYPE_SSH
-//#ifndef notelnet			
-			, SessionSpec.TYPE_TELNET
-//#endif
+			SessionSpec.TYPE_SSH, SessionSpec.TYPE_TELNET
 	};
+	//#endif
 
 	/**
 	 * @param arg0
@@ -96,15 +92,17 @@ public class SessionForm extends EditableForm {
 		}
 //#endif
 		tfPassword = new TextField( "Password:", null, 255, TextField.PASSWORD );
+		//#ifndef notelnet
 		cgType = new ChoiceGroup( "Type", ChoiceGroup.EXCLUSIVE );
 		for ( int i = 0; i < typeNames.length; i++ ) {
 			cgType.append( typeNames[i], null );
 		}
+		//#endif
 
 		append( tfAlias );
 		append( tfHost );
-		append( cgType );
 //#ifndef notelnet
+		append( cgType );
 		//#ifndef small
 		append( new StringItem( "Authentication:\n", "For SSH connections only. Optional." ) );
 		//#endif
@@ -156,6 +154,7 @@ public class SessionForm extends EditableForm {
 		if ( conn != null ) {
 			tfAlias.setString( conn.alias );
 			tfHost.setString( conn.host );
+			//#ifndef notelnet
 			if ( conn.type != null ) {
 				for ( int i = 0; i < typeCodes.length; i++ ) {
 					if ( typeCodes[i].equals( conn.type ) ) {
@@ -163,6 +162,7 @@ public class SessionForm extends EditableForm {
 					}
 				}
 			}
+			//#endif
 			tfUsername.setString( conn.username );
 			tfPassword.setString( conn.password );
 			
@@ -209,7 +209,11 @@ public class SessionForm extends EditableForm {
 			if ( validateForm() ) {
 				SessionSpec conn = new SessionSpec();
 				conn.alias = tfAlias.getString();
-				conn.type = selectedConnectionType();
+				//#ifndef notelnet
+				conn.type = typeCodes[cgType.getSelectedIndex()];
+				//#else
+				conn.type = SessionSpec.TYPE_SSH;
+				//#endif
 				conn.host = tfHost.getString();
 				conn.username = tfUsername.getString();
 				conn.password = tfPassword.getString();
@@ -235,24 +239,13 @@ public class SessionForm extends EditableForm {
 	protected boolean validateForm() {
 		String alias = tfAlias.getString();
 		String host = tfHost.getString();
-		String type = selectedConnectionType();
 
-		if (type == null || alias.length() == 0 || host.length() == 0) {
-			showErrorMessage(WARNING_REQUIRED);
+		if (alias.length() == 0 || host.length() == 0) {
+			MainMenu.showErrorMessage(WARNING_REQUIRED);
 			return false;
 		}
 		else {
 			return true;
-		}
-	}
-
-	protected String selectedConnectionType() {
-		int i = cgType.getSelectedIndex();
-		if ( i < 0 || i >= typeCodes.length ) {
-			return null;
-		}
-		else {
-			return typeCodes[i];
 		}
 	}
 

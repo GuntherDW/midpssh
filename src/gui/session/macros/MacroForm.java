@@ -23,6 +23,7 @@
 package gui.session.macros;
 
 import gui.EditableForm;
+import gui.MainMenu;
 import gui.SessionForm;
 
 import javax.microedition.lcdui.ChoiceGroup;
@@ -193,7 +194,7 @@ public class MacroForm extends EditableForm {
 	protected boolean validateForm() {
 		if ((isMacroSet && tfName.getString().length() == 0)
 				|| (!isMacroSet && tfValue.getString().length() == 0)) {
-			showErrorMessage(SessionForm.WARNING_REQUIRED);
+			MainMenu.showErrorMessage(SessionForm.WARNING_REQUIRED);
 			return false;
 		}
 		else {

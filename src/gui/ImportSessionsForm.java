@@ -189,8 +189,6 @@ public class ImportSessionsForm extends Form implements Activatable, Runnable, C
             MainMenu.alert(alert, (Displayable)back);
         }
         catch (Exception e) {
-            e.printStackTrace();
-            
             Alert alert = new Alert( "Import Failed" );
             alert.setType( AlertType.ERROR );
         

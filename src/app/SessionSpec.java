@@ -24,7 +24,6 @@ package app;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 
 /**
@@ -55,19 +54,9 @@ public class SessionSpec {
 		username = in.readUTF();
 		password = in.readUTF();
 //#ifdef blackberryconntypes
-        try {
-            blackberryConnType = in.readInt();
-        }
-        catch ( EOFException e ) {
-            // Ignore as this is newly added and people's saved state won't have it, maybe remove this at a later stage
-        }
+        blackberryConnType = in.readInt();
 //#endif
-        try {
-        	usepublickey = in.readBoolean();
-        }
-        catch (EOFException e) {
-        	
-        }
+    	usepublickey = in.readBoolean();
 	}
 
 	public void write( DataOutputStream out ) throws IOException {

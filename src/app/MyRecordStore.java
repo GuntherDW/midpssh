@@ -29,8 +29,6 @@ import java.util.Vector;
 
 import javax.microedition.rms.RecordEnumeration;
 import javax.microedition.rms.RecordStore;
-import javax.microedition.rms.RecordStoreException;
-import javax.microedition.rms.RecordStoreFullException;
 import javax.microedition.rms.RecordStoreNotFoundException;
 
 /**
@@ -52,7 +50,7 @@ public abstract class MyRecordStore {
                 try {
                     vector.addElement(read(in));
                 } catch (IOException e) {
-                    // e.printStackTrace();
+                    
                 }
                 in.close();
             }
@@ -64,14 +62,8 @@ public abstract class MyRecordStore {
             }
 //#endif
             return vector;
-        } catch (RecordStoreFullException e) {
-            // e.printStackTrace();
-        } catch (RecordStoreNotFoundException e) {
-            // Start with an empty Vector
-        } catch (RecordStoreException e) {
-            // e.printStackTrace();
-        } catch (IOException e) {
-            // e.printStackTrace();
+        } catch (Exception e) {
+            
         }
         return new Vector();
     }
@@ -117,17 +109,13 @@ public abstract class MyRecordStore {
                         byte[] data = out.toByteArray();
                         rec.addRecord(data, 0, data.length);
                     } catch (IOException e) {
-                        // e.printStackTrace();
+                        
                     }
                 }
 
                 rec.closeRecordStore();
-            } catch (RecordStoreFullException e) {
-//              e.printStackTrace();
-            } catch (RecordStoreNotFoundException e) {
-                // e.printStackTrace();
-            } catch (RecordStoreException e) {
-                // e.printStackTrace();
+            } catch (Exception e) {
+
             }
         }
     }

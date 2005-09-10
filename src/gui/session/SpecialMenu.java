@@ -82,7 +82,7 @@ public class SpecialMenu extends List implements CommandListener, Activatable {
         }
         
         int start = 0;
-        int i = options.indexOf('|');
+        int i = options.indexOf('|', 1);
         while (i != -1) {
         	append(options.substring(start, i), null);
         	start = i + 1;

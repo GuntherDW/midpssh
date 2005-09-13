@@ -146,6 +146,7 @@ public class SettingsForm extends EditableForm {
             cgFont.append( "LCD 3x6", null );
             cgFont.append( "LCD 4x6", null );
             cgFont.append( "LCD 4x7", null );
+            cgFont.append( "LCD 5x9", null );
             //#endif
             append( cgFont );
 

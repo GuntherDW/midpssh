@@ -155,6 +155,7 @@ public class SettingsForm extends EditableForm {
             //#ifdef midp2
             cgLCDFontMode.append("RGB", null);
             cgLCDFontMode.append("BGR", null);
+            append(cgLCDFontMode);
             //#endif
 
             append( tfFg );

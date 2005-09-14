@@ -912,21 +912,27 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 			// Redraw backing store if necessary
 			redrawBackingStore();
 			
+			/*
+			 * Note the y coord is offset by 1 because without the offset it sometimes fails to
+			 * draw on my SonyEricsson K700i.
+			 */
+			Image image;
 			switch ( rotated ) {
 //#ifdef midp2
             case Settings.ROT_270:
-                g.drawRegion( backingStore, 0, 0, width - 1, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT270, 0, 1, Graphics.TOP | Graphics.LEFT );
+//            	g.drawRegion( backingStore, 0, 0, width - 1, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT270, 0, 1, Graphics.TOP | Graphics.LEFT );
+            	image = Image.createImage(backingStore, 0, 0, width, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT270);
                 break;
             case Settings.ROT_90:
-                g.drawRegion( backingStore, 0, 0, width - 1, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT90, 0, 1, Graphics.TOP | Graphics.LEFT );
+//                g.drawRegion( backingStore, 0, 0, width - 1, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT90, 0, 1, Graphics.TOP | Graphics.LEFT );
+            	image = Image.createImage(backingStore, 0, 0, width, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT90);
                 break;
 //#endif
             default:
-                // KARL the y coord 1 is because with 0 it sometimes fails to draw
-                // on my SonyEricsson K700i
-				g.drawImage( backingStore, 0, 1, Graphics.TOP | Graphics.LEFT );
+                image = backingStore;
                 break;
             }
+			g.drawImage( image, 0, 1, Graphics.TOP | Graphics.LEFT );
 //#ifndef nopaintsync
 		}
 //#endif
@@ -1076,7 +1082,14 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 	    }
 	    //#ifdef midp2
 	    if (lcdFontFile != null) {
-        	lcdfont = new LCDFont(lcdFontFile, false);
+	    	boolean BGR = Settings.lcdFontMode != 0;
+	    	if (rotated != Settings.ROT_NORMAL) {
+	    		lcdFontFile = "/font4x6lcdV.png";
+	    		if (rotated == Settings.ROT_270) {
+	    			BGR = !BGR;
+	    		}
+	    	}
+        	lcdfont = new LCDFont(lcdFontFile, BGR);
         	fontWidth = lcdfont.fontWidth;
         	fontHeight = lcdfont.fontHeight;
         }

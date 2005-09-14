@@ -70,6 +70,8 @@ public class SettingsForm extends EditableForm {
     
 //#ifndef small
     protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size", ChoiceGroup.EXCLUSIVE );
+    
+    protected ChoiceGroup cgLCDFontMode = new ChoiceGroup( "LCD Font Mode", ChoiceGroup.EXCLUSIVE );
 	
 	protected TextField tfFg = new TextField( "Foreground", "", 6, TextField.ANY );
 	
@@ -149,6 +151,11 @@ public class SettingsForm extends EditableForm {
             cgFont.append( "LCD 5x9", null );
             //#endif
             append( cgFont );
+            
+            //#ifdef midp2
+            cgLCDFontMode.append("RGB", null);
+            cgLCDFontMode.append("BGR", null);
+            //#endif
 
             append( tfFg );
             append( tfBg );
@@ -273,6 +280,9 @@ public class SettingsForm extends EditableForm {
         case MODE_FONTS:
         {
         	cgFont.setSelectedIndex(Settings.fontMode, true);
+        	//#ifdef midp2
+        	cgLCDFontMode.setSelectedIndex(Settings.lcdFontMode, true);
+        	//#endif
             tfFg.setString( toHex( Settings.fgcolor ) );
             tfBg.setString( toHex( Settings.bgcolor ) );
         }
@@ -350,6 +360,9 @@ public class SettingsForm extends EditableForm {
         case MODE_FONTS:
         {
         	Settings.fontMode = cgFont.getSelectedIndex();
+        	//#ifdef midp2
+        	Settings.lcdFontMode = (byte) cgLCDFontMode.getSelectedIndex();
+        	//#endif
             try {
                 int col = Integer.parseInt( tfFg.getString(), 16 );
                 Settings.fgcolor = col;

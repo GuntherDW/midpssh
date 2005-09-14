@@ -58,6 +58,12 @@ public class Settings extends MyRecordStore {
 	//#endif
 	
 	public static int fontMode;
+	
+	//#ifndef small
+	//#ifdef midp2
+	public static byte lcdFontMode;
+	//#endif
+	//#endif
 
 	private static Settings me = new Settings();
 
@@ -132,6 +138,11 @@ public class Settings extends MyRecordStore {
 		x = null;
 		y = null;
 		//#endif
+		//#ifndef small
+		//#ifdef midp2
+		lcdFontMode = 0;
+		//#endif
+		//#endif
 	}
 
 	/*
@@ -169,6 +180,11 @@ public class Settings extends MyRecordStore {
 		//#ifdef ssh2
 		x = readByteArray(in);
 		y = readByteArray(in);
+		//#endif
+		//#ifndef small
+		//#ifdef midp2
+		lcdFontMode = in.readByte();
+		//#endif
 		//#endif
 		return null;
 	}
@@ -208,6 +224,11 @@ public class Settings extends MyRecordStore {
 		//#ifdef ssh2
 		writeByteArray(out, x);
 		writeByteArray(out, y);
+		//#endif
+		//#ifndef small
+		//#ifdef midp2
+		out.writeByte(lcdFontMode);
+		//#endif
 		//#endif
 	}
 

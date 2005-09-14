@@ -220,13 +220,13 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
             bgcolor = color[0];
         }
 
-        initFont();
-
-//#ifdef midp2
+        //#ifdef midp2
         rotated = Settings.terminalRotated;
-//#else
+        //#else
         rotated = Settings.ROT_NORMAL;
-//#endif
+        //#endif
+
+        initFont();
 
         top = 0;
         left = 0;

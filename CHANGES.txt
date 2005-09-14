@@ -1,3 +1,9 @@
+1.4.11
+Added more LCD font sizes
+Added BGR mode for LCD fonts
+Added vertical LCD font
+Bug fix for Siemens full screen and rotated view (thanks to DarkBear)
+
 1.4.10
 Public key authentication added
 Special menu refactored

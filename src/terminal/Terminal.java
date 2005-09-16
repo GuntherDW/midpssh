@@ -208,12 +208,6 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     public Terminal( VT320 buffer, Session session ) {
         this.buffer = buffer;
         buffer.setDisplay( this );
-        
-//#ifdef midp2
-        if ( Settings.terminalFullscreen ) {
-            setFullScreenMode( true );
-        }
-//#endif
 
         if ( MainMenu.useColors ) {
             fgcolor = color[7];
@@ -227,6 +221,13 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         //#endif
 
         initFont();
+        
+        //#ifdef midp2
+        /* Full screen mode moved below initFont() to avoid hang on Siemens phones, thanks DarkBear */
+        if ( Settings.terminalFullscreen ) {
+            setFullScreenMode( true );
+        }
+        //#endif
 
         top = 0;
         left = 0;
@@ -921,11 +922,11 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 //#ifdef midp2
             case Settings.ROT_270:
 //            	g.drawRegion( backingStore, 0, 0, width - 1, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT270, 0, 1, Graphics.TOP | Graphics.LEFT );
-            	image = Image.createImage(backingStore, 0, 0, width, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT270);
+            	image = Image.createImage(backingStore, 0, 0, width - 1, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT270);
                 break;
             case Settings.ROT_90:
 //                g.drawRegion( backingStore, 0, 0, width - 1, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT90, 0, 1, Graphics.TOP | Graphics.LEFT );
-            	image = Image.createImage(backingStore, 0, 0, width, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT90);
+            	image = Image.createImage(backingStore, 0, 0, width - 1, height, javax.microedition.lcdui.game.Sprite.TRANS_ROT90);
                 break;
 //#endif
             default:

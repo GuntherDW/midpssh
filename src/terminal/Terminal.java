@@ -915,7 +915,8 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 			
 			/*
 			 * Note the y coord is offset by 1 because without the offset it sometimes fails to
-			 * draw on my SonyEricsson K700i.
+			 * draw on my SonyEricsson K700i. This is seen in width - 1 on the two rotated image widths
+             * and the y coord of 1 in drawImage.
 			 */
 			Image image;
 			switch ( rotated ) {

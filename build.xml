@@ -214,6 +214,14 @@
 			<param name="bb.codename" value="midpsshe"/>
 			<param name="bb.name" value="MidpSSHe" />
 		</antcall>
+		<antcall target="build-blackberry">
+			<param name="name" value="${name}e" />
+			<param name="filename" value="midpssh-bb-e-midp2"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="blackberry-enterprise"/>
+			<param name="bb.codename" value="midpsshe2"/>
+			<param name="bb.name" value="MidpSSHe" />
+		</antcall>
 	</target>
 	
 	<!--
@@ -249,6 +257,7 @@
 				<include name="*.xml"/>
 				<include name="*.properties"/>
 				<exclude name="TODO.txt" />
+				<exclude name="BETA_TESTERS.txt" />
 				<exclude name="UNSUBSCRIBES.txt" />
 			</fileset>
 		</zip>

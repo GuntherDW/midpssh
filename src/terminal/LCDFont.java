@@ -59,8 +59,11 @@ public class LCDFont {
 		imageHeight = fontImage.getHeight();
 		fontWidth = imageWidth / 32;
 		fontHeight = imageHeight / 3;
-		bwBuf = new int[imageWidth * imageHeight];
-		colorBuf = new int[imageWidth * imageHeight];
+		bwBuf = new int[imageWidth * (imageHeight + 1)];
+		colorBuf = new int[imageWidth * (imageHeight + 1)];
+		/* Karl: add 1 to the imageHeight because some device seek beyond the bottom of the array when
+		 * drawing.
+		 */
 		fontImage.getRGB(bwBuf, 0, imageWidth, 0, 0, imageWidth, imageHeight);
 		if (BGR) {
 			// For screens with BGR subpixel ordering, or for ROT_180

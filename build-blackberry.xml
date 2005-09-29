@@ -7,12 +7,30 @@
 		<antcall target="ota"/>
 	</target>
 
-	<target name="init">
+	<target name="init" depends="init-midp1,init-midp2">
 		<property file="build.properties"/>
 		<property name="jar.file" value="${filename}.jar"/>
 		<property name="jad.file" value="${filename}.jad"/>
 		<property name="ota.jad.file" value="${filename}-ota.jad"/>
 		<property name="cod.file" value="${bb.codename}.cod"/>
+	</target>
+	
+	<target name="init-midp1" if="midp1">
+		<property file="build-blackberry-midp1.properties" />
+	</target>
+	
+	<target name="init-midp2" if="midp2">
+		<property file="build-blackberry-midp2.properties" />
+	</target>
+	
+	<target name="run" depends="all">
+		<copy todir="${bb.simulator}">
+			<fileset dir="${dist.dir}">
+				<include name="${cod.file}"/>
+			</fileset>
+		</copy>
+		
+		<exec executable="${bb.simulator.run}" dir="${bb.simulator}" />
 	</target>
 
 	<target name="build-blackberry" unless="build.uptodate" depends="build">

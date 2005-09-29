@@ -177,16 +177,13 @@
 		</delete>
 	</target>
 	
-	<target name="run-blackberry" depends="blackberry" description="Run Blackberry version">
-		<property file="build.properties"/>
-		
-		<copy todir="${bb.simulator}">
-			<fileset dir="${dist.dir}">
-				<include name="*.cod"/>
-			</fileset>
-		</copy>
-		
-		<exec executable="${bb.simulator.run}" dir="${bb.simulator}" />
+	<target name="run-blackberry" depends="build-tasks" description="Run Blackberry version">
+		<property name="filename" value="midpssh-bb-run"/>
+		<property name="midp2" value="true"/>
+		<property name="mode" value="blackberry"/>
+		<property name="bb.codename" value="midpsshrun"/>
+		<property name="bb.name" value="MidpSSHrun" />
+		<ant antfile="build-blackberry.xml" target="run" />
 	</target>
 	
 	<target name="build-tasks">
@@ -200,6 +197,13 @@
 			<param name="midp1" value="true"/>
 			<param name="mode" value="blackberry"/>
 			<param name="bb.codename" value="midpssh"/>
+			<param name="bb.name" value="MidpSSH" />
+		</antcall>
+		<antcall target="build-blackberry">
+			<param name="filename" value="midpssh-bb-midp2"/>
+			<param name="midp2" value="true"/>
+			<param name="mode" value="blackberry"/>
+			<param name="bb.codename" value="midpssh2"/>
 			<param name="bb.name" value="MidpSSH" />
 		</antcall>
 		<antcall target="build-blackberry">
@@ -222,7 +226,7 @@
 	</target>
 	-->
 	
-	<target name="build-blackberry">
+	<target name="build-blackberry" depends="build-tasks">
 		<ant antfile="build-blackberry.xml"/>
 	</target>
 		

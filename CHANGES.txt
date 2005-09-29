@@ -1,3 +1,7 @@
+1.4.12
+Fix for devices that AIOOB on LCD fonts
+BB MIDP2 version
+
 1.4.11
 Added more LCD font sizes
 Added BGR mode for LCD fonts

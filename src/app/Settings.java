@@ -89,8 +89,9 @@ public class Settings extends MyRecordStore {
 
 	//#ifdef midp2
 	public static boolean predictiveText;
-
 	//#endif
+	
+	public static String httpProxy;
 
 	public static void init() {
 		defaults();
@@ -143,6 +144,7 @@ public class Settings extends MyRecordStore {
 		lcdFontMode = 0;
 		//#endif
 		//#endif
+		httpProxy = "";
 	}
 
 	/*
@@ -186,6 +188,7 @@ public class Settings extends MyRecordStore {
 		lcdFontMode = in.readByte();
 		//#endif
 		//#endif
+		httpProxy = in.readUTF();
 		return null;
 	}
 
@@ -230,6 +233,7 @@ public class Settings extends MyRecordStore {
 		out.writeByte(lcdFontMode);
 		//#endif
 		//#endif
+		out.writeUTF(httpProxy);
 	}
 
 	//#ifdef ssh2

@@ -28,8 +28,10 @@ import gui.MainMenu;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Random;
 
 import javax.microedition.io.Connector;
+import javax.microedition.io.HttpConnection;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
@@ -48,7 +50,7 @@ public abstract class Session implements Activatable {
 	 * After this count of millisends without communication on connection we will
 	 * send something just to keep connection alive
 	 */
-	public static int keepAliveTime = 1000 * 60 * 1; // 1 minute
+	public static final int keepAliveTime = 1000 * 60 * 1; // 1 minute
 
 	protected VT320 emulation;
 
@@ -66,7 +68,7 @@ public abstract class Session implements Activatable {
 	 * Holds the socket connetion object (from the Generic Connection Framework)
 	 * that is the basis of this connection.
 	 */
-	private StreamConnection socket;
+	private StreamConnection connection;
 
 	/**
 	 * Holds the InputStream associated with the socket.
@@ -194,13 +196,13 @@ public abstract class Session implements Activatable {
         String host = spec.host;
         
 		emulation.putString( "Connecting to " + host + "..." );
+		
+		if ( host.indexOf( ':' ) == -1 ) {
+			host += ":" + defaultPort();
+		}
 
 		StringBuffer conn = new StringBuffer("socket://");
 		conn.append(host);
-		if ( host.indexOf( ':' ) == -1 ) {
-			conn.append(':');
-			conn.append(defaultPort());
-		}
 //#ifdef blackberryconntypes
         if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_PROXY ) {
             conn.append(";deviceside=false");
@@ -212,10 +214,27 @@ public abstract class Session implements Activatable {
 //#ifdef blackberryenterprise
         conn.append(";deviceside=false");
 //#endif
+
+    	String httpProxy = Settings.httpProxy;
+        if (httpProxy.length() == 0) {
+			connection = (StreamConnection) Connector.open( conn.toString(), Connector.READ_WRITE, false );
+			in = connection.openDataInputStream();
+			out = connection.openDataOutputStream();
+        }
+        else {
+        	/* Connect using HTTP proxy */
+        	emulation.putString("\r\nUsing HTTP Proxy...");
+        	
+        	int id = new Random().nextInt();
+    		String url = "http://" + httpProxy + "/" + id + "/" + host;
+    		
+        	HttpConnection outbound = (HttpConnection) Connector.open(url, Connector.READ_WRITE, false);
+    		outbound.setRequestMethod(HttpConnection.POST);
+    		out = outbound.openOutputStream();
+    		
+    		in = ((HttpConnection) Connector.open(url, Connector.READ_WRITE, false)).openInputStream();
+        }
         
-		socket = (StreamConnection) Connector.open( conn.toString(), Connector.READ_WRITE, false );
-		in = socket.openDataInputStream();
-		out = socket.openDataOutputStream();
 		emulation.putString( "OK\r\n" );
 
 		return true;
@@ -409,7 +428,7 @@ public abstract class Session implements Activatable {
 				try {
 					if ( in != null ) in.close();
 					if ( out != null ) out.close();
-					if ( socket != null ) socket.close();
+					if ( connection != null ) connection.close();
 				}
 				catch ( IOException e ) {
 					handleException( "Disconnect", e );

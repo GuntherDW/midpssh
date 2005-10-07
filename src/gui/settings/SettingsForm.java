@@ -55,6 +55,8 @@ public class SettingsForm extends EditableForm {
     
     private int mode;
     
+    protected TextField tfHttpProxy = new TextField("HTTP Proxy", "", 255, TextField.ANY);
+    
 	protected TextField tfType = new TextField( "Terminal Type", "", 20, TextField.ANY );
 	
 	protected TextField tfCols = new TextField( "Cols", "", 3, TextField.NUMERIC );
@@ -107,6 +109,7 @@ public class SettingsForm extends EditableForm {
         switch ( mode ) {
         case MODE_NETWORK:
         {
+        	append(tfHttpProxy);
             append( tfType );
             booleanChoiceGroup(cgPolling);
             append(cgPolling);
@@ -233,6 +236,7 @@ public class SettingsForm extends EditableForm {
         switch ( mode ) {
         case MODE_NETWORK:
         {
+        	tfHttpProxy.setString(Settings.httpProxy);
             tfType.setString( Settings.terminalType );
         	cgPolling.setSelectedIndex(Settings.pollingIO ? 0 : 1, true);
         }
@@ -315,6 +319,7 @@ public class SettingsForm extends EditableForm {
         switch ( mode ) {
         case MODE_NETWORK:
         {
+        	Settings.httpProxy = tfHttpProxy.getString();
             Settings.terminalType = tfType.getString();
         	Settings.pollingIO = cgPolling.getSelectedIndex() == 0;
         }

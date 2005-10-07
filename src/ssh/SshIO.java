@@ -1387,19 +1387,25 @@ public class SshIO {
 		// for keep alives indicates that SSH_MSG_IGNORE (the alternative)
 		// crashes some servers and
 		// advocates SSH_MSG_NONE instead.
-		//#ifndef nossh1
-		if (useprotocol == 1) {
-			SshPacket1 packet = new SshPacket1(SSH_MSG_NONE);
-			sendPacket1(packet);
+		
+		/* Don't send if we're not at the cansenddata stage yet, as otherwise
+		 * we'll end up sending this in the middle of the negotiation phase!
+		 */
+		if (cansenddata) {
+			//#ifndef nossh1
+			if (useprotocol == 1) {
+				SshPacket1 packet = new SshPacket1(SSH_MSG_NONE);
+				sendPacket1(packet);
+			}
+			//#endif
+			//#ifdef ssh2
+			if (useprotocol == 2) {
+				SshPacket2 packet = new SshPacket2(SSH2_MSG_IGNORE);
+				packet.putString("");
+				sendPacket2(packet);
+			}
+			//#endif
 		}
-		//#endif
-		//#ifdef ssh2
-		if (useprotocol == 2) {
-			SshPacket2 packet = new SshPacket2(SSH2_MSG_IGNORE);
-			packet.putString("");
-			sendPacket2(packet);
-		}
-		//#endif
 		return "";
 	}
 

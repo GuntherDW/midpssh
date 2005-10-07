@@ -170,6 +170,7 @@
 		<property file="build.properties"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="output"/>
+		<mkdir dir="${dist.dir}" />
 		<delete>
 			<fileset dir="${dist.dir}">
 				<include name="**" />

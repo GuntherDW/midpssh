@@ -59,7 +59,7 @@ public class Settings extends MyRecordStore {
 	
 	public static int fontMode;
 	
-	//#ifndef small
+	//#ifndef nofonts
 	//#ifdef midp2
 	public static byte lcdFontMode;
 	//#endif
@@ -139,7 +139,7 @@ public class Settings extends MyRecordStore {
 		x = null;
 		y = null;
 		//#endif
-		//#ifndef small
+		//#ifndef nofonts
 		//#ifdef midp2
 		lcdFontMode = 0;
 		//#endif
@@ -183,7 +183,7 @@ public class Settings extends MyRecordStore {
 		x = readByteArray(in);
 		y = readByteArray(in);
 		//#endif
-		//#ifndef small
+		//#ifndef nofonts
 		//#ifdef midp2
 		lcdFontMode = in.readByte();
 		//#endif
@@ -228,7 +228,7 @@ public class Settings extends MyRecordStore {
 		writeByteArray(out, x);
 		writeByteArray(out, y);
 		//#endif
-		//#ifndef small
+		//#ifndef nofonts
 		//#ifdef midp2
 		out.writeByte(lcdFontMode);
 		//#endif

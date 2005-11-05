@@ -107,7 +107,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     
     private static final Command backCommand = new Command( "Back", Command.BACK, commandPriority++ );
     
-    //#ifndef small
+    //#ifndef noinstructions
     private static final Command showBindingsCommand = new Command( "Show Key Bindings", Command.ITEM, commandPriority++ );
     //#endif
     
@@ -143,7 +143,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 //#ifndef nocursororscroll
         cursorCommand, scrollCommand,
 //#endif
-        //#ifndef small
+        //#ifndef noinstructions
         showBindingsCommand,
         //#endif
         disconnectCommand
@@ -433,7 +433,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         else if ( command == backCommand  || command == backMainCommand ) {
             changeMode( MODE_CONNECTED );
         }
-    	//#ifndef small
+    	//#ifndef noinstructions
         else if ( command == showBindingsCommand ) {
             doShowBindings();
         }
@@ -830,7 +830,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
     }
 //#endif
     
-    //#ifndef small
+    //#ifndef noinstructions
     private void doShowBindings() {
         StringBuffer str = new StringBuffer();
         
@@ -1051,14 +1051,14 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 		}
 	}
 	
-//#ifndef small
+//#ifndef nofonts
 	private LCDFont lcdfont;
 	
 	private int prevfg = -1, prevbg = -1;
 //#endif
 	
 	private void initFont() {
-//#ifdef small
+//#ifdef nofonts
         initInternalFont();
 //#else
         //#ifdef midp2
@@ -1139,14 +1139,14 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
 	}
 	
 	protected void drawChars( Graphics g, int fg, int bg, char[] chars, int offset, int length, int x, int y ) {
-//#ifndef small
+//#ifndef nofonts
 	    if ( fontMode == Settings.FONT_NORMAL ) {
 //#endif
 	        for ( int i = offset; i < offset + length; i++ ) {
 				drawChar( g, chars[i], x, y );
 				x += fontWidth;
 			}
-//#ifndef small
+//#ifndef nofonts
 	    }
 	    else if (fontMode == Settings.FONT_DEVICE) {
 	        g.setFont( font );

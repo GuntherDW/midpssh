@@ -45,7 +45,7 @@ public class SettingsForm extends EditableForm {
     
     public static final int MODE_INTERFACE = 2;
     
-    //#ifndef small
+    //#ifndef nofonts
     public static final int MODE_FONTS = 3;
     //#endif
     
@@ -70,11 +70,13 @@ public class SettingsForm extends EditableForm {
     protected ChoiceGroup cgPredictiveText = new ChoiceGroup("Predictive Text", ChoiceGroup.EXCLUSIVE);
 //#endif
     
-//#ifndef small
+//#ifndef nofonts
     protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size", ChoiceGroup.EXCLUSIVE );
     
+//#ifndef nofonts
     protected ChoiceGroup cgLCDFontMode = new ChoiceGroup( "LCD Font Mode", ChoiceGroup.EXCLUSIVE );
-	
+//#endif
+    
 	protected TextField tfFg = new TextField( "Foreground", "", 6, TextField.ANY );
 	
 	protected TextField tfBg = new TextField( "Background", "", 6, TextField.ANY );
@@ -129,7 +131,7 @@ public class SettingsForm extends EditableForm {
             append( cgRotated );
 //#endif
 
-            //#ifndef small
+            //#ifndef noinstructions
             append( new StringItem( "Terminal Size", "The default is to use the maximum available screen area." ) );
             //#endif
             
@@ -142,7 +144,7 @@ public class SettingsForm extends EditableForm {
             //#endif
         }
         break;
-        //#ifndef small
+        //#ifndef nofonts
         case MODE_FONTS:
         {
             cgFont.append( "Tiny", null );
@@ -281,7 +283,7 @@ public class SettingsForm extends EditableForm {
             //#endif
         }
         break;
-        //#ifndef small
+        //#ifndef nofonts
         case MODE_FONTS:
         {
         	cgFont.setSelectedIndex(Settings.fontMode, true);
@@ -362,7 +364,7 @@ public class SettingsForm extends EditableForm {
             //#endif
         }
         break;
-        //#ifndef small
+        //#ifndef nofonts
         case MODE_FONTS:
         {
         	Settings.fontMode = cgFont.getSelectedIndex();

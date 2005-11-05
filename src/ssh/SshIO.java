@@ -489,7 +489,7 @@ public class SshIO {
 
 			sendPacket2(pn);
 
-			//#ifndef small
+			//#ifndef noinstructions
 			//#ifdef removeme
 			if (1 == 1)
 				//#endif
@@ -519,7 +519,7 @@ public class SshIO {
 				buf.putString(sig);
 				sendPacket2(buf);
 
-				//#ifndef small
+				//#ifndef noinstructions
 				//#ifdef removeme
 				if (1 == 1)
 					//#endif
@@ -537,7 +537,7 @@ public class SshIO {
 				buf.putString(password);
 				sendPacket2(buf);
 
-				//#ifndef small
+				//#ifndef noinstructions
 				//#ifdef removeme
 				if (1 == 1)
 					//#endif
@@ -564,7 +564,7 @@ public class SshIO {
 				buf.putString(password);
 				sendPacket2(buf);
 
-				//#ifndef small
+				//#ifndef noinstructions
 				//#ifdef removeme
 				if (1 == 1)
 					//#endif
@@ -587,7 +587,7 @@ public class SshIO {
 			pn.putInt32(0x4000);
 			sendPacket2(pn);
 
-			//#ifndef small
+			//#ifndef noinstructions
 			//#ifdef removeme
 			if (1 == 1)
 				//#endif
@@ -625,7 +625,7 @@ public class SshIO {
 
 			cansenddata = true;
 
-			//#ifndef small
+			//#ifndef noinstructions
 			//#ifdef removeme
 			if (1 == 1)
 				//#endif

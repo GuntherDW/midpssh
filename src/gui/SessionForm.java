@@ -103,7 +103,7 @@ public class SessionForm extends EditableForm {
 		append( tfHost );
 //#ifndef notelnet
 		append( cgType );
-		//#ifndef small
+		//#ifndef noinstructions
 		append( new StringItem( "Authentication:\n", "For SSH connections only. Optional." ) );
 		//#endif
 //#endif

@@ -45,7 +45,7 @@ public class SettingsMenu extends List implements Activatable,
 
 		append("Network", null);
 		append("Interface", null);
-		//#ifndef small
+		//#ifndef nofonts
 		append("Fonts", null);
 		//#endif
 		//#ifdef ssh2
@@ -83,7 +83,7 @@ public class SettingsMenu extends List implements Activatable,
 			showSettingsForm(i, SettingsForm.MODE_NETWORK);
 		} else if (j++ == i) {
 			showSettingsForm(i, SettingsForm.MODE_INTERFACE);
-		//#ifndef small
+		//#ifndef nofonts
 		} else if (j++ == i) {
 			showSettingsForm(i, SettingsForm.MODE_FONTS);
 		//#endif

@@ -46,7 +46,7 @@ public class SessionsMenu extends EditableMenu {
 
 	private static SessionForm editConnectionForm = new SessionForm( true );
     
-//#ifndef small
+//#ifndef nosessionimport
     private static Command importCommand = new Command("Import", Command.SCREEN, 20);
     
     private ImportSessionsForm importSessionsForm;
@@ -62,7 +62,7 @@ public class SessionsMenu extends EditableMenu {
 		super( "Sessions" );
 		replaceSelectCommand( connectCommand );
         
-//#ifndef small
+//#ifndef nosessionimport
         addCommand(importCommand);
 //#endif
 	}
@@ -79,7 +79,7 @@ public class SessionsMenu extends EditableMenu {
     		}
     	}
     	else {
-    		//#ifndef small
+    		//#ifndef nosessionimport
 	        if (command == importCommand) {
 	            /* Import */
 	            if (importSessionsForm == null) {

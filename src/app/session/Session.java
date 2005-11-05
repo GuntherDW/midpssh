@@ -231,8 +231,11 @@ public abstract class Session implements Activatable {
         	HttpConnection outbound = (HttpConnection) Connector.open(url, Connector.READ_WRITE, false);
     		outbound.setRequestMethod(HttpConnection.POST);
     		out = outbound.openOutputStream();
-    		
-    		in = ((HttpConnection) Connector.open(url, Connector.READ_WRITE, false)).openInputStream();
+//    		out = new HttpOutboundStream(url);
+    		HttpConnection inbound = (HttpConnection) Connector.open(url, Connector.READ_WRITE, false);
+    		inbound.setRequestProperty("X-MidpSSH-Persistent", "true");
+    		in = inbound.openInputStream();
+//    		in = new HttpInboundStream(url);
         }
         
 		emulation.putString( "OK\r\n" );
@@ -392,6 +395,7 @@ public abstract class Session implements Activatable {
 		if ( !disconnecting ) {
 			Alert alert = new Alert( "Session Error" );
 			alert.setType( AlertType.ERROR );
+			alert.setTimeout(Alert.FOREVER);
 
 			String msg = t.getMessage();
 			if ( msg == null )

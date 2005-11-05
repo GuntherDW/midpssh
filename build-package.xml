@@ -151,6 +151,7 @@
         		  debug="false"
         	      optimize="true"
         	      target="1.1" 
+        		  source="1.2"
         	      bootclasspathref="${wtk.classpath}" />
 
         <!-- Package everything. Most of the necessary information is

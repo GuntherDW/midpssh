@@ -531,7 +531,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
                 handled = true;
             }
         }
-        if ( keycode == KEY_BACKSPACE ) {
+        if ( keycode == KEY_BACKSPACE || keycode == 13 ) {
             handled = true;
         }
         
@@ -557,6 +557,10 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
             if ( keycode == KEY_BACKSPACE ) {
                 // Backspace
                 buffer.keyPressed( VT320.VK_BACK_SPACE, 0 );
+            }
+            else if (keycode == 13) {
+            	// Enter
+            	buffer.keyTyped( 0, '\n', 0 );
             }
         }
     }

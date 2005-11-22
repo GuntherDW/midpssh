@@ -1,3 +1,8 @@
+1.4.18
+Fixes for BB bad packets
+Fix for bad packet type 0 on SSH 1 keep-alive
+Ensure that keep-alives aren't sent while we're still negotiating
+
 1.4.12
 Fix for devices that AIOOB on LCD fonts
 BB MIDP2 version

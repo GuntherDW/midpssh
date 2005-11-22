@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="MidpSSH" basedir="." default="all">
+<project name="MidpSSH STABLE" basedir="." default="all">
 
 	<property file="build.properties"/>
 	
@@ -170,6 +170,7 @@
 		<property file="build.properties"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="output"/>
+		<mkdir dir="${dist.dir}"/>
 		<delete>
 			<fileset dir="${dist.dir}">
 				<include name="**" />

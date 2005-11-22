@@ -1,5 +1,5 @@
 1.4.18
-Fixes for BB bad packets
+Fixes for BB bad packets (due to noiosync issue)
 Fix for bad packet type 0 on SSH 1 keep-alive
 Ensure that keep-alives aren't sent while we're still negotiating
 

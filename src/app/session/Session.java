@@ -364,20 +364,16 @@ public abstract class Session implements Activatable {
 				}
 				
 				if ( !disconnecting ) {
-//#ifdef blackberryxxx
-				    /* Some older BlackBerrys (or all using MDS?) fail if we don't have
-				     * this slight delay here. This appears to be a problem in the RIM I/O
-				     * as I've tested to see if the contents of outputBuffer and outputCount
-				     * are different before and after the sleep.
-				     */
-                    // TODO is this still necessary if blackberry uses noiosync and has the sleep above?
-				    try {
-	                    Thread.sleep( 100 );
-	                } catch (InterruptedException e) {
-	                }
+				    //#ifdef noiosync
+					/* If we aren't syncing I/O then we should make a copy of relevant data structures so that
+					 * we don't stumble if they are changed while we're sending, this is quite likely to happen
+					 * as sending can be a slow operation.
+					 */
 				    byte [] outputBuffer = new byte[ outputCount ];
+				    int outputCount = this.outputCount;
+				    this.outputCount = 0;
 				    System.arraycopy( this.outputBuffer, 0, outputBuffer, 0, outputCount );
-//#endif
+				    //#endif
 				    
 					bytesWritten += outputCount;
 					out.write( outputBuffer, 0, outputCount );

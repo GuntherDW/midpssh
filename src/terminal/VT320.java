@@ -1029,49 +1029,16 @@ public abstract class VT320 {
 		}
 //#endif
 
-		switch ( keyCode ) {
+		if (keyCode >= VT320.VK_F1 && keyCode <= VT320.VK_F12) {
+			writeSpecial(fmap[keyCode - VT320.VK_F1 + 1]);
+		}
+		else switch ( keyCode ) {
 //#ifndef simplevt320
 			case VT320.VK_PAUSE:
 				if ( shift || control )
 					sendTelnetCommand( (byte) 243 ); // BREAK
 				break;
 //#endif
-			case VT320.VK_F1:
-				writeSpecial( fmap[1] );
-				break;
-			case VT320.VK_F2:
-				writeSpecial( fmap[2] );
-				break;
-			case VT320.VK_F3:
-				writeSpecial( fmap[3] );
-				break;
-			case VT320.VK_F4:
-				writeSpecial( fmap[4] );
-				break;
-			case VT320.VK_F5:
-				writeSpecial( fmap[5] );
-				break;
-			case VT320.VK_F6:
-				writeSpecial( fmap[6] );
-				break;
-			case VT320.VK_F7:
-				writeSpecial( fmap[7] );
-				break;
-			case VT320.VK_F8:
-				writeSpecial( fmap[8] );
-				break;
-			case VT320.VK_F9:
-				writeSpecial( fmap[9] );
-				break;
-			case VT320.VK_F10:
-				writeSpecial( fmap[10] );
-				break;
-			case VT320.VK_F11:
-				writeSpecial( fmap[11] );
-				break;
-			case VT320.VK_F12:
-				writeSpecial( fmap[12] );
-				break;
 			case VT320.VK_UP:
 				writeSpecial( KeyUp[xind] );
 				break;

@@ -1,7 +1,10 @@
+1.4.19
+Added lcdfont8x16
+
 1.4.18
 Fixes for BB bad packets (due to noiosync issue)
 Fix for bad packet type 0 on SSH 1 keep-alive
-Ensure that keep-alives aren't sent while we're still negotiating
+Check for accumulated data waiting to send upon ready to send
 
 1.4.12
 Fix for devices that AIOOB on LCD fonts

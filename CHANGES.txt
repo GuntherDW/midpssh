@@ -1,3 +1,6 @@
+1.4.20
+Changed lcdfont8x16 to lcdfont8x13
+
 1.4.19
 Added lcdfont8x16
 

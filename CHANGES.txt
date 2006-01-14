@@ -1,3 +1,9 @@
+1.5.4
+Keyboard-interactive support
+
+1.5.3
+Released HTTP proxy support
+
 1.4.20
 Changed lcdfont8x16 to lcdfont8x13
 

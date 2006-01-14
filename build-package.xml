@@ -109,7 +109,7 @@
 	
 	<target name="build-uptodate">
 		<uptodate property="build.uptodate" targetfile="${dist.dir}/${jar.file}">
-			<srcfiles dir="src" includes="**/*.java"/>
+			<srcfiles dir="src/j2me" includes="**/*.java"/>
 		</uptodate>
 	</target>
 	
@@ -118,7 +118,7 @@
 		<mkdir dir="${build.dir}/src-proc/${filename}"/>
 
 		<copy todir="${build.dir}/src">
-			<fileset dir="src">
+			<fileset dir="src/j2me">
 				<include name="**/*.java" />
 			</fileset>
 			<filterset>

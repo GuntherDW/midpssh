@@ -93,6 +93,8 @@ public class Settings extends MyRecordStore {
 	
 	public static String httpProxy;
 
+	public static int httpProxyMode;
+
 	public static void init() {
 		defaults();
 		me.load(RMS_NAME, false);
@@ -145,6 +147,7 @@ public class Settings extends MyRecordStore {
 		//#endif
 		//#endif
 		httpProxy = "";
+		httpProxyMode = 0;
 	}
 
 	/*
@@ -189,6 +192,7 @@ public class Settings extends MyRecordStore {
 		//#endif
 		//#endif
 		httpProxy = in.readUTF();
+		httpProxyMode = in.readByte();
 		return null;
 	}
 
@@ -234,6 +238,7 @@ public class Settings extends MyRecordStore {
 		//#endif
 		//#endif
 		out.writeUTF(httpProxy);
+		out.writeByte(httpProxyMode);
 	}
 
 	//#ifdef ssh2

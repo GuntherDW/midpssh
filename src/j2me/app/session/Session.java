@@ -228,14 +228,18 @@ public abstract class Session implements Activatable {
         	int id = new Random().nextInt();
     		String url = "http://" + httpProxy + "/" + id + "/" + host;
     		
-        	HttpConnection outbound = (HttpConnection) Connector.open(url, Connector.READ_WRITE, false);
-    		outbound.setRequestMethod(HttpConnection.POST);
-    		out = outbound.openOutputStream();
-//    		out = new HttpOutboundStream(url);
-    		HttpConnection inbound = (HttpConnection) Connector.open(url, Connector.READ_WRITE, false);
-    		inbound.setRequestProperty("X-MidpSSH-Persistent", "true");
-    		in = inbound.openInputStream();
-//    		in = new HttpInboundStream(url);
+    		if (Settings.httpProxyMode == 0) {
+	        	HttpConnection outbound = (HttpConnection) Connector.open(url, Connector.READ_WRITE, false);
+	    		outbound.setRequestMethod(HttpConnection.POST);
+	    		out = outbound.openOutputStream();
+	    		HttpConnection inbound = (HttpConnection) Connector.open(url, Connector.READ_WRITE, false);
+	    		inbound.setRequestProperty("X-MidpSSH-Persistent", "true");
+	    		in = inbound.openInputStream();
+    		}
+    		else {
+    			out = new HttpOutboundStream(url);
+    			in = new HttpInboundStream(url);
+    		}
         }
         
 		emulation.putString( "OK\r\n" );

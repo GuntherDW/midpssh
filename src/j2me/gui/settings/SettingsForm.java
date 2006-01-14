@@ -57,6 +57,8 @@ public class SettingsForm extends EditableForm {
     
     protected TextField tfHttpProxy = new TextField("HTTP Proxy", "", 255, TextField.ANY);
     
+    protected ChoiceGroup cgHttpProxyMode = new ChoiceGroup( "HTTP Proxy Mode", ChoiceGroup.EXCLUSIVE );
+    
 	protected TextField tfType = new TextField( "Terminal Type", "", 20, TextField.ANY );
 	
 	protected TextField tfCols = new TextField( "Cols", "", 3, TextField.NUMERIC );
@@ -112,6 +114,9 @@ public class SettingsForm extends EditableForm {
         case MODE_NETWORK:
         {
         	append(tfHttpProxy);
+        	cgHttpProxyMode.append("Persistent", null);
+        	cgHttpProxyMode.append("Transient", null);
+        	append(cgHttpProxyMode);
             append( tfType );
             booleanChoiceGroup(cgPolling);
             append(cgPolling);
@@ -240,6 +245,7 @@ public class SettingsForm extends EditableForm {
         case MODE_NETWORK:
         {
         	tfHttpProxy.setString(Settings.httpProxy);
+        	cgHttpProxyMode.setSelectedIndex(Settings.httpProxyMode, true);
             tfType.setString( Settings.terminalType );
         	cgPolling.setSelectedIndex(Settings.pollingIO ? 0 : 1, true);
         }
@@ -323,6 +329,7 @@ public class SettingsForm extends EditableForm {
         case MODE_NETWORK:
         {
         	Settings.httpProxy = tfHttpProxy.getString();
+        	Settings.httpProxyMode = cgHttpProxyMode.getSelectedIndex();
             Settings.terminalType = tfType.getString();
         	Settings.pollingIO = cgPolling.getSelectedIndex() == 0;
         }

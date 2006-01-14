@@ -59,7 +59,7 @@
 	
 	<target name="blackberry-uptodate">
 		<uptodate property="build.uptodate" targetfile="${dist.dir}/${cod.file}">
-			<srcfiles dir="src" includes="**/*.java"/>
+			<srcfiles dir="src/j2me" includes="**/*.java"/>
 		</uptodate>
 	</target>
 

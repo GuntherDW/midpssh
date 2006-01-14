@@ -1085,7 +1085,7 @@ public class Terminal extends Canvas implements Activatable, CommandListener {
         	lcdFontFile = "/font5x9lcd.png";
         	break;
         case 6:
-        	lcdFontFile = "/font8x16lcd.png";
+        	lcdFontFile = "/font8x13lcd.png";
         	break;
         	//#endif
 	    }

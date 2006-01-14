@@ -106,7 +106,11 @@ public class SshIO {
 	private static final byte MODE_PUBLICKEY = 1;
 	
 	private static final byte MODE_PASSWORD = 2;
-
+	
+	//#ifdef keybrdinteractive
+	private static final byte MODE_KEYBOARD_INTERACTIVE = 3;
+	//#endif
+	
 	// handlePacket
 	// messages
 	// The supported packet types and the corresponding message numbers are
@@ -177,6 +181,10 @@ public class SshIO {
 //	private static final byte SSH2_MSG_USERAUTH_BANNER = 53;
 
 //	private static final byte SSH2_MSG_USERAUTH_PK_OK = 60;
+	
+	private static final byte SSH2_MSG_USERAUTH_INFO_REQUEST = 60;
+	
+	private static final byte SSH2_MSG_USERAUTH_INFO_RESPONSE = 61;
 
 	private static final byte SSH2_MSG_CHANNEL_OPEN = 90;
 
@@ -470,10 +478,6 @@ public class SshIO {
 		case SSH2_MSG_DISCONNECT:
 			p.getInt32(); // disconnect reason
 			String discreason1 = p.getString();
-			/* String discreason2 = p.getString(); */
-			// System.out.println("SSH2: SSH2_MSG_DISCONNECT(" + discreason
-			// +
-			// "," + discreason1 + "," + /*discreason2+*/")");
 			return "\r\nDisconnected: " + discreason1 + "\r\n";
 
 		case SSH2_MSG_NEWKEYS: {
@@ -502,81 +506,39 @@ public class SshIO {
 		case SSH2_MSG_SERVICE_ACCEPT: {
 			// Send login request
 			
-			SshPacket2 buf = new SshPacket2(SSH2_MSG_USERAUTH_REQUEST);
-			buf.putString(login);
-			buf.putString("ssh-connection");
-			if (usepublickey && Settings.x != null) {
-				/* Try publickey */
-				authmode = MODE_PUBLICKEY;
-				
-				PublicKeyAuthentication kg = new PublicKeyAuthentication();
-				
-				buf.putString("publickey");
-				buf.putByte((byte) 1);
-				buf.putString(DHKeyExchange.SSH_DSS);
-				buf.putString(kg.getPublicKeyBlob());
-				byte[] sig = kg.sign(session_id, buf.getData());
-				buf.putString(sig);
-				sendPacket2(buf);
-
-				//#ifndef noinstructions
-				//#ifdef removeme
-				if (1 == 1)
-					//#endif
-					return "Sent publickey\r\n";
-				//#else
-				break;
-				//#endif
-			}
-			else {
-				/* Do password auth */
-				authmode = MODE_PASSWORD;
-				
-				buf.putString("password");
-				buf.putByte((byte) 0);
-				buf.putString(password);
-				sendPacket2(buf);
-
-				//#ifndef noinstructions
-				//#ifdef removeme
-				if (1 == 1)
-					//#endif
-					return "Sent password\r\n";
-				//#else
-				break;
-				//#endif
-			}
+			return authenticate2();
 		}
 
 		case SSH2_MSG_USERAUTH_FAILURE:
-			String methods = p.getString();
-			p.getByte(); // partialSuccess
+//			p.getString(); // methods
+//			p.getByte(); // partialSuccess
 
-			if (authmode != MODE_PASSWORD) {
-				/* Try again with password */
-				authmode = MODE_PASSWORD;
-				
-				SshPacket2 buf = new SshPacket2(SSH2_MSG_USERAUTH_REQUEST);
-				buf.putString(login);
-				buf.putString("ssh-connection");
-				buf.putString("password");
-				buf.putByte((byte) 0);
-				buf.putString(password);
-				sendPacket2(buf);
-
-				//#ifndef noinstructions
-				//#ifdef removeme
-				if (1 == 1)
-					//#endif
-					return "Retrying with password\r\n";
-				//#else
-				break;
-				//#endif
+			String message = authenticate2();
+			if (message != null) {
+				return message;
 			}
 			else {
 				return "Authentication failure.\r\nAvailable methods are: "
-						+ methods + "\r\n";
+				+ p.getString() + "\r\n";
 			}
+			
+		//#ifdef keybrdinteractive
+		case SSH2_MSG_USERAUTH_INFO_REQUEST:
+			String name = p.getString();
+			String instruction = p.getString();
+			p.getString(); // language tag
+			int numPrompts = p.getInt32();
+			String[] prompts = new String[numPrompts];
+			boolean[] echos = new boolean[numPrompts];
+			
+			for (int i = 0; i < numPrompts; i++) {
+				prompts[i] = p.getString();
+				echos[i] = p.getByte() != 0;
+			}
+			
+			sshSession.prompt(name, instruction, prompts, echos);
+			break;
+		//#endif
 
 		case SSH2_MSG_USERAUTH_SUCCESS: {
 			// Open channel
@@ -600,8 +562,8 @@ public class SshIO {
 		case SSH2_MSG_CHANNEL_OPEN_CONFIRMATION: {
 			p.getInt32(); // localId
 			int remoteId = p.getInt32();
-			p.getInt32(); // remoteWindowSize
-			p.getInt32(); // remotePacketSize
+//			p.getInt32(); // remoteWindowSize
+//			p.getInt32(); // remotePacketSize
 
 			// Open PTY
 			SshPacket2 pn = new SshPacket2(SSH2_MSG_CHANNEL_REQUEST);
@@ -656,7 +618,7 @@ public class SshIO {
 		case SSH2_MSG_KEXINIT: {
 			/*
 			 * Described
-			 * http://www.ietf.org/internet-drafts/draft-ietf-secsh-transport-24.txt
+			 * http://www.ietf.org/rfc/rfc4253.txt
 			 * Section 7.1
 			 */
 //			p.getBytes(16); // cookie
@@ -746,6 +708,87 @@ public class SshIO {
 		}
 		}
 		return "";
+	}
+	
+	//#ifdef keybrdinteractive
+	public void sendUserauthInfoResponse(String[] responses) throws IOException {
+		SshPacket2 buf = new SshPacket2(SSH2_MSG_USERAUTH_INFO_RESPONSE);
+		buf.putInt32(responses.length);
+		for (int i = 0; i < responses.length; i++) {
+			buf.putString(responses[i]);
+		}
+		sendPacket2(buf);
+	}
+	//#endif
+	
+	private String authenticate2() throws IOException {
+		SshPacket2 buf = new SshPacket2(SSH2_MSG_USERAUTH_REQUEST);
+		buf.putString(login);
+		buf.putString("ssh-connection");
+		if (usepublickey && Settings.x != null && authmode < MODE_PUBLICKEY) {
+			/* Try publickey */
+			authmode = MODE_PUBLICKEY;
+			
+			PublicKeyAuthentication kg = new PublicKeyAuthentication();
+			
+			buf.putString("publickey");
+			buf.putByte((byte) 1);
+			buf.putString(DHKeyExchange.SSH_DSS);
+			buf.putString(kg.getPublicKeyBlob());
+			byte[] sig = kg.sign(session_id, buf.getData());
+			buf.putString(sig);
+			sendPacket2(buf);
+
+			//#ifndef noinstructions
+			//#ifdef removeme
+			if (1 == 1)
+				//#endif
+				return "Sent publickey\r\n";
+			//#else
+			return "";
+			//#endif
+		}
+		else if (authmode < MODE_PASSWORD) {
+			/* Do password auth */
+			authmode = MODE_PASSWORD;
+			
+			buf.putString("password");
+			buf.putByte((byte) 0);
+			buf.putString(password);
+			sendPacket2(buf);
+
+			//#ifndef noinstructions
+			//#ifdef removeme
+			if (1 == 1)
+				//#endif
+				return "Sent password\r\n";
+			//#else
+			return "";
+			//#endif
+		}
+		//#ifdef keybrdinteractive
+		else if (authmode < MODE_KEYBOARD_INTERACTIVE) {
+			/* Attempt keyboard-interactive auth */
+			authmode = MODE_KEYBOARD_INTERACTIVE;
+			
+			buf.putString("keyboard-interactive");
+			buf.putString("");
+			buf.putString("");
+			sendPacket2(buf);
+
+			//#ifndef noinstructions
+			//#ifdef removeme
+			if (1 == 1)
+				//#endif
+				return "Start keyboard-interactive\r\n";
+			//#else
+			return "";
+			//#endif
+		}
+		//#endif
+		else {
+			return null;
+		}
 	}
 
 	private void sendPacket2(SshPacket2 packet) throws IOException {

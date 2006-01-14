@@ -22,7 +22,16 @@
  */
 package app.session;
 
+import gui.MainMenu;
+
 import java.io.IOException;
+
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.CommandListener;
+import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Form;
+import javax.microedition.lcdui.StringItem;
+import javax.microedition.lcdui.TextField;
 
 import ssh.SshIO;
 import app.SessionSpec;
@@ -32,7 +41,12 @@ import app.Settings;
  * @author Karl von Randow
  * 
  */
-public class SshSession extends Session implements SessionIOHandler {
+public class SshSession extends Session implements SessionIOHandler
+	//#ifdef keybrdinteractive
+	, CommandListener
+	//#endif
+	{
+	
 
     private SshIO sshIO;
     
@@ -100,4 +114,58 @@ public class SshSession extends Session implements SessionIOHandler {
 	public int getTerminalHeight() {
 		return emulation.height;
 	}
+	
+	//#ifdef keybrdinteractive
+	public void prompt(String name, String instruction, String[] prompts, boolean[] echos) throws IOException {
+		if (prompts.length > 0) {
+			/* Show prompt */
+			if (name.length() == 0) {
+				name = "Authenticate";
+			}
+			Form form = new Form(name);
+
+			if (instruction.length() > 0) {
+				form.append(new StringItem("Instructions", instruction));
+			}
+			promptFields = new TextField[prompts.length];
+			for (int i = 0; i < prompts.length; i++) {
+				promptFields[i] = new TextField(prompts[i], "", 255, TextField.ANY | (echos[i] ? 0 : TextField.PASSWORD));
+				if (prompts[i].toLowerCase().startsWith("password:")) {
+					promptFields[i].setString(sshIO.password);
+				}
+				form.append(promptFields[i]);
+			}
+			form.addCommand(MainMenu.okCommand);
+			form.addCommand(MainMenu.backCommand);
+			form.setCommandListener(this);
+			MainMenu.setDisplay(form);
+		}
+		else {
+			sshIO.sendUserauthInfoResponse(new String[0]);
+		}
+	}
+	
+	private TextField[] promptFields;
+
+	public void commandAction(Command cmd, Displayable displayable) {
+		try {
+			if (cmd == MainMenu.okCommand) {
+				String[] responses = new String[promptFields.length];
+				for (int i = 0; i < responses.length; i++) {
+					responses[i] = promptFields[i].getString();
+				}
+				sshIO.sendUserauthInfoResponse(responses);
+			}
+			else {
+				sshIO.sendUserauthInfoResponse(new String[0]);
+			}
+		}
+		catch (IOException e) {
+			
+		}
+	
+		promptFields = null;
+		activate();
+	}
+	//#endif
 }

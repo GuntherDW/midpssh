@@ -114,7 +114,7 @@ public class SshIO {
 	// be sent by either side. Messages with _CMSG_ are only sent by the
 	// client, and messages with _SMSG_ only by the server.
 	//
-	private static final byte SSH_MSG_NONE = 0;
+//	private static final byte SSH_MSG_NONE = 0;
 
 	private static final byte SSH_MSG_DISCONNECT = 1;
 
@@ -142,7 +142,7 @@ public class SshIO {
 
 	private static final byte SSH_SMSG_EXITSTATUS = 20;
 
-//	private static final byte SSH_MSG_IGNORE = 32;
+	private static final byte SSH_MSG_IGNORE = 32;
 
 	private static final byte SSH_CMSG_EXIT_CONFIRMATION = 33;
 
@@ -624,6 +624,13 @@ public class SshIO {
 			sendPacket2(pn);
 
 			cansenddata = true;
+			if (dataToSend != null) {
+				pn = new SshPacket2(SSH2_MSG_CHANNEL_DATA);
+				pn.putInt32(0);
+				pn.putString(dataToSend);
+				sendPacket2(pn);
+				dataToSend = null;
+			}
 
 			//#ifndef small
 			//#ifdef removeme
@@ -1387,9 +1394,11 @@ public class SshIO {
 		// for keep alives indicates that SSH_MSG_IGNORE (the alternative)
 		// crashes some servers and
 		// advocates SSH_MSG_NONE instead.
+		/* OpenSSL now seems to not like SSH_MSG_NONE http://www.xk72.com/phpBB2/viewtopic.php?t=346 */
+		
 		//#ifndef nossh1
 		if (useprotocol == 1) {
-			SshPacket1 packet = new SshPacket1(SSH_MSG_NONE);
+			SshPacket1 packet = new SshPacket1(SSH_MSG_IGNORE);
 			sendPacket1(packet);
 		}
 		//#endif

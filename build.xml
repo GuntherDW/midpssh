@@ -81,6 +81,7 @@
 		</antcall>
 		
 		<antcall target="blackberry" />
+		<antcall target="build-httpserver" />
 	</target>
 	
 	<target name="build-midp2-full" description="Build midp2 full">
@@ -262,5 +263,12 @@
 				<exclude name="UNSUBSCRIBES.txt" />
 			</fileset>
 		</zip>
+	</target>
+	
+	<target name="build-httpserver" description="Builds MidpSSH HTTP Server">
+		<mkdir dir="${build.dir}/httpserver" />
+		<javac srcdir="src/httpserver" destdir="${build.dir}/httpserver" target="1.4" source="1.4" />
+		<jar jarfile="${dist.dir}/midpssh-http-server.jar" basedir="${build.dir}/httpserver"
+			manifest="conf/httpserver-manifest.txt" />
 	</target>
 </project>

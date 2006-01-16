@@ -33,6 +33,10 @@ import java.util.StringTokenizer;
 
 public class Server implements Runnable {
 
+	private static final String HTTP_HEADERS = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-type: application/octet-stream\r\n";
+
+	private static final String CRLF = "\r\n";
+
 	private static Map current;
 
 	private Socket clientSocket;
@@ -196,7 +200,7 @@ public class Server implements Runnable {
 			read = in.read(buf);
 		}
 
-		out.write("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n");
+		out.write(HTTP_HEADERS + CRLF);
 		out.flush();
 	}
 
@@ -218,9 +222,9 @@ public class Server implements Runnable {
 		while (read != -1) {
 			if (!headers) {
 				if (persistent) {
-					out.write("HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n");
+					out.write(HTTP_HEADERS + CRLF);
 				} else {
-					out.write("HTTP/1.1 200 OK\r\nContent-length: " + read + "\r\n\r\n");
+					out.write(HTTP_HEADERS + "Content-length: " + read + CRLF + CRLF);
 				}
 				out.flush();
 				headers = true;

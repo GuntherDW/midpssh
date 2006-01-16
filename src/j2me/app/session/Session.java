@@ -201,22 +201,14 @@ public abstract class Session implements Activatable {
 			host += ":" + defaultPort();
 		}
 
-		StringBuffer conn = new StringBuffer("socket://");
-		conn.append(host);
-//#ifdef blackberryconntypes
-        if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_PROXY ) {
-            conn.append(";deviceside=false");
-        }
-        else if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_DEVICESIDE ) {
-            conn.append(";deviceside=true");
-        }
-//#endif
-//#ifdef blackberryenterprise
-        conn.append(";deviceside=false");
-//#endif
+		StringBuffer conn;
 
     	String httpProxy = Settings.httpProxy;
-        if (httpProxy.length() == 0) {
+        if (httpProxy.length() == 0 || Settings.httpProxyMode == 0) {
+        	conn = new StringBuffer("socket://").append(host);
+    		//#ifdef blackberry
+    		customiseConnectionString(conn);
+    		//#endif
 			connection = (StreamConnection) Connector.open( conn.toString(), Connector.READ_WRITE, false );
 			in = connection.openDataInputStream();
 			out = connection.openDataOutputStream();
@@ -226,19 +218,22 @@ public abstract class Session implements Activatable {
         	emulation.putString("\r\nUsing HTTP Proxy...");
         	
         	int id = new Random().nextInt();
-    		String url = "http://" + httpProxy + "/" + id + "/" + host;
+        	conn = new StringBuffer("http://").append(httpProxy).append('/').append(id).append('/').append(host);
+    		//#ifdef blackberry
+    		customiseConnectionString(conn);
+    		//#endif
     		
-    		if (Settings.httpProxyMode == 0) {
-	        	HttpConnection outbound = (HttpConnection) Connector.open(url, Connector.READ_WRITE, false);
+    		if (Settings.httpProxyMode == 1) {
+	        	HttpConnection outbound = (HttpConnection) Connector.open(conn.toString(), Connector.READ_WRITE, false);
 	    		outbound.setRequestMethod(HttpConnection.POST);
 	    		out = outbound.openOutputStream();
-	    		HttpConnection inbound = (HttpConnection) Connector.open(url, Connector.READ_WRITE, false);
+	    		HttpConnection inbound = (HttpConnection) Connector.open(conn.toString(), Connector.READ_WRITE, false);
 	    		inbound.setRequestProperty("X-MidpSSH-Persistent", "true");
 	    		in = inbound.openInputStream();
     		}
     		else {
-    			out = new HttpOutboundStream(url);
-    			in = new HttpInboundStream(url);
+    			out = new HttpOutboundStream(conn.toString());
+    			in = new HttpInboundStream(conn.toString());
     		}
         }
         
@@ -246,6 +241,22 @@ public abstract class Session implements Activatable {
 
 		return true;
 	}
+	
+	//#ifdef blackberry
+	private void customiseConnectionString(StringBuffer conn) {
+		//#ifdef blackberryconntypes
+        if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_PROXY ) {
+            conn.append(";deviceside=false");
+        }
+        else if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_DEVICESIDE ) {
+            conn.append(";deviceside=true");
+        }
+        //#endif
+        //#ifdef blackberryenterprise
+        conn.append(";deviceside=false");
+        //#endif
+	}
+	//#endif
 
 //#ifdef readwriteio
     private void readWrite() throws IOException {

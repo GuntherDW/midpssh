@@ -114,6 +114,7 @@ public class SettingsForm extends EditableForm {
         case MODE_NETWORK:
         {
         	append(tfHttpProxy);
+        	cgHttpProxyMode.append("Off", null);
         	cgHttpProxyMode.append("Persistent", null);
         	cgHttpProxyMode.append("Transient", null);
         	append(cgHttpProxyMode);

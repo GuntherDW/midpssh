@@ -252,6 +252,7 @@
 		<zip zipfile="${dist.dir}/${zip.file}">
 			<fileset dir=".">
 				<include name="src/**"/>
+				<include name="conf/**"/>
 				<include name="res/**"/>
 				<include name="lib"/>
 				<include name="tasks/"/>

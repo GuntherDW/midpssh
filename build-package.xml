@@ -236,8 +236,8 @@
 	</target>
 
 	<target name="checksum">
-		<checksum file="${dist.dir}/${jar.file}" algorithm="SHA" fileext="asc" />
-		<checksum file="${dist.dir}/${jad.file}" algorithm="SHA" fileext="asc" />
+		<checksum file="${dist.dir}/${jar.file}" algorithm="SHA" fileext=".asc" />
+		<checksum file="${dist.dir}/${jad.file}" algorithm="SHA" fileext=".asc" />
 	</target>
 
 </project>

@@ -310,6 +310,7 @@ public abstract class Session implements Activatable {
 			bytesRead += n;
 		    filter.handleReceiveData( buf, 0, n );
 			
+//#ifndef io.no_available
 			int a = in.available();
             if (pollingIO) {
 	            while (a == 0 && !disconnecting) {
@@ -325,6 +326,9 @@ public abstract class Session implements Activatable {
             
             // Read at least 1 byte, and at most the number of bytes available
 			n = in.read( buf, 0, Math.max( 1, Math.min( a, buf.length ) ) );
+//#else
+            n = in.read(buf, 0, buf.length);
+//#endif
 		}
 //#else
 	    buf = new byte[1];

@@ -13,7 +13,7 @@
 		<antcall target="build2" />
 	</target>
 
-	<target name="build2" depends="package,obfuscate,preverify">
+	<target name="build2" depends="package,obfuscate,preverify,checksum">
 
 	</target>
 
@@ -21,9 +21,6 @@
 		<mkdir dir="${dist.dir}"/>
 		<property name="jar.file" value="${filename}.jar"/>
 		<property name="jad.file" value="${filename}.jad"/>
-		
-		<!-- Set jad target to the default, if it's not already set -->
-		<property name="jad.target" value="${jad.target.default}"/>
 	</target>
 	
 	<target name="init-mode" if="mode">
@@ -71,12 +68,7 @@
 
 	<target name="jad-deploy-icon" if="jad.icon">
 		<echo message="JAD-DEVICE-ICON" />
-        <wtkjad jadfile="${dist.dir}/${jad.file}"
-                jarfile="${dist.dir}/${jar.file}"
-                name="${name}"
-                vendor="${jad.vendor}"
-                version="${version}"
-				target="${jad.target}">
+		<wtkjad jadfile="${dist.dir}/${jad.file}" jarfile="${dist.dir}/${jar.file}" name="${name}" vendor="${jad.vendor}" version="${version}" target="${jad.target}">
 
             <midlet name="${name}" class="app.Main" icon="/${jad.icon}" />
             <attribute name="MIDlet-Permissions" value="javax.microedition.io.Connector.socket" />
@@ -84,12 +76,7 @@
     </target>
 
 	<target name="jad-deploy-noicon" unless="jad.icon">
-        <wtkjad jadfile="${dist.dir}/${jad.file}"
-                jarfile="${dist.dir}/${jar.file}"
-                name="${name}"
-                vendor="${jad.vendor}"
-                version="${version}"
-				target="${jad.target}">
+		<wtkjad jadfile="${dist.dir}/${jad.file}" jarfile="${dist.dir}/${jar.file}" name="${name}" vendor="${jad.vendor}" version="${version}" target="${jad.target}">
 
             <midlet name="${name}" class="app.Main" />
             <attribute name="MIDlet-Permissions" value="javax.microedition.io.Connector.socket" />
@@ -97,11 +84,7 @@
     </target>
 
 	<target name="jad-run" if="run">
-        <wtkjad jadfile="${dist.dir}/${jad.file}"
-                jarfile="${dist.dir}/${jar.file}"
-                name="${name}"
-                vendor="XK72"
-                version="${version}">
+		<wtkjad jadfile="${dist.dir}/${jad.file}" jarfile="${dist.dir}/${jar.file}" name="${name}" vendor="${jad.vendor}" version="${version}">
 
             <midlet name="${name}" class="app.Main" icon="/${jad.icon}"/>
         </wtkjad>
@@ -126,10 +109,7 @@
             </filterset>
 		</copy>
 		
-		<wtkpreprocess srcdir="${build.dir}/src"
-					   destdir="${build.dir}/src-proc/${filename}"
-					   symbols="${preprocess.symbols},${preprocess.symbols.global},${preprocess.symbols.midp},${preprocess.symbols.extra}"
-					   verbose="false" />
+		<wtkpreprocess srcdir="${build.dir}/src" destdir="${build.dir}/src-proc/${filename}" symbols="${preprocess.symbols},${preprocess.symbols.global},${preprocess.symbols.midp},${preprocess.symbols.extra}" verbose="false" />
 		<touch file="${build.dir}/src-proc/done-${filename}"/>
 	</target>
     	
@@ -146,12 +126,7 @@
                   preverify="false" target="1.4" />
 -->
 
-        <javac srcdir="${build.dir}/src-proc/${filename}"
-                  destdir="${build.dir}/bin/${filename}"
-        		  debug="false"
-        	      optimize="true"
-        	      target="1.1" 
-        	      bootclasspathref="${wtk.classpath}" />
+		<javac srcdir="${build.dir}/src-proc/${filename}" destdir="${build.dir}/bin/${filename}" debug="false" optimize="true" target="1.1" source="1.2" bootclasspathref="${wtk.classpath}" />
 
         <!-- Package everything. Most of the necessary information is
              contained in the JAD file. Also preverify the result this
@@ -161,10 +136,7 @@
 	</target>
    		
 	<target name="package" depends="compile,resources">
-        <wtkpackage jarfile="${dist.dir}/${jar.file}"
-                    jadfile="${dist.dir}/${jad.file}"
-                    obfuscate="false"
-                    preverify="false">
+		<wtkpackage jarfile="${dist.dir}/${jar.file}" jadfile="${dist.dir}/${jad.file}" obfuscate="false" preverify="false">
 
             <!-- Package our newly compiled classes. -->
 
@@ -211,10 +183,7 @@
 
 	<target name="obfuscate-normal" depends="obfuscate-init" if="obfuscate-normal" unless="noobfuscate">
     	<!-- Obfuscate -->
-    	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
-        			  jadfile="${dist.dir}/${jad.file}"
-    				  obfuscator="proguard"
-    				  classpath="lib/proguard.jar">
+		<wtkobfuscate jarfile="${dist.dir}/${jar.file}" jadfile="${dist.dir}/${jad.file}" obfuscator="proguard" classpath="lib/proguard.jar">
     		<argument value="-keep class ssh.v1.Blowfish" />
     		<argument value="-keep class ssh.v1.DES" />
     		<argument value="-keep class ssh.v1.DES3" />
@@ -228,10 +197,7 @@
 	
 	<target name="obfuscate-blackberry" depends="obfuscate-init" if="obfuscate-blackberry" unless="noobfuscate">
 		<!-- Obfuscate -->
-    	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
-        			  jadfile="${dist.dir}/${jad.file}"
-    				  obfuscator="proguard"
-    				  classpath="lib/proguard.jar">
+		<wtkobfuscate jarfile="${dist.dir}/${jar.file}" jadfile="${dist.dir}/${jad.file}" obfuscator="proguard" classpath="lib/proguard.jar">
     		<argument value="-keep class ssh.v1.DES3" />
     		<argument value="-keep class ssh.v1.Blowfish" />
     		<argument value="-keep class ssh.v1.DES" />
@@ -245,10 +211,7 @@
 	
 	<target name="obfuscate-lite" depends="obfuscate-init" if="obfuscate-lite" unless="noobfuscate">
 		<!-- Obfuscate -->
-    	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
-        			  jadfile="${dist.dir}/${jad.file}"
-    				  obfuscator="proguard"
-    				  classpath="lib/proguard.jar">
+		<wtkobfuscate jarfile="${dist.dir}/${jar.file}" jadfile="${dist.dir}/${jad.file}" obfuscator="proguard" classpath="lib/proguard.jar">
     		<argument value="-keep class ssh.v1.DES3" />
     		<argument value="-defaultpackage" />
     		<argument value="-allowaccessmodification" />
@@ -259,10 +222,7 @@
 	
 	<target name="obfuscate-lite-nossh1" depends="obfuscate-init" if="obfuscate-lite-nossh1" unless="noobfuscate">
 		<!-- Obfuscate -->
-    	<wtkobfuscate jarfile="${dist.dir}/${jar.file}"
-        			  jadfile="${dist.dir}/${jad.file}"
-    				  obfuscator="proguard"
-    				  classpath="lib/proguard.jar">
+		<wtkobfuscate jarfile="${dist.dir}/${jar.file}" jadfile="${dist.dir}/${jad.file}" obfuscator="proguard" classpath="lib/proguard.jar">
     		<argument value="-defaultpackage" />
     		<argument value="-allowaccessmodification" />
     		<argument value="-overloadaggressively" />
@@ -272,8 +232,12 @@
 		
 	<target name="preverify">
         <!-- Preverify. -->
-        <wtkpreverify jarfile="${dist.dir}/${jar.file}"
-                      jadfile="${dist.dir}/${jad.file}"/>
+		<wtkpreverify jarfile="${dist.dir}/${jar.file}" jadfile="${dist.dir}/${jad.file}" />
     </target>
 	
+	<target name="checksum">
+		<checksum file="${dist.dir}/${jar.file}" algorithm="SHA" fileext=".asc" />
+		<checksum file="${dist.dir}/${jad.file}" algorithm="SHA" fileext=".asc" />
+	</target>
+
 </project>

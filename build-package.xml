@@ -13,7 +13,7 @@
 		<antcall target="build2" />
 	</target>
 
-	<target name="build2" depends="package,obfuscate,preverify">
+	<target name="build2" depends="package,obfuscate,preverify,checksum">
 
 	</target>
 
@@ -276,5 +276,10 @@
         <wtkpreverify jarfile="${dist.dir}/${jar.file}"
                       jadfile="${dist.dir}/${jad.file}"/>
     </target>
+	
+	<target name="checksum">
+		<checksum file="${dist.dir}/${jar.file}" algorithm="SHA" fileext="asc" />
+		<checksum file="${dist.dir}/${jad.file}" algorithm="SHA" fileext="asc" />
+	</target>
 	
 </project>

@@ -80,7 +80,7 @@ public class SshIO {
 	
 	String cipher_type;// = "IDEA";
 
-	public static java.util.Random rnd = new java.util.Random();
+	private static java.util.Random rnd = new java.util.Random();
 
 	private int remotemajor, remoteminor;
 

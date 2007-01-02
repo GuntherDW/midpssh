@@ -29,11 +29,11 @@ package ssh.v1;
 
 
 public final class DES3 extends Cipher {
-	DES des1 = new DES();
+	private DES des1 = new DES();
 
-	DES des2 = new DES();
+    private DES des2 = new DES();
 
-	DES des3 = new DES();
+    private DES des3 = new DES();
 
 	public void encrypt( byte[] src, int srcOff, byte[] dest, int destOff, int len ) {
 		des1.encrypt( src, srcOff, dest, destOff, len );

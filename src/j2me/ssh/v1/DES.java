@@ -320,7 +320,7 @@ public final class DES extends Cipher {
 	 * Table for key generation. This used to be in sk.h. Copyright (C) 1993
 	 * Eric Young - see README for more details
 	 */
-	final static int des_skb[][] = {
+    private final static int des_skb[][] = {
 			/* for C bits (numbered as per FIPS 46) 1 2 3 4 5 6 */
 			{
 					0x00000000, 0x00000010, 0x20000000, 0x20000010, 0x00010000, 0x00010010, 0x20010000, 0x20010010,
@@ -415,7 +415,7 @@ public final class DES extends Cipher {
 	 * Tables used for executing des. This used to be in spr.h. Copyright (C)
 	 * 1993 Eric Young - see README for more details
 	 */
-	final static int des_SPtrans[][] = {
+	private final static int des_SPtrans[][] = {
 			/* nibble 0 */
 			{
 					0x00820200, 0x00020000, 0x80800000, 0x80820200, 0x00800000, 0x80020200, 0x80020000, 0x80800000,

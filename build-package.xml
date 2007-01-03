@@ -84,7 +84,7 @@
 	</target>
 
 	<target name="jad-run" if="run">
-		<wtkjad jadfile="${dist.dir}/${jad.file}" jarfile="${dist.dir}/${jar.file}" name="${name}" vendor="XK72" version="${version}">
+		<wtkjad jadfile="${dist.dir}/${jad.file}" jarfile="${dist.dir}/${jar.file}" name="${name}" vendor="${jad.vendor}" version="${version}">
 
 			<midlet name="${name}" class="app.Main" icon="/${jad.icon}" />
 		</wtkjad>

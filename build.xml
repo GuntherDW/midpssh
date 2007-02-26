@@ -9,6 +9,7 @@
 	<target name="all" description="Clean and build all versions">
 		<antcall target="clean" />
 		<antcall target="build-all" />
+		<antcall target="source" />
 	</target>
 
 	<target name="build-all">

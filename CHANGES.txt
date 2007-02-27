@@ -1,3 +1,11 @@
+1.5.8
+Release version.
+Testing support for avoiding InputStream.available() method
+Improved build process - now deploys each new version into a separate URL so that old versions can be maintained
+Updated to BB 4.0.2
+Checksums created for all files
+Field access permissions tightened as per recommendations in the paper by Erik Poll and Aleksy Schubert (http://zls.mimuw.edu.pl/~alx/papers/wits.pdf)
+
 1.5.4
 Keyboard-interactive support
 

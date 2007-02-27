@@ -53,6 +53,7 @@
 				<include name="${bb.codename}.cso"/>
 				<include name="${bb.codename}.debug"/>
 				<include name="${bb.codename}-*.debug"/>
+				<include name="${bb.codename}.jar"/>
 			</fileset>
 		</delete>
 	</target>

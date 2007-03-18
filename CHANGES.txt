@@ -1,4 +1,12 @@
-1.5.8
+1.7.0
+Proguard upgrade from 3.3.2 to 3.8. Reduces lite build sizes by 13 and 24 bytes respectively.
+Antenna upgrade from 0.9.13 to 0.9.14. No significant improvements. Just the latest.
+Upgrade to WTK2.5
+BlackBerry JDE upgrade to 4.2.0
+Settings forms no longer have an OK and Back option. They just have a back option, no longer any way to cancel changes.
+Fix Blackberry Pearl ChoiceGroup bug by changing from EXCLUSIVE to POPUP ChoiceGroups for MIDP2.
+
+1.5.8 becomes 1.6.0
 Release version.
 Testing support for avoiding InputStream.available() method
 Improved build process - now deploys each new version into a separate URL so that old versions can be maintained

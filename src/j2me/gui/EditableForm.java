@@ -50,10 +50,20 @@ public abstract class EditableForm extends Form implements CommandListener, Acti
 	public void commandAction( Command command, Displayable displayed ) {
 		if ( command == MainMenu.backCommand ) {
 			doBack();
+		} else if (command == MainMenu.okCommand) {
+			doOK();
 		}
+	}
+	
+	protected void addOKCommand() {
+		addCommand(MainMenu.okCommand);
 	}
 
 	protected void doBack() {
+		back.activate();
+	}
+	
+	protected void doOK() {
 		back.activate();
 	}
 	

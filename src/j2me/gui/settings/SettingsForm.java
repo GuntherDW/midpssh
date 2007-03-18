@@ -37,6 +37,9 @@ import ssh.v2.PublicKeyAuthentication;
 import app.Settings;
 
 /**
+ * NOTE on ChoiceGroup workarounds. Because of a bug in Java support on Blackberry Pearl we change the
+ * ChoiceGroups to be Popup rather than Exclusive in Midp2. They look nicer as popup in Midp2 as well
+ * I hope.
  * @author Karl von Randow
  */
 public class SettingsForm extends EditableForm {
@@ -57,26 +60,39 @@ public class SettingsForm extends EditableForm {
     
     protected TextField tfHttpProxy = new TextField("HTTP Proxy", "", 255, TextField.ANY);
     
-    protected ChoiceGroup cgHttpProxyMode = new ChoiceGroup( "HTTP Proxy Mode", ChoiceGroup.EXCLUSIVE );
+    protected ChoiceGroup cgHttpProxyMode = new ChoiceGroup( "HTTP Proxy Mode", ChoiceGroup.EXCLUSIVE
+    		//#ifdef midp2
+    		* 0 + ChoiceGroup.POPUP
+    		//#endif
+    		);
     
 	protected TextField tfType = new TextField( "Terminal Type", "", 20, TextField.ANY );
 	
 	protected TextField tfCols = new TextField( "Cols", "", 3, TextField.NUMERIC );
 	
 	protected TextField tfRows = new TextField( "Rows", "", 3, TextField.NUMERIC );
+	
 //#ifdef midp2    
-    protected ChoiceGroup cgFullscreen = new ChoiceGroup( "Full Screen", ChoiceGroup.EXCLUSIVE );
+    protected ChoiceGroup cgFullscreen = new ChoiceGroup( "Full Screen", ChoiceGroup.POPUP);
     
-    protected ChoiceGroup cgRotated = new ChoiceGroup( "Orientation", ChoiceGroup.EXCLUSIVE );
+    protected ChoiceGroup cgRotated = new ChoiceGroup( "Orientation", ChoiceGroup.POPUP);
     
-    protected ChoiceGroup cgPredictiveText = new ChoiceGroup("Predictive Text", ChoiceGroup.EXCLUSIVE);
+    protected ChoiceGroup cgPredictiveText = new ChoiceGroup("Predictive Text", ChoiceGroup.POPUP);
 //#endif
     
 //#ifndef nofonts
-    protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size", ChoiceGroup.EXCLUSIVE );
+    protected ChoiceGroup cgFont = new ChoiceGroup( "Font Size",  ChoiceGroup.EXCLUSIVE
+    		//#ifdef midp2
+    		* 0 + ChoiceGroup.POPUP
+    		//#endif
+    		);
     
 //#ifndef nofonts
-    protected ChoiceGroup cgLCDFontMode = new ChoiceGroup( "LCD Font Mode", ChoiceGroup.EXCLUSIVE );
+    protected ChoiceGroup cgLCDFontMode = new ChoiceGroup( "LCD Font Mode",  ChoiceGroup.EXCLUSIVE
+    		//#ifdef midp2
+    		* 0 + ChoiceGroup.POPUP
+    		//#endif
+    );
 //#endif
     
 	protected TextField tfFg = new TextField( "Foreground", "", 6, TextField.ANY );
@@ -84,18 +100,38 @@ public class SettingsForm extends EditableForm {
 	protected TextField tfBg = new TextField( "Background", "", 6, TextField.ANY );
 //#endif
     
-    protected ChoiceGroup cgPolling = new ChoiceGroup("Polling I/O", ChoiceGroup.EXCLUSIVE);
+    protected ChoiceGroup cgPolling = new ChoiceGroup("Polling I/O", ChoiceGroup.EXCLUSIVE
+    		//#ifdef midp2
+    		* 0 + ChoiceGroup.POPUP
+    		//#endif
+    		);
 	
 //#ifdef ssh2
     //#ifndef nossh1
-    protected ChoiceGroup cgSsh = new ChoiceGroup("Prefer", ChoiceGroup.EXCLUSIVE);
+    protected ChoiceGroup cgSsh = new ChoiceGroup("Prefer", ChoiceGroup.EXCLUSIVE
+    		//#ifdef midp2
+    		* 0 + ChoiceGroup.POPUP
+    		//#endif
+    		);
     //#endif
     
-    protected ChoiceGroup cgSshPublicKey = new ChoiceGroup("Public Key", ChoiceGroup.EXCLUSIVE);
+    protected ChoiceGroup cgSshPublicKey = new ChoiceGroup("Public Key", ChoiceGroup.EXCLUSIVE
+    		//#ifdef midp2
+    		* 0 + ChoiceGroup.POPUP
+    		//#endif
+    		);
     
-    protected ChoiceGroup cgSshKeys = new ChoiceGroup("Store Session Key", ChoiceGroup.EXCLUSIVE);
+    protected ChoiceGroup cgSshKeys = new ChoiceGroup("Store Session Key", ChoiceGroup.EXCLUSIVE
+    		//#ifdef midp2
+    		* 0 + ChoiceGroup.POPUP
+    		//#endif
+    		);
     
-    protected ChoiceGroup cgSshKeySize = new ChoiceGroup("Session Key Size", ChoiceGroup.EXCLUSIVE);
+    protected ChoiceGroup cgSshKeySize = new ChoiceGroup("Session Key Size", ChoiceGroup.EXCLUSIVE
+    		//#ifdef midp2
+    		* 0 + ChoiceGroup.POPUP
+    		//#endif
+    		);
     
     private static final int[] sshKeySizes = new int[] { 32, 64, 128, 256, 512, 1024 };
 //#endif
@@ -198,8 +234,6 @@ public class SettingsForm extends EditableForm {
         break;
 //#endif
         }
-        
-        addCommand(MainMenu.okCommand);
 	}
     
     /* (non-Javadoc)
@@ -227,17 +261,16 @@ public class SettingsForm extends EditableForm {
     	}
     	else
     	//#endif
-        if ( command == MainMenu.okCommand ) {
-            if ( doSave() ) {
-                Settings.saveSettings( );
-                doBack();
-            }
-        }
-        else {
-            super.commandAction( command, displayable );
-        }
+        super.commandAction( command, displayable );
     }
     
+	protected void doBack() {
+		 if ( doSave() ) {
+             Settings.saveSettings( );
+             super.doBack();
+         }
+	}
+
 	/* (non-Javadoc)
 	 * @see gui.Activatable#activate()
 	 */

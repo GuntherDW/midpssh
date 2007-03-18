@@ -24,6 +24,12 @@
 	</target>
 	
 	<target name="run" depends="all">
+		<available property="has.bb.simulator" file="${bb.simulator}" />
+		<antcall target="run-simulator" />
+		<antcall target="run-simulator2" />
+	</target>
+		
+	<target name="run-simulator" if="has.bb.simulator">
 		<copy todir="${bb.simulator}">
 			<fileset dir="${dist.dir}">
 				<include name="${cod.file}"/>
@@ -31,6 +37,10 @@
 		</copy>
 		
 		<exec executable="${bb.simulator.run}" dir="${bb.simulator}" />
+	</target>
+	
+	<target name="run-simulator2" unless="has.bb.simulator">
+		<echo message="Blackberry simulator not found: ${bb.simulator}" />
 	</target>
 
 	<target name="build-blackberry" unless="build.uptodate" depends="build">

@@ -27,8 +27,6 @@ import gui.MainMenu;
 import gui.SessionForm;
 
 import javax.microedition.lcdui.ChoiceGroup;
-import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.TextField;
 
 import app.Settings;
@@ -76,7 +74,11 @@ public class MacroForm extends EditableForm {
 //#endif
             
     		tfName = new TextField( "Name (Optional):", null, 255, TextField.ANY );
-    		cgType = new ChoiceGroup( "Mode", ChoiceGroup.EXCLUSIVE );
+    		cgType = new ChoiceGroup( "Mode", ChoiceGroup.EXCLUSIVE
+    	    		//#ifdef midp2
+    	    		* 0 + ChoiceGroup.POPUP
+    	    		//#endif
+    				);
     		cgType.append( "Enter", null );
     		cgType.append( "Type", null );
     		
@@ -85,12 +87,25 @@ public class MacroForm extends EditableForm {
     		append( cgType );
         }
 
-		this.edit = edit;
-		if ( edit ) {
-		    addCommand( SessionForm.saveCommand );
+        if (!edit) {
+		    addOKCommand();
 		}
-		else {
-		    addCommand( SessionForm.createCommand );
+		this.edit = edit;
+	}
+
+	protected void doBack() {
+		if (edit) {
+			if (doSave(false)) {
+				super.doBack();
+			}
+		} else {
+			super.doBack();
+		}
+	}
+
+	protected void doOK() {
+		if (doSave(true)) {
+			super.doOK();
 		}
 	}
 
@@ -140,25 +155,7 @@ public class MacroForm extends EditableForm {
 		tfValue.setString( value );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
-	 *      javax.microedition.lcdui.Displayable)
-	 */
-	public void commandAction( Command command, Displayable displayed ) {
-		if ( command == SessionForm.saveCommand ) {
-			doSave(false);
-		}
-		else if ( command == SessionForm.createCommand ) {
-		    doSave(true);
-		}
-		else {
-			super.commandAction( command, displayed );
-		}
-	}
-
-	private void doSave(boolean create) {
+	private boolean doSave(boolean create) {
 		if (create || macroSetIndex != -1 ) {
 			if ( validateForm() ) {
                 if ( isMacroSet ) {
@@ -185,10 +182,10 @@ public class MacroForm extends EditableForm {
     					macroSet.replaceMacro( macroIndex, macro );
     				}
                 }
-
-				doBack();
+                return true;
 			}
 		}
+		return false;
 	}
 
 	protected boolean validateForm() {

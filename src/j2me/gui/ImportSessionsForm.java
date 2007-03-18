@@ -71,7 +71,11 @@ public class ImportSessionsForm extends Form implements Activatable, Runnable, C
         append(tfUrl);
         
 //#ifdef blackberryconntypes
-        cgBlackberryConnType = new ChoiceGroup( "Connection Type", ChoiceGroup.EXCLUSIVE);
+        cgBlackberryConnType = new ChoiceGroup( "Connection Type", ChoiceGroup.EXCLUSIVE
+    		//#ifdef midp2
+    		* 0 + ChoiceGroup.POPUP
+    		//#endif	
+        	);
         cgBlackberryConnType.append( "Default", null );
         cgBlackberryConnType.append( "TCP/IP", null );
         cgBlackberryConnType.append( "BES", null );

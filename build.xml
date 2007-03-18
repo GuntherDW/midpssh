@@ -4,7 +4,7 @@
 
 	<property file="build.properties" />
 
-	<taskdef resource="antenna.properties" classpath="lib/antenna-bin-0.9.13.jar" />
+	<taskdef resource="antenna.properties" classpath="lib/antenna-bin-0.9.14.jar" />
 
 	<target name="all" description="Clean and build all versions">
 		<antcall target="clean" />

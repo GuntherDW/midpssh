@@ -25,8 +25,6 @@ package gui;
 import gui.settings.SettingsForm;
 
 import javax.microedition.lcdui.ChoiceGroup;
-import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
@@ -40,10 +38,6 @@ import app.Settings;
  */
 public class SessionForm extends EditableForm {
 
-	public static final Command saveCommand = new Command( "Save", Command.SCREEN, 1 );
-
-	public static final Command createCommand = new Command( "Create", Command.SCREEN, 1 );
-	
 	public static final String WARNING_REQUIRED = "Please fill in required fields.";
 
 	private int connectionIndex = 1;
@@ -93,7 +87,11 @@ public class SessionForm extends EditableForm {
 //#endif
 		tfPassword = new TextField( "Password:", null, 255, TextField.PASSWORD );
 		//#ifndef notelnet
-		cgType = new ChoiceGroup( "Type", ChoiceGroup.EXCLUSIVE );
+		cgType = new ChoiceGroup( "Type", ChoiceGroup.EXCLUSIVE
+    		//#ifdef midp2
+    		* 0 + ChoiceGroup.POPUP
+    		//#endif
+			);
 		for ( int i = 0; i < typeNames.length; i++ ) {
 			cgType.append( typeNames[i], null );
 		}
@@ -112,25 +110,46 @@ public class SessionForm extends EditableForm {
 		
 		//#ifdef ssh2
 		if (Settings.x != null) {
-			cgUsePublicKey = new ChoiceGroup("Use Public Key", ChoiceGroup.EXCLUSIVE);
+			cgUsePublicKey = new ChoiceGroup("Use Public Key", ChoiceGroup.EXCLUSIVE
+		    		//#ifdef midp2
+		    		* 0 + ChoiceGroup.POPUP
+		    		//#endif
+					);
 			SettingsForm.booleanChoiceGroup(cgUsePublicKey);
 			append(cgUsePublicKey);
 		}
 		//#endif
 
 //#ifdef blackberryconntypes
-        cgBlackberryConnType = new ChoiceGroup( "Connection Type", ChoiceGroup.EXCLUSIVE);
+        cgBlackberryConnType = new ChoiceGroup( "Connection Type", ChoiceGroup.EXCLUSIVE
+        		//#ifdef midp2
+        		* 0 + ChoiceGroup.POPUP
+        		//#endif
+        		);
         cgBlackberryConnType.append( "Default", null );
         cgBlackberryConnType.append( "TCP/IP", null );
         cgBlackberryConnType.append( "BES", null );
         append(cgBlackberryConnType);
 //#endif
-                
-		if ( edit ) {
-		    addCommand( saveCommand );
+        
+        if (!edit) {
+		    addOKCommand();
 		}
-		else {
-			addCommand( createCommand );
+	}
+
+	protected void doBack() {
+		if (edit) {
+			if (doSave(false)) {
+				super.doBack();
+			}
+		} else {
+			super.doBack();
+		}
+	}
+
+	protected void doOK() {
+		if (doSave(true)) {
+			super.doOK();
 		}
 	}
 
@@ -188,25 +207,7 @@ public class SessionForm extends EditableForm {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command,
-	 *      javax.microedition.lcdui.Displayable)
-	 */
-	public void commandAction( Command command, Displayable displayed ) {
-		if ( command == saveCommand ) {
-			doSave(false);
-		}
-		else if ( command == createCommand ) {
-			doSave(true);
-		}
-		else {
-			super.commandAction( command, displayed );
-		}
-	}
-
-	private void doSave(boolean create) {
+	private boolean doSave(boolean create) {
 		if ( !create || connectionIndex != -1 ) {
 			if ( validateForm() ) {
 				SessionSpec conn = new SessionSpec();
@@ -235,9 +236,10 @@ public class SessionForm extends EditableForm {
                 	SessionManager.replaceSession( connectionIndex, conn );
                 }
                 
-				doBack();
+				return true;
 			}
 		}
+		return false;
 	}
     
 	protected boolean validateForm() {

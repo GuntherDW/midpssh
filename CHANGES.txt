@@ -1,3 +1,16 @@
+1.7.3
+Fix SSH protocol error that caused connection drop on ScreenOS firewall - thanks Stefan Brunner
+Improve security of SSH implementation by simple state tracking - thanks to Aleksy Schubert for bringing this to my attention
+
+1.7.2
+Add BB Wi-fi support
+
+1.7.1
+Attempt to fix BB OTA JAD files
+Upgrade to Antenna 1.0.0
+Upgrade to WTK2.5.2
+Upgrade to Proguard 4.1
+
 1.7.0
 Proguard upgrade from 3.3.2 to 3.8. Reduces lite build sizes by 13 and 24 bytes respectively.
 Antenna upgrade from 0.9.13 to 0.9.14. No significant improvements. Just the latest.

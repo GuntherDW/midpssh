@@ -43,6 +43,7 @@ public class SessionSpec {
     public static final int BLACKBERRY_CONN_TYPE_DEFAULT = 0;
     public static final int BLACKBERRY_CONN_TYPE_DEVICESIDE = 1;
     public static final int BLACKBERRY_CONN_TYPE_PROXY = 2;
+    public static final int BLACKBERRY_CONN_TYPE_WIFI = 3;
     
     public int blackberryConnType;
 //#endif

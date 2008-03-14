@@ -250,6 +250,8 @@ public abstract class Session implements Activatable {
         }
         else if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_DEVICESIDE ) {
             conn.append(";deviceside=true");
+        } else if ( spec.blackberryConnType == SessionSpec.BLACKBERRY_CONN_TYPE_WIFI ) {
+            conn.append(";DeviceSide=True;ConnectionUID=S TCP-WiFi;ConnectionSetup=delayed;retrynocontext=true");
         }
         //#endif
         //#ifdef blackberryenterprise

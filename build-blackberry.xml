@@ -5,6 +5,7 @@
 	<target name="all" depends="init,blackberry-uptodate,alx">
 		<antcall target="build-blackberry"/>
 		<antcall target="ota"/>
+		<antcall target="simple-ota"/>
 	</target>
 
 	<target name="init" depends="init-midp1,init-midp2">
@@ -88,7 +89,7 @@
 		</copy>
 	</target>
 	
-	<target name="ota">
+	<target name="ota" if="bb.ota">
 		<mkdir dir="${build.dir}/blackberry/ota" />
 		
 		<!-- Unzip main COD file and rename constituents -->
@@ -112,6 +113,8 @@
 		<java classname="RewriteBlackberryJAD" classpath="${build.dir}/tasks">
 			<arg value="${dist.dir}/${jad.file}" />
 			<arg value="${dist.dir}/${ota.jad.file}" />
+			<arg value="${dist.dir}/${bb.codename}-1.cod" />
+			<arg value="${dist.dir}/${bb.codename}-2.cod" />
 			<arg value="${bb.codename}-1.cod" />
 			<arg value="${bb.codename}-2.cod" />
 			<arg value="${cod.size.1}" />
@@ -119,4 +122,7 @@
 		</java>
 	</target>
 
+	<target name="simple-ota" unless="bb.ota">
+		<copy file="${dist.dir}/${jad.file}" tofile="${dist.dir}/${ota.jad.file}" />
+	</target>
 </project>

@@ -4,7 +4,7 @@
 
 	<property file="build.properties" />
 
-	<taskdef resource="antenna.properties" classpath="lib/antenna-bin-0.9.14.jar" />
+	<taskdef resource="antenna.properties" classpath="lib/antenna-bin-1.0.0.jar" />
 
 	<target name="all" description="Clean and build all versions">
 		<antcall target="clean" />
@@ -65,7 +65,7 @@
 			<param name="noobfuscate" value="true" />
 		</antcall>
 
-		<antcall target="blackberry" />
+		<antcall target="build-blackberry" />
 		<antcall target="build-httpserver" />
 	</target>
 
@@ -111,7 +111,7 @@
 			<param name="mode" value="ssh2" />
 			<param name="run" value="true" />
 			<param name="noobfuscate" value="true" />
-			<param name="preprocess.symbols.extra" value="blackberry,debug" />
+			<param name="preprocess.symbols.extra" value="blackberry,debugging" />
 		</antcall>
 	</target>
 
@@ -175,25 +175,25 @@
 
 	<target name="build-tasks">
 		<mkdir dir="${build.dir}/tasks" />
-		<javac srcdir="tasks" destdir="${build.dir}/tasks" />
+		<javac srcdir="src/tasks" destdir="${build.dir}/tasks" />
 	</target>
 
-	<target name="blackberry">
-		<antcall target="build-blackberry">
+	<target name="build-blackberry" description="Build Blackberry versions">
+		<antcall target="build-blackberry2">
 			<param name="filename" value="midpssh-bb" />
 			<param name="midp1" value="true" />
 			<param name="mode" value="blackberry" />
 			<param name="bb.codename" value="midpssh" />
 			<param name="bb.name" value="MidpSSH" />
 		</antcall>
-		<antcall target="build-blackberry">
+		<antcall target="build-blackberry2">
 			<param name="filename" value="midpssh-bb-midp2" />
 			<param name="midp2" value="true" />
 			<param name="mode" value="blackberry" />
 			<param name="bb.codename" value="midpssh2" />
 			<param name="bb.name" value="MidpSSH" />
 		</antcall>
-		<antcall target="build-blackberry">
+		<antcall target="build-blackberry2">
 			<param name="name" value="${name}e" />
 			<param name="filename" value="midpssh-bb-e" />
 			<param name="midp1" value="true" />
@@ -201,7 +201,7 @@
 			<param name="bb.codename" value="midpsshe" />
 			<param name="bb.name" value="MidpSSHe" />
 		</antcall>
-		<antcall target="build-blackberry">
+		<antcall target="build-blackberry2">
 			<param name="name" value="${name}e" />
 			<param name="filename" value="midpssh-bb-e-midp2" />
 			<param name="midp2" value="true" />
@@ -221,7 +221,7 @@
 	</target>
 	-->
 
-	<target name="build-blackberry" depends="build-tasks">
+	<target name="build-blackberry2" depends="build-tasks">
 		<ant antfile="build-blackberry.xml" />
 	</target>
 

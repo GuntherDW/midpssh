@@ -332,12 +332,12 @@ public abstract class Session implements Activatable {
 		}
 //#else
 	    buf = new byte[1];
-//#ifdef debug
+//#ifdef debugging
 		emulation.putString( "Waiting for first byte.\r\n" );
 //#endif
 	    
 	    int c = in.read();
-//#ifdef debug
+//#ifdef debugging
 		emulation.putString( "Read first byte.\r\n" );
 //#endif
 	    while ( c != -1 ) {
@@ -539,7 +539,7 @@ public abstract class Session implements Activatable {
 	private class Reader extends Thread {
 		public void run() {
 			try {
-//#ifdef debug
+//#ifdef debugging
 				emulation.putString( "Reader started.\r\n" );
 //#endif
 				read();

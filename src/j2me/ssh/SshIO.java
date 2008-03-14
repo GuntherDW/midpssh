@@ -76,6 +76,8 @@ public class SshIO {
 	
 	//#ifdef ssh2
 	private SshCrypto2 crypto2;
+	
+	private int remoteId;
 	//#endif
 	
 	String cipher_type;// = "IDEA";
@@ -97,7 +99,15 @@ public class SshIO {
 	private byte lastPacketSentType;
 
 	// phase : handleBytes
-	private boolean initting = true;
+	private byte state;
+	
+	private static final byte STATE_INIT = 0;
+	
+	private static final byte STATE_KEYS = 1;
+	
+	private static final byte STATE_SECURE = 2;
+	
+	private static final byte STATE_CONNECTED = 3;
 	
 	private int authmode;
 	
@@ -207,7 +217,7 @@ public class SshIO {
 	// private static final byte SSH2_MSG_CHANNEL_SUCCESS = 99;
 
 	// private static final byte SSH2_MSG_CHANNEL_FAILURE = 100;
-
+	
 	private int outgoingseq = 0;
 
 	//
@@ -243,8 +253,6 @@ public class SshIO {
 	// private final int SSH_AUTH_RHOSTS_RSA = 4; // .rhosts with RSA host
 
 	// authentication
-
-	private boolean cansenddata = false;
 
 	/**
 	 * Initialise SshIO
@@ -290,11 +298,11 @@ public class SshIO {
 			dataToSend = str;
 		else
 			dataToSend += str;
-		if (cansenddata) {
+		if (state == STATE_CONNECTED) {
 			//#ifdef ssh2
 			if (useprotocol == 2) {
 				SshPacket2 pn = new SshPacket2(SSH2_MSG_CHANNEL_DATA);
-				pn.putInt32(0);
+				pn.putInt32(remoteId);
 				pn.putString(dataToSend);
 				sendPacket2(pn);
 			}
@@ -323,7 +331,7 @@ public class SshIO {
 		// Telnet.console.append("SshIO.getPacket(" + buff + "," + length +
 		// ")");
 
-		PHASE_INIT: if (initting) {
+		PHASE_INIT: if (state == STATE_INIT) {
 			byte b; // of course, byte is a signed entity (-128 -> 127)
 
 			while (boffset < boffsetend) {
@@ -334,8 +342,6 @@ public class SshIO {
 				idstr += (char) b;
 				if (b == '\n') {
 					if (idstr.startsWith("SSH-")) {
-						initting = false;
-						
 						remotemajor = Integer.parseInt(idstr.substring(4, 5));
 						String minorverstr = idstr.substring(6, 8);
 						if (!Character.isDigit(minorverstr.charAt(1)))
@@ -390,7 +396,9 @@ public class SshIO {
 						idstr_sent = "SSH-" + mymajor + "." + myminor + "-"
 								+ idstr_sent;
 						write(idstr_sent.getBytes());
-	
+
+						state = STATE_KEYS;
+						
 						//#ifdef ssh2
 						if (useprotocol == 2) {
 							currentpacket = new SshPacket2();
@@ -417,7 +425,7 @@ public class SshIO {
 			}
 			if (boffset == boffsetend)
 				return "".getBytes();
-			return "PHASE_INIT error\n".getBytes();
+			return "Init Error\n".getBytes();
 		}
 
 		result = "";
@@ -475,146 +483,7 @@ public class SshIO {
 	 */
 	private String handlePacket2(SshPacket2 p) throws IOException {
 		switch (p.getType()) {
-		case SSH2_MSG_DISCONNECT:
-			p.getInt32(); // disconnect reason
-			String discreason1 = p.getString();
-			return "\r\nDisconnected: " + discreason1 + "\r\n";
-
-		case SSH2_MSG_NEWKEYS: {
-			// Send response
-			sendPacket2(new SshPacket2(SSH2_MSG_NEWKEYS));
-
-			// byte[] session_key = new byte[24];
-			// crypto = new SshCrypto( cipher_type, session_key );
-			updateKeys(dhkex);
-
-			SshPacket2 pn = new SshPacket2(SSH2_MSG_SERVICE_REQUEST);
-			pn.putString("ssh-userauth");
-
-			sendPacket2(pn);
-
-			//#ifndef noinstructions
-			//#ifdef removeme
-			if (1 == 1)
-				//#endif
-				return "Requesting authentication\r\n";
-			//#else
-			break;
-			//#endif
-		}
-
-		case SSH2_MSG_SERVICE_ACCEPT: {
-			// Send login request
-			
-			return authenticate2();
-		}
-
-		case SSH2_MSG_USERAUTH_FAILURE:
-//			p.getString(); // methods
-//			p.getByte(); // partialSuccess
-
-			String message = authenticate2();
-			if (message != null) {
-				return message;
-			}
-			else {
-				return "Authentication failure.\r\nAvailable methods are: "
-				+ p.getString() + "\r\n";
-			}
-			
-		//#ifdef keybrdinteractive
-		case SSH2_MSG_USERAUTH_INFO_REQUEST:
-			String name = p.getString();
-			String instruction = p.getString();
-			p.getString(); // language tag
-			int numPrompts = p.getInt32();
-			String[] prompts = new String[numPrompts];
-			boolean[] echos = new boolean[numPrompts];
-			
-			for (int i = 0; i < numPrompts; i++) {
-				prompts[i] = p.getString();
-				echos[i] = p.getByte() != 0;
-			}
-			
-			sshSession.prompt(name, instruction, prompts, echos);
-			break;
-		//#endif
-
-		case SSH2_MSG_USERAUTH_SUCCESS: {
-			// Open channel
-			SshPacket2 pn = new SshPacket2(SSH2_MSG_CHANNEL_OPEN);
-			pn.putString("session");
-			pn.putInt32(0);
-			pn.putInt32(0x100000);
-			pn.putInt32(0x4000);
-			sendPacket2(pn);
-
-			//#ifndef noinstructions
-			//#ifdef removeme
-			if (1 == 1)
-				//#endif
-				return "Authentication accepted\r\n";
-			//#else
-			break;
-			//#endif
-		}
-
-		case SSH2_MSG_CHANNEL_OPEN_CONFIRMATION: {
-			p.getInt32(); // localId
-			int remoteId = p.getInt32();
-//			p.getInt32(); // remoteWindowSize
-//			p.getInt32(); // remotePacketSize
-
-			// Open PTY
-			SshPacket2 pn = new SshPacket2(SSH2_MSG_CHANNEL_REQUEST);
-			pn.putInt32(remoteId);
-			pn.putString("pty-req");
-			pn.putByte((byte) 0); // want reply
-			pn.putString(getTerminalID());
-			pn.putInt32(getTerminalWidth());
-			pn.putInt32(getTerminalHeight());
-			pn.putInt32(0);
-			pn.putInt32(0);
-			pn.putString("");
-			sendPacket2(pn);
-
-			// Open Shell
-			pn = new SshPacket2(SSH2_MSG_CHANNEL_REQUEST);
-			pn.putInt32(remoteId);
-			pn.putString("shell");
-			pn.putByte((byte) 0); // want reply
-			sendPacket2(pn);
-
-			cansenddata = true;
-			if (dataToSend != null) {
-				pn = new SshPacket2(SSH2_MSG_CHANNEL_DATA);
-				pn.putInt32(0);
-				pn.putString(dataToSend);
-				sendPacket2(pn);
-				dataToSend = null;
-			}
-
-			//#ifndef noinstructions
-			//#ifdef removeme
-			if (1 == 1)
-				//#endif
-				return "Shell opened\r\n";
-			//#else
-			break;
-			//#endif
-		}
-
-		case SSH2_MSG_CHANNEL_DATA: {
-			p.getInt32(); // localId
-			String data = p.getString();
-			return data;
-		}
-
-		case SSH2_MSG_CHANNEL_CLOSE: {
-			sendDisconnect(11, "Finished");
-			break;
-		}
-
+		
 		case SSH2_MSG_KEXINIT: {
 			/*
 			 * Described
@@ -680,7 +549,7 @@ public class SshIO {
 			dhkex.V_C = idstr_sent.trim().getBytes();
 			dhkex.I_S = add20(p.getData());
 			dhkex.I_C = add20(I_C);
-
+			
 			pn = new SshPacket2(SSH2_MSG_KEXDH_INIT);
 			pn.putMpInt(dhkex.getE());
 			sendPacket2(pn);
@@ -706,6 +575,152 @@ public class SshIO {
 				return "FAILED\r\n";
 			}
 		}
+
+		case SSH2_MSG_NEWKEYS: {
+			// Send response
+			sendPacket2(new SshPacket2(SSH2_MSG_NEWKEYS));
+
+			// byte[] session_key = new byte[24];
+			// crypto = new SshCrypto( cipher_type, session_key );
+			updateKeys(dhkex);
+			
+			state = STATE_SECURE;
+
+			SshPacket2 pn = new SshPacket2(SSH2_MSG_SERVICE_REQUEST);
+			pn.putString("ssh-userauth");
+
+			sendPacket2(pn);
+
+			//#ifndef noinstructions
+			//#ifdef removeme
+			if (1 == 1)
+				//#endif
+				return "Requesting authentication\r\n";
+			//#else
+			break;
+			//#endif
+		}
+		
+		case SSH2_MSG_SERVICE_ACCEPT:
+			if (state < STATE_SECURE)
+				break;
+			return authenticate2();
+
+		case SSH2_MSG_USERAUTH_FAILURE:
+			if (state < STATE_SECURE)
+				break;
+//			p.getString(); // methods
+//			p.getByte(); // partialSuccess
+
+			String message = authenticate2();
+			if (message != null) {
+				return message;
+			} else {
+				return "Authentication failed.\r\nAvailable methods are: "
+				+ p.getString() + "\r\n";
+			}
+			
+		//#ifdef keybrdinteractive
+		case SSH2_MSG_USERAUTH_INFO_REQUEST:
+			if (state < STATE_SECURE)
+				break;
+			String name = p.getString();
+			String instruction = p.getString();
+			p.getString(); // language tag
+			int numPrompts = p.getInt32();
+			String[] prompts = new String[numPrompts];
+			boolean[] echos = new boolean[numPrompts];
+			
+			for (int i = 0; i < numPrompts; i++) {
+				prompts[i] = p.getString();
+				echos[i] = p.getByte() != 0;
+			}
+			
+			sshSession.prompt(name, instruction, prompts, echos);
+			break;
+		//#endif
+
+		case SSH2_MSG_USERAUTH_SUCCESS: {
+			// Open channel
+			SshPacket2 pn = new SshPacket2(SSH2_MSG_CHANNEL_OPEN);
+			pn.putString("session");
+			pn.putInt32(0);
+			pn.putInt32(0x100000);
+			pn.putInt32(0x4000);
+			sendPacket2(pn);
+
+			//#ifndef noinstructions
+			//#ifdef removeme
+			if (1 == 1)
+				//#endif
+				return "Authentication accepted\r\n";
+			//#else
+			break;
+			//#endif
+		}
+		
+		case SSH2_MSG_CHANNEL_OPEN_CONFIRMATION: {
+			p.getInt32(); // localId
+			remoteId = p.getInt32();
+//			p.getInt32(); // remoteWindowSize
+//			p.getInt32(); // remotePacketSize
+
+			// Open PTY
+			SshPacket2 pn = new SshPacket2(SSH2_MSG_CHANNEL_REQUEST);
+			pn.putInt32(remoteId);
+			pn.putString("pty-req");
+			pn.putByte((byte) 0); // want reply
+			pn.putString(getTerminalID());
+			pn.putInt32(getTerminalWidth());
+			pn.putInt32(getTerminalHeight());
+			pn.putInt32(0);
+			pn.putInt32(0);
+			pn.putString("");
+			sendPacket2(pn);
+				
+			// Open Shell
+			pn = new SshPacket2(SSH2_MSG_CHANNEL_REQUEST);
+			pn.putInt32(remoteId);
+			pn.putString("shell");
+			pn.putByte((byte) 0); // want reply
+			sendPacket2(pn);
+
+			state = STATE_CONNECTED;
+			
+			if (dataToSend != null) {
+			pn = new SshPacket2(SSH2_MSG_CHANNEL_DATA);
+				pn.putInt32(0);
+				pn.putString(dataToSend);
+				sendPacket2(pn);
+				dataToSend = null;
+			}
+
+			//#ifndef noinstructions
+			//#ifdef removeme
+			if (1 == 1)
+				//#endif
+				return "Shell opened\r\n";
+			//#else
+			break;
+			//#endif
+		}
+
+		case SSH2_MSG_CHANNEL_DATA: {
+			p.getInt32(); // localId
+			String data = p.getString();
+			return data;
+		}
+
+		case SSH2_MSG_CHANNEL_CLOSE: {
+			sendDisconnect(11, "Finished");
+			break;
+		}
+		
+		case SSH2_MSG_DISCONNECT:
+			p.getInt32(); // disconnect reason
+			String discreason1 = p.getString();
+			return "\r\nDisconnected: " + discreason1 + "\r\n";
+			
 		}
 		return "";
 	}
@@ -756,7 +771,7 @@ public class SshIO {
 			buf.putByte((byte) 0);
 			buf.putString(password);
 			sendPacket2(buf);
-
+			
 			//#ifndef noinstructions
 			//#ifdef removeme
 			if (1 == 1)
@@ -999,7 +1014,8 @@ public class SshIO {
 				/*
 				 * we can send data with a pty accepted ... no need for a shell.
 				 */
-				cansenddata = true;
+				state = STATE_CONNECTED;
+				
 				if (dataToSend != null) {
 					Send_SSH_CMSG_STDIN_DATA(dataToSend);
 					dataToSend = null;
